@@ -1,4 +1,4 @@
-# 林间来信 · v1.1.0
+# 林间来信 · v1.2.0
 
 三维森林社交网页，包含动物好友、聊天、朋友圈、公众号、视频号与 Windows 独立桌宠。
 
@@ -6,7 +6,7 @@
 
 **下载并解压后，双击根目录的 [启动林间来信.cmd](./启动林间来信.cmd)。浏览器会自动打开最新网页。**
 
-[![下载最新版](https://img.shields.io/badge/下载最新版-v1.1.0-52734d?style=for-the-badge)](https://github.com/szddddddd/letters-from-the-woods/archive/refs/heads/main.zip)
+[![下载最新版](https://img.shields.io/badge/下载最新版-v1.2.0-52734d?style=for-the-badge)](https://github.com/szddddddd/letters-from-the-woods/archive/refs/heads/main.zip)
 
 | 第一步 | 第二步 | 第三步 |
 | --- | --- | --- |
@@ -18,7 +18,13 @@
 
 GitHub 上的按钮用于下载，不能直接运行电脑中的程序。更新请重新下载 main，或执行 `git pull --ff-only`，然后再次双击启动文件。
 
-唯一产品入口为 `index.html`，当前版本 **1.1.0**。旧版根目录代码和过期预览已删除。`pet.html` 是桌宠运行页面，`asset-review.html` 是开发用模型检查工具，不是另一版网页。
+唯一产品入口为 `index.html`，当前版本 **1.2.0**。旧版根目录代码和过期预览已删除。`pet.html` 是桌宠运行页面，`asset-review.html` 是开发用模型检查工具，不是另一版网页。
+
+## v1.2.0 · 清澈森林溪谷
+
+河流新增可见浅滩与卵石河床、受灯光和桥影影响的半透明水面、桥后小跌水、岩石分流白沫及五束弯曲前景瀑布。复用 10 个现有 Rodin 苔石实例，桥和两岸主体保持原尺寸；减少动态模式下水波、白沫与水雾静止。
+
+`src/river.js` 管理河床、岸线、水体与动画；`src/river-profile.js` 是共享水位、深度和边界来源。执行 `npm run test:river` 查看几何检查、同机位前后图、近景、手机布局和帧率记录，产物在 `validation/river-*`。现有视频号短片属于此前录制内容，本轮没有批量重录。
 
 ## 主要操作
 

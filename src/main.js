@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { buildTerrain, riverCenter } from './terrain.js';
+import { buildTerrain } from './terrain.js';
 import { buildArchitecture } from './architecture.js';
 import { buildNature } from './nature.js';
 import { loadRodinProps, placeRodinProps } from './rodin-props.js';
@@ -30,7 +30,7 @@ const hemi=new THREE.HemisphereLight(0xc7e3d2,0x3e5233,2.0);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffe3a1,3.7);sun.position.set(-11,22,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-24,right:24,top:24,bottom:-24,near:1,far:65});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;scene.add(sun);
 const rim=new THREE.DirectionalLight(0x9acbc5,1.2);rim.position.set(12,8,-15);scene.add(rim);
 let rodinAssets=null;try{rodinAssets=await loadRodinProps();}catch(error){console.warn('Local Rodin assets unavailable; retaining procedural props.',error);}
-const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge});
+const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,reduced});
 const generated=rodinAssets?placeRodinProps(scene,rodinAssets):null;
 const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});
 const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
@@ -40,6 +40,7 @@ const characters=await createCharacters({scene,camera,controls,renderer,terrain,
 store=captureIndex?null:await createSocialStore();
 characters.setPlacements(store?.state.characterPositions);
 window.__characterPlacement=characters.placement;
+window.__river={...terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
 socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls});
 if(!captureIndex){
   window.__webPet=createWebPet({store,onOpenFriend:id=>socialUI.openFriend(id)});
@@ -68,7 +69,7 @@ if(stressMode){characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-st
 // Batch immutable meshes by material. Source still names and constructs every component.
 const animated=new Set([...(architecture.flames||[])]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));
 const buckets=new Map();scene.updateMatrixWorld(true);
-scene.traverse(object=>{if(!object.isMesh||object.userData.socialCharacter||object.userData.generatedProp||animated.has(object)||object.material.transparent||object.material.isShaderMaterial||Array.isArray(object.material)||object.name.includes('foam')||object.name.includes('filament'))return;const key=object.material.uuid+object.castShadow+object.receiveShadow; if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(object);});
+scene.traverse(object=>{if(!object.isMesh||object.userData.riverOwned||object.userData.socialCharacter||object.userData.generatedProp||animated.has(object)||object.material.transparent||object.material.isShaderMaterial||Array.isArray(object.material)||object.name.includes('foam')||object.name.includes('filament'))return;const key=object.material.uuid+object.castShadow+object.receiveShadow; if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(object);});
 for(const objects of buckets.values()){if(objects.length<8)continue;const geometries=objects.map(o=>{let g=o.geometry.clone();if(g.index)g=g.toNonIndexed();g.applyMatrix4(o.matrixWorld);for(const key of Object.keys(g.attributes))if(!['position','normal','uv'].includes(key))g.deleteAttribute(key);if(!g.attributes.uv)g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});const combined=mergeGeometries(geometries,false);if(!combined)continue;const mesh=new THREE.Mesh(combined,objects[0].material);mesh.name='Batched detail · '+objects[0].name;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;scene.add(mesh);objects.forEach(o=>o.removeFromParent());geometries.forEach(g=>g.dispose());}
 if(generated){$('viewport').dataset.rodinInstances=String(generated.userData.inventory.length);$('viewport').dataset.rodinKinds=Object.keys(rodinAssets).join(',');}
 $('viewport').dataset.people='0';$('viewport').dataset.landArea=String(terrain.root.userData.landArea?.total||567.807833);
@@ -82,9 +83,7 @@ let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect
 resetCamera();
 let fpsFrames=0,fpsStart=performance.now();
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
-  controls.update(dt);characters.update(now,dt);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.waterUniforms.uTime.value=clockTime;
-  for(const fall of terrain.falls)fall.position.y=-((clockTime*1.3+fall.userData.phase)%2.8);
-  for(const ripple of terrain.ripples){const z=((ripple.userData.originZ+11+clockTime*.26)%22)-11;ripple.position.z=z;ripple.position.x=riverCenter(z)+ripple.userData.xOffset;}
+  controls.update(dt);characters.update(now,dt);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
   for(let i=0;i<architecture.flames.length;i++){const flame=architecture.flames[i];flame.scale.y=.85+Math.sin(clockTime*7+i*1.6)*.16;flame.rotation.y=clockTime*.3+i;}
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}

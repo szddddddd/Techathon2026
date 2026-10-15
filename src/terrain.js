@@ -1,15 +1,17 @@
 import * as THREE from 'three';
+import {createRiver} from './river.js';
+import {riverCenter,riverHalfWidth} from './river-profile.js';
+export {riverCenter,riverHalfWidth} from './river-profile.js';
 
 const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.92,flatShading:true,...extra});
 const rockMats=[0x596d63,0x687b6e,0x7c8a77,0x8d9980,0x52665e].map(c=>mat(c));
 const grassMats=[0x839c46,0x9aad56,0x718e47,0xb0bb66,0x92a952].map(c=>mat(c));
 let seed=194;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
 function mesh(parent,name,geo,material,x=0,y=0,z=0){const o=new THREE.Mesh(geo,material);o.name=name;o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
-export const riverCenter=z=>.9+Math.sin(z*.36)*.68;
-export const riverHalfWidth=z=>.7*(4.9+Math.sin(z*.6)*.24);
 const BANK_SHIFT=1.5;
 
-export function buildTerrain(scene,{rodinBridge=false}={}){
+export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=false}={}){
+  seed=194;
   const root=new THREE.Group();root.name='Terrain · sculpted river canyon';scene.add(root);
   const left=[],right=[];
   for(let i=0;i<=22;i++){const z=-11+i;const c=riverCenter(z),w=riverHalfWidth(z)-BANK_SHIFT;left.push([c-w,z]);right.push([c+w,z]);}
@@ -46,18 +48,6 @@ export function buildTerrain(scene,{rodinBridge=false}={}){
     }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
-  for(const [bankIndex,edge] of [left,right].entries()){
-    edge.forEach(([originalX,z],i)=>{
-      const x=originalX+(bankIndex===0?-BANK_SHIFT:BANK_SHIFT);
-      if(rodinBridge&&z>-1.8&&z<4.8)return;
-      for(let j=0;j<2;j++){
-        const height=1.4+rnd()*1.4,geo=new THREE.DodecahedronGeometry(1,0);
-        const b=mesh(root,'Fractured bank stone',geo,rockMats[(i+j)%5],x+(bankIndex===0?-.12:.12),j===0?-.6:.85,z);
-        b.scale.set(.55+rnd()*.25,height*.46,.66+rnd()*.3);b.rotation.set(rnd()*.13,rnd()*.6,rnd()*.15);
-      }
-      if(i%2===0){const m=mesh(root,'Moss cap',new THREE.DodecahedronGeometry(1,0),grassMats[i%5],x+(bankIndex===0?-.25:.25),2.18,z);m.scale.set(.8,.17,.64);}
-    });
-  }
   // A continuous ochre track winds from the foreground to the cottage and bridge.
   const pathMat=mat(0xc6b47e),pebble=mat(0xb3b18c);
   function path(points,width){const shift=points[0][0]<0?-BANK_SHIFT:BANK_SHIFT;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0]+shift,2.255,p[1])));const positions=[],indices=[];for(let i=0;i<=64;i++){const p=curve.getPoint(i/64),t=curve.getTangent(i/64),n=new THREE.Vector3(-t.z,0,t.x).multiplyScalar(width*(.95+.07*Math.sin(i)));positions.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);if(i<64){const j=i*2;indices.push(j,j+2,j+1,j+1,j+2,j+3);}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();const p=mesh(root,'Winding woodland path',g,pathMat);p.castShadow=false;}
@@ -65,23 +55,10 @@ export function buildTerrain(scene,{rodinBridge=false}={}){
   path([[-4.6,3],[-5.1,1],[-5.3,-1.5]],.63);
   path([[3,1.5],[5.2,1.8],[7.3,1],[9.9,-.2]],.6);
   for(let i=0;i<50;i++){const z=-1+rnd()*10,x=-5.4-BANK_SHIFT+Math.sin(z*.5)*.8+(rnd()-.5)*2.5;const o=mesh(root,'Path stepping stone',new THREE.CylinderGeometry(.14+rnd()*.13,.2,.06,5),pebble,x,2.29,z);o.rotation.y=rnd()*6;o.scale.z=.65+rnd()*.4;}
-  const waterUniforms={uTime:{value:0},uNight:{value:0}};
-  const waterMat=new THREE.ShaderMaterial({uniforms:waterUniforms,side:THREE.DoubleSide,vertexShader:`varying vec3 vWorld; void main(){vec4 p=modelMatrix*vec4(position,1.);vWorld=p.xyz;gl_Position=projectionMatrix*viewMatrix*p;}`,fragmentShader:`precision highp float; varying vec3 vWorld; uniform float uTime; uniform float uNight;
-    void main(){vec2 p=vWorld.xz;float s=sin(p.y*5.0-uTime*1.5+sin(p.x*6.)*.8);float s2=sin(p.y*9.8-uTime*2.0+p.x*3.);float lines=pow(max(0.,s*s2),13.);float broad=sin(p.x*3.+p.y*.9+uTime*.4)*.5+.5;vec3 col=mix(vec3(.16,.49,.48),vec3(.44,.73,.66),broad*.6);col=mix(col,vec3(.83,.95,.82),lines*.7);col*=mix(1.,.48,uNight);gl_FragColor=vec4(col,1.);}`});
-  const waterPos=[],waterIndices=[];for(let i=0;i<=96;i++){const z=-11.06+i/96*22.12,c=riverCenter(z),w=riverHalfWidth(z);waterPos.push(c-w,.22,z,c+w,.22,z);if(i<96){const j=i*2;waterIndices.push(j,j+2,j+1,j+1,j+2,j+3);}}const waterGeo=new THREE.BufferGeometry();waterGeo.setAttribute('position',new THREE.Float32BufferAttribute(waterPos,3));waterGeo.setIndex(waterIndices);waterGeo.computeVertexNormals();const water=mesh(root,'Flowing turquoise river',waterGeo,waterMat);water.castShadow=false;water.receiveShadow=false;
-  // Water exits the miniature as a translucent curtain down the exposed riverbed.
-  const fallMat=new THREE.MeshStandardMaterial({color:0x7ac9c2,emissive:0x2f6d6d,emissiveIntensity:.14,transparent:true,opacity:.7,roughness:.32,side:THREE.DoubleSide});
-  const waterfall=mesh(root,'Front waterfall',new THREE.PlaneGeometry(riverHalfWidth(11.06)*2,3,36,8),fallMat,riverCenter(11.06),-1.25,11.06);waterfall.castShadow=false;
-  const foamMat=new THREE.MeshBasicMaterial({color:0xe2f7de,transparent:true,opacity:.72});const falls=[];
-  for(let i=0;i<60;i++){const s=mesh(root,'Waterfall white filament',new THREE.PlaneGeometry(.025+rnd()*.045,.35+rnd()*.95),foamMat,riverCenter(11.06)+(rnd()-.5)*(riverHalfWidth(11.06)*2-.3),-rnd()*2.8,11.08+rnd()*.035);s.userData.phase=rnd()*3;falls.push(s);s.castShadow=false;}
-  const ripples=[];
-  // Fixed lateral offsets remain valid throughout the narrower portions of the river,
-  // including the existing frame update that sets x=riverCenter(z)+xOffset.
-  for(let i=0;i<96;i++){const z=-10.5+rnd()*21.3,x=riverCenter(z)+(rnd()-.5)*5.74;const line=mesh(root,'Drifting foam',new THREE.TorusGeometry(.10+rnd()*.2,.012,3,9,Math.PI*(.5+rnd())),foamMat,x,.25,z);line.rotation.x=-Math.PI/2;line.rotation.z=rnd()*6;line.scale.x=1.4;line.userData.originZ=z;line.userData.xOffset=x-riverCenter(z);line.userData.phase=rnd()*6;ripples.push(line);line.castShadow=false;}
-  for(let i=0;i<22;i++){const z=-9+rnd()*19,x=riverCenter(z)+(rnd()-.5)*5.6;if(Math.abs(z-1.5)<3.3)continue;const s=mesh(root,'River boulder',new THREE.DodecahedronGeometry(.32+rnd()*.35,0),rockMats[i%5],x,.25,z);s.scale.set(1,.65,1.3);s.rotation.y=rnd()*6;const cap=mesh(root,'River boulder moss',new THREE.DodecahedronGeometry(.27,0),grassMats[i%5],x,.46,z);cap.scale.set(1,.3,1.2);}
+  const river=createRiver(root,{assets:riverAssets,reduced});
   if(rodinBridge)buildBridgeTransitions(root);
   else{buildBridge(root);const bridge=root.children.find(o=>o.name==='Stone bridge · complete arch vault');bridge.scale.set(1.4,1,1.4);}
-  return{root,waterUniforms,falls,ripples};
+  return{root,river};
 }
 
 function buildBridgeTransitions(root){

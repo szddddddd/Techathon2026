@@ -1,0 +1,86 @@
+{
+  "createdAt": "2026-10-15T08:13:22.187Z",
+  "surfaceVertices": 5313,
+  "rodinRocks": 10,
+  "fallbackRocks": 0,
+  "pebbles": 160,
+  "waterfallSheets": 5,
+  "bridgeLevel": 0.22,
+  "downstreamLevel": -0.07999999999999999,
+  "rocks": [
+    {
+      "x": -1.4538153901627326,
+      "z": -9,
+      "width": 1.4560000000000002
+    },
+    {
+      "x": 2.900606741208732,
+      "z": -7.5,
+      "width": 1.6900000000000002
+    },
+    {
+      "x": -1.6261871246263508,
+      "z": -4.5,
+      "width": 1.1700000000000002
+    },
+    {
+      "x": 2.4456622893306985,
+      "z": -3,
+      "width": 1.4300000000000002
+    },
+    {
+      "x": -0.6625232527244047,
+      "z": 6.05,
+      "width": 1.586
+    },
+    {
+      "x": 3.112015442750674,
+      "z": 7.1,
+      "width": 1.1960000000000002
+    },
+    {
+      "x": 0.1368056798547479,
+      "z": 8.5,
+      "width": 0.9880000000000001
+    },
+    {
+      "x": 2.840448358487229,
+      "z": 9.15,
+      "width": 1.6380000000000001
+    },
+    {
+      "x": -1.7439080186628368,
+      "z": 10.2,
+      "width": 1.4040000000000001
+    },
+    {
+      "x": 1.334770173893328,
+      "z": -8.3,
+      "width": 0.9359999999999999
+    }
+  ],
+  "minimumDepth": 0.16999999999999993,
+  "maximumWave": 0.04498391404176371,
+  "meadow": [
+    {
+      "name": "West translated bank",
+      "x": -1.5,
+      "y": 2.22
+    },
+    {
+      "name": "East translated bank",
+      "x": 1.5,
+      "y": 2.22
+    }
+  ],
+  "checks": [
+    "shared profile and continuous drop",
+    "bridge level unchanged",
+    "bed stays below waves",
+    "waterfall joins waterline exactly",
+    "10 local GLB rocks",
+    "static-batch exclusion",
+    "reduced motion frozen",
+    "missing-asset fallback"
+  ]
+}
