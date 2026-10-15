@@ -132,6 +132,7 @@ app.whenReady().then(() => {
   createMainWindow(); createPetWindow();
   ipcMain.on('social-state', (_event, payload) => { latestState = payload.state || latestState; unreadCount = Number(payload.unreadCount) || 0; broadcast(); tray.setContextMenu(buildMenu()); });
   ipcMain.on('pet-open-main', (_event, friendId) => focusMain(friendId));
+  ipcMain.on('show-desktop-pet', event => { if (event.sender !== mainWindow?.webContents) return; if (!petWindow || petWindow.isDestroyed()) createPetWindow(); else petWindow.showInactive(); tray?.setContextMenu(buildMenu()); broadcast(); });
   ipcMain.on('pet-context-menu', () => { if (petWindow && !petWindow.isDestroyed()) buildMenu().popup({ window: petWindow }); });
   // Read cursor and window positions in the same DIP coordinate system. Moving a
   // window must not feed renderer-generated pointer coordinates back into itself.

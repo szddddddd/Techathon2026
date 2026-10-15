@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+import fs from 'node:fs/promises';
+const {chromium}=await import(pathToFileURL('C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs'));
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
+const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],checks=[];
+page.on('pageerror',e=>errors.push(e.message));
+await page.addInitScript(()=>{window.__rafCalls=0;const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=fn=>{window.__rafCalls++;return raf(fn);};});
+try{
+ await page.goto('http://localhost:8080/');await page.waitForFunction(()=>window.__webPet,null,{timeout:180000});
+ await page.evaluate(()=>__socialStore.setDemoPaused(true));
+ assert.equal(await page.locator('#pet-widget').isVisible(),false);assert.equal(await page.locator('#web-pet iframe').count(),0);
+ await page.locator('#pet-toggle').click();await page.waitForFunction(()=>document.querySelector('#pet-loading').hidden);
+ const pet=page.frameLocator('#web-pet iframe');await pet.locator('#pet-canvas').waitFor();
+ assert.ok((await page.locator('#pet-summary').textContent()).includes('先认识'));checks.push('lazy-loaded 3D widget, clear empty state');
+ await page.evaluate(async()=>{await __socialStore.addFriend('tuantuan');await __socialStore.receiveMessage('tuantuan',{type:'text',text:'来小森林坐一会儿吧'},'web-pet-test');});
+ await pet.locator('[data-friend=tuantuan] .role[data-model]').waitFor({timeout:30000});assert.equal(await page.locator('#pet-toggle b').textContent(),'1');
+ await page.screenshot({path:'validation/web-pet-desktop.jpg',type:'jpeg',quality:88});
+ const before=await page.evaluate(()=>__discoveryScene.pose());const header=await page.locator('#pet-handle h2').boundingBox();
+ await page.mouse.move(header.x+20,header.y+8);await page.mouse.down();await page.mouse.move(-400,-400,{steps:20});await page.mouse.up();
+ const rect=await page.locator('#pet-widget').boundingBox();assert.ok(rect.x>=0&&rect.y>=0);assert.deepEqual(await page.evaluate(()=>__discoveryScene.pose()),before);checks.push('drag constrained to viewport without moving forest');
+ await pet.locator('[data-friend=tuantuan]').click();await page.waitForFunction(()=>__socialUI.activeFriend==='tuantuan');assert.equal(await page.locator('#pet-widget').isVisible(),false);await page.waitForFunction(()=>document.querySelector('#pet-toggle b').hidden);checks.push('click actual miniature friend opens correct chat and clears unread');
+ await page.locator('#chat-input').fill('保留这句草稿');await page.locator('#pet-toggle').click();assert.equal(await page.locator('#chat-input').inputValue(),'保留这句草稿');assert.ok(await page.locator('#meeting').isVisible());
+ await page.locator('#pet-hide').click();assert.ok(await page.locator('#meeting').isVisible());checks.push('pet controls preserve conversation and draft');
+ await page.evaluate(()=>__socialUI.closeMeeting());await page.waitForTimeout(600);
+ await page.locator('#pet-toggle').click();await pet.locator('#pet-canvas').click({position:{x:8,y:8}});await page.keyboard.press('Escape');await page.waitForFunction(()=>!__webPet.isOpen);
+ await page.locator('#pet-toggle').click();await page.mouse.click(700,800);assert.equal(await page.locator('#pet-widget').isVisible(),false);checks.push('outside click and iframe Escape dismiss without a cross');
+ await page.waitForTimeout(150);const raf=await pet.locator('body').evaluate(()=>window.__rafCalls);await page.waitForTimeout(300);assert.equal(await pet.locator('body').evaluate(()=>window.__rafCalls),raf);checks.push('hidden pet stops rendering');
+ await page.reload();await page.waitForFunction(()=>window.__webPet,null,{timeout:180000});await page.locator('#pet-toggle').click();await page.waitForTimeout(350);const saved=await page.locator('#pet-widget').boundingBox();assert.ok(Math.abs(saved.x-rect.x)<6&&Math.abs(saved.y-rect.y)<12);checks.push('position restored after reload');
+ await page.setViewportSize({width:391,height:844});await page.waitForTimeout(500);const mobile=await page.locator('#pet-widget').boundingBox();assert.ok(mobile.x>=0&&mobile.x+mobile.width<=391);assert.ok(mobile.y>=0&&mobile.y+mobile.height<=844);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ await page.waitForFunction(()=>document.querySelector('#pet-loading').hidden);await pet.locator('[data-friend=tuantuan] .role[data-model]').waitFor();
+ await page.screenshot({path:'validation/web-pet-mobile.jpg',type:'jpeg',quality:88});checks.push('portrait resize stays inside viewport');
+ assert.deepEqual(errors,[]);const report={createdAt:new Date().toISOString(),checks,errors};await fs.writeFile('validation/web-pet.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+}finally{await browser.close();}

@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-10-15T06:54:46.941Z",
+  "checks": [
+    "lazy-loaded 3D widget, clear empty state",
+    "drag constrained to viewport without moving forest",
+    "click actual miniature friend opens correct chat and clears unread",
+    "pet controls preserve conversation and draft",
+    "outside click and iframe Escape dismiss without a cross",
+    "hidden pet stops rendering",
+    "position restored after reload",
+    "portrait resize stays inside viewport"
+  ],
+  "errors": []
+}

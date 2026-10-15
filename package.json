@@ -15,7 +15,8 @@
     "test:boards": "node scripts/test-discovery-boards.mjs",
     "test:anchors": "node scripts/test-social-anchors.mjs",
     "test:camera": "node scripts/test-camera-pan.mjs",
-    "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs"
+    "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs",
+    "test:pet": "node scripts/test-web-pet.mjs"
   },
   "keywords": [],
   "author": "",

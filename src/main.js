@@ -13,6 +13,7 @@ import { createDiscoveryUI } from './discovery-ui.js';
 import { createContentPlayer } from './discovery-player.js';
 import { createDiscoveryBoards } from './discovery-boards.js';
 import { constrainCameraPan } from './camera-pan-bounds.js';
+import { createWebPet } from './web-pet.js';
 
 async function boot(){
 
@@ -39,6 +40,7 @@ const characters=await createCharacters({scene,camera,controls,renderer,terrain,
 const store=captureIndex?null:await createSocialStore();
 socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls});
 if(!captureIndex){
+  window.__webPet=createWebPet({store,onOpenFriend:id=>socialUI.openFriend(id)});
   function publishDesktopState(){
     if(!window.desktopMain)return;
     const unreadCount=store.state.messages.filter(message=>message.senderId!=='me'&&!message.read).length;

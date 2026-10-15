@@ -231,7 +231,7 @@ export function createSocialUI({store,characters,controls,onOpenContent=route=>w
     if(!outsideDown||Math.hypot(e.clientX-outsideDown.x,e.clientY-outsideDown.y)>6)return;
     if(document.querySelector('dialog[open]'))return;
     if(!$('directory').hidden){if(!e.target.closest('#directory,[data-action="directory"]')){$('directory').hidden=true;syncVisibleRead();}return;}
-    if(active&&outsideDown.active&&!e.target.closest('.meeting-workspace,.social-dock,dialog,[data-action="open-friend"]'))closeMeeting();
+    if(active&&outsideDown.active&&!e.target.closest('.meeting-workspace,.social-dock,dialog,#web-pet,[data-action="open-friend"]'))closeMeeting();
     if(picker&&!e.target.closest('#chat-picker,[data-action="emoji"],[data-action="stickers"]')){$('chat-picker').hidden=true;picker=null;}
   });
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]')&&!e.defaultPrevented){if(!$('directory').hidden)$('directory').hidden=true;else if(active)closeMeeting();}});

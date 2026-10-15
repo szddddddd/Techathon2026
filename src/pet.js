@@ -7,6 +7,22 @@ const FRIEND_META = {
   xiaomian: { name: '小眠', emoji: '🐰', color: 0xb5c2a5, position: [-.25, .08] },
   shanshan: { name: '山山', emoji: '🐻', color: 0xaa8265, position: [.3, .08] }
 };
+const embedded = new URLSearchParams(location.search).has('embedded') && parent !== window;
+const parentOrigin = location.protocol === 'file:' ? '*' : location.origin;
+const sendParent = message => parent.postMessage({channel:'forest-web-pet',...message}, parentOrigin);
+let embeddedState;
+const bridge = embedded ? {
+  onState(callback){embeddedState=callback;},
+  openMain(id){if(id)sendParent({type:'open-friend',id});},
+} : window.desktopPet;
+let active = !embedded;
+if(embedded)window.addEventListener('message',event=>{
+  const sameOrigin=location.protocol==='file:'?['null','file://'].includes(event.origin):event.origin===location.origin;
+  if(event.source!==parent||!sameOrigin||event.data?.channel!=='forest-web-pet')return;
+  if(event.data.type==='state')embeddedState?.(event.data.payload);
+  if(event.data.type==='active'){active=!!event.data.value;if(active)requestFrame();}
+});
+if(embedded)window.addEventListener('keydown',event=>{if(event.key==='Escape'){sendParent({type:'dismiss'});event.preventDefault();}});
 const $ = id => document.getElementById(id);
 const viewport = $('pet-viewport');
 const canvas = $('pet-canvas');
@@ -98,7 +114,7 @@ function buildWoods() {
   butterfly(1.42, 1.82, .34, .9, 0xe3ed9b, 2.6);
   // Keep the miniature silhouette clear: butterflies provide the ambient motion.
 }
-function resize() { const size = Math.min(innerWidth, innerHeight); renderer.setSize(size, size, false); renderer.domElement.style.width = '100%'; renderer.domElement.style.height = '100%'; camera.left = -4; camera.right = 4; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
+function resize() { renderer.setSize(innerWidth, innerHeight, false); const aspect=innerWidth/innerHeight; camera.left = -4*aspect; camera.right = 4*aspect; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
 function clearNotice(id) { const record = notificationRecords.get(id); if (!record) return; record.model?.removeFromParent(); record.node.remove(); notificationRecords.delete(id); }
 async function loadRole(friendId, record, index) {
   const meta = FRIEND_META[friendId];
@@ -146,32 +162,37 @@ function messageItems(payload) {
   const allowed = new Set(state.friends || []);
   const latest = new Map();
   for (const message of state.messages || []) if (message.senderId !== 'me' && !message.read && allowed.has(message.friendId)) latest.set(message.friendId, message);
-  return [...latest.values()].sort((a, b) => a.createdAt - b.createdAt);
+  const items=[...latest.values()].sort((a, b) => a.createdAt - b.createdAt);
+  if(embedded&&!items.length&&state.friends?.length)items.push({friendId:state.friends[0],text:'陪你在森林里歇一会儿',idle:true});
+  return items;
 }
-if (window.desktopPet) window.desktopPet.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });
-viewport.addEventListener('click', () => { if (!dragged) window.desktopPet?.openMain(clickedFriend); dragged = false; });
-viewport.addEventListener('contextmenu', event => { event.preventDefault(); window.desktopPet?.showMenu(); });
-viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = event.target.closest('[data-friend]')?.dataset.friend || null; viewport.setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; window.desktopPet?.dragStart(event.screenX, event.screenY); });
+if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });
+viewport.addEventListener('click', () => { if (!dragged) bridge?.openMain?.(clickedFriend); dragged = false; });
+viewport.addEventListener('contextmenu', event => { event.preventDefault(); bridge?.showMenu?.(); });
+viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = event.target.closest('[data-friend]')?.dataset.friend || null; viewport.setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; bridge?.dragStart?.(event.screenX, event.screenY); });
 viewport.addEventListener('pointermove', event => {
   if (!dragStart || event.buttons !== 1) return;
   if (!dragged && Math.hypot(event.screenX - dragStart.x, event.screenY - dragStart.y) < 4) return;
   dragged = true;
   viewport.classList.add('dragging');
   latestPointer = { x: event.screenX, y: event.screenY };
-  if (!dragFrame) dragFrame = requestAnimationFrame(() => { dragFrame = 0; if (latestPointer) window.desktopPet?.drag(latestPointer.x, latestPointer.y); });
+  if (!dragFrame) dragFrame = requestAnimationFrame(() => { dragFrame = 0; if (latestPointer) bridge?.drag?.(latestPointer.x, latestPointer.y); });
 });
 function endDrag() {
-  if (latestPointer) window.desktopPet?.drag(latestPointer.x, latestPointer.y);
+  if (latestPointer) bridge?.drag?.(latestPointer.x, latestPointer.y);
   if (dragFrame) cancelAnimationFrame(dragFrame);
   dragFrame = 0; dragStart = null; latestPointer = null;
   viewport.classList.remove('dragging');
-  window.desktopPet?.dragEnd();
+  bridge?.dragEnd?.();
 }
 viewport.addEventListener('pointerup', endDrag);
 viewport.addEventListener('pointercancel', endDrag);
 viewport.addEventListener('lostpointercapture', () => { if (dragStart) endDrag(); });
 window.addEventListener('blur', endDrag);
 buildWoods(); resize(); window.addEventListener('resize', resize);
-let start = performance.now();
-function frame(now) { const t = (now - start) / 1000; for (const item of animated) { if (item.type === 'fire') item.object.scale.setScalar(.9 + Math.sin(t * 7) * .1); if (item.type === 'mote') { item.object.position.x = item.origin.x + Math.sin(t * .35 + item.phase) * .06; item.object.position.y = item.origin.y + Math.sin(t * .8 + item.phase) * .08; } if (item.type === 'butterfly') { item.group.position.y = item.origin.y + Math.sin(t * .7 + item.phase) * .08; item.group.position.x = item.origin.x + Math.sin(t * .45 + item.phase) * .12; item.left.rotation.z = .18 + Math.sin(t * 8 + item.phase) * .3; item.right.rotation.z = -.18 - Math.sin(t * 8 + item.phase) * .3; } } for (const record of notificationRecords.values()) if (record.model) { record.model.position.y = .25 + Math.max(0, Math.sin(t * 5.4)) * .55; record.model.rotation.y = Math.sin(t * 1.3) * .08; } if (!dragStart) root.rotation.y = Math.sin(t * .25) * .025; renderer.clear(); renderer.render(scene, camera); renderer.clearDepth(); renderer.render(foreground, camera); requestAnimationFrame(frame); }
-requestAnimationFrame(frame);
+let start = performance.now(), frameId=0;
+function requestFrame(){if(!frameId&&!document.hidden&&active)frameId=requestAnimationFrame(frame);}
+document.addEventListener('visibilitychange',requestFrame);
+if(embedded)sendParent({type:'ready'});
+function frame(now) { frameId=0;if(document.hidden||!active)return; const t = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : (now - start) / 1000; for (const item of animated) { if (item.type === 'fire') item.object.scale.setScalar(.9 + Math.sin(t * 7) * .1); if (item.type === 'mote') { item.object.position.x = item.origin.x + Math.sin(t * .35 + item.phase) * .06; item.object.position.y = item.origin.y + Math.sin(t * .8 + item.phase) * .08; } if (item.type === 'butterfly') { item.group.position.y = item.origin.y + Math.sin(t * .7 + item.phase) * .08; item.group.position.x = item.origin.x + Math.sin(t * .45 + item.phase) * .12; item.left.rotation.z = .18 + Math.sin(t * 8 + item.phase) * .3; item.right.rotation.z = -.18 - Math.sin(t * 8 + item.phase) * .3; } } for (const record of notificationRecords.values()) if (record.model) { record.model.position.y = .25 + Math.max(0, Math.sin(t * 5.4)) * .55; record.model.rotation.y = Math.sin(t * 1.3) * .08; } if (!dragStart) root.rotation.y = Math.sin(t * .25) * .025; renderer.clear(); renderer.render(scene, camera); renderer.clearDepth(); renderer.render(foreground, camera); requestFrame(); }
+requestFrame();

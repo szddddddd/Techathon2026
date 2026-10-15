@@ -6,12 +6,13 @@ const page=await browser.newPage(),errors=[];
 page.on('pageerror',error=>errors.push(error.message));
 await page.addInitScript(()=>{
  window.__published=[];
- window.desktopMain={publishState(payload){window.__published.push(structuredClone(payload));},onOpenFriend(callback){window.__desktopOpenFriend=callback;}};
+ window.desktopMain={showPet(){window.__nativePetRequested=true;},publishState(payload){window.__published.push(structuredClone(payload));},onOpenFriend(callback){window.__desktopOpenFriend=callback;}};
 });
 try{
  await page.goto('http://localhost:8080/');await page.waitForFunction(()=>window.__socialStore&&window.__discoveryBoards,null,{timeout:180000});
  await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);await __socialStore.addFriend('tuantuan');await __socialStore.receiveMessage('tuantuan',{text:'桌面通知合并检查'},'desktop-merge-check');});
  const last=await page.evaluate(()=>__published.at(-1));assert.equal(last.unreadCount,1);assert.deepEqual(last.state.friends,['tuantuan']);assert.ok(last.state.messages.some(m=>m.id==='desktop-merge-check'));
+ await page.locator('#pet-toggle').click();await page.locator('#pet-native').click();assert.ok(await page.evaluate(()=>__nativePetRequested));await page.locator('#pet-hide').click();
  await page.evaluate(()=>__desktopOpenFriend('tuantuan'));
  await page.waitForFunction(()=>__socialUI.activeFriend==='tuantuan'&&__published.at(-1).unreadCount===0);
  await page.reload();await page.waitForFunction(()=>window.__socialStore,null,{timeout:180000});

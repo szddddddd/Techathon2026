@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('desktopPet', {
   dragEnd() { ipcRenderer.send('pet-drag-end'); }
 });
 contextBridge.exposeInMainWorld('desktopMain', {
+  showPet() { ipcRenderer.send('show-desktop-pet'); },
   publishState(payload) { ipcRenderer.send('social-state', payload); },
   onOpenFriend(callback) { ipcRenderer.on('open-friend', (_event, id) => callback(id)); }
 });

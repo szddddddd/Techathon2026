@@ -1,0 +1,30 @@
+#web-pet{font:14px/1.5 system-ui,"Microsoft YaHei",sans-serif;color:#304c40;position:relative;z-index:60}
+#web-pet [hidden]{display:none!important}
+#web-pet button{font:inherit;color:inherit;cursor:pointer}
+#pet-toggle{position:fixed;right:max(24px,env(safe-area-inset-right));top:max(22px,env(safe-area-inset-top));display:flex;align-items:center;gap:9px;border:1px solid #e8efd7a6;border-radius:30px;padding:11px 18px;background:#f8f6e9ed;box-shadow:0 5px 24px #102b2926;backdrop-filter:blur(16px);transition:background .2s,transform .2s}
+#pet-toggle:hover,#pet-toggle[aria-expanded="true"]{background:#e5edd8;transform:translateY(-1px)}
+#pet-toggle svg{width:20px;height:20px;fill:#d0deaf;stroke:#52734d;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#web-pet b{font-size:10px;background:#bd704f;color:#fff8e8;min-width:17px;line-height:17px;text-align:center;border-radius:15px;padding:0 3px}
+#pet-widget{position:fixed;box-sizing:border-box;width:296px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto;border:1px solid #dddcc2;border-radius:23px;background:#f8f7edea;box-shadow:0 18px 64px #102b2940,inset 0 1px 0 #fff;backdrop-filter:blur(22px);animation:pet-arrive .28s ease-out}
+#pet-handle{display:flex;align-items:center;justify-content:space-between;padding:19px 20px 0;cursor:grab;touch-action:none;user-select:none}
+#pet-handle:active{cursor:grabbing}
+#pet-handle small{font-size:10px;letter-spacing:1px;color:#81917a}
+#pet-handle h2{font-size:18px;font-weight:600;margin:3px 0 0;letter-spacing:1px}
+#pet-handle h2 span{color:#a7b78c;margin-left:5px}
+#pet-hide{border:0;border-radius:15px;background:#e6ebdc;padding:6px 11px;font-size:11px!important}
+#web-pet .pet-stage{position:relative;aspect-ratio:1.12;margin:0 10px;background:radial-gradient(ellipse at 50% 68%,#cfdac86b,transparent 65%)}
+#web-pet iframe{width:100%;height:100%;border:0;display:block;color-scheme:light}
+#pet-loading{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:#6c8069;margin:0}
+#pet-loading[data-retry]{cursor:pointer}
+#pet-widget footer{padding:0 18px 17px;text-align:center}
+#pet-summary{margin:0 0 12px;font-size:12px;color:#63785e}
+#pet-friends{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+#pet-friends button{display:flex;gap:4px;align-items:center;border:1px solid #d9e2cb;background:#ffffff8c;border-radius:18px;padding:6px 9px;font-size:11px}
+#pet-friends button:hover{background:#e5edd8}
+#pet-friends button>span{font-size:17px}
+#pet-widget footer>small{display:block;font-size:10px;color:#95a08a;margin-top:13px}
+#pet-native{display:block;margin:12px auto 0;font-size:11px!important;border:0;background:transparent;text-decoration:underline;text-underline-offset:4px}
+#web-pet button:focus-visible{outline:2px solid #688b58;outline-offset:3px}
+@keyframes pet-arrive{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:600px){#pet-toggle{top:max(14px,env(safe-area-inset-top));right:14px;padding:9px 14px;font-size:12px}#pet-widget{width:272px}#pet-handle{padding-top:16px}}
+@media(prefers-reduced-motion:reduce){#pet-widget{animation:none}#pet-toggle{transition:none}}
