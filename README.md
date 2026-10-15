@@ -1,4 +1,4 @@
-# 林间来信 · v1.3.0
+# 林间来信 · v1.3.1
 
 三维森林社交网页，包含动物好友、聊天、朋友圈、公众号、视频号与 Windows 独立桌宠。
 
@@ -6,7 +6,7 @@
 
 **下载并解压后，双击根目录的 [启动林间来信.cmd](./启动林间来信.cmd)。浏览器会自动打开最新网页。**
 
-[![下载最新版](https://img.shields.io/badge/下载最新版-v1.3.0-52734d?style=for-the-badge)](https://github.com/szddddddd/letters-from-the-woods/archive/refs/heads/main.zip)
+[![下载最新版](https://img.shields.io/badge/下载最新版-v1.3.1-52734d?style=for-the-badge)](https://github.com/szddddddd/letters-from-the-woods/archive/refs/heads/main.zip)
 
 | 第一步 | 第二步 | 第三步 |
 | --- | --- | --- |
@@ -18,7 +18,13 @@
 
 GitHub 上的按钮用于下载，不能直接运行电脑中的程序。更新请重新下载 main，或执行 `git pull --ff-only`，然后再次双击启动文件。
 
-唯一产品入口为 `index.html`，当前版本 **1.3.0**。旧版根目录代码和过期预览已删除。`pet.html` 是桌宠运行页面，`asset-review.html` 是开发用模型检查工具，不是另一版网页。
+唯一产品入口为 `index.html`，当前版本 **1.3.1**。旧版根目录代码和过期预览已删除。`pet.html` 是桌宠运行页面，`asset-review.html` 是开发用模型检查工具，不是另一版网页。
+
+## v1.3.1 · Rodin 山谷资产升级
+
+新增并接入 8 类 Rodin 资产：两款山体、来信树灯主体、弧形坐阶、木长椅、苔缝石环、告示牌和观景木框。共生成 8 次，消耗 **4 credits**；网页只读取本地 GLB。山路与可行走地表保持原有查询，四片叶灯、邀请内容和交互由程序控制。点击新增告示牌也能打开聚会邀请。
+
+[前后对比与资产验收](./RODIN-VALLEY-REVIEW.md) · [资产来源及任务清单](./assets/rodin-valley/manifest.json)。单个新模型加载失败时使用原生几何回退。开发比较地址 `/?native-valley=1` 保留上一版几何，仅用于同光照对比。
 
 ## v1.3.0 · 山谷会客厅
 
@@ -28,7 +34,7 @@ GitHub 上的按钮用于下载，不能直接运行电脑中的程序。更新�
 
 沿广场后侧的缓坡可到约 **5.5 单位高**的观景台，主坡道最大 **21.1°**。人物可拖放到广场、山路和平台，脚底与地形一致；山峰只作景观。点击平台木制取景框，镜头抬升越过树冠回望石桥、木屋与溪流；「返回原视角」恢复进入前镜头。
 
-`src/world-surface.js` 统一轮廓、高度、法线与可行走区域，`src/valley-landmarks.js` 构建可编辑几何，`src/valley-social.js` 管理临时聚会与镜头。没有新增付费生成任务；已有 Rodin 道具共享模型资源。四叶灯按对应好友未读柔和发亮。
+`src/world-surface.js` 统一轮廓、高度、法线与可行走区域，`src/valley-landmarks.js` 构建可编辑几何，`src/valley-social.js` 管理临时聚会与镜头。v1.3.0 扩建时未新增付费生成；v1.3.1 新增资产详见上文。已有 Rodin 道具共享模型资源。四叶灯按对应好友未读柔和发亮。
 
 执行 `npm run test:valley` 查看地形、拖放、聚会、刷新、八角色容量、手机与性能检查。完整证据见 [山谷会客厅验收清单](./VALLEY-ACCEPTANCE.md)，截图和演示录像在 `validation/valley-*`。现有视频号短片仍是此前录制的内容。
 

@@ -18,8 +18,8 @@ function mountain(x,z,cx,cz,rx,rz,h){
   const raw=h*Math.pow(Math.max(0,1-r),.9),tier=2.05,level=Math.floor(raw/tier),f=raw/tier-level;
   return tier*(level+smooth((f-.12)/.76));
 }
-export function surfaceHeight(x,z){
-  const mountainY=Math.max(mountain(x,z,-9,-18.6,7.5,6.4,11.7),mountain(x,z,10.8,-19.8,6.8,5.4,13.6),mountain(x,z,18,-18.4,5.4,4.4,5.2));
+export function surfaceHeight(x,z,{west=true,east=true}={}){
+  const mountainY=Math.max(west?mountain(x,z,-9,-18.6,7.5,6.4,11.7):0,east?mountain(x,z,10.8,-19.8,6.8,5.4,13.6):0,mountain(x,z,18,-18.4,5.4,4.4,5.2));
   const q=Math.max(0,Math.min(9,-z-4)),rise=(q<.5?q*q:q>8.5?8.5-(9-q)*(9-q):q-.25)/8.5;
   const shelf=3.28*rise*smooth((x-15)/3)*(1-smooth((-z-16)/3));
   return 2.22+Math.max(mountainY,shelf);

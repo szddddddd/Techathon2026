@@ -3,7 +3,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const $ = id => document.getElementById(id);
-import { ASSET_NAMES as names } from './layout.js';
+import { ASSET_NAMES as originalNames } from './layout.js';
+import {VALLEY_ASSET_NAMES} from './valley-assets.js';
+const names={...originalNames,...VALLEY_ASSET_NAMES};
 const status = $('status');
 const viewport = $('viewport');
 let renderer;
@@ -129,7 +131,7 @@ function boot() {
     renderer.renderLists.dispose();
     let loaded = null;
     try {
-      const gltf = await loader.loadAsync(`./assets/rodin/${name}/scene.glb`);
+      const gltf = await loader.loadAsync(`./assets/${Object.hasOwn(VALLEY_ASSET_NAMES,name)?'rodin-valley':'rodin'}/${name}/scene.glb`);
       loaded = gltf.scene;
       if (request !== generation || stopped) { disposeObject(loaded); return; }
       let triangles = 0, meshCount = 0;
@@ -176,6 +178,7 @@ function boot() {
     }
   }
 
+  for(const [key,label] of Object.entries(VALLEY_ASSET_NAMES)){const button=document.createElement('button');button.type='button';button.dataset.asset=key;button.setAttribute('aria-pressed','false');button.textContent=label;document.querySelector('nav').append(button);}
   document.querySelectorAll('[data-asset]').forEach(button => button.addEventListener('click', () => selectAsset(button.dataset.asset)));
   $('retry').addEventListener('click', () => selectAsset(selected));
   $('reset').addEventListener('click', fitCamera);
@@ -219,6 +222,7 @@ function boot() {
     renderer.dispose();
   }, { once: true });
   requestAnimationFrame(frame);
+  window.__assetReview={view(theta=0,elevation=.4){const offset=new THREE.Vector3(Math.sin(theta)*Math.cos(elevation),Math.sin(elevation),Math.cos(theta)*Math.cos(elevation)).multiplyScalar(radius*3.3);camera.position.copy(center).add(offset);controls.target.copy(center);controls.update();},get bounds(){return current?new THREE.Box3().setFromObject(current):null;}};
   selectAsset(new URLSearchParams(location.search).get('asset') in names?new URLSearchParams(location.search).get('asset'):'cart');
 }
 

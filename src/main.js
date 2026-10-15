@@ -1,3 +1,4 @@
+import {loadValleyAssets} from './valley-assets.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -32,12 +33,14 @@ const hemi=new THREE.HemisphereLight(0xc7e3d2,0x3e5233,2.2);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffe3a1,3.7);sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;scene.add(sun);
 const rim=new THREE.DirectionalLight(0x9acbc5,1.2);rim.position.set(12,8,-15);scene.add(rim);
 let rodinAssets=null;try{rodinAssets=await loadRodinProps();}catch(error){console.warn('Local Rodin assets unavailable; retaining procedural props.',error);}
-const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,reduced});
+const valleyAssets=new URLSearchParams(location.search).has('native-valley')?{}:await loadValleyAssets();
+$('viewport').dataset.valleyAssets=Object.keys(valleyAssets).join(',');
+const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,valleyAssets,reduced});
 const generated=rodinAssets?placeRodinProps(scene,rodinAssets):null;
 const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});
 const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
 const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
-const landmarks=buildValleyLandmarks({scene,terrain,generated,assets:rodinAssets});
+const landmarks=buildValleyLandmarks({scene,terrain,generated,assets:rodinAssets,valleyAssets});
 let socialUI,store;
 const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
 store=captureIndex?null:await createSocialStore();

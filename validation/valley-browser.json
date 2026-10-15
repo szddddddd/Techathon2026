@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-10-15T09:01:22.201Z",
+  "createdAt": "2026-10-15T09:40:59.775Z",
   "viewport": [
     1440,
     1000
@@ -7,12 +7,12 @@
   "deviceScaleFactor": 1,
   "friends": 4,
   "performance": {
-    "durationMs": 8001.5,
+    "durationMs": 8001.7999998092655,
     "frames": 480,
-    "averageFPS": 59.98875210897957,
+    "averageFPS": 59.98650303824658,
     "p95FrameMs": 16.800000000000182,
-    "calls": 292,
-    "triangles": 764046
+    "calls": 291,
+    "triangles": 894100
   },
   "terrace": [
     {

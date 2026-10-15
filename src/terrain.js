@@ -1,3 +1,4 @@
+import {valleyInstance} from './valley-assets.js';
 import * as THREE from 'three';
 import {bankOutlines,landAreaAudit,querySurface,surfaceHeight,WORLD_BOUNDS} from './world-surface.js';
 import {createRiver} from './river.js';
@@ -11,9 +12,10 @@ let seed=194;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/42949
 function mesh(parent,name,geo,material,x=0,y=0,z=0){const o=new THREE.Mesh(geo,material);o.name=name;o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
 const BANK_SHIFT=1.5;
 
-export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=false}={}){
+export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAssets=null,reduced=false}={}){
   seed=194;
   const root=new THREE.Group();root.name='Terrain · sculpted river canyon';scene.add(root);
+  const mountainOptions={west:!valleyAssets?.mountain_crag,east:!valleyAssets?.mountain_ridge},visualHeight=(x,z)=>surfaceHeight(x,z,mountainOptions),mountains=[];
   const outlines=bankOutlines();
   const leftOutline=outlines.west.map(([x,z])=>[x+BANK_SHIFT,z]),rightOutline=outlines.east.map(([x,z])=>[x-BANK_SHIFT,z]);
   const area=landAreaAudit();
@@ -41,14 +43,14 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=f
       const edges=[[a,b,c],[b,c,a],[c,a,b]].sort((u,v)=>v[0].distanceToSquared(v[1])-u[0].distanceToSquared(u[1]));
       const [u,v,w]=edges[0];
       if(u.distanceToSquared(v)>.55*.55){const m=u.clone().lerp(v,.5);triangle(u,m,w);triangle(m,v,w);return;}
-      const center=a.clone().add(b).add(c).multiplyScalar(1/3),q=querySurface(center.x+shift,-center.y),stone=q.height>7||q.normal.y<.83;
+      const center=a.clone().add(b).add(c).multiplyScalar(1/3),q=querySurface(center.x+shift,-center.y),stone=visualHeight(center.x+shift,-center.y)>6;
       const color=new THREE.Color(stone?0x819080:0x839c46).multiplyScalar(.94+.08*Math.sin(center.x*2.3+center.y*1.7));
-      for(const p of [a,b,c]){vertices.push(p.x,surfaceHeight(p.x+shift,-p.y)-2.22,-p.y);colors.push(color.r,color.g,color.b);}
+      for(const p of [a,b,c]){vertices.push(p.x,visualHeight(p.x+shift,-p.y)-2.22,-p.y);colors.push(color.r,color.g,color.b);}
     }
     for(let i=0;i<idx.count;i+=3)triangle(...[0,1,2].map(k=>new THREE.Vector2(pos.getX(idx.getX(i+k)),pos.getY(idx.getX(i+k)))));
     source.dispose();const top=new THREE.BufferGeometry();top.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));top.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));top.computeVertexNormals();
     const surface=mesh(bankRoot,name+' meadow',top,mat(0xffffff,{vertexColors:true}),0,2.22,0);surface.userData.terrainSurface=true;
-    const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=surfaceHeight(x+shift,z),yy=surfaceHeight(xx+shift,zz);sides.push(x,1.94,z,xx,yy,zz,x,y,z,x,1.94,z,xx,1.94,zz,xx,yy,zz);}}
+    const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=visualHeight(x+shift,z),yy=visualHeight(xx+shift,zz);sides.push(x,1.94,z,xx,yy,zz,x,y,z,x,1.94,z,xx,1.94,zz,xx,yy,zz);}}
     const skirt=new THREE.BufferGeometry();skirt.setAttribute('position',new THREE.Float32BufferAttribute(sides,3));skirt.computeVertexNormals();mesh(bankRoot,name+' sculpted escarpment',skirt,mat(0x687b6e,{side:THREE.DoubleSide}));
     // Triangular earth-color variations keep a painted surface without photo textures.
     for(let i=0;i<70;i++){const x=(name==='West'?-11:3.4)+rnd()*7.4,z=-10.5+rnd()*21;
@@ -60,6 +62,11 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=f
     }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
+  for(const p of [{kind:'mountain_crag',x:-8.8,z:-16.9,width:10.8,height:13.4,depth:8.3},{kind:'mountain_ridge',x:10.8,z:-18.7,width:11.2,height:15.3,depth:7.7}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.94,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
+  root.updateMatrixWorld(true);
+  const mountainRay=new THREE.Raycaster(),heightCache=new Map();
+  function sample(x,z){const value=querySurface(x,z);if(value.region!=='mountain'||!mountains.length)return value;const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
+
   // A continuous ochre track winds from the foreground to the cottage and bridge.
   const pathMat=mat(0xc6b47e),pebble=mat(0xb3b18c);
   function path(points,width){const shift=points[0][0]<0?-BANK_SHIFT:BANK_SHIFT;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0]+shift,2.255,p[1])));const positions=[],indices=[];for(let i=0;i<=64;i++){const p=curve.getPoint(i/64),t=curve.getTangent(i/64),n=new THREE.Vector3(-t.z,0,t.x).multiplyScalar(width*(.95+.07*Math.sin(i)));positions.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);if(i<64){const j=i*2;indices.push(j,j+2,j+1,j+1,j+2,j+3);}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();const p=mesh(root,'Winding woodland path',g,pathMat);p.castShadow=false;}
@@ -70,7 +77,7 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=f
   const river=createRiver(root,{assets:riverAssets,reduced});
   if(rodinBridge)buildBridgeTransitions(root);
   else{buildBridge(root);const bridge=root.children.find(o=>o.name==='Stone bridge · complete arch vault');bridge.scale.set(1.4,1,1.4);}
-  return{root,river,sample:querySurface,bounds:WORLD_BOUNDS};
+  return{root,river,sample,mountains,bounds:WORLD_BOUNDS};
 }
 
 function buildBridgeTransitions(root){

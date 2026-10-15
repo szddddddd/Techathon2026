@@ -1,0 +1,195 @@
+{
+  "createdAt": "2026-10-15T09:47:09.743Z",
+  "geometry": [
+    {
+      "name": "mountain_crag",
+      "triangles": 19146,
+      "bytes": 2217944
+    },
+    {
+      "name": "mountain_ridge",
+      "triangles": 18494,
+      "bytes": 2360900
+    },
+    {
+      "name": "letter_tree",
+      "triangles": 11716,
+      "bytes": 1957104
+    },
+    {
+      "name": "curved_seat",
+      "triangles": 8782,
+      "bytes": 1284204
+    },
+    {
+      "name": "wood_bench",
+      "triangles": 9724,
+      "bytes": 1750820
+    },
+    {
+      "name": "stone_ring",
+      "triangles": 5864,
+      "bytes": 1168076
+    },
+    {
+      "name": "notice_board",
+      "triangles": 11860,
+      "bytes": 1731860
+    },
+    {
+      "name": "viewing_frame",
+      "triangles": 8628,
+      "bytes": 1356148
+    }
+  ],
+  "mountainChecks": [
+    {
+      "name": "Rodin · 苔岩主峰",
+      "vertices": 26234,
+      "outside": 0,
+      "bounds": {
+        "min": [
+          -14.200000000000001,
+          1.9400000000000004,
+          -21.05
+        ],
+        "max": [
+          -3.4000000000000012,
+          15.340000000000002,
+          -12.75
+        ]
+      }
+    },
+    {
+      "name": "Rodin · 层叠山脊",
+      "vertices": 21461,
+      "outside": 0,
+      "bounds": {
+        "min": [
+          5.200000000000001,
+          1.9400000000000004,
+          -22.549999999999997
+        ],
+        "max": [
+          16.400000000000002,
+          17.240000000000002,
+          -14.849999999999998
+        ]
+      }
+    }
+  ],
+  "fixtureBounds": [
+    {
+      "name": "Letter tree lamp",
+      "bounds": {
+        "min": [
+          19.71155259102328,
+          2.22,
+          1.375
+        ],
+        "max": [
+          22.259824621315346,
+          6.997989503451193,
+          2.625
+        ]
+      }
+    },
+    {
+      "name": "Curved limestone seating 0.6",
+      "bounds": {
+        "min": [
+          21.902125924962014,
+          2.22,
+          4.8478229176728025
+        ],
+        "max": [
+          26.326839469435676,
+          2.7700000000000005,
+          8.339668040983756
+        ]
+      }
+    },
+    {
+      "name": "Curved limestone seating 2.65",
+      "bounds": {
+        "min": [
+          14.636469752199588,
+          2.22,
+          0.42861729811831184
+        ],
+        "max": [
+          16.374613535535467,
+          2.7700000000000005,
+          5.137814791346214
+        ]
+      }
+    },
+    {
+      "name": "Woodland shade bench",
+      "bounds": {
+        "min": [
+          24.70848315426528,
+          2.22,
+          -1.3183548857268519
+        ],
+        "max": [
+          27.291516845734723,
+          3.2700000000000005,
+          0.3183548857268517
+        ]
+      }
+    },
+    {
+      "name": "Terrace safety rail",
+      "bounds": {
+        "min": [
+          18.036629682779314,
+          5.500000005960464,
+          -15.658562975376844
+        ],
+        "max": [
+          23.47299741389583,
+          6.199999994039535,
+          -13.135000002384185
+        ]
+      }
+    },
+    {
+      "name": "Valley viewing frame",
+      "bounds": {
+        "min": [
+          18.779184230122993,
+          5.499999976158142,
+          -14.275210228411538
+        ],
+        "max": [
+          20.220815769877003,
+          7.2000000238418576,
+          -12.324789771588463
+        ]
+      }
+    },
+    {
+      "name": "Forest plaza notice board",
+      "bounds": {
+        "min": [
+          25.016972038669476,
+          2.22,
+          2.6072912029537516
+        ],
+        "max": [
+          26.383027961330527,
+          4.220000000000001,
+          3.392708797046248
+        ]
+      }
+    }
+  ],
+  "checks": [
+    "all eight generated GLBs are finite and readable",
+    "mountain vertices remain within land outline",
+    "new fixture geometry participates in collision",
+    "ramp and terrace heights unchanged",
+    "full-width main ramp remains supported and clear"
+  ]
+}

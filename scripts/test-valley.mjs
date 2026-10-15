@@ -10,7 +10,8 @@ import {landAreaAudit,querySurface} from '../src/world-surface.js';
 import {riverLevel,riverHalfWidth} from '../src/river-profile.js';
 
 const assets={};for(const kind of ['rock','tree','grass','fern_large'])assets[kind]=await loadGeometryGLB(`assets/rodin/${kind}/scene.glb`);
-const scene=new THREE.Scene(),terrain=buildTerrain(scene,{rodinBridge:true});buildValleyLandmarks({scene,terrain,assets});const context=createPlacementContext({scene,terrain});
+const valleyAssets={};for(const kind of ['mountain_crag','mountain_ridge','letter_tree','curved_seat','wood_bench','stone_ring','notice_board','viewing_frame'])valleyAssets[kind]=await loadGeometryGLB(`assets/rodin-valley/${kind}/scene.glb`);
+const scene=new THREE.Scene(),terrain=buildTerrain(scene,{rodinBridge:true,valleyAssets});buildValleyLandmarks({scene,terrain,assets,valleyAssets});const context=createPlacementContext({scene,terrain});
 const area=landAreaAudit();assert.ok(area.ratio>=1.9&&area.ratio<=2.1);
 const samples=[];
 for(let z=0;z>=-13.5;z-=.1){const x=z<-11?23+(z+11)*.625:23,q=querySurface(x,z),check=context.inspect(x,z,.63,[],{manual:true});assert.ok(q.walkable,`ramp surface at ${z}`);assert.ok(check.ok,`full body support at ${z}: ${JSON.stringify(check)}`);samples.push(q);}
