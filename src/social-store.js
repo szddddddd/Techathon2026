@@ -1,3 +1,4 @@
+import {getContent,getAccount,getCreator,validContentRef} from './discovery-catalog.js';
 // All visible social data is local. A mutation becomes visible only after IDB commits.
 export const FRIENDS = [
   {id:'tuantuan',name:'团团',animal:'kangaroo',emoji:'🦘',color:'#eaba43',signature:'把小事过成好日子。',height:2.1},
@@ -16,7 +17,8 @@ const DAY=86400000;
 const clone=value=>structuredClone(value);
 const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const assets=['forest','river','camp','sky'].map(name=>`assets/social/${name}.svg`);
-const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],messages:[],groups:[],messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[]});
+const discoveryDefaults=()=>({accountFollows:[],creatorFollows:[],likes:[],collections:[],comments:{},progress:{},history:[],fontSize:18});
+const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],messages:[],groups:[],messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
 const requestValue=request=>new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
 function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('本地保存失败'));tx.onabort=()=>reject(tx.error||new Error('本地保存已中断'));});}
 function storageError(error){const wrapped=new Error(error?.name==='QuotaExceededError'?'本地空间不足，请释放浏览器存储空间后重试。':'无法保存到此浏览器，请检查存储权限后重试。');wrapped.cause=error;return wrapped;}
@@ -24,8 +26,10 @@ function requireFriend(state,id){if(!state.friends.includes(id))throw new Error(
 function requirePerson(state,id){if(id!=='me')requireFriend(state,id);}
 function textValue(value,max=4000){return String(value||'').trim().slice(0,max);}
 function makeStatus(payload){if(!STATES.some(item=>item.id===payload.kind))throw new Error('请选择一个状态。');const now=Date.now();return {id:uid(),kind:payload.kind,text:textValue(payload.text,500),mediaId:payload.mediaId||null,createdAt:now,expiresAt:now+DAY};}
-function makePost(payload,authorId,id=uid()){const text=textValue(payload.text),mediaIds=(payload.mediaIds||[]).slice();if(mediaIds.length>9)throw new Error('朋友圈最多添加九张照片。');if(!text&&!mediaIds.length)throw new Error('写一点内容或添加一张照片吧。');return {id,authorId,text,mediaIds,createdAt:Date.now(),likes:[],comments:[]};}
-function messagePayload(payload){const type=payload.type||'text';if(!['text','image','sticker','moment'].includes(type))throw new Error('不支持的消息类型。');const text=textValue(payload.text);if((type==='text'||type==='sticker')&&!text)throw new Error('消息不能为空。');if(type==='image'&&!payload.mediaId)throw new Error('请先选择图片。');if(type==='moment'&&!payload.momentId)throw new Error('这条回忆不存在。');return {type,text,mediaId:payload.mediaId||null,momentId:payload.momentId||null};}
+function requireContent(ref){if(!validContentRef(ref))throw new Error('这条内容暂时无法查看。');return {type:ref.type,id:ref.id};}
+function contentKey(ref){const valid=requireContent(ref);return `${valid.type}:${valid.id}`;}
+function makePost(payload,authorId,id=uid()){const text=textValue(payload.text),mediaIds=(payload.mediaIds||[]).slice(),contentRef=payload.contentRef?requireContent(payload.contentRef):null;if(mediaIds.length>9)throw new Error('朋友圈最多添加九张照片。');if(!text&&!mediaIds.length&&!contentRef)throw new Error('写一点内容或添加一张照片吧。');return {id,authorId,text,mediaIds,...(contentRef?{contentRef}:{}),createdAt:Date.now(),likes:[],comments:[]};}
+function messagePayload(payload){const type=payload.type||'text';if(!['text','image','sticker','moment','content'].includes(type))throw new Error('不支持的消息类型。');const text=textValue(payload.text);if((type==='text'||type==='sticker')&&!text)throw new Error('消息不能为空。');if(type==='image'&&!payload.mediaId)throw new Error('请先选择图片。');if(type==='moment'&&!payload.momentId)throw new Error('这条回忆不存在。');return {type,text,mediaId:payload.mediaId||null,momentId:payload.momentId||null,...(type==='content'?{contentRef:requireContent(payload.contentRef)}:{})};}
 function seedFriend(state,id){
   const index=FRIENDS.findIndex(friend=>friend.id===id),now=Date.now();
   const captions=[['今天的森林，比昨天又绿了一点。','桥边的水声，是最好的白噪音。','围着篝火坐一会儿，烦恼也慢慢变小了。','没有特别的事，只是想和你分享一片晴天。'],['背上小包，去找一条没走过的小路。','旅行的意义，也藏在停下来的时候。','我的露营清单：一盏灯，一杯茶，还有好朋友。','今天走得不远，但看见了很多。'],['叶子在发呆，我也在。','把今天调成静音，听听溪水。','困了就休息一下，世界会等你的。','如果快乐有颜色，大概是浅浅的绿。'],['认真收集每一束穿过树叶的光。','慢慢走，也能遇见很好的风景。','今天的任务：照看篝火，等待朋友。','愿你今晚睡一个暖暖的觉。']][index];
@@ -44,7 +48,7 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
   db.onversionchange=()=>db.close();
   let initial;
   try{initial=await requestValue(db.transaction('state','readonly').objectStore('state').get('main'));}catch(error){db.close();throw storageError(error);}
-  let state=initial?{...fresh(),...initial,settings:{...fresh().settings,...initial.settings}}:fresh();
+  let state=initial?{...fresh(),...initial,settings:{...fresh().settings,...initial.settings},discovery:{...discoveryDefaults(),...initial.discovery}}:fresh();
   const listeners=new Set(),urls=new Map();let queue=Promise.resolve(),disposed=false;
   const emit=event=>{for(const fn of listeners){try{fn(state,event);}catch(error){console.error('Social subscriber failed',error);}}};
   function mutate(type,fn,details={}){
@@ -74,6 +78,13 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
     updateProfile(payload){return mutate('profile',next=>{if(payload.name!==undefined){const name=textValue(payload.name,24);if(!name)throw new Error('昵称不能为空。');next.profile.name=name;}if(payload.signature!==undefined)next.profile.signature=textValue(payload.signature,100);});},
     setDemoPaused(value){return mutate('demo-paused',next=>{next.settings.demoPaused=!!value;});},
     restartDemo(){return mutate('demo-restart',next=>{next.settings.demoCursor=0;next.settings.demoPaused=false;});},
+    followContent(kind,id){return mutate('discovery-follow',next=>{if(kind!=='account'&&kind!=='creator')throw new Error('不支持的关注类型。');if(!(kind==='account'?getAccount(id):getCreator(id)))throw new Error('这个账号不存在。');const field=kind==='account'?'accountFollows':'creatorFollows',list=next.discovery[field];next.discovery[field]=list.includes(id)?list.filter(value=>value!==id):[...list,id];},{kind,id});},
+    toggleContentLike(ref){return mutate('discovery-like',next=>{const key=contentKey(ref),list=next.discovery.likes;next.discovery.likes=list.includes(key)?list.filter(value=>value!==key):[...list,key];},{ref});},
+    toggleContentCollection(ref){return mutate('discovery-collection',next=>{const key=contentKey(ref),list=next.discovery.collections;next.discovery.collections=list.includes(key)?list.filter(value=>value!==key):[...list,key];},{ref});},
+    addContentComment(ref,text){return mutate('discovery-comment',next=>{const key=contentKey(ref),value=textValue(text,1000);if(!value)throw new Error('评论不能为空。');const comment={id:uid(),authorId:'me',text:value,createdAt:Date.now()};(next.discovery.comments[key]??=[]).push(comment);return comment;},{ref});},
+    setContentProgress(ref,value){return mutate('discovery-progress',next=>{const key=contentKey(ref),number=Number(value);if(!Number.isFinite(number)||number<0)throw new Error('无效的浏览进度。');const progress=ref.type==='video'?Math.min(number,getContent(ref).duration):number;if(next.discovery.progress[key]===progress)return false;next.discovery.progress[key]=progress;},{ref});},
+    visitContent(ref){return mutate('discovery-visit',next=>{requireContent(ref);next.discovery.history=[{type:ref.type,id:ref.id,visitedAt:Date.now()},...next.discovery.history.filter(item=>item.type!==ref.type||item.id!==ref.id)].slice(0,100);},{ref});},
+    setReadingFont(size){return mutate('discovery-font',next=>{const number=Number(size);if(!Number.isFinite(number)||number<14||number>26)throw new Error('字号应在 14–26 之间。');next.discovery.fontSize=number;});},
     demoEvent(friendId,cursor){return mutate('demo-event',next=>{
       requireFriend(next,friendId);const eventId=`ambient-${cursor}-${friendId}`;next.settings.demoCursor=cursor+1;
       if(next.events.includes(eventId))return;

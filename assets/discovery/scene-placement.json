@@ -1,0 +1,97 @@
+{
+  "method": "13 support rays and projected body-band obstacle triangles, invariant WALKWAYS; facilities become companion obstacles before graph construction.",
+  "facilities": [
+    {
+      "kind": "accounts",
+      "position": [
+        -6.899999999999984,
+        2.220000000000001,
+        -8.7
+      ],
+      "radius": 1.1,
+      "bounds": {
+        "min": [
+          -7.305489178587921,
+          2.2199999761581433,
+          -9.64999998807907
+        ],
+        "max": [
+          -6.439999998807892,
+          4.584558682614981,
+          -7.750000011920928
+        ]
+      },
+      "support": true
+    },
+    {
+      "kind": "scene-video",
+      "position": [
+        -5.099999999999985,
+        2.220000000000001,
+        -1.2000000000000013
+      ],
+      "radius": 1.3,
+      "bounds": {
+        "min": [
+          -6.206999999999986,
+          2.2199999804496775,
+          -1.4870000048875822
+        ],
+        "max": [
+          -3.9929999999999852,
+          5.315500000733138,
+          0.12839999560117585
+        ]
+      },
+      "support": true
+    }
+  ],
+  "bboxIntersections": [
+    {
+      "kind": "accounts",
+      "intersections": []
+    },
+    {
+      "kind": "scene-video",
+      "intersections": []
+    }
+  ],
+  "companionSlots": [
+    {
+      "id": "tuantuan",
+      "animal": "kangaroo",
+      "x": -4.599999999999994,
+      "y": 2.22,
+      "z": -6.899999999999999,
+      "radius": 0.8210504965803462,
+      "height": 2.1
+    },
+    {
+      "id": "ali",
+      "animal": "fox",
+      "x": -7.849999999999996,
+      "y": 2.22,
+      "z": 8.050000000000004,
+      "radius": 0.9659456071911773,
+      "height": 1.9
+    },
+    {
+      "id": "xiaomian",
+      "animal": "rabbit",
+      "x": -8.499999999999996,
+      "y": 2.22,
+      "z": 5.450000000000003,
+      "radius": 0.6261862515110711,
+      "height": 1.85
+    },
+    {
+      "id": "shanshan",
+      "animal": "bear",
+      "x": 7.100000000000007,
+      "y": 2.22,
+      "z": 3.500000000000002,
+      "radius": 0.825188737754986,
+      "height": 2
+    }
+  ]
+}

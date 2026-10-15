@@ -7,8 +7,15 @@
     "build": "esbuild src/main.js --bundle --format=iife --minify --outfile=dist/world.js && esbuild src/asset-review.js --bundle --format=iife --minify --outfile=dist/review.js && esbuild src/pet.js --bundle --format=iife --minify --outfile=dist/pet.js",
     "start": "python -m http.server 8080 --bind 127.0.0.1",
     "desktop": "electron .",
-    "test": "node scripts/test-social-store.mjs",
-    "audit:social": "node scripts/audit-social-characters.mjs"
+    "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs",
+    "audit:social": "node scripts/audit-social-characters.mjs",
+    "record:discovery": "node scripts/record-discovery.mjs",
+    "audit:discovery": "node scripts/audit-discovery.mjs",
+    "test:browser": "node scripts/test-discovery-browser.mjs",
+    "test:boards": "node scripts/test-discovery-boards.mjs",
+    "test:anchors": "node scripts/test-social-anchors.mjs",
+    "test:camera": "node scripts/test-camera-pan.mjs",
+    "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs"
   },
   "keywords": [],
   "author": "",

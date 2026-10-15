@@ -1,0 +1,13 @@
+{
+  "errors": [],
+  "checks": [
+    "camera then live board, no immediate dialog",
+    "9 article board browsing",
+    "article and scroll preserved on expansion",
+    "outside returns one level",
+    "Esc restores scene",
+    "single video element and continuous play",
+    "pause preserved on return",
+    "391px board and window"
+  ]
+}

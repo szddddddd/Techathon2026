@@ -1,0 +1,206 @@
+/* A calm, centered workspace: directory / conversation / optional personal feed. */
+#social{--paper:#fafbf7;--line:#e4e9e1;--ink:#31483c;--muted:#8b988d;--shadow:0 18px 58px #18332822}
+#social .paper{background:#fafbf7f5;border-color:#ffffffb8;box-shadow:var(--shadow)}
+#social .social-corner{opacity:.85;font-size:18px;letter-spacing:2px}
+#social.in-meeting .social-corner{opacity:.25}
+#social.in-meeting #friend-anchors{visibility:hidden}
+#social .demo-badge{background:#29443729;border-color:#edf5de25}
+#social #meeting{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:86px 40px 84px;pointer-events:auto;background:linear-gradient(#173d2810,#1939271a);isolation:isolate}
+#social .meeting-workspace{position:relative;display:grid;grid-template-columns:234px minmax(0,570px);gap:22px;width:min(826px,100%);height:min(760px,calc(100dvh - 170px));min-height:330px;align-items:stretch;pointer-events:auto;transition:width .32s ease}
+#social #meeting[data-moments="open"] .meeting-workspace{width:min(1320px,100%);grid-template-columns:minmax(190px,.55fr) minmax(360px,1.2fr) minmax(320px,1fr)}
+#social .meeting-friends,#social .chat-panel,#social .memory-panel{position:relative;inset:auto;width:auto;max-width:none;height:auto;min-height:0;border-radius:18px;overflow:hidden;pointer-events:auto}
+#social .meeting-friends{display:flex;flex-direction:column;padding:28px 15px 16px;background:#f7faf3f2}
+#social .meeting-friends>header{padding:0 12px}
+#social .meeting-friends>header small{display:block;color:#98a38f;font-size:8px;letter-spacing:2px;margin-bottom:10px}
+#social .meeting-friends>header h2{font-size:23px;letter-spacing:2px}
+#social .meeting-friends>header .text-button{color:#87997a;font-size:10px;padding:14px 0 0;letter-spacing:.4px}
+#social .workspace-hint{flex-shrink:0;padding:17px 8px 0;border-top:1px solid #e5ebdf;font-size:9px;color:#a0ad96;letter-spacing:.5px;line-height:1.8;text-align:center}
+#social .meeting-search{margin:24px 6px 18px}
+#social #meeting-search{background:#e9eee57d;border:1px solid #e3e9dd;padding:11px 12px;border-radius:10px;font-size:11px}
+#social #meeting-friend-list{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#d3ddcd transparent;padding:0 1px}
+#social .meeting-friend{position:relative;display:flex;align-items:center;gap:11px;width:100%;background:transparent;border-radius:12px;padding:14px 10px;margin:3px 0;text-align:left}
+#social .meeting-friend:hover{background:#eaf0e3b3}
+#social .meeting-friend.active,#social .meeting-friend[aria-current="true"]{background:#e5eddd;box-shadow:inset 3px 0 #7d9871}
+#social .meeting-friend .avatar{width:41px;height:41px;border-radius:12px;font-size:26px}
+#social .meeting-friend-copy{min-width:0;flex:1}
+#social .meeting-friend-copy strong{display:block;font-size:13px;font-weight:500;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#social .meeting-friend-copy p{font-size:10px;color:#929e8b;line-height:1.6;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#social .meeting-unread{background:#ba886b;color:#fff9ed;border-radius:9px;min-width:17px;height:17px;padding:2px 5px;text-align:center;font-size:9px;flex-shrink:0}
+#social .chat-panel{display:flex;flex-direction:column;background:#fbfcf8f5}
+#social .chat-panel>.meeting-title{position:relative;inset:auto;display:flex;align-items:center;justify-content:flex-start;gap:13px;padding:26px 26px 23px;min-height:98px;color:var(--ink);background:none;backdrop-filter:none;border-radius:0;border-bottom:1px solid var(--line)}
+#social .meeting-title>.avatar{width:45px;height:45px;font-size:30px;border-radius:13px}
+#social .meeting-title>div{min-width:0;flex:1}
+#social .meeting-title h2{font-family:system-ui,-apple-system,'Microsoft YaHei',sans-serif;font-size:17px!important;letter-spacing:1px;font-weight:550}
+#social .meeting-title p{font-size:11px;line-height:1.6;color:#8c9988;opacity:1;margin-top:7px!important;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:none}
+#social #moments-toggle{flex-shrink:0;margin-left:auto;border:1px solid #dce5d7;border-radius:20px;padding:9px 13px;background:#edf3e6;color:#6d8263;font-size:11px;letter-spacing:.5px}
+#social #moments-toggle:hover,#social #moments-toggle[aria-expanded="true"]{background:#dee9d4;border-color:#cfddc4}
+#social #chat-messages{padding:20px 26px;scroll-padding:20px}
+#social .chat-day,#social .chat-time{margin:9px 0 25px;color:#a0aa99;font-size:10px;letter-spacing:.4px}
+#social .message{margin:22px 0;gap:11px}
+#social .message-body{font-size:13px;padding:11px 15px;line-height:1.85;border-color:#e5e9df;box-shadow:0 2px 5px #30482e03}
+#social .outgoing .message-body{background:#e3ecd7;border-color:#dbe6ce}
+#social .message-body.image{padding:5px}
+#social .message-body.sticker{background:none;border:0;box-shadow:none;padding:0}
+#social #chat-form{padding:16px 23px 19px;background:#f5f8efb3}
+#social #chat-input{font-size:13px!important;min-height:56px}
+#social .composer-tools{padding:0 1px 12px;gap:14px}
+#social .composer-tools button{opacity:.7}
+#social .composer-tools button:hover{opacity:1}
+#social .composer-tools span{font-size:9px;letter-spacing:.5px}
+#social .composer-bottom small{font-size:9px!important;color:#a1ad99}
+#social .composer-bottom .primary{min-width:68px;background:#6d8860;border-radius:10px;letter-spacing:1px}
+#social #chat-picker{padding:15px 22px;background:#f0f5e9}
+#social #chat-attachment{padding:11px 23px}
+#social .memory-panel{display:flex;flex-direction:column;background:#fffefaed;backdrop-filter:blur(22px);border:1px solid #ffffffb8}
+#social .memory-panel>.moments-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 24px;border-bottom:1px solid var(--line);min-height:67px;flex-shrink:0;background:#fcfdf8}
+#social .moments-toolbar h2{font-family:system-ui,-apple-system,'Microsoft YaHei',sans-serif;font-size:14px!important;font-weight:500;letter-spacing:1px;margin:0!important}
+#social .moments-toolbar button{background:none;color:#87987a;font-size:11px;padding:5px 0 5px 12px}
+#social #moments-feed{overflow:auto;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:#d2dbca transparent;scroll-behavior:smooth;background:#fffefa}
+#social .moments-profile{position:relative;padding-bottom:30px}
+#social .moments-cover{height:154px;overflow:hidden;background:linear-gradient(120deg,#9bae86,#dae4c7);position:relative}
+#social .moments-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,#1e412b1a)}
+#social .moments-cover img{display:block;width:100%;height:100%;object-fit:cover}
+#social .moments-identity{position:relative;display:flex;align-items:flex-end;justify-content:flex-end;gap:13px;margin:-26px 24px 0;min-height:65px}
+#social .moments-identity .avatar{width:66px;height:66px;border:4px solid #fffefa;border-radius:15px;font-size:42px;box-shadow:0 3px 9px #2e442a0c}
+#social .moments-identity h2{font-family:system-ui,-apple-system,'Microsoft YaHei',sans-serif;font-size:17px;font-weight:550;letter-spacing:1px;padding-bottom:4px;text-align:right}
+#social .moments-signature{padding:0 25px;margin-top:15px!important;text-align:right;font-size:11px;color:#8c9a83;line-height:1.9;letter-spacing:.3px}
+#social .moments-signature p{font-size:11px;line-height:1.9}
+#social .moments-timeline{padding:0 23px 30px}
+#social .moment-entry{display:flex;gap:16px;padding:25px 0;border-top:1px solid #e9ede3}
+#social .moment-date{width:42px;flex-shrink:0;text-align:center;padding-top:1px;color:#475d43}
+#social .moment-date strong{display:block;font-size:27px;font-weight:500;line-height:1.1;letter-spacing:-1px}
+#social .moment-date small{display:block;color:#a2ab98;margin-top:6px;font-size:9px;letter-spacing:.6px;white-space:nowrap}
+#social .moment-content{flex:1;min-width:0}
+#social .moment-content .post-text{font-size:12px;line-height:1.9;margin:0 0 12px!important;color:#41523e;overflow-wrap:anywhere}
+#social .moment-content .post-photos{gap:4px}
+#social .moment-content .post-photos img{border-radius:4px}
+#social .moment-content .post-photos.count-1 img{max-height:240px;aspect-ratio:4/3}
+#social .moment-meta{margin-top:11px!important;font-size:9px;color:#a3ad9a;line-height:1.7}
+#social .moment-content .post-actions{border:0;padding:12px 0 10px;gap:15px;flex-wrap:wrap}
+#social .moment-content .post-actions button{font-size:10px!important;color:#778d6b}
+#social .moment-content .post-actions .liked{color:#af7d61!important}
+#social .moment-content .post-likes{padding:10px 11px;background:#f1f4eb;border-radius:6px 6px 0 0;gap:5px;font-size:10px;line-height:1.7;color:#728468}
+#social .moment-content .post-likes span{padding:0;background:none;border-radius:0}
+#social .moment-content .comments{padding:2px 11px 8px;background:#f1f4eb;border-radius:0 0 6px 6px}
+#social .moment-content .comments p{font-size:10px!important;line-height:1.8;overflow-wrap:anywhere}
+#social .moment-content .comment-form{gap:5px;margin-top:10px}
+#social .moment-content .comment-form input{padding:9px 10px!important;border-radius:8px;font-size:10px!important;background:#f8faf3}
+#social .moment-content .comment-form .secondary{font-size:10px;padding:7px 9px;border-radius:8px}
+#social .own-moments{margin-top:20px;max-height:58vh;overflow:auto;background:#fffefa;border:1px solid var(--line);border-radius:14px;scrollbar-width:thin}
+#social .own-moments .moments-cover{height:150px}
+#social .mobile-tabs{display:none!important}
+#social .dialog-close,#social #photo-dialog>.icon-button{display:none!important}
+#social #social-dialog{padding:32px;border:1px solid #fffffff0;background:#fcfcf6;box-shadow:0 30px 120px #102b3440;border-radius:20px;outline:none}
+#social #social-dialog::backdrop,#social #photo-dialog::backdrop{background:#17382c65;backdrop-filter:blur(7px)}
+#social .status-cover{margin:-32px -32px 26px;border-radius:20px 20px 0 0}
+#social .drawer{z-index:3;border-radius:20px;background:#fafbf7f7}
+#social .social-dock{z-index:4}
+#social .dock-button{padding:11px 21px;background:#fafbf4ef!important;font-size:12px!important;box-shadow:0 5px 24px #16332924}
+#social .in-meeting .friend-anchor{opacity:.2}
+#social .friend-anchor{transition:none;transform-origin:50% 100%}
+#social.is-orbiting .friend-anchor:not(.show-message) .head-message{display:none}
+#social.is-orbiting .friend-anchor:not(.show-message) .unread-dot{display:block}
+#social #social-toast{z-index:10}
+@media(max-width:1100px) and (min-width:761px){
+  #social #meeting{padding-left:24px;padding-right:24px}
+  #social #meeting[data-moments="open"] .meeting-workspace{grid-template-columns:172px minmax(290px,1.1fr) minmax(270px,1fr);gap:14px}
+  #social #meeting[data-moments="open"] .meeting-friends{padding:24px 9px 14px}
+  #social #meeting[data-moments="open"] .meeting-friend{padding:12px 7px;gap:9px}
+  #social #meeting[data-moments="open"] .meeting-friend-copy p{font-size:9px}
+  #social #meeting[data-moments="open"] .meeting-friend .avatar{width:34px;height:34px;font-size:23px}
+  #social #meeting[data-moments="open"] .chat-panel>.meeting-title{padding:23px 18px;gap:10px}
+  #social #meeting[data-moments="open"] #chat-messages{padding:18px}
+  #social #meeting[data-moments="open"] #chat-form{padding:14px 18px}
+  #social #meeting[data-moments="open"] .moments-timeline{padding:0 17px 24px}
+  #social #meeting[data-moments="open"] .moment-entry{gap:10px}
+  #social #meeting[data-moments="open"] .moment-date{width:34px}
+}
+@media(max-width:950px) and (min-width:761px){
+  #social #meeting[data-moments="open"] .meeting-workspace{grid-template-columns:136px minmax(0,1.1fr) minmax(0,1fr);gap:12px}
+  #social #meeting[data-moments="open"] .meeting-friend{gap:8px;padding-left:5px;padding-right:5px}
+  #social #meeting[data-moments="open"] .meeting-friend .avatar{width:30px;height:30px;font-size:21px}
+  #social #meeting[data-moments="open"] .meeting-friend-copy strong{font-size:11px}
+  #social #meeting[data-moments="open"] .meeting-title>.avatar{display:none}
+  #social #meeting[data-moments="open"] .meeting-title p{font-size:10px}
+  #social #meeting[data-moments="open"] .meeting-friends>header{padding:0 6px}
+  #social #meeting[data-moments="open"] .meeting-friends>header small{font-size:6px;letter-spacing:1px}
+  #social #meeting[data-moments="open"] .moment-content .comment-form{flex-wrap:wrap}
+  #social #meeting[data-moments="open"] .moment-content .comment-form input{flex:1;min-width:90px}
+}
+@media(max-width:760px){
+  #social #meeting{padding:76px 14px 83px;align-items:center}
+  #social .meeting-workspace,#social #meeting[data-moments="open"] .meeting-workspace{width:min(620px,100%);height:calc(100dvh - 159px);min-height:300px;grid-template-columns:72px minmax(0,1fr);gap:12px;transition:none}
+  #social .meeting-friends{padding:16px 6px 10px;border-radius:16px;grid-row:1;grid-column:1}
+  #social .meeting-friends>header{padding:0;text-align:center}
+  #social .meeting-friends>header small{display:none}
+  #social .meeting-friends>header .text-button,#social .workspace-hint{display:none}
+  #social .meeting-friends>header h2{font-family:system-ui,-apple-system,'Microsoft YaHei',sans-serif;font-size:11px;letter-spacing:1px;margin-bottom:12px}
+  #social .meeting-search{display:none}
+  #social #meeting-friend-list{padding:0}
+  #social .meeting-friend{flex-direction:column;gap:7px;padding:12px 3px;margin:3px 0;border-radius:10px}
+  #social .meeting-friend .avatar{width:36px;height:36px;font-size:25px;border-radius:10px}
+  #social .meeting-friend-copy{width:100%;text-align:center;flex:none}
+  #social .meeting-friend-copy strong{font-size:9px;letter-spacing:0;font-weight:400}
+  #social .meeting-friend-copy p{display:none}
+  #social .meeting-unread{position:absolute;top:7px;right:3px;font-size:8px;min-width:14px;height:14px;padding:2px 4px}
+  #social .chat-panel,#social .memory-panel{grid-column:2;grid-row:1;position:relative;inset:auto!important;height:auto;width:auto!important;border-radius:16px;max-width:none}
+  #social #meeting[data-moments="open"] .chat-panel{display:none}
+  #social #meeting[data-moments="closed"] .chat-panel{display:flex}
+  #social .chat-panel>.meeting-title{inset:auto!important;padding:18px 16px;min-height:84px;gap:10px}
+  #social .meeting-title>.avatar{width:36px;height:36px;font-size:25px;border-radius:10px}
+  #social .meeting-title h2{font-size:14px!important}
+  #social .meeting-title p{font-size:9px;margin-top:5px!important}
+  #social #moments-toggle{font-size:10px;padding:8px 10px}
+  #social #chat-messages{padding:16px 14px}
+  #social .message{gap:8px;margin:19px 0}
+  #social .message>.avatar{width:25px;height:25px;font-size:18px;border-radius:8px}
+  #social .message-body{max-width:calc(100% - 33px);padding:9px 11px;font-size:12px}
+  #social #chat-form{padding:13px 14px 14px}
+  #social #chat-input{min-height:44px;font-size:12px!important}
+  #social .composer-tools{gap:11px;padding-bottom:10px}
+  #social .composer-tools span{display:none}
+  #social .composer-bottom small{display:none}
+  #social .composer-bottom{justify-content:flex-end;margin-top:4px}
+  #social #chat-picker{padding:10px 13px}
+  #social #chat-attachment{padding:9px 13px}
+  #social .memory-panel>.moments-toolbar{padding:18px 18px;min-height:59px}
+  #social .moments-cover{height:140px}
+  #social .moments-identity{margin-left:17px;margin-right:17px;gap:10px}
+  #social .moments-identity h2{font-size:16px}
+  #social .moments-signature{padding:0 18px}
+  #social .moments-timeline{padding:0 16px 25px}
+  #social .moment-entry{gap:10px;padding:23px 0}
+  #social .moment-date{width:32px}
+  #social .moment-date strong{font-size:24px}
+  #social .moment-content .post-text{font-size:11px}
+  #social .moment-content .post-actions{gap:12px}
+  #social #social-dialog{padding:26px}
+  #social .status-cover{margin:-26px -26px 23px}
+  #social .own-moments .moments-timeline{padding:0 17px 24px}
+}
+@media(max-width:480px){
+  #social #meeting{padding-left:9px;padding-right:9px}
+  #social .meeting-workspace,#social #meeting[data-moments="open"] .meeting-workspace{grid-template-columns:59px minmax(0,1fr);gap:8px}
+  #social .meeting-friends{padding-left:4px;padding-right:4px}
+  #social .meeting-friend .avatar{width:33px;height:33px;font-size:23px}
+  #social .meeting-title>.avatar{display:none}
+  #social .chat-panel>.meeting-title{padding:16px 14px;min-height:76px}
+  #social .meeting-title h2{font-size:14px!important}
+  #social .meeting-title p{max-width:150px;font-size:9px}
+  #social .moment-content .comment-form{flex-wrap:wrap}
+  #social .moment-content .comment-form input{flex:1;min-width:95px}
+  #social .moments-identity{margin-left:14px;margin-right:14px}
+  #social .moments-identity .avatar{width:57px;height:57px;font-size:35px}
+  #social .moments-timeline{padding-left:12px;padding-right:12px}
+  #social .moment-date{width:28px}
+  #social .moment-entry{gap:8px}
+  #social .moment-content .post-likes,#social .moment-content .comments{padding-left:8px;padding-right:8px}
+}
+@media(max-height:620px) and (min-width:761px){
+  #social #meeting{padding-top:52px;padding-bottom:67px}
+  #social .meeting-workspace{height:calc(100dvh - 119px);min-height:270px}
+  #social .chat-panel>.meeting-title{padding-top:16px;padding-bottom:16px;min-height:77px}
+  #social .meeting-friends{padding-top:20px}
+  #social #chat-input{min-height:32px}
+}
+@media(prefers-reduced-motion:reduce){#social .meeting-workspace,#social #moments-feed{transition:none;scroll-behavior:auto}}

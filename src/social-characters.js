@@ -226,6 +226,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     if(mobileFocus){const w=renderer.domElement.clientWidth,h=renderer.domElement.clientHeight;if(!camera.view?.enabled||camera.view.offsetY!==h*.26)camera.setViewOffset(w,h,0,h*.26,w,h);}
     else if(camera.view?.enabled)camera.clearViewOffset();
     if(transition){const t=isReduced()?1:THREE.MathUtils.clamp((now-transition.start)/450,0,1),s=t*t*(3-2*t);camera.position.lerpVectors(transition.fromPosition,transition.position,s);controls.target.lerpVectors(transition.fromTarget,transition.target,s);camera.lookAt(controls.target);if(t===1){const done=transition.done;transition=null;done?.();}}
+    // Project against this frame's camera, before WebGLRenderer updates it.
+    camera.updateMatrixWorld(true);
     const rect=renderer.domElement.getBoundingClientRect();anchors=[];
     const checkOcclusion=now-lastOcclusion>300;if(checkOcclusion)lastOcclusion=now;
     for(const [id,r] of records){
