@@ -4,7 +4,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 export const VALLEY_ASSET_NAMES={mountain_crag:'苔岩主峰',mountain_ridge:'层叠山脊',letter_tree:'来信树灯',curved_seat:'弧形石坐阶',wood_bench:'林间长椅',stone_ring:'苔缝石环',notice_board:'森林告示牌',viewing_frame:'观景木框'};
 export async function loadValleyAssets(){
   const loader=new GLTFLoader(),assets={};
-  await Promise.all(Object.keys(VALLEY_ASSET_NAMES).map(async kind=>{
+  await Promise.all(Object.keys(VALLEY_ASSET_NAMES).filter(kind=>!['curved_seat','stone_ring'].includes(kind)).map(async kind=>{
     try{const {scene:model}=await loader.loadAsync(`assets/rodin-valley/${kind}/scene.glb`);
       model.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const adapt=m=>{const copy=m.clone();copy.roughness=.94;copy.metalness=0;copy.envMapIntensity=.2;if(copy.normalScale)copy.normalScale.multiplyScalar(.55);if(copy.map){copy.map.colorSpace=THREE.SRGBColorSpace;copy.map.anisotropy=4;}return copy;};o.material=Array.isArray(o.material)?o.material.map(adapt):adapt(o.material);});
       assets[kind]={model};

@@ -62,7 +62,7 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
     }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
-  for(const p of [{kind:'mountain_crag',x:-8.8,z:-16.9,width:10.8,height:13.4,depth:8.3},{kind:'mountain_ridge',x:10.8,z:-18.7,width:11.2,height:15.3,depth:7.7}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.94,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
+  for(const p of [{kind:'mountain_crag',x:-8.8,z:-16.9,width:16.2,height:18.5,depth:8.3},{kind:'mountain_ridge',x:10.8,z:-18.7,width:16.8,height:20.8,depth:7.7}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.94,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
   root.updateMatrixWorld(true);
   const mountainRay=new THREE.Raycaster(),heightCache=new Map();
   function sample(x,z){const value=querySurface(x,z);if(value.region!=='mountain'||!mountains.length)return value;const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
