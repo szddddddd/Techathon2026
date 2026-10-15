@@ -1,3 +1,4 @@
+import {createUIInteractions} from './ui-interactions.js';
 import {loadValleyAssets} from './valley-assets.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -22,6 +23,7 @@ import { petPayload } from './pet-state.js';
 async function boot(){
 
 const $=id=>document.getElementById(id);
+const ui=createUIInteractions();window.__uiInteractions=ui;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x203a32);scene.fog=new THREE.FogExp2(0x203a32,innerWidth<700?.003:.0065);
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});
@@ -37,22 +39,22 @@ let rodinAssets=null;try{rodinAssets=await loadRodinProps();}catch(error){consol
 const valleyAssets=new URLSearchParams(location.search).has('native-valley')?{}:await loadValleyAssets();
 $('viewport').dataset.valleyAssets=Object.keys(valleyAssets).join(',');
 const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,valleyAssets,reduced});
-const generated=rodinAssets?placeRodinProps(scene,rodinAssets):null;
+const generated=rodinAssets?placeRodinProps(scene,rodinAssets,terrain):null;
 const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});
 const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
-const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
+const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,ui,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
 const landmarks=buildValleyLandmarks({scene,terrain,generated,assets:rodinAssets,valleyAssets});
 let socialUI,store;
 const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
 store=captureIndex?null:await createSocialStore();
-characters.setPlacements(store?.state.characterPositions);
+// Main-app placements are session-only; historical coordinates remain in storage.
 window.__characterPlacement=characters.placement;
 window.__river={...terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
-socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls});
-const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced});window.__valley=valley;
+socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui});
+const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});window.__valley=valley;
 const focusFriend=characters.focus;characters.focus=id=>{valley.finishCamera();return focusFriend(id);};
 if(!captureIndex){
-  window.__webPet=createWebPet({store,onOpenFriend:id=>socialUI.openFriend(id)});
+  window.__webPet=createWebPet({store,ui,onOpenFriend:id=>socialUI.openFriend(id)});
   function publishDesktopState(){
     if(!window.desktopMain)return;
     window.desktopMain.publishState(petPayload(store.state));
@@ -62,10 +64,10 @@ if(!captureIndex){
   publishDesktopState();
   const player=createContentPlayer({store});
   let boards;
-  const contentUI=createDiscoveryUI({store,player,onShare:ref=>socialUI.shareContent(ref),onClose:()=>{},onRequestClose:()=>boards?.exit(),onNavigate:route=>{if(route.type==='article')discoveryScene.updatePreview('accounts',route.id);if(route.type==='video')discoveryScene.updatePreview('scene-video',route.id);},onScenePlay:async id=>{await boards.open('scene-video',{type:'video',id});}});
+  const contentUI=createDiscoveryUI({store,player,ui,onShare:ref=>socialUI.shareContent(ref),onClose:()=>{},onRequestClose:()=>boards?.exit(),onNavigate:route=>{if(route.type==='article')discoveryScene.updatePreview('accounts',route.id);if(route.type==='video')discoveryScene.updatePreview('scene-video',route.id);},onScenePlay:async id=>{await boards.open('scene-video',{type:'video',id});}});
   boards=createDiscoveryBoards({camera,facilities:discoveryScene,contentUI,player,beforeFocus:()=>{valley.finishCamera();if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}});
   window.__openSceneDiscovery=kind=>boards.open(kind);
-  window.__openDiscovery=route=>contentUI.open(route);
+  window.__openDiscovery=(route,options)=>contentUI.open(route,options);
   window.__discoveryBoards=boards;
   window.__discoveryUI=contentUI;window.__contentPlayer=player;
 }
@@ -91,7 +93,7 @@ let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect
 resetCamera();
 let fpsFrames=0,fpsStart=performance.now();
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
-  controls.update(dt);characters.update(now,dt);valley.update(now);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
+  controls.update(dt);if(!stressMode)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
   for(let i=0;i<architecture.flames.length;i++){const flame=architecture.flames[i];flame.scale.y=.85+Math.sin(clockTime*7+i*1.6)*.16;flame.rotation.y=clockTime*.3+i;}
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}

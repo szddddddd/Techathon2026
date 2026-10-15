@@ -1,6 +1,6 @@
 /* A calm, centered workspace: directory / conversation / optional personal feed. */
 #social{--paper:#fafbf7;--line:#e4e9e1;--ink:#31483c;--muted:#8b988d;--shadow:0 18px 58px #18332822}
-#social .paper{background:#fafbf7f5;border-color:#ffffffb8;box-shadow:var(--shadow)}
+
 #social .social-corner{opacity:.85;font-size:18px;letter-spacing:2px}
 #social.in-meeting .social-corner{opacity:.25}
 #social.in-meeting #friend-anchors{visibility:hidden}
@@ -94,8 +94,6 @@
 #social #social-dialog::backdrop,#social #photo-dialog::backdrop{background:#17382c65;backdrop-filter:blur(7px)}
 #social .status-cover{margin:-32px -32px 26px;border-radius:20px 20px 0 0}
 #social .drawer{z-index:3;border-radius:20px;background:#fafbf7f7}
-#social .social-dock{z-index:4}
-#social .dock-button{padding:11px 21px;background:#fafbf4ef!important;font-size:12px!important;box-shadow:0 5px 24px #16332924}
 #social .in-meeting .friend-anchor{opacity:.2}
 #social .friend-anchor{transition:none;transform-origin:50% 100%}
 #social.is-orbiting .friend-anchor:not(.show-message) .head-message{display:none}

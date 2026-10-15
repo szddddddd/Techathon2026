@@ -21,10 +21,10 @@ export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
   return {nodes,radius};
 }
 
-export function walkingRoute(graph,start,sequence=0){
+export function walkingRoute(graph,start,sequence=0,{range=Infinity,home=graph.nodes[0]}={}){
   const {nodes}=graph,parents=new Map([[start,-1]]),queue=[start];
   for(let i=0;i<queue.length;i++)for(const next of nodes[queue[i]].links)if(!parents.has(next)){parents.set(next,queue[i]);queue.push(next);}
-  const origin=nodes[start];const candidates=queue.filter(i=>i!==start).sort((a,b)=>Math.hypot(nodes[b].x-origin.x,nodes[b].z-origin.z)-Math.hypot(nodes[a].x-origin.x,nodes[a].z-origin.z));
+  const origin=nodes[start];const candidates=queue.filter(i=>i!==start&&Math.hypot(nodes[i].x-home.x,nodes[i].z-home.z)<=range).sort((a,b)=>Math.hypot(nodes[b].x-origin.x,nodes[b].z-origin.z)-Math.hypot(nodes[a].x-origin.x,nodes[a].z-origin.z));
   if(!candidates.length)return [];
   let end=candidates[(sequence*7)%Math.min(12,candidates.length)],route=[];
   while(end!==start){route.push(end);end=parents.get(end);}return route.reverse();

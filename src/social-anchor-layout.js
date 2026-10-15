@@ -19,13 +19,13 @@ export function createAnchorLayout(){
         for(const item of [...items].sort((a,b)=>a.id.localeCompare(b.id))){
           const crowded=items.some(other=>other!==item&&Math.abs(item.x-other.x)<((item.width||150)+(other.width||150))/2+24&&Math.abs(item.y-other.y)<100);
           const preferred=crowded?item.state.target:0;
-          const candidates=[preferred,0,-38,38,-76,76,-114];let best=preferred,bestScore=Infinity;
+          const step=Math.max(38,item.height||38),candidates=[preferred,0,-step,step,-step*2,step*2,-step*3];let best=preferred,bestScore=Infinity;
           for(const candidate of candidates){
             const y=clamp(item.y+candidate,60,height-90),offset=y-item.y;
-            const score=placed.reduce((sum,p)=>sum+(Math.abs(item.x-p.x)<((item.width||150)+p.width)/2+12?Math.max(0,34-Math.abs(y-p.y)):0),0);
+            const score=placed.reduce((sum,p)=>sum+(Math.abs(item.x-p.x)<((item.width||150)+p.width)/2+12?Math.max(0,((item.height||34)+p.height)/2+6-Math.abs(y-p.y)):0),0);
             if(score<bestScore){bestScore=score;best=offset;}if(score===0)break;
           }
-          item.state.target=best;placed.push({x:item.x,y:item.y+best,width:item.width||150});
+          item.state.target=best;placed.push({x:item.x,y:item.y+best,width:item.width||150,height:item.height||34});
         }
       }
       wasMoving=moving;

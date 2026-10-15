@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import {createPlacementContext} from './social-characters.js';
 import {createDiscoveryPreview} from './discovery-previews.js';
+import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
 
 /** Authored timber props: every board remains individually editable. */
-export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen}){
+export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui}){
   const placement=createPlacementContext({scene,terrain,generated});
   const holder=generated||new THREE.Group();if(!generated){holder.name='Interactive woodland facilities';scene.add(holder);}
   const mats={wood:new THREE.MeshStandardMaterial({color:0x806044,roughness:1}),edge:new THREE.MeshStandardMaterial({color:0xb99b6f,roughness:1}),cream:new THREE.MeshStandardMaterial({color:0xf0e8ca,roughness:1}),green:new THREE.MeshStandardMaterial({color:0x6a8668,roughness:1}),orange:new THREE.MeshStandardMaterial({color:0xc58f54,roughness:1}),dark:new THREE.MeshStandardMaterial({color:0x37473e,roughness:1})};
@@ -89,8 +90,10 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   function setEmphasis(kind,value){(kind==='accounts'?journalSurface:screen).material.color.setScalar(1+Math.max(0,value)*.12);}
   function updatePreview(kind,id){return (kind==='accounts'?journalPreview:cinemaPreview)?.update(id);}
   function preview(kind){return (kind==='accounts'?journalPreview:cinemaPreview)?.data;}
+  const sceneIcons=typeof document==='undefined'?null:createDiscoverySceneIcons({camera,groups:{accounts:kiosk,'scene-video':cinema},onOpen,preview,ui,interactive:()=>!transition&&!focusKind&&controls.enabled});
   function pose(){return {position:camera.position.toArray(),target:controls.target.toArray(),enabled:controls.enabled};}
   function update(now){
+    sceneIcons?.update();
     if(transition){const current=transition,t=(reduced()?1:Math.min(1,(now-current.start)/Math.max(1,current.duration))),s=t*t*t*(t*(t*6-15)+10);camera.position.lerpVectors(current.from,current.position,s);controls.target.lerpVectors(current.targetFrom,current.target,s);camera.lookAt(controls.target);if(t===1){if(current.restore){controls.enabled=saved?.enabled??true;controls.minDistance=saved?.minDistance??6;controls.enableDamping=saved?.enableDamping??true;saved=null;}transition=null;current.resolve();}}
     else if(focusedPose){camera.position.copy(focusedPose.position);controls.target.copy(focusedPose.target);camera.lookAt(controls.target);}
 
@@ -98,5 +101,5 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   function up(e){const p=down;down=null;if(!p||p.id!==e.pointerId||Math.hypot(e.clientX-p.x,e.clientY-p.y)>6)return;const rect=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);const hit=ray.intersectObjects(pickables,true)[0];if(!hit)return;const obstacles=ray.intersectObjects(placement.occluders,false);if(obstacles[0]&&obstacles[0].distance<hit.distance-.05)return;const kind=hit.object.userData.discoveryKind;onOpen?.(kind);}
   const pointer=e=>{if(document.querySelector('dialog[open]'))return;if(e.button===0)down={x:e.clientX,y:e.clientY,id:e.pointerId};};renderer.domElement.addEventListener('pointerdown',pointer);renderer.domElement.addEventListener('pointerup',up);
   function screenPoint(kind){const group=kind==='accounts'?kiosk:cinema;const p=group.localToWorld(new THREE.Vector3(0,kind==='accounts'?1.4:2.1,.12)).project(camera);const rect=renderer.domElement.getBoundingClientRect();return {x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(-p.y*.5+.5)*rect.height};}
-  return {focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
+  return {focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
 }

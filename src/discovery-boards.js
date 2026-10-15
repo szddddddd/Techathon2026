@@ -89,5 +89,6 @@ export function createDiscoveryBoards({camera,facilities,contentUI,player,before
   window.addEventListener('keydown',key,{capture:true});document.addEventListener('click',outside);
   const resize=()=>{const ticket=++resizeToken;requestAnimationFrame(()=>{if(ticket!==resizeToken||!kind||stage==='closing')return;facilities.focus(kind,{duration:0});});};
   window.addEventListener('resize',resize);
-  return {open,exit,update,audit,get kind(){return kind;},get stage(){return stage;},surfaceRect,dispose(){finish?.(false);player.pause();window.removeEventListener('keydown',key,{capture:true});document.removeEventListener('click',outside);window.removeEventListener('resize',resize);frame.remove();hero.remove();}};
+  function dismiss(){if(!kind)return;finish?.(false);finish=null;facilities.setEmphasis(kind,0);facilities.setBoardActive(kind,false);facilities.restore({duration:0});kind=null;frame.hidden=true;hero.hidden=true;setStage('closed');document.body.classList.remove('in-scene-board');}
+  return {open,exit,dismiss,update,audit,get kind(){return kind;},get stage(){return stage;},surfaceRect,dispose(){finish?.(false);player.pause();window.removeEventListener('keydown',key,{capture:true});document.removeEventListener('click',outside);window.removeEventListener('resize',resize);frame.remove();hero.remove();}};
 }

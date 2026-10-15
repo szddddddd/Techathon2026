@@ -6,6 +6,11 @@ __pycache__/
 .forest-runtime.json
 .test-results/
 *.log
+validation/**/raw/
+validation/**/recordings/
+validation/**/valley-recording/
+validation/**/*failure*
+validation/scene-polish/*-map-*.png
 
 # Credentials and local environment
 .env

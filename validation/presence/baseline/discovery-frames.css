@@ -1,0 +1,38 @@
+/* Thin timber rails carry the woodland surface into the reading window. */
+#discovery-dialog,#discovery-morph-frame{
+  --rail:14px;--timber:#b19b70;--timber-light:#d7c69c;--timber-dark:#8f784e;--join:#f1dbaa;--paper:#fcfaf1;
+  box-sizing:border-box;border:0;padding:var(--rail);border-radius:9px;
+  background-color:var(--timber);
+  background-image:radial-gradient(circle at 7px 7px,var(--join) 1px,transparent 2px),radial-gradient(circle at calc(100% - 7px) 7px,var(--join) 1px,transparent 2px),radial-gradient(circle at 7px calc(100% - 7px),var(--timber-dark) 1px,transparent 2px),radial-gradient(circle at calc(100% - 7px) calc(100% - 7px),var(--timber-dark) 1px,transparent 2px),repeating-linear-gradient(1deg,transparent 0px,transparent 3px,#48351a10 4px,transparent 6px),linear-gradient(90deg,var(--timber-dark),var(--timber-light) 2%,var(--timber) 4%,var(--timber) 96%,var(--timber-dark));
+  box-shadow:inset 0 2px 1px #fff6d955,inset 0 -3px 3px #32271955,0 25px 85px #102e3350;
+}
+#discovery-dialog[data-frame=cinema],#discovery-morph-frame[data-frame=cinema]{--timber:#74553c;--timber-light:#a78758;--timber-dark:#4e3829;--join:#d6b977;--paper:#f8f7ee}
+#discovery-dialog,#discovery-dialog[data-page=video],#discovery-dialog[data-page=videos]{width:min(1280px,calc(100vw - 80px));height:min(850px,88dvh);max-height:88dvh;max-width:1280px;outline:none;overflow:visible}
+#discovery-dialog::before,#discovery-morph-frame::before{content:'';position:absolute;inset:5px;border:1px solid #eed8a74a;border-radius:5px;pointer-events:none}
+#discovery-dialog::after,#discovery-morph-frame::after{content:'';position:absolute;left:var(--rail);right:var(--rail);top:3px;height:7px;background:linear-gradient(#fff4cc20,#3c2b1517);border-radius:2px;pointer-events:none}
+#discovery-dialog .discovery-window{height:100%;width:100%;border-radius:3px;background:var(--paper);box-shadow:0 0 0 1px #614e3544;overflow:hidden;position:relative}
+#discovery-dialog .discovery-top{background:#faf9f0;min-height:70px;height:70px;padding:0 26px}
+#discovery-dialog .discovery-top small{letter-spacing:1.7px}
+#discovery-dialog .d-back{background:#edf0e3}
+#discovery-dialog[data-frame=cinema] .discovery-top{background:#f5f4e9}
+#discovery-dialog::backdrop{background:rgb(23 45 32 / calc(.32 * var(--backdrop-alpha,1)));backdrop-filter:blur(calc(6px * var(--backdrop-alpha,1)))}
+#discovery-dialog[data-motion]{background:transparent;box-shadow:none}
+#discovery-dialog[data-motion]::before,#discovery-dialog[data-motion]::after{display:none}
+#discovery-dialog[data-motion] .discovery-window{pointer-events:none;box-shadow:none;will-change:clip-path,opacity}
+#discovery-dialog[data-motion] .d-subscriptions,#discovery-dialog[data-motion] .d-video-comments{opacity:var(--secondary-alpha,0)}
+#discovery-morph-frame{position:fixed;z-index:10;pointer-events:none;overflow:hidden;margin:0;will-change:width,height,left,top;border-radius:8px;border:var(--rail) solid var(--timber);padding:0;background:transparent!important;box-shadow:inset 0 0 0 1px var(--timber-dark),0 10px 40px #18362633}
+#discovery-morph-frame[hidden]{display:none!important}
+#discovery-morph-frame .morph-paper{position:absolute;inset:0;background:var(--paper)}
+#discovery-morph-frame>img{position:relative;display:block;width:100%;height:100%;object-fit:contain;background:var(--paper);border-radius:2px}
+#discovery-morph-cover{position:fixed;z-index:11;pointer-events:none;object-fit:cover;border-radius:5px;box-shadow:0 0 0 1px #8a926322;will-change:left,top,width,height,opacity}
+#discovery-morph-cover[hidden]{display:none!important}
+@media(max-width:760px){
+  #discovery-dialog,#discovery-dialog[data-page=video],#discovery-dialog[data-page=videos]{--rail:7px;width:calc(100vw - 26px);height:88dvh;border-radius:8px}
+  #discovery-morph-frame{--rail:7px}
+  #discovery-dialog .discovery-window{border-radius:3px}
+  #discovery-dialog .discovery-top{height:59px;min-height:59px;padding:0 14px;gap:10px}
+  #discovery-dialog .d-reading{padding:25px 20px 45px}
+  #discovery-dialog .d-library{padding:20px 16px}
+  #discovery-dialog .d-video-comments{left:20px;right:20px;bottom:6dvh;border-radius:14px 14px 3px 3px}
+}
+@media(prefers-reduced-motion:reduce){#discovery-dialog[data-motion] .discovery-window{will-change:opacity}}

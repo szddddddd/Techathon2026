@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "lying actor remains pickable; dragging stands up and lands without persistence",
+    "chat overrides state movement and state changes; closing restores current action",
+    "incoming messages read in visible collected chat do not flash an actor",
+    "gathering transition overrides posture; ending restores rest"
+  ],
+  "errors": []
+}

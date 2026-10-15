@@ -22,17 +22,20 @@
 #content-share-dialog .content-recipient .avatar{width:34px;height:34px;font-size:24px}
 #content-share-dialog form>.primary{display:block;margin:18px 0 10px auto}
 #content-share-result{min-height:22px}
-@media(max-width:600px){#social .social-dock{gap:7px;left:12px;right:12px}#social .dock-button{padding:10px 12px;font-size:11px!important;gap:5px;letter-spacing:1px}#social .dock-button>span{font-size:18px}#content-share-dialog{padding:24px}#social .content-share-card img{width:64px;height:64px}}
+@media(max-width:600px){#content-share-dialog{padding:24px}#social .content-share-card img{width:64px;height:64px}}
 body.in-scene-board #social #friend-anchors{visibility:hidden}
 body.in-scene-board #social .social-corner,body.in-scene-board #social .demo-badge{opacity:.25}
-body.in-scene-board #social .social-dock{opacity:0;pointer-events:none;transition:opacity .25s}
-body.in-scene-board #social .social-dock button{pointer-events:none}
 body.in-scene-board #first-invitation{display:none!important}
 
-/* One compact navigation surface, centered under the valley. */
-#social .social-dock{left:50%;right:auto;bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px));transform:translateX(-50%);width:min(440px,calc(100vw - 28px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:7px;pointer-events:auto;background:#fafbf2ed;border:1px solid #ffffffe0;border-radius:34px;box-shadow:0 8px 32px #152f3333,inset 0 1px 0 #fff;backdrop-filter:blur(18px)}
-#social .social-dock .dock-button{position:relative;justify-content:center;gap:8px;min-width:0;padding:12px 8px;border-radius:25px;background:transparent!important;box-shadow:none;white-space:nowrap;font-size:12px!important;letter-spacing:1px}
-#social .social-dock .dock-button:hover,#social .social-dock .dock-button:focus-visible{background:#e5eddb!important}
-#social .social-dock .dock-button>span{font-size:20px;line-height:1}
-#social .social-dock .dock-button b{position:absolute;right:3px;top:1px;font-size:9px;line-height:14px;min-width:14px;padding:0 4px;letter-spacing:0}
-@media(max-width:600px){#social .social-dock{bottom:max(16px,calc(env(safe-area-inset-bottom) + 10px));padding:6px;gap:2px}#social .social-dock .dock-button{padding:11px 4px;gap:5px;font-size:11px!important;letter-spacing:.5px}#social .social-dock .dock-button>span{font-size:18px}}
+/* World-attached content icons retain a 44px touch target at every zoom. */
+#discovery-scene-icons{position:fixed;inset:0;pointer-events:none;z-index:18}
+#discovery-scene-icons[hidden],.scene-content-icon[hidden]{display:none}
+.scene-content-icon{position:absolute;top:0;left:0;margin-left:-86px;margin-top:-22px;display:flex;align-items:center;gap:8px;width:172px;min-height:48px;padding:7px 11px;border:1px solid #ffffffb0;border-radius:15px;background:rgba(248,250,236,.94);box-shadow:0 5px 20px #203d3226;color:#456346;font:12px/1.45 system-ui;pointer-events:auto;cursor:pointer;text-align:left;backdrop-filter:blur(12px);transition:background .14s,box-shadow .14s}
+.scene-content-icon:hover{background:#fffff4;box-shadow:0 7px 23px #203d3238}
+.scene-content-icon:active{background:#e8eedc}.scene-content-icon:focus-visible{outline:2px solid #66865b;outline-offset:3px}
+.scene-content-glyph{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:10px;background:#dfe9d4;color:#55764c}.scene-content-glyph svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.scene-content-copy{min-width:0}.scene-content-copy strong{display:block;font-size:11px;font-weight:600}.scene-content-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;font-size:9px;color:#8a987d}
+.d-content-kind{position:absolute;left:10px;top:10px;background:#f6f8edeb;color:#506c49;font-size:10px;padding:4px 9px;border-radius:20px;box-shadow:0 2px 9px #223c3020}.d-card-cover{position:relative}
+.d-source-note{padding:18px 20px;border-radius:14px;background:#eaf0e1;color:#7b8e70;font-size:12px;line-height:1.8}.d-source-note a{color:#4e734b;text-decoration:underline;text-underline-offset:3px}
+@media(prefers-reduced-motion:reduce){.scene-content-icon{transition:none}}
+@supports not (backdrop-filter:blur(1px)){.scene-content-icon{background:#f7f9eb}}

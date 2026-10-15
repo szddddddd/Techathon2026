@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {ARTICLES,VIDEOS,getAccount,getCreator} from './discovery-catalog.js';
+import {ARTICLES,JOURNAL_ARTICLES,VIDEOS,getAccount,getCreator} from './discovery-catalog.js';
 
 const images=new Map();
 function loadImage(src){
@@ -31,10 +31,10 @@ export function createDiscoveryPreview(kind){
     ctx.strokeStyle='#dce1d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(journal?64:44,journal?160:130);ctx.lineTo(w-(journal?64:44),journal?160:130);ctx.stroke();
     if(journal){
       coverRect={x:64,y:198,width:1072,height:360};cover(ctx,photo,64,198,1072,360);
-      ctx.fillStyle='#8c9a7f';ctx.font='24px sans-serif';ctx.fillText(getAccount(content.accountId)?.name||'溪谷生活志',64,610);
+      ctx.fillStyle='#8c9a7f';ctx.font='24px sans-serif';ctx.fillText(getAccount(content.accountId)?.name||'Hyper3D',64,610);
       ctx.fillStyle='#334d3b';ctx.font='500 40px sans-serif';line(ctx,content.title,64,673,1072);
       ctx.font='25px sans-serif';ctx.fillStyle='#869279';line(ctx,content.summary,64,720,1072);
-      const others=ARTICLES.filter(a=>a.id!==content.id).slice(0,2);
+      const others=JOURNAL_ARTICLES.filter(a=>a.id!==content.id).slice(0,2);
       others.forEach((a,i)=>{const y=790+i*64;ctx.strokeStyle='#e1e5d6';ctx.beginPath();ctx.moveTo(64,y-25);ctx.lineTo(1136,y-25);ctx.stroke();ctx.fillStyle='#526c4a';ctx.font='27px sans-serif';line(ctx,a.title,64,y+15,990);ctx.fillText('↗',1090,y+15);});
     }else{
       ctx.font='25px sans-serif';ctx.fillStyle='#526d45';ctx.fillText('推荐',206,180);ctx.fillStyle='#9ba58c';ctx.fillText('关注',330,180);ctx.fillText('朋友',454,180);
@@ -48,7 +48,7 @@ export function createDiscoveryPreview(kind){
     texture.needsUpdate=true;imageURL=canvas.toDataURL('image/png');
   }
   function update(id){
-    const next=(journal?ARTICLES:VIDEOS).find(item=>item.id===id)||(journal?ARTICLES:VIDEOS)[0];
+    const next=(journal?ARTICLES:VIDEOS).find(item=>item.id===id)||(journal?JOURNAL_ARTICLES:VIDEOS)[0];
     if(content?.id===next.id)return ready;content=next;const token=++version;paint(null,null);
     ready=Promise.all([loadImage(content.cover),journal?Promise.resolve(null):loadImage(getCreator(content.creatorId).avatar)]).then(([photo,avatar])=>{if(token===version)paint(photo,avatar);});return ready;
   }

@@ -1,0 +1,164 @@
+{
+  "checks": [
+    "frame and its hit area removed",
+    "plaza connection and ramp have full-body clearance",
+    "all 14 tree roots grounded",
+    "two road trees moved to right slope"
+  ],
+  "trees": [
+    {
+      "id": "tree-a",
+      "variant": "tree",
+      "position": [
+        -14.6,
+        2.22,
+        -7.8
+      ],
+      "minGap": -0.04499990124037678,
+      "rootSamples": 544
+    },
+    {
+      "id": "tree-c",
+      "variant": "tree_birch",
+      "position": [
+        6.3,
+        2.22,
+        -9.5
+      ],
+      "minGap": -0.04499991786723667,
+      "rootSamples": 395
+    },
+    {
+      "id": "tree-d",
+      "variant": "tree",
+      "position": [
+        14.6,
+        2.22,
+        -6.8
+      ],
+      "minGap": -0.044999932792971986,
+      "rootSamples": 480
+    },
+    {
+      "id": "tree-e",
+      "variant": "tree_birch",
+      "position": [
+        -14.6,
+        2.22,
+        -3.6
+      ],
+      "minGap": -0.04500007835654385,
+      "rootSamples": 395
+    },
+    {
+      "id": "tree-f",
+      "variant": "tree_birch",
+      "position": [
+        25.9,
+        2.586588235294118,
+        -5.2
+      ],
+      "minGap": -0.041703999183187346,
+      "rootSamples": 51
+    },
+    {
+      "id": "tree-g",
+      "variant": "tree",
+      "position": [
+        -14.7,
+        2.22,
+        6.65
+      ],
+      "minGap": -0.044999932792971986,
+      "rootSamples": 544
+    },
+    {
+      "id": "tree-h",
+      "variant": "tree_maple",
+      "position": [
+        13.6,
+        2.22,
+        7.8
+      ],
+      "minGap": -0.04499994333671253,
+      "rootSamples": 865
+    },
+    {
+      "id": "Valley tree 26.5 -1.8",
+      "variant": "tree",
+      "position": [
+        26.5,
+        2.22,
+        -1.8
+      ],
+      "minGap": -0.04500005900335369,
+      "rootSamples": 550
+    },
+    {
+      "id": "Valley tree_maple 26.8 7",
+      "variant": "tree_maple",
+      "position": [
+        26.8,
+        2.22,
+        7
+      ],
+      "minGap": -0.045000053515327654,
+      "rootSamples": 867
+    },
+    {
+      "id": "Valley tree_maple 18 9.3",
+      "variant": "tree_maple",
+      "position": [
+        18,
+        2.22,
+        9.3
+      ],
+      "minGap": -0.04500001888776284,
+      "rootSamples": 869
+    },
+    {
+      "id": "Valley tree -17 -12.5",
+      "variant": "tree",
+      "position": [
+        -17,
+        2.22,
+        -12.5
+      ],
+      "minGap": -0.04499997696660474,
+      "rootSamples": 552
+    },
+    {
+      "id": "Valley tree_birch 5.4 -12.4",
+      "variant": "tree_birch",
+      "position": [
+        5.4,
+        2.22,
+        -12.4
+      ],
+      "minGap": -0.04500001227271122,
+      "rootSamples": 398
+    },
+    {
+      "id": "Valley tree 22 -23",
+      "variant": "tree",
+      "position": [
+        22,
+        2.22,
+        -23
+      ],
+      "minGap": -0.045000033761276814,
+      "rootSamples": 552
+    },
+    {
+      "id": "Valley tree_maple 25.1 -9.5",
+      "variant": "tree_maple",
+      "position": [
+        25.1,
+        4.245882352941177,
+        -9.5
+      ],
+      "minGap": -0.044621647830614286,
+      "rootSamples": 152
+    }
+  ]
+}

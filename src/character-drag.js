@@ -37,7 +37,7 @@ export function createCharacterDrag({scene,camera,controls,canvas,surfaces=[],pi
     else record.group.position.copy(gesture.origin).add(new THREE.Vector3(0,.16,0));
     marker.visible=!!candidate;marker.scale.setScalar(record.bodyRadius+.08);if(candidate)marker.position.set(candidate.x,(check.y??gesture.origin.y)+.035,candidate.z);marker.material.color.set(check.ok?0xa7d58c:0xd78b71);const n=check.normal||{x:0,y:1,z:0};marker.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(n.x,n.y,n.z));
     record.ring.material.color.set(check.ok?0xcce5ad:0xe9aa8e);
-    hint.dataset.valid=String(check.ok);hint.querySelector('strong').textContent=check.ok?'松手，放在这里':reasons[check.reason]||'这里暂时放不下';hint.querySelector('span').textContent=record.slot?.gathering?'Esc 取消 · 聚会临时位置':'Esc 取消 · 位置会自动保存';
+    hint.dataset.valid=String(check.ok);hint.querySelector('strong').textContent=check.ok?'松手，放在这里':reasons[check.reason]||'这里暂时放不下';hint.querySelector('span').textContent=record.slot?.gathering?'Esc 取消 · 聚会临时位置':record.transient?'Esc 取消 · 仅调整本次停留':'Esc 取消 · 位置会自动保存';
   }
   function release(){
     const current=gesture;if(!current)return;
