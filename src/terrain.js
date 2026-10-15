@@ -62,10 +62,10 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
     }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
-  for(const p of [{kind:'mountain_crag',x:-8.8,z:-16.9,width:16.2,height:18.5,depth:8.3},{kind:'mountain_ridge',x:10.8,z:-18.7,width:16.8,height:20.8,depth:7.7}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.94,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
+  for(const p of [{kind:'mountain_crag',x:-11,z:-19,width:16.2,height:18.5,depth:12.45},{kind:'mountain_ridge',x:12,z:-21,width:16.8,height:20.8,depth:11.55}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.4,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
   root.updateMatrixWorld(true);
   const mountainRay=new THREE.Raycaster(),heightCache=new Map();
-  function sample(x,z){const value=querySurface(x,z);if(value.region!=='mountain'||!mountains.length)return value;const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
+  function sample(x,z){const value=querySurface(x,z);if(!mountains.length)return value;if(value.region!=='mountain'){const height=visualHeight(x,z),e=.025,dx=(visualHeight(x+e,z)-visualHeight(x-e,z))/(2*e),dz=(visualHeight(x,z+e)-visualHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);return{...value,height,normal:{x:-dx/n,y:1/n,z:-dz/n},walkable:value.walkable&&Math.hypot(dx,dz)<=Math.tan(22*Math.PI/180)};}const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
 
   // A continuous ochre track winds from the foreground to the cottage and bridge.
   const pathMat=mat(0xc6b47e),pebble=mat(0xb3b18c);

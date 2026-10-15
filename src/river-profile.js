@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export const riverCenter=z=>.9+Math.sin(z*.36)*.68;
 export const riverHalfWidth=z=>.7*(4.9+Math.sin(z*.6)*.24)*(z<-11.06?1-.55*THREE.MathUtils.smoothstep(-z,11.06,23):1);
-export const RIVER_START=-23,RIVER_END=11.06;
+export const RIVER_START=-28,RIVER_END=11.06;
 const smooth=(a,b,x)=>THREE.MathUtils.smoothstep(x,a,b);
 export const riverLevel=z=>.22+.16*(1-smooth(-10,-2,z))-.3*smooth(4.8,5.4,z)+(z<-11.06?1.6*smooth(11.06,23,-z):0);
 export const riverDepth=(u,z)=>.17+.94*Math.pow(Math.max(0,1-u*u),1.6)+.05*Math.sin(z*.8)*(1-u*u);

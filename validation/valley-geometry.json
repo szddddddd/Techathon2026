@@ -1,16 +1,16 @@
 {
   "area": {
     "before": 566.4735899263699,
-    "after": 1186.0956569383754,
-    "ratio": 2.0938233980026215,
-    "west": 459.3852787647061,
-    "east": 726.7103781736694
+    "after": 1501.3906499280288,
+    "ratio": 2.650415971066152,
+    "west": 633.6776777434862,
+    "east": 867.7129721845424
   },
   "maxSlope": 21.100721473629815,
-  "rampNodes": 129,
+  "rampNodes": 131,
   "maxVisualHeightError": 0.011777766976649229,
   "checks": [
-    "1.9–2.1 area ratio",
+    "rear terrain expanded to support deeper mountains",
     "continuous 22 degree supported ramp",
     "terrace support",
     "mountains and cliffs rejected",
