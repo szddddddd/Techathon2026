@@ -12,7 +12,7 @@ __pycache__/
 *.pem
 *.key
 
-# Historical working copies remain local
+# Do not add obsolete working copies
 previous-*/
 
 # Raw API records may contain resumable subscription keys or signed URLs.

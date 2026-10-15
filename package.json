@@ -1,11 +1,11 @@
 {
   "name": "world",
-  "version": "1.0.0",
-  "description": "Reference-inspired editable Three.js forest diorama",
+  "version": "1.1.0",
+  "description": "林间来信：三维森林社交与 Windows 桌宠",
   "main": "desktop/main.cjs",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --format=iife --minify --outfile=dist/world.js && esbuild src/asset-review.js --bundle --format=iife --minify --outfile=dist/review.js && esbuild src/pet.js --bundle --format=iife --minify --outfile=dist/pet.js",
-    "start": "python -m http.server 8080 --bind 127.0.0.1",
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/serve.mjs",
     "desktop": "electron .",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs",
     "audit:social": "node scripts/audit-social-characters.mjs",
@@ -19,7 +19,9 @@
     "test:pet": "node scripts/test-web-pet.mjs",
     "test:drag": "node scripts/test-character-drag.mjs",
     "test:placement": "node scripts/test-placement-clearance.mjs",
-    "desktop:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-desktop-launcher.ps1"
+    "desktop:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-desktop-launcher.ps1",
+    "launch": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/launch.ps1",
+    "test:launch": "node scripts/test-launch.mjs"
   },
   "keywords": [],
   "author": "",
@@ -32,5 +34,8 @@
     "esbuild": "^0.25.10",
     "electron": "^36.3.2",
     "fake-indexeddb": "^6.2.5"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
