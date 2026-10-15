@@ -2,10 +2,11 @@
   "name": "world",
   "version": "1.0.0",
   "description": "Reference-inspired editable Three.js forest diorama",
-  "main": "ambient.js",
+  "main": "desktop/main.cjs",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --format=iife --minify --outfile=dist/world.js && esbuild src/asset-review.js --bundle --format=iife --minify --outfile=dist/review.js",
+    "build": "esbuild src/main.js --bundle --format=iife --minify --outfile=dist/world.js && esbuild src/asset-review.js --bundle --format=iife --minify --outfile=dist/review.js && esbuild src/pet.js --bundle --format=iife --minify --outfile=dist/pet.js",
     "start": "python -m http.server 8080 --bind 127.0.0.1",
+    "desktop": "electron .",
     "test": "node scripts/test-social-store.mjs",
     "audit:social": "node scripts/audit-social-characters.mjs"
   },
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.25.10",
+    "electron": "^36.3.2",
     "fake-indexeddb": "^6.2.5"
   }
 }

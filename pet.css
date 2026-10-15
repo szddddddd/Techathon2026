@@ -1,0 +1,11 @@
+html,body,#pet-viewport{width:100%;height:100%;margin:0;overflow:hidden;background:transparent}
+#pet-viewport{position:relative;cursor:grab;user-select:none;touch-action:none}
+#pet-viewport.dragging{cursor:grabbing}
+#pet-canvas{display:block;width:100%;height:100%;touch-action:none}
+#pet-notices{position:absolute;inset:0;pointer-events:none}
+.notice-role{position:absolute;top:40%;bottom:8%;display:grid;place-items:center;pointer-events:auto;cursor:pointer}
+.notice{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);box-sizing:border-box;width:max-content;max-width:100%;padding:4px 7px;border:1px solid #cbd8c1;border-radius:7px;background:#f5f8eff2;color:#304c40;font:10px/1.4 system-ui,'Microsoft YaHei',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 5px #233e3026}
+.notice-role .role{width:80%;height:70%;display:grid;place-items:center;font-size:30px;animation:jump .75s ease-in-out infinite alternate}
+.notice-role .role[data-model]{animation:none}
+@keyframes jump{from{transform:translateY(3px)}to{transform:translateY(-9px)}}
+@media(prefers-reduced-motion:reduce){.notice-role .role{animation:none}}

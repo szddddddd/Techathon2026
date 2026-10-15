@@ -30,6 +30,14 @@ let socialUI;
 const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id)});
 const store=await createSocialStore();
 socialUI=createSocialUI({store,characters});
+function publishDesktopState(){
+  if(!window.desktopMain)return;
+  const unreadCount=store.state.messages.filter(message=>message.senderId!=='me'&&!message.read).length;
+  window.desktopMain.publishState({state:{friends:store.state.friends,messages:store.state.messages,profile:store.state.profile},unreadCount});
+}
+store.subscribe(()=>publishDesktopState());
+window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));
+publishDesktopState();
 const stressMode=new URLSearchParams(location.search).has('stress');
 const demo=stressMode?null:startDemo(store);
 if(stressMode){characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);$('viewport').dataset.stressCharacters=String(characters.audit.slots.length);}
