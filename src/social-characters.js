@@ -23,12 +23,12 @@ export function createPlacementContext({scene,terrain,generated}){
   scene.updateMatrixWorld(true);
   const meadows=[],occluders=[],obstacles=[];
   terrain.root.traverse(o=>{if(o.isMesh&&o.name.endsWith(' meadow'))meadows.push(o);});
-  const owners=[...(generated?.children||[])];
+  const owners=[...(generated?.children||[]),...(terrain.landmarkObstacles||[])];
   scene.traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
   for(const owner of owners){
     const triangles=[],bounds=new THREE.Box2(),solidMeshes=[];
     owner.traverse(mesh=>{
-      if(!mesh.isMesh||!mesh.geometry?.attributes.position)return;
+      if(!mesh.isMesh||!mesh.geometry?.attributes.position||mesh.userData.interactionOnly)return;
       occluders.push(mesh);
       // Double-sided geometry views support parity rays without changing the
       // visible material. They remain valid after render batching.
@@ -38,23 +38,10 @@ export function createPlacementContext({scene,terrain,generated}){
       const count=index?index.count:pos.count;
       for(let i=0;i<count;i+=3){
         const points=[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(pos,index?index.getX(i+k):i+k).applyMatrix4(mesh.matrixWorld));
-        if(Math.max(...points.map(p=>p.y))<2.27||Math.min(...points.map(p=>p.y))>4.45)continue;
-        // Clip triangles to the vertical body band, so crowns above a head do not
-        // reserve their whole shadow and distant roots do not reserve whole trees.
-        let clipped=points;
-        for(const [height,above] of [[2.27,true],[4.45,false]]){
-          const input=clipped;clipped=[];
-          for(let j=0;j<input.length;j++){
-            const a=input[j],b=input[(j+1)%input.length],ain=above?a.y>=height:a.y<=height,bin=above?b.y>=height:b.y<=height;
-            if(ain)clipped.push(a);
-            if(ain!==bin)clipped.push(a.clone().lerp(b,(height-a.y)/(b.y-a.y)));
-          }
-        }
-        for(let j=1;j+1<clipped.length;j++){
-          const t=[clipped[0],clipped[j],clipped[j+1]].map(p=>[p.x,p.z]);
-          const box=new THREE.Box2().setFromPoints(t.map(p=>new THREE.Vector2(...p)));
-          bounds.union(box);triangles.push({points:t,box});
-        }
+        const minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
+        if(maxY<2.25)continue;
+        const t=points.map(p=>[p.x,p.z]),box=new THREE.Box2().setFromPoints(t.map(p=>new THREE.Vector2(...p)));
+        bounds.union(box);triangles.push({points:t,world:points,minY,maxY,box});
       }
     });
     obstacles.push({id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes});
@@ -65,34 +52,34 @@ export function createPlacementContext({scene,terrain,generated}){
     if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
     if(Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
     if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+(manual?.15:.6)))return {ok:false,reason:'friend clearance'};
-    let groundY=2.22;
+    const center=terrain.sample?.(x,z);let groundY=center?.height??2.22;
     for(let i=0;i<13;i++){
-      const r=i?radius+(manual?.02:.12):0,a=(i-1)/12*Math.PI*2;
-      ray.set(new THREE.Vector3(x+Math.cos(a)*r,8,z+Math.sin(a)*r),down);ray.far=8;
-      const hit=ray.intersectObjects(meadows,false)[0];
-      if(!hit)return {ok:false,reason:'no meadow support'};
-      groundY=Math.max(groundY,hit.point.y);
+      const r=i?radius+(manual?.02:.12):0,a=(i-1)/12*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
+      if(terrain.sample){const sample=terrain.sample(px,pz);if(!sample.walkable)return {ok:false,reason:'no meadow support',region:sample.region};if(Math.abs(sample.height-groundY)>r*Math.tan(22*Math.PI/180)+.04)return {ok:false,reason:'steep slope'};}
+      else{ray.set(new THREE.Vector3(px,20,pz),down);ray.far=25;const hit=ray.intersectObjects(meadows,false)[0];if(!hit)return {ok:false,reason:'no meadow support'};groundY=Math.max(groundY,hit.point.y);}
     }
     const point=new THREE.Vector2(x,z),clearance=radius+(manual?.06:.35);
     for(const obstacle of obstacles){
       if(manual&&['grass','fern_large'].includes(obstacle.kind))continue;
       if(obstacle.bounds.distanceToPoint(point)>=clearance)continue;
       for(const triangle of obstacle.triangles){
-        if(triangle.box.distanceToPoint(point)>=clearance)continue;
-        if(triangleDistance(x,z,triangle.points)<clearance)return {ok:false,reason:'obstacle',id:obstacle.id};
+        if(triangle.box.distanceToPoint(point)>=clearance||triangle.maxY<groundY+.06||triangle.minY>groundY+2.23)continue;
+        let clipped=triangle.world;for(const [height,above] of [[groundY+.06,true],[groundY+2.23,false]]){const input=clipped;clipped=[];for(let j=0;j<input.length;j++){const a=input[j],b=input[(j+1)%input.length],ain=above?a.y>=height:a.y<=height,bin=above?b.y>=height:b.y<=height;if(ain)clipped.push(a);if(ain!==bin)clipped.push(a.clone().lerp(b,(height-a.y)/(b.y-a.y)));}}
+        let intersects=false;for(let j=1;j+1<clipped.length;j++)if(triangleDistance(x,z,[clipped[0],clipped[j],clipped[j+1]].map(p=>[p.x,p.z]))<clearance)intersects=true;
+        if(intersects)return {ok:false,reason:'obstacle',id:obstacle.id};
       }
       // A point deep inside a closed building can be far from every wall;
       // reject that case using horizontal parity, without reserving tree shade.
       if(obstacle.bounds.containsPoint(point)){
-        ray.set(new THREE.Vector3(x,3.1,z),new THREE.Vector3(1,0,0));ray.far=100;
+        ray.set(new THREE.Vector3(x,groundY+.88,z),new THREE.Vector3(1,0,0));ray.far=100;
         const hits=ray.intersectObjects(obstacle.solidMeshes,false).map(h=>h.distance);
         const unique=hits.filter((distance,i)=>!i||distance-hits[i-1]>1e-4);
         if(unique.length%2)return {ok:false,reason:'inside obstacle',id:obstacle.id};
       }
     }
-    return {ok:true,y:groundY};
+    return {ok:true,y:groundY,region:center?.region,normal:center?.normal};
   }
-  return {meadows,occluders,obstacles,inspect};
+  return {meadows,occluders:[...occluders,...meadows],obstacles,inspect};
 }
 
 export function pickCharacterSlots(context,friends){
@@ -148,9 +135,10 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   await Promise.all(ANIMALS.map(async animal=>{
     try{const gltf=await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`);models.set(animal,gltf.scene);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
   }));
-  let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={};
+  const leafCanvas=document.createElement('canvas');leafCanvas.width=leafCanvas.height=48;const lc=leafCanvas.getContext('2d');lc.fillStyle='#eff5bd';lc.beginPath();lc.moveTo(7,41);lc.bezierCurveTo(0,10,25,0,42,6);lc.bezierCurveTo(43,25,28,42,7,41);lc.fill();const leafTexture=new THREE.CanvasTexture(leafCanvas);
+  let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={},gathering=null,gatherTransition=null;
   const isReduced=()=>typeof reduced==='boolean'?reduced:!!reduced?.matches;
-  const audit={method:'Ground disk raycasts; actual obstacle triangles clipped to 2.27–4.45m; body radius plus 0.35m; WALKWAYS; 0.6m inter-character separation.',slots:[],missingModels:ANIMALS.filter(a=>!models.has(a)),unplaced:[]};
+  const audit={method:'Unified surface and 13-point support disks; slope <=22 degrees; triangles clipped to current foot/head heights; manual body clearance; transient gathering slots.',slots:[],missingModels:ANIMALS.filter(a=>!models.has(a)),unplaced:[]};
   function create(friend){
     const group=new THREE.Group(),body=(models.get(friend.animal)?.clone(true)||createCharacterPlaceholder(friend));
     const box=new THREE.Box3().setFromObject(body),size=box.getSize(new THREE.Vector3()),height=friend.height||1.9;
@@ -176,13 +164,13 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     body.updateMatrixWorld(true);
     body.traverse(o=>{if(!o.isMesh)return;const edge=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,38),new THREE.LineBasicMaterial({color:0xffe5a4,transparent:true,opacity:.36}));edge.applyMatrix4(o.matrixWorld);outline.add(edge);});bodyHolder.add(outline);
     const moteGeo=new THREE.BufferGeometry(),motePositions=new Float32Array(12*3);moteGeo.setAttribute('position',new THREE.BufferAttribute(motePositions,3));
-    const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:0xe4ecac,size:.09,transparent:true,opacity:1,depthWrite:false}));group.add(motes);
+    const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:0xe4ecac,map:leafTexture,size:.2,transparent:true,opacity:1,depthWrite:false}));group.add(motes);
     group.name=`Friend · ${friend.id}`;group.userData.friendId=friend.id;group.userData.placeholder=!!body.userData.placeholder;
     group.traverse(o=>{o.userData.socialCharacter=true;o.userData.friendId=friend.id;});root.add(group);
     return {friend,group,bodyHolder,ring,outline,motes,motePositions,height,radius:Math.max(.35,radius),bodyRadius:characterBodyRadius(radius),spawn:performance.now(),occluded:false,gait,walk:null};
   }
   function resetWalk(record,slot){
-    record.slot=slot;const graph=buildWalkingGraph(context,slot);
+    record.slot=slot;const graph=buildWalkingGraph(context,slot,{range:gathering?1.2:3.2});
     record.walk={graph,node:0,route:[],sequence:slot.id.length,wait:4,phase:0,heading:record.walk?.heading??.35,speed:.24+(slot.id.length%3)*.025};
   }
   function refreshAudit(){
@@ -234,8 +222,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     return records.get(hit.object.userData.friendId)||null;
   }
   function inspectPlacement(record,x,z){return context.inspect(x,z,characterBodyRadius(record.radius),[...records.values()].filter(r=>r!==record&&r.group.visible&&!r.slot?.unplaced&&r.slot).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:characterBodyRadius(r.radius)})),{manual:true});}
-  const drag=createCharacterDrag({scene,camera,controls,canvas:renderer.domElement,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:onPlace,onError:onPlacementError,onPlaced(record,point){
-    const slot={...record.slot,...point,manualPlacement:true,placementRadius:characterBodyRadius(record.radius)};savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
+  const drag=createCharacterDrag({scene,camera,controls,canvas:renderer.domElement,surfaces:context.meadows,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:(id,p)=>gathering?Promise.resolve():onPlace?.(id,p),onError:onPlacementError,onPlaced(record,point){
+    const slot={...record.slot,...point,manualPlacement:true,placementRadius:characterBodyRadius(record.radius)};if(!gathering)savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
   }});
   const placement={
     snapshot(){return{...drag.snapshot(),characters:[...records.values()].map(r=>({id:r.friend.id,position:r.group.position.toArray(),home:r.slot,radius:r.radius,walking:!!r.walk?.route.length}))};},
@@ -245,6 +233,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   };
   function update(now,dt){
     drag.update();
+    if(gatherTransition){const t=isReduced()?1:Math.min(1,(now-gatherTransition.start)/600);for(const r of records.values()){r.group.scale.setScalar(Math.max(.015,Math.abs(t*2-1)));if(t>=.5&&!gatherTransition.moved){const p=gatherTransition.targets.get(r.friend.id);if(p)r.group.position.copy(p);r.spawn=now;}}if(t>=.5)gatherTransition.moved=true;if(t===1){for(const r of records.values())r.group.scale.setScalar(1);gatherTransition=null;}}
     const mobileFocus=selected&&renderer.domElement.clientWidth<=850;
     if(mobileFocus){const w=renderer.domElement.clientWidth,h=renderer.domElement.clientHeight;if(!camera.view?.enabled||camera.view.offsetY!==h*.26)camera.setViewOffset(w,h,0,h*.26,w,h);}
     else if(camera.view?.enabled)camera.clearViewOffset();
@@ -257,7 +246,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       if(!r.group.visible)continue;
       const seconds=now/1000,age=(now-r.spawn)/1000,motion=isReduced()?0:1;
       const walk=r.walk,delta=Math.min(dt||0,.05);let moving=false;
-      if(walk&&!drag.busy&&selected!==id&&motion&&!document.hidden&&age>1){
+      if(walk&&!gatherTransition&&!drag.busy&&selected!==id&&motion&&!document.hidden&&age>1){
         walk.wait=Math.max(0,walk.wait-delta);
         if(!walk.route.length&&walk.wait===0){walk.route=walkingRoute(walk.graph,walk.node,walk.sequence++);if(!walk.route.length)walk.wait=3;}
         if(walk.route.length&&walk.wait===0){
@@ -265,7 +254,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
           const next={x:r.group.position.x+dx/Math.max(distance,1e-6)*amount,z:r.group.position.z+dz/Math.max(distance,1e-6)*amount};
           const others=[...records.values()].filter(other=>other!==r&&other.group.visible).map(other=>({x:other.group.position.x,z:other.group.position.z,radius:r.slot.manualPlacement?characterBodyRadius(other.radius):other.radius+.08}));
           if(canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
-            r.group.position.set(next.x,dest.y,next.z);walk.heading=Math.atan2(dx,dz);moving=amount>0;walk.phase+=amount*17;
+            r.group.position.set(next.x,terrain.sample?.(next.x,next.z).height??THREE.MathUtils.lerp(r.group.position.y,dest.y,amount/Math.max(distance,1e-6)),next.z);walk.heading=Math.atan2(dx,dz);moving=amount>0;walk.phase+=amount*17;
             if(distance<.015||amount>=distance){walk.node=walk.route.shift();if(!walk.route.length)walk.wait=2+(walk.sequence%4);}
           }else walk.wait=.7;
         }
@@ -281,12 +270,29 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       r.bodyHolder.rotation.y+=angle*Math.min(1,delta*3);
       r.motes.visible=age<1.7&&!isReduced();
       if(r.motes.visible){for(let i=0;i<12;i++){const a=i*2.399+age*2;r.motePositions[i*3]=Math.cos(a)*(r.radius+.15);r.motePositions[i*3+1]=.15+age*.8+i%3*.15;r.motePositions[i*3+2]=Math.sin(a)*(r.radius+.15);}r.motes.geometry.attributes.position.needsUpdate=true;r.motes.material.opacity=Math.max(0,1-age/1.7);}
+      const normal=terrain.sample?.(r.group.position.x,r.group.position.z).normal;if(normal)r.ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(normal.x,normal.y,normal.z));
       r.group.updateMatrixWorld(true);
       const world=r.group.position.clone().add(new THREE.Vector3(0,r.height+.3,0));
       if(checkOcclusion)r.occluded=blocked(camera.position,r.group.position.clone().add(new THREE.Vector3(0,r.height*.7,0)));
       const p=world.project(camera);anchors.push({id,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder});
     }
   }
-  function dispose(){drag.dispose();root.removeFromParent();records.clear();}
-  return {sync,focus,restore,update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  function beginGather(){
+    if(gathering)return {ok:true,count:records.size,repeated:true};
+    if(!records.size)return {ok:false,reason:'请先从「好友」添加一位伙伴。'};
+    if(drag.busy)return {ok:false,reason:'请先完成当前拖动。'};
+    const used=[],slots=new Map();
+    let guestIndex=0;for(const [id,r] of records){let chosen;const preferred=guestIndex++/records.size*Math.PI*2+.3;for(let i=0;i<96;i++){const a=preferred+(i%2?-1:1)*Math.ceil((i%32)/2)*Math.PI/16,radius=3.1+Math.floor(i/32)*.5,x=21+Math.cos(a)*radius,z=2+Math.sin(a)*radius;const check=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(check.ok){chosen={...r.slot,x,y:check.y,z,gathering:true,manualPlacement:true,placementRadius:r.bodyRadius};break;}}if(!chosen)return {ok:false,reason:'广场暂时没有足够空位。'};slots.set(id,chosen);used.push({...chosen,radius:r.bodyRadius});}
+    gathering=new Map([...records].map(([id,r])=>[id,{position:r.group.position.clone(),slot:{...r.slot},walk:r.walk}]));
+    const targets=new Map();for(const [id,r] of records){const slot=slots.get(id);resetWalk(r,slot);r.walk.wait=3;r.spawn=performance.now();targets.set(id,new THREE.Vector3(slot.x,slot.y,slot.z));}
+    gatherTransition={start:performance.now(),targets,moved:false};refreshAudit();return{ok:true,count:slots.size};
+  }
+  function endGather(){
+    if(!gathering)return false;drag.cancel();const old=gathering;gathering=null;
+    const targets=new Map();for(const [id,state] of old){const r=records.get(id);if(!r)continue;r.slot=state.slot;r.walk=state.walk;targets.set(id,state.position);}
+    gatherTransition={start:performance.now(),targets,moved:false};refreshAudit();return true;
+  }
+  function finishCamera(){if(transition){const t=transition;transition=null;camera.position.copy(t.position);controls.target.copy(t.target);camera.lookAt(controls.target);t.done?.();}}
+  function dispose(){drag.dispose();leafTexture.dispose();root.removeFromParent();records.clear();}
+  return {sync,focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

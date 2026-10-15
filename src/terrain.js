@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {bankOutlines,landAreaAudit,querySurface,surfaceHeight,WORLD_BOUNDS} from './world-surface.js';
 import {createRiver} from './river.js';
 import {riverCenter,riverHalfWidth} from './river-profile.js';
 export {riverCenter,riverHalfWidth} from './river-profile.js';
@@ -13,14 +14,10 @@ const BANK_SHIFT=1.5;
 export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=false}={}){
   seed=194;
   const root=new THREE.Group();root.name='Terrain · sculpted river canyon';scene.add(root);
-  const left=[],right=[];
-  for(let i=0;i<=22;i++){const z=-11+i;const c=riverCenter(z),w=riverHalfWidth(z)-BANK_SHIFT;left.push([c-w,z]);right.push([c+w,z]);}
-  // Move both banks inward and match their inner contours to the 70% river width.
-  const leftOutline=[[-14.5,-10.7],[-11,-11.3],[-3.2,-11.1],...left,[-7.3,11.1],[-12.9,10.3],[-15.1,7.4],[-15.4,1.2],[-14.8,-6.8]];
-  const rightOutline=[...right.slice().reverse(),[9.8,-11.4],[14.4,-9.4],[15.3,-4],[15.4,2],[14.4,8.3],[12.6,10.8],[8.5,11.2]];
-  const polygonArea=points=>Math.abs(points.reduce((sum,p,i)=>{const q=points[(i+1)%points.length];return sum+p[0]*q[1]-q[0]*p[1];},0))/2;
-  const landArea={west:polygonArea(leftOutline),east:polygonArea(rightOutline),previousTotal:399.81283302418726};
-  landArea.total=landArea.west+landArea.east;landArea.increasePercent=(landArea.total/landArea.previousTotal-1)*100;root.userData.landArea=landArea;
+  const outlines=bankOutlines();
+  const leftOutline=outlines.west.map(([x,z])=>[x+BANK_SHIFT,z]),rightOutline=outlines.east.map(([x,z])=>[x-BANK_SHIFT,z]);
+  const area=landAreaAudit();
+  const landArea={west:area.west,east:area.east,total:area.after,previousTotal:area.before,ratio:area.ratio,increasePercent:(area.ratio-1)*100};root.userData.landArea=landArea;
   root.userData.bankSeparation={westTranslation:-BANK_SHIFT,eastTranslation:BANK_SHIFT,addedChannelWidth:BANK_SHIFT*2,widthAtBridge:riverHalfWidth(1.5)*2,minimumWidth:9.32*.7,maximumWidth:10.28*.7};
   // Full disk containment keeps even rotated/scaled paint patches over solid ground.
   function containsDisk(points,x,z,radius){
@@ -37,7 +34,22 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=f
     const bankRoot=new THREE.Group();bankRoot.name=name+' translated bank';bankRoot.position.x=name==='West'?-BANK_SHIFT:BANK_SHIFT;root.add(bankRoot);
     const shape=new THREE.Shape(points.map(([x,z])=>new THREE.Vector2(x,-z)));
     const body=new THREE.ExtrudeGeometry(shape,{depth:4.55,bevelEnabled:true,bevelThickness:.25,bevelSize:.2,bevelSegments:1,curveSegments:1});body.rotateX(-Math.PI/2);mesh(bankRoot,name+' rock body',body,[grassMats[0],rockMats[0]],0,-2.6,0);
-    const top=new THREE.ShapeGeometry(shape);top.rotateX(-Math.PI/2);mesh(bankRoot,name+' meadow',top,grassMats[0],0,2.22,0);
+    const source=new THREE.ShapeGeometry(shape),vertices=[],colors=[];
+    const pos=source.attributes.position,idx=source.index;
+    const shift=bankRoot.position.x;
+    function triangle(a,b,c){
+      const edges=[[a,b,c],[b,c,a],[c,a,b]].sort((u,v)=>v[0].distanceToSquared(v[1])-u[0].distanceToSquared(u[1]));
+      const [u,v,w]=edges[0];
+      if(u.distanceToSquared(v)>.55*.55){const m=u.clone().lerp(v,.5);triangle(u,m,w);triangle(m,v,w);return;}
+      const center=a.clone().add(b).add(c).multiplyScalar(1/3),q=querySurface(center.x+shift,-center.y),stone=q.height>7||q.normal.y<.83;
+      const color=new THREE.Color(stone?0x819080:0x839c46).multiplyScalar(.94+.08*Math.sin(center.x*2.3+center.y*1.7));
+      for(const p of [a,b,c]){vertices.push(p.x,surfaceHeight(p.x+shift,-p.y)-2.22,-p.y);colors.push(color.r,color.g,color.b);}
+    }
+    for(let i=0;i<idx.count;i+=3)triangle(...[0,1,2].map(k=>new THREE.Vector2(pos.getX(idx.getX(i+k)),pos.getY(idx.getX(i+k)))));
+    source.dispose();const top=new THREE.BufferGeometry();top.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));top.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));top.computeVertexNormals();
+    const surface=mesh(bankRoot,name+' meadow',top,mat(0xffffff,{vertexColors:true}),0,2.22,0);surface.userData.terrainSurface=true;
+    const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=surfaceHeight(x+shift,z),yy=surfaceHeight(xx+shift,zz);sides.push(x,1.94,z,xx,yy,zz,x,y,z,x,1.94,z,xx,1.94,zz,xx,yy,zz);}}
+    const skirt=new THREE.BufferGeometry();skirt.setAttribute('position',new THREE.Float32BufferAttribute(sides,3));skirt.computeVertexNormals();mesh(bankRoot,name+' sculpted escarpment',skirt,mat(0x687b6e,{side:THREE.DoubleSide}));
     // Triangular earth-color variations keep a painted surface without photo textures.
     for(let i=0;i<70;i++){const x=(name==='West'?-11:3.4)+rnd()*7.4,z=-10.5+rnd()*21;
       if(name==='West'&&x>riverCenter(z)-2.3)continue;if(name==='East'&&x<riverCenter(z)+2.4)continue;
@@ -58,7 +70,7 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,reduced=f
   const river=createRiver(root,{assets:riverAssets,reduced});
   if(rodinBridge)buildBridgeTransitions(root);
   else{buildBridge(root);const bridge=root.children.find(o=>o.name==='Stone bridge · complete arch vault');bridge.scale.set(1.4,1,1.4);}
-  return{root,river};
+  return{root,river,sample:querySurface,bounds:WORLD_BOUNDS};
 }
 
 function buildBridgeTransitions(root){

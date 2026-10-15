@@ -1,0 +1,54 @@
+{
+  "createdAt": "2026-10-15T09:01:22.201Z",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "deviceScaleFactor": 1,
+  "friends": 4,
+  "performance": {
+    "durationMs": 8001.5,
+    "frames": 480,
+    "averageFPS": 59.98875210897957,
+    "p95FrameMs": 16.800000000000182,
+    "calls": 292,
+    "triangles": 764046
+  },
+  "terrace": [
+    {
+      "id": "tuantuan",
+      "x": 20.8,
+      "z": -13.05
+    },
+    {
+      "id": "ali",
+      "x": 22.300000000000004,
+      "z": -13.05
+    },
+    {
+      "id": "xiaomian",
+      "x": 20.5,
+      "z": -14.250000000000004
+    },
+    {
+      "id": "shanshan",
+      "x": 21.700000000000003,
+      "z": -14.250000000000004
+    }
+  ],
+  "checks": [
+    "empty valley prompts adding friends",
+    "unread leaf lights follow incoming messages and read state",
+    "real lamp click, invitation, repeated gather and outside dismiss",
+    "gather drag never writes home positions",
+    "chat opens and restores gathering camera",
+    "sloped walking stays upright and supported at every sampled frame",
+    "end restores exact pre-gather positions and camera",
+    "all four real character bodies fit and drag onto terrace",
+    "refresh discards party, preserves original friend and home data",
+    "persisted x/z positions recompute elevated height on reload",
+    "mobile plaza, responsive popover and rotation during gathering",
+    "eight-character gathering capacity and collision validation"
+  ],
+  "errors": []
+}

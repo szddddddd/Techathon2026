@@ -9,8 +9,8 @@ const snapshot=()=>page.evaluate(()=>__cameraPanBounds.snapshot());
 async function check(label){
  const state=await snapshot();
  assert.ok(state.enabled,`${label}: orbit control restored`);
- assert.ok(state.offset<=state.limit+.01,`${label}: pan stays within the boundary`);
- assert.ok(Math.abs(state.projected[0])<.95&&Math.abs(state.projected[1])<.95,`${label}: forest center remains inside the viewport`);
+ const [x,y,z]=state.target,b=state.bounds;assert.ok(x>=b.minX-.01&&x<=b.maxX+.01&&z>=b.minZ-.01&&z<=b.maxZ+.01,`${label}: pan stays within the world bounds`);
+ assert.ok(Number.isFinite(y),`${label}: target height remains finite`);
  checks.push({label,...state});return state;
 }
 async function drag(dx,dy){
@@ -27,7 +27,7 @@ try{
  for(const [dx,dy] of [[5000,0],[-10000,0],[0,8000],[0,-16000]]){await drag(dx,dy);await check(`extreme pan ${dx},${dy}`);}
  await page.screenshot({path:'validation/pan-bounds-desktop.jpg',type:'jpeg',quality:88});
  for(let i=0;i<28;i++)await page.keyboard.press('+');await page.waitForTimeout(300);
- const zoomed=await check('zoomed boundary');assert.ok(zoomed.limit<moved.limit,'near zoom tightens the range');
+ const zoomed=await check('zoomed boundary');assert.deepEqual(zoomed.bounds,moved.bounds,'near zoom still permits travel to plaza and terrace');
  await drag(8000,8000);await check('extreme pan after zoom');
  await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowUp');await page.waitForTimeout(300);await check('rotation remains usable');
  const before=await page.evaluate(()=>__discoveryScene.pose());

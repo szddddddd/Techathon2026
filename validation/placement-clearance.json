@@ -1,15 +1,15 @@
 {
-  "createdAt": "2026-10-15T07:12:36.211Z",
+  "createdAt": "2026-10-15T08:41:27.829Z",
   "gridStep": 0.75,
   "total": 1161,
   "before": 20,
-  "after": 342,
-  "gain": 17.1,
+  "after": 345,
+  "gain": 17.25,
   "fullRadius": 0.9659456071911773,
   "bodyRadius": 0.6278646446742653,
   "newlyAllowedByPreviousReason": {
-    "no meadow support": 54,
-    "obstacle": 168,
+    "no meadow support": 51,
+    "obstacle": 174,
     "campfire": 7,
     "walkway": 93
   },
@@ -79,8 +79,8 @@
     "x": -15.25,
     "z": -9.5,
     "previously": "no meadow support",
-    "nodes": 3,
-    "route": 2
+    "nodes": 18,
+    "route": 12
   },
   "checks": [
     "paths usable",

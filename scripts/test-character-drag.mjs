@@ -15,7 +15,7 @@ async function pickPoint(id){return page.evaluate(id=>{
  }return null;
 },id);}
 async function start(id){const p=await pickPoint(id);assert.ok(p,`${id} has a visible, selectable model`);await page.mouse.move(p.x,p.y);await page.mouse.down();assert.equal((await snapshot()).active,id);}
-async function moveTo(x,z){const p=await page.evaluate(({x,z})=>{const s=__characterPlacement.snapshot();return __characterPlacement.project(x-s.offset[0],s.origin[1],z-s.offset[2]);},{x,z});await page.mouse.move(p.x,p.y,{steps:12});return snapshot();}
+async function moveTo(x,z){const p=await page.evaluate(({x,z})=>{const s=__characterPlacement.snapshot();const p=__characterPlacement.project(x,__valley.sample(x,z).height,z);return{x:p.x-s.footOffset.x,y:p.y-s.footOffset.y};},{x,z});await page.mouse.move(p.x,p.y,{steps:12});return snapshot();}
 async function end(){await page.mouse.up();await page.waitForFunction(()=>!__characterPlacement.snapshot().active);return snapshot();}
 async function safeDestination(id){return page.evaluate(id=>{
  const r=__characterPlacement.snapshot().characters.find(r=>r.id===id),[x,,z]=r.position;
@@ -42,7 +42,7 @@ try{
  const stable=await snapshot();await page.evaluate(()=>__socialStore.addFriend('shanshan'));const added=await snapshot();for(const r of stable.characters)assert.deepEqual(added.characters.find(c=>c.id===r.id).position,r.position);checks.push('adding another friend preserves existing placements');
  await page.setViewportSize({width:391,height:844});await page.waitForTimeout(200);const touchId=(await snapshot()).characters.find(r=>r.id===id)?.id;assert.ok(await pickPoint(touchId));
  const cdp=await page.context().newCDPSession(page);const tp=await pickPoint(touchId);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:tp.x,y:tp.y}]});assert.equal((await snapshot()).active,touchId);
- const touchTarget=await safeDestination(touchId);const endPoint=await page.evaluate(t=>{const s=__characterPlacement.snapshot();return __characterPlacement.project(t.x-s.offset[0],s.origin[1],t.z-s.offset[2]);},touchTarget);
+ const touchTarget=await safeDestination(touchId);const endPoint=await page.evaluate(t=>{const s=__characterPlacement.snapshot();const p=__characterPlacement.project(t.x,__valley.sample(t.x,t.z).height,t.z);return{x:p.x-s.footOffset.x,y:p.y-s.footOffset.y};},touchTarget);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:endPoint.x,y:endPoint.y}]});await page.screenshot({path:'validation/character-drag-mobile.jpg',type:'jpeg',quality:88});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForFunction(()=>!__characterPlacement.snapshot().active);assert.ok((await snapshot()).lastResult.ok);checks.push('real mobile touch drag places character');
  const landed=(await snapshot()).characters.find(r=>r.id===touchId).position;await page.emulateMedia({reducedMotion:'no-preference'});await page.waitForFunction(({id,landed})=>{const p=__characterPlacement.snapshot().characters.find(r=>r.id===id).position;return Math.hypot(p[0]-landed[0],p[2]-landed[2])>.08;},{id:touchId,landed},{timeout:12000});checks.push('walking resumes around the newly placed home');
  assert.deepEqual(errors,[]);const report={createdAt:new Date().toISOString(),checks,errors};await fs.writeFile('validation/character-drag.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

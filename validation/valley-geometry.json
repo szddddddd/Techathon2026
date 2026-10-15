@@ -1,0 +1,22 @@
+{
+  "area": {
+    "before": 566.4735899263699,
+    "after": 1186.0956569383754,
+    "ratio": 2.0938233980026215,
+    "west": 459.3852787647061,
+    "east": 726.7103781736694
+  },
+  "maxSlope": 21.100721473629815,
+  "rampNodes": 129,
+  "maxVisualHeightError": 0.011777766976649229,
+  "checks": [
+    "1.9–2.1 area ratio",
+    "continuous 22 degree supported ramp",
+    "terrace support",
+    "mountains and cliffs rejected",
+    "lamp and elevated rails collide",
+    "walk edges respect elevation",
+    "rendered terrain matches query",
+    "original river width and bridge level unchanged"
+  ]
+}

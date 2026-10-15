@@ -13,7 +13,7 @@ export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
       if(next===-1)continue;
       const x=slot.x+nx*step,z=slot.z+nz*step;
       if(next===undefined){const check=safe(x,z);if(!check.ok){seen.set(key,-1);continue;}next=nodes.length;seen.set(key,next);nodes.push({x,z,y:check.y,links:[]});queue.push([nx,nz,next]);}
-      const a=nodes[index];let clear=true;
+      const a=nodes[index];let clear=Math.abs(nodes[next].y-a.y)<=Math.hypot(x-a.x,z-a.z)*Math.tan(22*Math.PI/180)+.025;
       for(let t=.25;t<1;t+=.25)if(!safe(a.x+(x-a.x)*t,a.z+(z-a.z)*t).ok){clear=false;break;}
       if(clear&&!a.links.includes(next)){a.links.push(next);nodes[next].links.push(index);}
     }

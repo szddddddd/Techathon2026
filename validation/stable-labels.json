@@ -1,32 +1,32 @@
 {
-  "createdAt": "2026-10-15T07:01:47.196Z",
-  "dragFrames": 83,
+  "createdAt": "2026-10-15T08:59:23.943Z",
+  "dragFrames": 84,
   "stats": [
     {
       "id": "tuantuan",
-      "frames": 82,
-      "movingFrames": 82,
+      "frames": 83,
+      "movingFrames": 83,
       "updateRatio": 1,
       "offsetSpread": 0
     },
     {
       "id": "ali",
-      "frames": 82,
-      "movingFrames": 82,
+      "frames": 83,
+      "movingFrames": 83,
       "updateRatio": 1,
       "offsetSpread": 0
     },
     {
       "id": "xiaomian",
-      "frames": 82,
-      "movingFrames": 82,
+      "frames": 83,
+      "movingFrames": 83,
       "updateRatio": 1,
       "offsetSpread": 0
     },
     {
       "id": "shanshan",
-      "frames": 82,
-      "movingFrames": 82,
+      "frames": 83,
+      "movingFrames": 83,
       "updateRatio": 1,
       "offsetSpread": 0
     }
