@@ -1,3 +1,5 @@
+import { petPayload } from './pet-state.js';
+
 export function createWebPet({store,onOpenFriend,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
   const root=document.createElement('aside');root.id='web-pet';root.setAttribute('aria-label','Windows 桌宠');
   root.innerHTML=`<button id="pet-toggle" type="button" title="在 Windows 桌面唤出桌宠"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4C9 3 4 8 5 14s10 8 13 0c1-3 0-6 1-10Z"/><path d="m7 18 8-9M10 14l-1-4m3 2 4 1"/></svg><span>桌宠</span><b hidden></b></button><p id="pet-launch-status" role="status" hidden></p>`;
@@ -10,7 +12,7 @@ export function createWebPet({store,onOpenFriend,bridgeOrigin='http://127.0.0.1:
     if(!response.ok)throw new Error('桌宠连接暂不可用');return response.json();
   }
   function say(text){notice.textContent=text;notice.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{notice.hidden=true;},6500);}
-  function payload(){const {friends,messages,profile}=store.state;return{client,state:{friends,messages:messages.slice(-300).map(({id,friendId,senderId,read,type,text,createdAt})=>({id,friendId,senderId,read,type,text:String(text||'').slice(0,300),createdAt})),profile},unreadCount:messages.filter(m=>m.senderId!=='me'&&!m.read&&friends.includes(m.friendId)).length};}
+  function payload(){return {client,...petPayload(store.state)};}
   function badge(){const count=payload().unreadCount,b=toggle.querySelector('b');b.hidden=!count;b.textContent=count>99?'99+':count;toggle.setAttribute('aria-label',`唤出电脑桌宠${count?`，${count}条未读消息`:''}`);}
   async function sync(){
     if(disposed||!online||window.desktopMain)return;

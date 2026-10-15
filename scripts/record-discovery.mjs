@@ -1,9 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
-const runtime='C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
-const {chromium}=await import(pathToFileURL(runtime).href);
+import {chromium,baseURL} from './test-runtime.mjs';
 const out=path.resolve('assets/discovery');await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'msedge',args:['--use-gl=angle','--use-angle=d3d11','--disable-background-timer-throttling','--autoplay-policy=no-user-gesture-required']});
 const start=Number(process.argv[2])||1,end=Number(process.argv[3])||6;
@@ -13,7 +11,7 @@ function withDuration(input,milliseconds){const marker=Buffer.from([0x15,0x49,0x
 try{for(let index=start;index<=end;index++){
   const context=await browser.newContext({viewport:{width:540,height:960},deviceScaleFactor:1});const page=await context.newPage();
   page.on('pageerror',e=>console.error('pageerror',e.message));
-  await page.goto(`http://localhost:8080/?capture=${index}`,{waitUntil:'domcontentloaded'});
+  await page.goto(`${baseURL}/?capture=${index}`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>window.__capture?.ready,{},{timeout:180000});
   const report=await page.evaluate(()=>window.__capture.audit);await fs.writeFile(path.join(out,'scene-placement.json'),JSON.stringify(report,null,2));
   const clip=await page.evaluate(async index=>window.__capture.record(index,12000),index);

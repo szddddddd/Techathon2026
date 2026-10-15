@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import {pathToFileURL} from 'node:url';
-const {chromium}=await import(pathToFileURL('C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs'));
+import {chromium,baseURL,outputDir,outputPath} from './test-runtime.mjs';
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
 const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),errors=[],checks=[];
 page.on('pageerror',e=>errors.push(e.message));
@@ -22,15 +21,15 @@ async function safeDestination(id){return page.evaluate(id=>{
  for(const radius of [1.4,2,2.6,3.3,4.2])for(let a=Math.PI/2;a<Math.PI*2.5;a+=Math.PI/8){const nx=x+Math.cos(a)*radius,nz=z+Math.sin(a)*radius;if(__characterPlacement.inspect(id,nx,nz).ok&&[[.7,0],[-.7,0],[0,.7],[0,-.7]].every(([dx,dz])=>__characterPlacement.inspect(id,nx+dx,nz+dz).ok))return{x:nx,z:nz};}return null;
 },id);}
 try{
- await page.goto('http://localhost:8080/');await page.waitForFunction(()=>window.__characterPlacement&&window.__socialUI,null,{timeout:180000});
+ await page.goto(baseURL+"/");await page.waitForFunction(()=>window.__characterPlacement&&window.__socialUI,null,{timeout:180000});
  await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian'])await __socialStore.addFriend(id);});await page.waitForTimeout(300);
  const available=[];for(const id of ['tuantuan','ali','xiaomian','shanshan'])if(await pickPoint(id))available.push(id);assert.ok(available.length>=2);
  const id=available[0],original=(await snapshot()).characters.find(r=>r.id===id).position;
  await start(id);const target=await safeDestination(id);assert.ok(target);let s=await moveTo(target.x,target.z);assert.ok(s.candidate.ok);const camera=await page.evaluate(()=>__discoveryScene.pose());
- await page.screenshot({path:'validation/character-drag-valid.jpg',type:'jpeg',quality:88});s=await end();assert.ok(s.lastResult.ok);assert.equal(await page.evaluate(()=>__socialUI.activeFriend),null);
+ await page.screenshot({path:outputPath('character-drag-valid.jpg'),type:'jpeg',quality:88});s=await end();assert.ok(s.lastResult.ok);assert.equal(await page.evaluate(()=>__socialUI.activeFriend),null);
  let record=s.characters.find(r=>r.id===id);assert.ok(distance(original,record.position)>1);assert.ok(distance([target.x,record.position[1],target.z],record.position)<.01);assert.deepEqual(await page.evaluate(()=>__discoveryScene.pose()),{...camera,enabled:true});
  const saved=await page.evaluate(id=>__socialStore.state.characterPositions[id],id);assert.ok(Math.abs(saved.x-target.x)<.01&&Math.abs(saved.z-target.z)<.01);checks.push('real model drag commits supported position, preserves camera, does not open chat');
- await start(id);s=await moveTo(0,0);assert.equal(s.candidate.ok,false);await page.screenshot({path:'validation/character-drag-invalid.jpg',type:'jpeg',quality:88});s=await end();assert.equal(s.lastResult.ok,false);assert.ok(distance(record.position,s.characters.find(r=>r.id===id).position)<.001);checks.push('river placement rejected, returns to origin');
+ await start(id);s=await moveTo(0,0);assert.equal(s.candidate.ok,false);await page.screenshot({path:outputPath('character-drag-invalid.jpg'),type:'jpeg',quality:88});s=await end();assert.equal(s.lastResult.ok,false);assert.ok(distance(record.position,s.characters.find(r=>r.id===id).position)<.001);checks.push('river placement rejected, returns to origin');
  const other=s.characters.find(r=>r.id!==id);await start(id);s=await moveTo(other.position[0],other.position[2]);assert.equal(s.candidate.ok,false);await end();checks.push('friend overlap rejected');
  await start(id);const target2=await safeDestination(id);await moveTo(target2.x,target2.z);await page.keyboard.press('Escape');await page.mouse.up();s=await snapshot();assert.equal(s.active,null);assert.ok(distance(record.position,s.characters.find(r=>r.id===id).position)<.001);checks.push('Escape cancels and restores controls');
  // Fail a real placement commit, without changing the successful data snapshot.
@@ -43,7 +42,7 @@ try{
  await page.setViewportSize({width:391,height:844});await page.waitForTimeout(200);const touchId=(await snapshot()).characters.find(r=>r.id===id)?.id;assert.ok(await pickPoint(touchId));
  const cdp=await page.context().newCDPSession(page);const tp=await pickPoint(touchId);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:tp.x,y:tp.y}]});assert.equal((await snapshot()).active,touchId);
  const touchTarget=await safeDestination(touchId);const endPoint=await page.evaluate(t=>{const s=__characterPlacement.snapshot();const p=__characterPlacement.project(t.x,__valley.sample(t.x,t.z).height,t.z);return{x:p.x-s.footOffset.x,y:p.y-s.footOffset.y};},touchTarget);
- await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:endPoint.x,y:endPoint.y}]});await page.screenshot({path:'validation/character-drag-mobile.jpg',type:'jpeg',quality:88});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForFunction(()=>!__characterPlacement.snapshot().active);assert.ok((await snapshot()).lastResult.ok);checks.push('real mobile touch drag places character');
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:endPoint.x,y:endPoint.y}]});await page.screenshot({path:outputPath('character-drag-mobile.jpg'),type:'jpeg',quality:88});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForFunction(()=>!__characterPlacement.snapshot().active);assert.ok((await snapshot()).lastResult.ok);checks.push('real mobile touch drag places character');
  const landed=(await snapshot()).characters.find(r=>r.id===touchId).position;await page.emulateMedia({reducedMotion:'no-preference'});await page.waitForFunction(({id,landed})=>{const p=__characterPlacement.snapshot().characters.find(r=>r.id===id).position;return Math.hypot(p[0]-landed[0],p[2]-landed[2])>.08;},{id:touchId,landed},{timeout:12000});checks.push('walking resumes around the newly placed home');
- assert.deepEqual(errors,[]);const report={createdAt:new Date().toISOString(),checks,errors};await fs.writeFile('validation/character-drag.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ assert.deepEqual(errors,[]);const report={createdAt:new Date().toISOString(),checks,errors};await fs.writeFile(outputPath('character-drag.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{await browser.close();}

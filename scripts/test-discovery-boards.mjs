@@ -1,16 +1,15 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
-import {pathToFileURL} from 'node:url';
-const {chromium}=await import(pathToFileURL('C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs'));
+import {chromium,baseURL,outputDir,outputPath} from './test-runtime.mjs';
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
-const errors=[],checks=[],out='validation';await fs.mkdir(out,{recursive:true});
-const boot=async p=>{p.on('pageerror',e=>errors.push(e.message));await p.goto('http://localhost:8080/');await p.waitForFunction(()=>window.__discoveryBoards,null,{timeout:180000});await p.evaluate(()=>__discoveryScene.previewsReady);await p.evaluate(()=>__socialStore.setDemoPaused(true));};
+const errors=[],checks=[],out=outputDir;await fs.mkdir(out,{recursive:true});
+const boot=async p=>{p.on('pageerror',e=>errors.push(e.message));await p.goto(baseURL+"/");await p.waitForFunction(()=>window.__discoveryBoards,null,{timeout:180000});await p.evaluate(()=>__discoveryScene.previewsReady);await p.evaluate(()=>__socialStore.setDemoPaused(true));};
 const waitStage=(p,s)=>p.waitForFunction(s=>__discoveryBoards.stage===s,s,{timeout:15000});
 const screenshot=(p,name)=>p.screenshot({path:`${out}/one-click-${name}.jpg`,type:'jpeg',quality:88});
 const open=(p,kind)=>p.evaluate(kind=>{__openSceneDiscovery(kind);},kind);
 try{
  for(const [kind,name] of [['accounts','kiosk'],['scene-video','cinema']]){
-  const ctx=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:'validation/recordings',size:{width:1440,height:1000}}}),p=await ctx.newPage();await boot(p);
+  const ctx=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:outputPath('recordings'),size:{width:1440,height:1000}}}),p=await ctx.newPage();await boot(p);
   const original=await p.evaluate(()=>__discoveryScene.pose());await screenshot(p,`${name}-overview`);await p.waitForTimeout(650);
   await open(p,kind);await p.waitForTimeout(510);await screenshot(p,`${name}-approach`);await p.waitForTimeout(200);await screenshot(p,`${name}-morph`);
   await waitStage(p,'browsing');await p.waitForTimeout(350);await screenshot(p,`${name}-window`);

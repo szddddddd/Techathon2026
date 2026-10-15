@@ -17,6 +17,7 @@ import { constrainCameraPan } from './camera-pan-bounds.js';
 import {buildValleyLandmarks} from './valley-landmarks.js';
 import {createValleySocial} from './valley-social.js';
 import { createWebPet } from './web-pet.js';
+import { petPayload } from './pet-state.js';
 
 async function boot(){
 
@@ -54,8 +55,7 @@ if(!captureIndex){
   window.__webPet=createWebPet({store,onOpenFriend:id=>socialUI.openFriend(id)});
   function publishDesktopState(){
     if(!window.desktopMain)return;
-    const unreadCount=store.state.messages.filter(message=>message.senderId!=='me'&&!message.read).length;
-    window.desktopMain.publishState({state:{friends:store.state.friends,messages:store.state.messages,profile:store.state.profile},unreadCount});
+    window.desktopMain.publishState(petPayload(store.state));
   }
   store.subscribe(()=>publishDesktopState());
   window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));

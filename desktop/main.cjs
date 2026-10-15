@@ -2,6 +2,8 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, screen } = require
 const path = require('node:path');
 const zlib = require('node:zlib');
 const { startPetBridge } = require('./pet-bridge.cjs');
+const { validState } = require('./runtime-config.cjs');
+const fs = require('node:fs');
 
 const ROOT = path.resolve(__dirname, '..');
 if(process.env.FOREST_PET_USER_DATA)app.setPath('userData',process.env.FOREST_PET_USER_DATA);
@@ -13,6 +15,17 @@ app.on('second-instance', () => app.whenReady().then(() => showDesktopPet()));
 const DEFAULT_SIZE = 200;
 const SIZE_PRESETS = { small: 160, medium: 200, large: 280 };
 let mainWindow;
+let mainReady = false, pendingFriend = null;
+function validFriend(id) { return id == null || (typeof id === 'string' && latestState.friends.includes(id)); }
+function secureWindow(window) {
+  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  window.webContents.on('will-navigate', event => event.preventDefault());
+}
+function saveJSON(name, value) {
+  const target = path.join(app.getPath('userData'), name), temporary = target + '.tmp';
+  try { fs.writeFileSync(temporary, JSON.stringify(value)); fs.renameSync(temporary, target); }
+  catch (error) { console.error(`Unable to save ${name}: ${error.message}`); }
+}
 let petWindow;
 let tray;
 let settings = { size: DEFAULT_SIZE, reminders: true, alwaysOnTop: true };
@@ -58,7 +71,7 @@ function updateTrayFlash() {
 }
 
 function persistSettings() {
-  try { require('node:fs').writeFileSync(path.join(app.getPath('userData'), 'pet-settings.json'), JSON.stringify(settings)); } catch (_) {}
+  saveJSON('pet-settings.json', settings);
 }
 function loadSettings() {
   try { settings = { ...settings, ...JSON.parse(require('node:fs').readFileSync(path.join(app.getPath('userData'), 'pet-settings.json'), 'utf8')) }; } catch (_) {}
@@ -75,7 +88,7 @@ function showDesktopPet() {
   tray.setContextMenu(buildMenu());broadcast();
 }
 function persistSocialSnapshot() {
-  try { require('node:fs').writeFileSync(path.join(app.getPath('userData'),'pet-social-snapshot.json'),JSON.stringify({state:latestState,unreadCount})); } catch (_) {}
+  saveJSON('pet-social-snapshot.json', {state:latestState,unreadCount});
 }
 function acceptWebState(payload) {
   latestState=payload.state;unreadCount=Number(payload.unreadCount)||0;
@@ -86,10 +99,13 @@ function focusMain(friendId) {
   if (!mainWindow || mainWindow.isDestroyed()) createMainWindow();
   if (mainWindow.isMinimized()) mainWindow.restore();
   mainWindow.show(); mainWindow.focus();
-  if (friendId) mainWindow.webContents.send('open-friend', friendId);
+  if (friendId) { if (mainReady) mainWindow.webContents.send('open-friend', friendId); else pendingFriend = friendId; }
 }
 function createMainWindow() {
+  mainReady = false;
   mainWindow = new BrowserWindow({ width: 1440, height: 920, minWidth: 900, minHeight: 650, show: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
+  secureWindow(mainWindow);
+  mainWindow.webContents.on('did-start-loading', () => { mainReady = false; });
   mainWindow.loadFile(path.join(ROOT, 'index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
   mainWindow.on('close', event => { if (!app.isQuitting) { event.preventDefault(); mainWindow.hide(); } });
@@ -100,6 +116,7 @@ function createPetWindow() {
   const display = screen.getPrimaryDisplay();
   const area = display.workArea;
   petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
+  secureWindow(petWindow);
   petWindow.loadURL(webBridge.origin + '/pet.html');
   petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating');
   petWindow.on('will-resize', event => {
@@ -114,7 +131,7 @@ function createPetWindow() {
   petWindow.on('hide', () => tray?.setContextMenu(buildMenu()));
   petWindow.on('show', () => { tray?.setContextMenu(buildMenu()); broadcast(); });
   petWindow.on('closed', () => { petWindow = null; tray?.setContextMenu(buildMenu()); });
-  petWindow.once('ready-to-show', () => { petWindow.showInactive(); broadcast(); });
+  petWindow.once('ready-to-show', () => { petWindow.showInactive(); petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating'); broadcast(); });
 }
 function setPetSize(size) {
   petSize = Math.max(120, Math.min(480, Number(size) || DEFAULT_SIZE));
@@ -154,10 +171,15 @@ if(singleInstance)app.whenReady().then(async () => {
   tray.setContextMenu(buildMenu());
   tray.on('click', () => focusMain());
   if(!petOnly)createMainWindow();createPetWindow();
-  ipcMain.on('social-state', (_event, payload) => { latestState = payload.state || latestState; unreadCount = Number(payload.unreadCount) || 0; broadcast(); tray.setContextMenu(buildMenu()); });
-  ipcMain.on('pet-open-main', (_event, friendId) => focusMain(friendId));
+  ipcMain.on('main-ready', event => {
+    if (event.sender !== mainWindow?.webContents) return;
+    mainReady = true;
+    if (pendingFriend) { mainWindow.webContents.send('open-friend', pendingFriend); pendingFriend = null; }
+  });
+  ipcMain.on('social-state', (event, payload) => { if (event.sender !== mainWindow?.webContents || !validState(payload)) return; acceptWebState(payload); tray.setContextMenu(buildMenu()); });
+  ipcMain.on('pet-open-main', (event, friendId) => { if (event.sender === petWindow?.webContents && validFriend(friendId)) focusMain(friendId); });
   ipcMain.on('show-desktop-pet', event => { if (event.sender !== mainWindow?.webContents) return; if (!petWindow || petWindow.isDestroyed()) createPetWindow(); else petWindow.showInactive(); tray?.setContextMenu(buildMenu()); broadcast(); });
-  ipcMain.on('pet-context-menu', () => { if (petWindow && !petWindow.isDestroyed()) buildMenu().popup({ window: petWindow }); });
+  ipcMain.on('pet-context-menu', event => { if (event.sender === petWindow?.webContents && !petWindow.isDestroyed()) buildMenu().popup({ window: petWindow }); });
   // Read cursor and window positions in the same DIP coordinate system. Moving a
   // window must not feed renderer-generated pointer coordinates back into itself.
   let dragTimer = null;
@@ -180,7 +202,7 @@ if(singleInstance)app.whenReady().then(async () => {
   petWindow.on('hide', stopPetDrag);
   petWindow.on('closed', stopPetDrag);
   app.on('before-quit', stopPetDrag);
-  ipcMain.on('pet-read-friend', (_event, friendId) => { focusMain(friendId); });
+  ipcMain.on('pet-read-friend', (event, friendId) => { if (event.sender === petWindow?.webContents && validFriend(friendId)) focusMain(friendId); });
 });
 app.on('window-all-closed', event => event.preventDefault());
 app.on('before-quit', () => { app.isQuitting = true;clearTimeout(stateSaveTimer);if(webBridge){persistSocialSnapshot();webBridge.close();} });

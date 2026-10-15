@@ -1,4 +1,4 @@
-param([switch]$NoBrowser)
+param([switch]$NoBrowser, [switch]$SkipProtocolInstall)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
@@ -17,18 +17,30 @@ try {
   }
   & npm.cmd run build
   if ($LASTEXITCODE -ne 0) { throw 'Build failed. See the output above.' }
-  & (Join-Path $PSScriptRoot 'install-desktop-launcher.ps1')
+  $port = & node -e "console.log(require('./desktop/runtime-config.cjs').webPort(process.cwd()))"
+  if ($LASTEXITCODE -ne 0) { throw 'Invalid web port configuration.' }
+  $port = [int]$port
   $response = $null
-  try { $response = Invoke-WebRequest 'http://127.0.0.1:8080/' -UseBasicParsing -TimeoutSec 2 } catch {}
-  if ($response) {
-    if ($response.Content -notmatch 'name="forest-version"') { throw 'Port 8080 is already used by another app. Close that server and retry.' }
-    if (!$NoBrowser) { Start-Process 'http://localhost:8080/' -WindowStyle Hidden }
-    Write-Host 'The current Forest Letters page is ready: http://localhost:8080/'
+  $available = $false
+  for ($attempt = 0; $attempt -lt 30; $attempt++) {
+    try { $response = Invoke-WebRequest "http://127.0.0.1:$port/" -UseBasicParsing -TimeoutSec 1 } catch { $response = $null }
+    if ($response -and $response.Content -match 'name="forest-version"') { break }
+    $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $port)
+    try { $listener.Start(); $available = $true; break } catch { $port++ } finally { $listener.Stop() }
+  }
+  if (!$available -and !($response -and $response.Content -match 'name="forest-version"')) { throw 'No available web port found.' }
+  $env:FOREST_WEB_PORT = "$port"
+  @{webPort=$port} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $projectRoot '.forest-runtime.json') -Encoding UTF8
+  if (!$SkipProtocolInstall) { & (Join-Path $PSScriptRoot 'install-desktop-launcher.ps1') }
+  $webUrl = "http://localhost:$port/"
+  if ($response -and $response.Content -match 'name="forest-version"') {
+    if (!$NoBrowser) { Start-Process $webUrl -WindowStyle Hidden }
+    Write-Host "The current Forest Letters page is ready: $webUrl"
     exit 0
   }
   if (!$NoBrowser) {
     # This helper waits until the real page responds before opening the browser.
-    $openScript = '$ErrorActionPreference="SilentlyContinue"; for($i=0;$i -lt 30;$i++){ try{$r=Invoke-WebRequest http://127.0.0.1:8080/ -UseBasicParsing -TimeoutSec 1;if($r.StatusCode -eq 200){Start-Process http://localhost:8080/ -WindowStyle Hidden;break}}catch{};Start-Sleep -Milliseconds 300}'
+    $openScript = '$ErrorActionPreference="SilentlyContinue"; for($i=0;$i -lt 30;$i++){ try{$r=Invoke-WebRequest http://127.0.0.1:PORT/ -UseBasicParsing -TimeoutSec 1;if($r.Content -match ''name="forest-version"''){Start-Process http://localhost:PORT/ -WindowStyle Hidden;break}}catch{};Start-Sleep -Milliseconds 300}'.Replace('PORT', "$port")
     $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($openScript))
     Start-Process powershell.exe -ArgumentList '-NoProfile','-EncodedCommand',$encoded -WindowStyle Hidden
   }

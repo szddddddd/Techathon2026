@@ -1,17 +1,16 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import {pathToFileURL} from 'node:url';
-const {chromium}=await import(pathToFileURL('C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs'));
+import {chromium,baseURL,outputDir,outputPath} from './test-runtime.mjs';
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
 const context=await browser.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});
 const page=await context.newPage(),errors=[];
 page.on('pageerror',error=>errors.push(error.message));
-const out=path.resolve('validation');await fs.mkdir(out,{recursive:true});
+const out=outputDir;await fs.mkdir(out,{recursive:true});
 const shot=name=>page.screenshot({path:path.join(out,`discovery-${name}.jpg`),type:'jpeg',quality:86});
 const action=(name)=>page.locator(`#discovery-dialog [data-d-action="${name}"]`);
 try{
-  await page.goto('http://localhost:8080/',{waitUntil:'domcontentloaded'});
+  await page.goto(baseURL+"/",{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#viewport')?.dataset.loaded==='true',null,{timeout:180000});
   await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan'])await __socialStore.addFriend(id);});
   await page.waitForTimeout(3200);await shot('panorama');

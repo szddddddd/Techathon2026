@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { notificationItems } from './pet-state.js';
 
 const FRIEND_META = {
   tuantuan: { name: '团团', emoji: '🦘', color: 0xeaba43, position: [-.55, 0] },
@@ -115,7 +116,13 @@ function buildWoods() {
   // Keep the miniature silhouette clear: butterflies provide the ambient motion.
 }
 function resize() { renderer.setSize(innerWidth, innerHeight, false); const aspect=innerWidth/innerHeight; camera.left = -4*aspect; camera.right = 4*aspect; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
-function clearNotice(id) { const record = notificationRecords.get(id); if (!record) return; record.model?.removeFromParent(); record.node.remove(); notificationRecords.delete(id); }
+function disposeRole(model) {
+  model?.removeFromParent();
+  const materials = new Set();
+  model?.traverse(object => { if (object.isMesh) for (const value of [].concat(object.material)) materials.add(value); });
+  for (const value of materials) value.dispose();
+}
+function clearNotice(id) { const record = notificationRecords.get(id); if (!record) return; disposeRole(record.model); record.node.remove(); notificationRecords.delete(id); }
 async function loadRole(friendId, record, index) {
   const meta = FRIEND_META[friendId];
   if (!meta) return;
@@ -130,7 +137,7 @@ async function loadRole(friendId, record, index) {
     const holder = new THREE.Group(); holder.add(model); model = holder;
     model.position.set((index - 1) * 1.55, .25, 1.1);
     model.traverse(object => { if (object.isMesh) { object.castShadow = true; object.material = Array.isArray(object.material) ? object.material.map(value => value.clone()) : object.material.clone(); } });
-    if (notificationRecords.get(friendId) !== record) return;
+    if (notificationRecords.get(friendId) !== record) { disposeRole(model); return; }
     model.position.x = (record.index - 1) * 1.55;
     foreground.add(model); record.model = model;
     const role = record.node.querySelector('.role'); role.textContent = ''; role.dataset.model = friendId; role.style.background = 'transparent';
@@ -157,15 +164,7 @@ function renderNotifications(items) {
     record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
   });
 }
-function messageItems(payload) {
-  const state = payload?.state || { friends: [], messages: [] };
-  const allowed = new Set(state.friends || []);
-  const latest = new Map();
-  for (const message of state.messages || []) if (message.senderId !== 'me' && !message.read && allowed.has(message.friendId)) latest.set(message.friendId, message);
-  const items=[...latest.values()].sort((a, b) => a.createdAt - b.createdAt);
-  if(!items.length&&state.friends?.length)items.push({friendId:state.friends[0],text:'陪你在森林里歇一会儿',idle:true});
-  return items;
-}
+function messageItems(payload) { return notificationItems(payload?.state); }
 if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });
 viewport.addEventListener('click', () => { if (!dragged) bridge?.openMain?.(clickedFriend); dragged = false; });
 viewport.addEventListener('contextmenu', event => { event.preventDefault(); bridge?.showMenu?.(); });
