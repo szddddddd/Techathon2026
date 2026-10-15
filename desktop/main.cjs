@@ -1,8 +1,15 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, screen } = require('electron');
 const path = require('node:path');
 const zlib = require('node:zlib');
+const { startPetBridge } = require('./pet-bridge.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
+if(process.env.FOREST_PET_USER_DATA)app.setPath('userData',process.env.FOREST_PET_USER_DATA);
+const petOnly = process.argv.some(value => value === '--pet-only' || /^forestletters:\/\/pet(?:[/?#]|$)/i.test(value));
+const singleInstance = app.requestSingleInstanceLock();
+if (!singleInstance) app.quit();
+let webBridge, stateSaveTimer;
+app.on('second-instance', () => app.whenReady().then(() => showDesktopPet()));
 const DEFAULT_SIZE = 200;
 const SIZE_PRESETS = { small: 160, medium: 200, large: 280 };
 let mainWindow;
@@ -61,7 +68,21 @@ function broadcast() {
   if (tray) tray.setToolTip(unreadCount ? `林间来信 · ${unreadCount} 条未读` : '林间来信');
   updateTrayFlash();
 }
+function showDesktopPet() {
+  if (!tray) return;
+  if (!petWindow || petWindow.isDestroyed()) createPetWindow();
+  else { petWindow.showInactive();petWindow.setAlwaysOnTop(!!settings.alwaysOnTop,'floating'); }
+  tray.setContextMenu(buildMenu());broadcast();
+}
+function persistSocialSnapshot() {
+  try { require('node:fs').writeFileSync(path.join(app.getPath('userData'),'pet-social-snapshot.json'),JSON.stringify({state:latestState,unreadCount})); } catch (_) {}
+}
+function acceptWebState(payload) {
+  latestState=payload.state;unreadCount=Number(payload.unreadCount)||0;
+  broadcast();clearTimeout(stateSaveTimer);stateSaveTimer=setTimeout(persistSocialSnapshot,500);
+}
 function focusMain(friendId) {
+  if (webBridge?.openFriend(friendId)) return;
   if (!mainWindow || mainWindow.isDestroyed()) createMainWindow();
   if (mainWindow.isMinimized()) mainWindow.restore();
   mainWindow.show(); mainWindow.focus();
@@ -78,8 +99,8 @@ function createPetWindow() {
   const size = petSize;
   const display = screen.getPrimaryDisplay();
   const area = display.workArea;
-  petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
-  petWindow.loadFile(path.join(ROOT, 'pet.html'));
+  petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
+  petWindow.loadURL(webBridge.origin + '/pet.html');
   petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating');
   petWindow.on('will-resize', event => {
     if (!petSizeChangeInProgress) event.preventDefault();
@@ -124,12 +145,15 @@ function buildMenu() {
     { label: '退出', click: () => { app.isQuitting = true; app.quit(); } }
   ]);
 }
-app.whenReady().then(() => {
+if(singleInstance)app.whenReady().then(async () => {
   loadSettings();
+  try { const data=JSON.parse(require('node:fs').readFileSync(path.join(app.getPath('userData'),'pet-social-snapshot.json'),'utf8'));if(Array.isArray(data.state?.friends)&&Array.isArray(data.state?.messages)){latestState=data.state;unreadCount=Number(data.unreadCount)||0;} } catch (_) {}
+  try { webBridge=await startPetBridge({root:ROOT,port:Number(process.env.FOREST_PET_PORT)||47831,onState:acceptWebState,onShow:showDesktopPet}); }
+  catch(error) { require('electron').dialog.showErrorBox('桌宠暂时无法启动',`本机桌宠连接未能建立：${error.message}`);app.quit();return; }
   tray = new Tray(createIcon());
   tray.setContextMenu(buildMenu());
   tray.on('click', () => focusMain());
-  createMainWindow(); createPetWindow();
+  if(!petOnly)createMainWindow();createPetWindow();
   ipcMain.on('social-state', (_event, payload) => { latestState = payload.state || latestState; unreadCount = Number(payload.unreadCount) || 0; broadcast(); tray.setContextMenu(buildMenu()); });
   ipcMain.on('pet-open-main', (_event, friendId) => focusMain(friendId));
   ipcMain.on('show-desktop-pet', event => { if (event.sender !== mainWindow?.webContents) return; if (!petWindow || petWindow.isDestroyed()) createPetWindow(); else petWindow.showInactive(); tray?.setContextMenu(buildMenu()); broadcast(); });
@@ -159,4 +183,4 @@ app.whenReady().then(() => {
   ipcMain.on('pet-read-friend', (_event, friendId) => { focusMain(friendId); });
 });
 app.on('window-all-closed', event => event.preventDefault());
-app.on('before-quit', () => { app.isQuitting = true; });
+app.on('before-quit', () => { app.isQuitting = true;clearTimeout(stateSaveTimer);if(webBridge){persistSocialSnapshot();webBridge.close();} });

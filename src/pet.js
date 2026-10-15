@@ -163,7 +163,7 @@ function messageItems(payload) {
   const latest = new Map();
   for (const message of state.messages || []) if (message.senderId !== 'me' && !message.read && allowed.has(message.friendId)) latest.set(message.friendId, message);
   const items=[...latest.values()].sort((a, b) => a.createdAt - b.createdAt);
-  if(embedded&&!items.length&&state.friends?.length)items.push({friendId:state.friends[0],text:'陪你在森林里歇一会儿',idle:true});
+  if(!items.length&&state.friends?.length)items.push({friendId:state.friends[0],text:'陪你在森林里歇一会儿',idle:true});
   return items;
 }
 if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });

@@ -18,7 +18,8 @@
     "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs",
     "test:pet": "node scripts/test-web-pet.mjs",
     "test:drag": "node scripts/test-character-drag.mjs",
-    "test:placement": "node scripts/test-placement-clearance.mjs"
+    "test:placement": "node scripts/test-placement-clearance.mjs",
+    "desktop:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-desktop-launcher.ps1"
   },
   "keywords": [],
   "author": "",

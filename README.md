@@ -2,11 +2,15 @@
 
 打开 http://localhost:8080/ 。运行 `npm start`，构建 `npm run build`，数据测试 `npm test`，角色审计 `npm run audit:social`。
 
-## 网页桌宠
+## Windows 桌宠
 
-右上角「桌宠」直接唤出三维森林小窗，无需启动 Electron。拖动顶部移动小窗，位置在刷新后保留，并限制在视口内。好友来信会同步显示未读提醒，点击小窗中的角色或好友按钮进入对应聊天；无未读时保留一位好友陪伴。点击外部、按 Esc 或「收起」隐藏，隐藏及切到后台时暂停小窗渲染。
+右上角「桌宠」直接唤出电脑桌面右下角的独立透明置顶窗口，浏览器最小化后仍能显示，可以拖动。右键桌宠或任务栏托盘可隐藏、调整大小、关闭置顶、设置提醒和退出。网页不再展开三维小窗。
 
-网页和独立桌宠共用 `src/pet.js`，网页通过受来源与窗口校验的消息通道连接当前社交数据。桌面版运行 `npm run desktop`，网页小窗额外提供「放到 Windows 桌面」入口。普通浏览器的小窗只存在于网页内。验证运行 `npm run test:pet` 与 `npm run test:desktop-bridge`，截图及记录见 `validation/web-pet*`。
+每台 Windows 电脑首次运行 `npm ci`、`npm run desktop:install`，为当前用户注册 `forestletters://pet`。之后点击网页「桌宠」即可启动，浏览器可能要求确认「打开应用」。已运行时直接显示原窗口，不重复启动；协议启动只显示桌宠，不另开一个森林主窗口。项目移动目录后需要重新运行安装命令。此处是本地开发启动器，尚未打包为可分发安装程序。
+
+`desktop/pet-bridge.cjs` 在 `127.0.0.1:47831` 提供本机连接，仅允许 `http://localhost:8080` 和 `http://127.0.0.1:8080` 的网页交换好友、最近消息和未读数，社交数据仍由原浏览器 IndexedDB 保存。桌宠点击好友后通过该连接打开网页现有会话；没有活跃网页时打开桌面主窗口。桌宠保留最近一次同步的本地摘要，无未读时保留一位好友陪伴。通过托盘「退出」结束本机进程后，再次点击网页可以重新唤出。
+
+实现见 `src/web-pet.js`、`desktop/main.cjs`、`scripts/install-desktop-launcher.ps1`。`npm run test:pet` 实际启动 Electron、检查透明桌宠窗口、消息同步、会话回跳、重复唤出及来源限制；`npm run test:desktop-bridge` 检查桌面主窗口接口。验证记录与截图见 `validation/native-pet*`，旧 `validation/web-pet*` 属于之前网页小窗的历史证据。
 
 ## 公共朋友圈
 
