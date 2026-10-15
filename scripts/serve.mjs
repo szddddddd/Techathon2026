@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import config from '../desktop/runtime-config.cjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const port=config.webPort(root);
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.webm':'video/webm','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.gif':'image/gif'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.mp3':'audio/mpeg','.webm':'video/webm','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.gif':'image/gif'};
 const server=http.createServer(async(req,res)=>{
  let relative;try{relative=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);res.end();return;}
  if(relative==='/')relative='/index.html';

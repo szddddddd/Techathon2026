@@ -19,6 +19,8 @@ import {buildValleyLandmarks} from './valley-landmarks.js';
 import {createValleySocial} from './valley-social.js';
 import { createWebPet } from './web-pet.js';
 import { petPayload } from './pet-state.js';
+import {createSound,createSoundSettings} from './sound.js';
+import {createRecordPlayer} from './record-player.js';
 
 async function boot(){
 
@@ -50,7 +52,12 @@ store=captureIndex?null:await createSocialStore();
 // Main-app placements are session-only; historical coordinates remain in storage.
 window.__characterPlacement=characters.placement;
 window.__river={...terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
-socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui});
+const sound=captureIndex?null:createSound({store});
+const soundSettings=sound?createSoundSettings({sound,ui}):null;
+window.__sound=sound;
+const recordPlayer=createRecordPlayer({scene,camera,canvas:renderer.domElement,terrain,generated,ui,sound,reduced,onOpen:origin=>soundSettings?.open(origin)});
+window.__recordPlayer=recordPlayer;
+socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onOpenSound:origin=>soundSettings.open(origin)});
 const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});window.__valley=valley;
 const focusFriend=characters.focus;characters.focus=id=>{valley.finishCamera();return focusFriend(id);};
 if(!captureIndex){
@@ -93,6 +100,7 @@ let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect
 resetCamera();
 let fpsFrames=0,fpsStart=performance.now();
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
+  recordPlayer.update(now,dt);
   controls.update(dt);if(!stressMode)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
   for(let i=0;i<architecture.flames.length;i++){const flame=architecture.flames[i];flame.scale.y=.85+Math.sin(clockTime*7+i*1.6)*.16;flame.rotation.y=clockTime*.3+i;}
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;

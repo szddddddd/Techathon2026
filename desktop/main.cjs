@@ -81,6 +81,11 @@ function broadcast() {
   if (tray) tray.setToolTip(unreadCount ? `林间来信 · ${unreadCount} 条未读` : '林间来信');
   updateTrayFlash();
 }
+function syncPetVisibility() {
+  tray?.setContextMenu(buildMenu());
+  if(mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('pet-visibility',!!petWindow&&!petWindow.isDestroyed()&&petWindow.isVisible());
+  webBridge?.visibilityChanged();
+}
 function showDesktopPet() {
   if (!tray) return;
   if (!petWindow || petWindow.isDestroyed()) createPetWindow();
@@ -128,9 +133,9 @@ function createPetWindow() {
       if (width !== petSize || height !== petSize) petWindow.setContentSize(petSize, petSize, false);
     }
   });
-  petWindow.on('hide', () => tray?.setContextMenu(buildMenu()));
-  petWindow.on('show', () => { tray?.setContextMenu(buildMenu()); broadcast(); });
-  petWindow.on('closed', () => { petWindow = null; tray?.setContextMenu(buildMenu()); });
+  petWindow.on('hide', () => setImmediate(syncPetVisibility));
+  petWindow.on('show', () => { setImmediate(syncPetVisibility); broadcast(); });
+  petWindow.on('closed', () => { petWindow = null; syncPetVisibility(); });
   petWindow.once('ready-to-show', () => { petWindow.showInactive(); petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating'); broadcast(); });
 }
 function setPetSize(size) {

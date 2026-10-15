@@ -12,7 +12,7 @@ const date = value => new Date(value).toLocaleDateString('zh-CN',{month:'long',d
 const STICKERS = [ ['🌼','送你一朵小花'], ['🐾','我来啦！'], ['☕','歇一会儿'], ['🌙','晚安好梦'], ['🫶','接住温柔'], ['🍀','好运发生'] ];
 const EMOJI = ['😊','🥰','😂','🥹','🤔','😴','😭','✨','💛','🌿','🌈','👍'];
 
-export function createSocialUI({store,characters,controls,ui,onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
+export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
   const root=document.createElement('div');root.id='social';document.body.append(root);
   root.innerHTML=`
     <div id="friend-anchors"></div>
@@ -27,7 +27,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenContent=(rout
       </div>
     </section>
     <dialog id="social-dialog" class="paper"></dialog><dialog id="compose-dialog" class="paper" aria-label="发布内容"></dialog><section id="status-popover" class="paper" hidden role="dialog" aria-label="好友状态"></section><dialog id="photo-dialog" aria-label="图片预览"><button class="ui-close" data-ui-close="photo" aria-label="关闭图片">×</button><img alt="完整照片"></dialog><dialog id="content-share-dialog" class="paper" aria-label="分享文章或视频"></dialog>
-    <input id="chat-file" type="file" accept="image/*" hidden><div id="social-toast" role="status"></div>`;
+    <input id="chat-file" type="file" accept="image/*" hidden><div id="social-toast" role="status" popover="manual"></div>`;
   const $=id=>root.querySelector('#'+id);
   let active=null,closingFriend=null,directoryTab='all',picker=null,attachment=null,dialogKind=null,dialogOwner=null;
   let publishingFiles=[],publishKind=null,renderVersion=0,lastFriendSignature='',lastMessageSignature='',lastPostSignature='',scrollTimer,draftTimer,toastTimer,chatFileVersion=0,publishFileVersion=0,momentsOpen=false,lastMeetingList='',publishReturn=null,lastPublicSignature='';
@@ -82,7 +82,13 @@ export function createSocialUI({store,characters,controls,ui,onOpenContent=(rout
   const postsOf=id=>store.state.posts.filter(p=>p.authorId===id).sort((a,b)=>b.createdAt-a.createdAt);
   const unread=id=>store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me'&&!m.read).length;
   const avatar=id=>`<span class="avatar" style="--friend-color:${esc(person(id).color||'#a9bc98')}">${esc(person(id).emoji||'🌱')}</span>`;
-  function toast(message){$('social-toast').textContent=message;$('social-toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('social-toast').classList.remove('visible'),4000);}
+  function toast(message){
+    const node=$('social-toast');node.textContent=message;
+    // A modal dialog's backdrop blurs ordinary page layers regardless of z-index.
+    if(node.showPopover){if(node.matches(':popover-open'))node.hidePopover();node.showPopover();}
+    node.classList.add('visible');clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>{node.classList.remove('visible');if(node.matches(':popover-open'))node.hidePopover();},4000);
+  }
   async function attempt(fn){try{return await fn();}catch(error){console.error(error);toast(error.message||'没有保存成功，请重试。');return null;}}
   async function hydrate(scope=root){for(const img of scope.querySelectorAll('img[data-media]')){const id=img.dataset.media;try{const url=await store.mediaUrl(id);if(img.isConnected&&img.dataset.media===id){img.onerror=()=>{img.alt='图片暂不可用';img.classList.add('unavailable');};img.src=url;}}catch{img.alt='图片暂不可用';img.classList.add('unavailable');}}}
   function photo(mediaId,cls=''){return `<button type="button" class="photo-button ${cls}" data-action="photo" data-media="${esc(mediaId)}"><img data-media="${esc(mediaId)}" alt="动态图片" loading="lazy"></button>`;}
@@ -233,7 +239,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenContent=(rout
     d.innerHTML=chrome(person(id).name+' · 此刻','status')+`<div class="status-cover"><span>${esc(info.icon)}</span><div><small>此刻的心情</small><h2>${esc(info.label)}</h2></div></div><div class="profile-line">${profileLine(id)}</div><p class="status-text">${esc(st.text||'让心情在这里待一会儿。')}</p>${st.mediaId?photo(st.mediaId,'status-photo'):''}<p class="muted">${date(st.createdAt)} ${time(st.createdAt)} · 24 小时后消散</p>${id==='me'?'<button class="secondary" data-action="clear-status">结束这个状态</button>':''}`;
     if(!refresh)ui.open('status',{origin:statusOrigin});else positionStatus();hydrate(d);
   }
-  function showMe(){const st=statusOf('me');dialog(`<small class="eyebrow">MY LITTLE CORNER</small><h2>我的林间角落</h2><div class="profile-line">${profileLine('me')}</div><button class="secondary edit-profile" data-action="edit-profile">编辑资料</button><div class="me-actions"><button data-action="publish-status">${st?esc(stateInfo(st.kind).icon):'☀'}<strong>${st?'更新状态':'发布状态'}</strong><small>让朋友知道此刻的你</small></button><button data-action="publish-post">✧<strong>发布朋友圈</strong><small>文字与照片，都会发光</small></button><button data-action="my-memories">◌<strong>我的朋友圈</strong><small>${postsOf('me').length} 条朋友圈</small></button>${st?'<button data-action="status" data-id="me">◉<strong>查看我的状态</strong><small>可以随时结束</small></button>':''}</div><div class="content-library-links"><button data-action="content-library" data-kind="follows">♧ 我的关注</button><button data-action="content-library" data-kind="collections">◇ 我的收藏</button><button data-action="content-library" data-kind="history">◷ 最近浏览</button></div><div class="demo-controls"><div><strong>本地演示</strong><p>朋友的回复与更新来自预设故事。</p></div><button class="secondary" data-action="pause-demo">${store.state.settings.demoPaused?'继续故事':'暂停故事'}</button><button class="text-button" data-action="replay-demo">重播故事</button></div>`,'me');}
+  function showMe(){const st=statusOf('me');dialog(`<small class="eyebrow">MY LITTLE CORNER</small><h2>我的林间角落</h2><div class="profile-line">${profileLine('me')}</div><button class="secondary edit-profile" data-action="edit-profile">编辑资料</button><div class="me-actions"><button data-action="publish-status">${st?esc(stateInfo(st.kind).icon):'☀'}<strong>${st?'更新状态':'发布状态'}</strong><small>让朋友知道此刻的你</small></button><button data-action="publish-post">✧<strong>发布朋友圈</strong><small>文字与照片，都会发光</small></button><button data-action="my-memories">◌<strong>我的朋友圈</strong><small>${postsOf('me').length} 条朋友圈</small></button>${st?'<button data-action="status" data-id="me">◉<strong>查看我的状态</strong><small>可以随时结束</small></button>':''}</div><div class="content-library-links"><button data-action="sound-settings">♫ 声音设置</button><button data-action="content-library" data-kind="follows">♧ 我的关注</button><button data-action="content-library" data-kind="collections">◇ 我的收藏</button><button data-action="content-library" data-kind="history">◷ 最近浏览</button></div><div class="demo-controls"><div><strong>本地演示</strong><p>朋友的回复与更新来自预设故事。</p></div><button class="secondary" data-action="pause-demo">${store.state.settings.demoPaused?'继续故事':'暂停故事'}</button><button class="text-button" data-action="replay-demo">重播故事</button></div>`,'me');}
   function showProfileEditor(){dialog(`<form id="profile-form"><label>昵称<input name="name" value="${esc(store.state.profile.name)}" maxlength="24" required></label><label>个性签名<textarea name="signature" maxlength="100" rows="2">${esc(store.state.profile.signature)}</textarea></label><button class="secondary" type="submit">保存资料</button></form>`,'profile');}
   function showPublish(kind){publishReturn=dialogKind==='public-moments'?'public-moments':null;saveFormDrafts();publishFileVersion++;publishKind=kind;publishingFiles=publishDrafts.get(kind)||[];dialog(`<small class="eyebrow">${kind==='status'?'A FEELING, FOR TODAY':'A MEMORY, TO KEEP'}</small><h2>${kind==='status'?'此刻，你是什么心情？':'分享今天的生活'}</h2><form id="publish-form" data-draft-key="publish-${kind}">${kind==='status'?`<div class="state-options">${STATES.map((s,i)=>`<label><input type="radio" name="kind" value="${esc(s.id)}" ${i===0?'checked':''}><span>${esc(s.icon)} ${esc(s.label)}</span></label>`).join('')}</div>`:''}<textarea name="text" rows="4" maxlength="2000" placeholder="${kind==='status'?'记录此刻的心情…':'今天有什么值得记住？'}" aria-label="发布文案"></textarea><label class="upload-area">＋ ${kind==='status'?'添加一张照片':'添加照片（最多九张）'}<input id="publish-files" type="file" accept="image/*" ${kind==='post'?'multiple':''}></label><div id="publish-previews">${publishingFiles.map(id=>`<img data-media="${esc(id)}" alt="待发布照片">`).join('')}</div><p class="muted">${kind==='status'?'24 小时后自动结束。':'只保存在当前浏览器。'} 每张图片不超过 10 MB。</p><button class="primary" type="submit">${kind==='status'?'就用这个状态':'发布朋友圈'} ↗</button></form>`,'publish');}
   function showOwnMemories(){dialog(`<div class="own-moments">${timelineHTML('me')}</div>`,'my-memories');}
@@ -244,13 +250,14 @@ export function createSocialUI({store,characters,controls,ui,onOpenContent=(rout
     if(action==='public-moments')showPublicFeed();
     if(action==='discover')onOpenContent('discover',{resume:true,origin:button});
     if(action==='open-content')onOpenContent({type:button.dataset.contentType,id:button.dataset.contentId});
-    if(action==='content-library')onOpenContent(button.dataset.kind);
+    if(action==='content-library')onOpenContent(button.dataset.kind,{owner:'me',origin:button,onBack:()=>showMe()});
     if(action==='feed-author'){if(id==='me'){showOwnMemories();}else{ui.close('social',{immediate:true,restoreFocus:false});await openFriend(id);setMoments(true);}}
     if(action==='directory')showDirectory();
     if(action==='directory-tab'){directoryTab=button.dataset.tab;root.querySelectorAll('.directory-tabs button').forEach(b=>b.classList.toggle('active',b===button));renderDirectory();}
     if(action==='add-friend'){button.disabled=true;const ok=await attempt(async()=>{await store.addFriend(id);return true;});button.disabled=false;if(ok){renderDirectory();toast(`已添加${person(id).name}，置顶或收到来信后会在森林相见。`);conversations.showAdd();}}
     if(action==='open-friend')openFriend(id,{origin:button});
     if(action==='status')showStatus(id,button.closest('.friend-anchor')?()=>root.querySelector(`.friend-anchor[data-friend="${CSS.escape(id)}"] .status-badge`):button);
+    if(action==='sound-settings')onOpenSound(button);
     if(action==='me')showMe();if(action==='edit-profile')showProfileEditor();
     if(action==='photo'){if(button.querySelector('img.unavailable'))return toast('图片暂不可用，请稍后再试。');const url=await attempt(()=>store.mediaUrl(button.dataset.media));if(url){$('photo-dialog').querySelector('img').src=url;ui.open('photo',{origin:button});}}
     if(action==='post')renderPost(id);
