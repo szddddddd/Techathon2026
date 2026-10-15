@@ -1,0 +1,23 @@
+{
+  "name": "world",
+  "version": "1.0.0",
+  "description": "Reference-inspired editable Three.js forest diorama",
+  "main": "ambient.js",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --minify --outfile=dist/world.js && esbuild src/asset-review.js --bundle --format=iife --minify --outfile=dist/review.js",
+    "start": "python -m http.server 8080 --bind 127.0.0.1",
+    "test": "node scripts/test-social-store.mjs",
+    "audit:social": "node scripts/audit-social-characters.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "fake-indexeddb": "^6.2.5"
+  }
+}

@@ -1,0 +1,694 @@
+{
+  "objects": 55,
+  "missingAssets": [],
+  "collisionCandidates": [],
+  "floraCollisions": [
+    {
+      "a": "cart",
+      "b": "grass-0",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        1.1612,
+        0.74,
+        0.0932
+      ],
+      "box": {
+        "min": [
+          -12.5806,
+          2.34,
+          2.3068
+        ],
+        "max": [
+          -11.4194,
+          3.08,
+          2.4
+        ],
+        "size": [
+          1.1612,
+          0.74,
+          0.0932
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "crate-c",
+      "b": "fern-0",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        0.8975,
+        0.6122,
+        0.5482
+      ],
+      "box": {
+        "min": [
+          -8.8549,
+          2.34,
+          6.8647
+        ],
+        "max": [
+          -7.9574,
+          2.9522,
+          7.4129
+        ],
+        "size": [
+          0.8975,
+          0.6122,
+          0.5482
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 15,
+        "examples": [
+          {
+            "axis": "x",
+            "point": [
+              -8.7503,
+              2.5696,
+              7.0703
+            ],
+            "depth": 0.0436
+          },
+          {
+            "axis": "x",
+            "point": [
+              -8.5876,
+              2.5696,
+              7.0703
+            ],
+            "depth": 0.0286
+          },
+          {
+            "axis": "x",
+            "point": [
+              -8.4986,
+              2.7226,
+              7.2073
+            ],
+            "depth": 0.0153
+          },
+          {
+            "axis": "x",
+            "point": [
+              -8.6679,
+              2.8757,
+              7.2073
+            ],
+            "depth": 0.0347
+          },
+          {
+            "axis": "y",
+            "point": [
+              -8.7427,
+              2.5834,
+              7.0703
+            ],
+            "depth": 0.0471
+          }
+        ],
+        "oddSurfaceCounts": 0,
+        "interpretation": "Sampled closed-surface interiors overlap"
+      },
+      "requiresAdjustment": true
+    },
+    {
+      "a": "crystal-b",
+      "b": "grass-5",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        0.2032,
+        0.69,
+        0.4949
+      ],
+      "box": {
+        "min": [
+          10.2223,
+          2.34,
+          5.9041
+        ],
+        "max": [
+          10.4255,
+          3.03,
+          6.399
+        ],
+        "size": [
+          0.2032,
+          0.69,
+          0.4949
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "tree-h",
+      "b": "grass-5",
+      "layers": [
+        "roots",
+        "solid"
+      ],
+      "overlap": [
+        0.7084,
+        0.4406,
+        0.0654
+      ],
+      "box": {
+        "min": [
+          10.4275,
+          2.34,
+          6.6439
+        ],
+        "max": [
+          11.1359,
+          2.7806,
+          6.7092
+        ],
+        "size": [
+          0.7084,
+          0.4406,
+          0.0654
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "rock-0",
+      "b": "fern-1",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        1.5423,
+        0.9373,
+        0.2727
+      ],
+      "box": {
+        "min": [
+          -4.3366,
+          2.34,
+          7.5474
+        ],
+        "max": [
+          -2.7943,
+          3.2773,
+          7.8201
+        ],
+        "size": [
+          1.5423,
+          0.9373,
+          0.2727
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "rock-0",
+      "b": "grass-2",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        0.1391,
+        0.64,
+        0.628
+      ],
+      "box": {
+        "min": [
+          -2.9334,
+          2.34,
+          8.9882
+        ],
+        "max": [
+          -2.7943,
+          2.98,
+          9.6162
+        ],
+        "size": [
+          0.1391,
+          0.64,
+          0.628
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "rock-1",
+      "b": "grass-4",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        0.1785,
+        0.69,
+        0.5314
+      ],
+      "box": {
+        "min": [
+          6.5517,
+          2.34,
+          8.7682
+        ],
+        "max": [
+          6.7301,
+          3.03,
+          9.2996
+        ],
+        "size": [
+          0.1785,
+          0.69,
+          0.5314
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "rock-4",
+      "b": "fern-6",
+      "layers": [
+        "solid",
+        "solid"
+      ],
+      "overlap": [
+        1.2251,
+        0.6006,
+        0.3538
+      ],
+      "box": {
+        "min": [
+          -3.647,
+          2.34,
+          3.9306
+        ],
+        "max": [
+          -2.4218,
+          2.9406,
+          4.2843
+        ],
+        "size": [
+          1.2251,
+          0.6006,
+          0.3538
+        ]
+      },
+      "status": "foliage-solid collision candidate",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    }
+  ],
+  "canopyOverlaps": [
+    {
+      "a": "tent",
+      "b": "tree-g",
+      "layers": [
+        "solid",
+        "canopy"
+      ],
+      "overlap": [
+        0.3443,
+        0.9706,
+        2.4732
+      ],
+      "box": {
+        "min": [
+          -11.675,
+          4.028,
+          3.7613
+        ],
+        "max": [
+          -11.3307,
+          4.9986,
+          6.2345
+        ],
+        "size": [
+          0.3443,
+          0.9706,
+          2.4732
+        ]
+      },
+      "status": "canopy overlap only",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "cart",
+      "b": "tree-e",
+      "layers": [
+        "solid",
+        "canopy"
+      ],
+      "overlap": [
+        2.0438,
+        0.0489,
+        1.3395
+      ],
+      "box": {
+        "min": [
+          -12.7893,
+          4.4186,
+          -1.4
+        ],
+        "max": [
+          -10.7454,
+          4.4675,
+          -0.0605
+        ],
+        "size": [
+          2.0438,
+          0.0489,
+          1.3395
+        ]
+      },
+      "status": "canopy overlap only",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "outcrop",
+      "b": "tree-d",
+      "layers": [
+        "solid",
+        "canopy"
+      ],
+      "overlap": [
+        0.1753,
+        3.797,
+        3.2577
+      ],
+      "box": {
+        "min": [
+          11.2307,
+          4.028,
+          -7.3814
+        ],
+        "max": [
+          11.4061,
+          7.825,
+          -4.1236
+        ],
+        "size": [
+          0.1753,
+          3.797,
+          3.2577
+        ]
+      },
+      "status": "canopy overlap only",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "crystal-b",
+      "b": "tree-h",
+      "layers": [
+        "solid",
+        "canopy"
+      ],
+      "overlap": [
+        1.3105,
+        0.1246,
+        0.5305
+      ],
+      "box": {
+        "min": [
+          9.115,
+          4.0881,
+          5.8684
+        ],
+        "max": [
+          10.4255,
+          4.2127,
+          6.399
+        ],
+        "size": [
+          1.3105,
+          0.1246,
+          0.5305
+        ]
+      },
+      "status": "canopy overlap only",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 0,
+        "examples": [],
+        "oddSurfaceCounts": 0,
+        "interpretation": "No sampled interior overlap; unsampled intersections remain possible"
+      },
+      "requiresAdjustment": false
+    },
+    {
+      "a": "tree-a",
+      "b": "tree-e",
+      "layers": [
+        "canopy",
+        "canopy"
+      ],
+      "overlap": [
+        4.3606,
+        4.8064,
+        2.6799
+      ],
+      "box": {
+        "min": [
+          -15.2028,
+          4.4186,
+          -7.0858
+        ],
+        "max": [
+          -10.8422,
+          9.225,
+          -4.406
+        ],
+        "size": [
+          4.3606,
+          4.8064,
+          2.6799
+        ]
+      },
+      "status": "canopy overlap only",
+      "meshSampling": {
+        "testedRays": 48,
+        "overlapSamples": 26,
+        "examples": [
+          {
+            "axis": "x",
+            "point": [
+              -13.6801,
+              5.0194,
+              -5.4109
+            ],
+            "depth": 0.4136
+          },
+          {
+            "axis": "x",
+            "point": [
+              -12.564,
+              6.221,
+              -6.7508
+            ],
+            "depth": 0.1331
+          },
+          {
+            "axis": "x",
+            "point": [
+              -12.4885,
+              6.221,
+              -6.0809
+            ],
+            "depth": 1.103
+          },
+          {
+            "axis": "x",
+            "point": [
+              -14.1859,
+              6.221,
+              -5.4109
+            ],
+            "depth": 0.0854
+          },
+          {
+            "axis": "x",
+            "point": [
+              -13.8765,
+              6.221,
+              -5.4109
+            ],
+            "depth": 0.1253
+          }
+        ],
+        "oddSurfaceCounts": 0,
+        "interpretation": "Sampled closed-surface interiors overlap"
+      },
+      "requiresAdjustment": false
+    }
+  ],
+  "walkwayChecks": [
+    {
+      "id": "bridge approach",
+      "width": 1.8,
+      "owner": null,
+      "ownerThresholdAllowance": 0.5,
+      "checkedHeight": [
+        2.3,
+        4.22
+      ],
+      "obstructions": [],
+      "status": "clear in sampled mesh checks"
+    },
+    {
+      "id": "cottage entrance",
+      "width": 1.35,
+      "owner": "cottage",
+      "ownerThresholdAllowance": 0.5,
+      "checkedHeight": [
+        2.3,
+        4.22
+      ],
+      "obstructions": [],
+      "status": "clear in sampled mesh checks"
+    },
+    {
+      "id": "left meadow trail",
+      "width": 1.2,
+      "owner": null,
+      "ownerThresholdAllowance": 0.5,
+      "checkedHeight": [
+        2.3,
+        4.22
+      ],
+      "obstructions": [
+        {
+          "id": "grass-9",
+          "kind": "grass",
+          "evidence": "mesh vertices inside pedestrian corridor",
+          "samples": 37,
+          "examples": [
+            [
+              -7.8066,
+              2.5556,
+              9.2563
+            ],
+            [
+              -7.8194,
+              2.5559,
+              9.2738
+            ],
+            [
+              -7.8486,
+              2.5748,
+              9.242
+            ],
+            [
+              -7.8585,
+              2.5842,
+              9.1854
+            ],
+            [
+              -7.8669,
+              2.5889,
+              9.1963
+            ]
+          ]
+        }
+      ],
+      "status": "obstructed"
+    },
+    {
+      "id": "tent entrance",
+      "width": 1.1,
+      "owner": "tent",
+      "ownerThresholdAllowance": 0.5,
+      "checkedHeight": [
+        2.3,
+        4.22
+      ],
+      "obstructions": [],
+      "status": "clear in sampled mesh checks"
+    }
+  ],
+  "unsupported": [],
+  "report": "validation/layout-dense-second.json"
+}

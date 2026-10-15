@@ -1,0 +1,2155 @@
+{
+  "generatedAt": "2026-10-14T17:22:32.804Z",
+  "passed": true,
+  "placement": {
+    "id": "bridge",
+    "kind": "bridge",
+    "x": 1.25,
+    "z": 1.5,
+    "size": 6.6,
+    "rotation": 0,
+    "axis": "x",
+    "y": 1.35,
+    "height": 1.9,
+    "depth": 2.35,
+    "alignLongAxis": true
+  },
+  "bounds": {
+    "min": [
+      -2.05,
+      1.35,
+      0.325
+    ],
+    "max": [
+      4.55,
+      3.25,
+      2.675
+    ]
+  },
+  "intentionalContact": "Bridge feet embedded in the bank are intentional abutment contact; overlap with bank volume is not a failure.",
+  "channel": {
+    "method": "Exact triangle raycasts along 120 segments following riverCenter(z), each direction, at five lateral offsets and three requested heights. Finite samples do not certify untested coordinates.",
+    "zRange": [
+      0.175,
+      2.825
+    ],
+    "forwardClear": true,
+    "reverseClear": true,
+    "checks": [
+      {
+        "y": 0.3,
+        "xOffset": -0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": -0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": -0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": -0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.3,
+        "xOffset": 0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": -0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": -0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": -0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": -0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 0.7,
+        "xOffset": 0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": -0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": -0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": -0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": -0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0.3,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0.3,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0.6,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 1.2,
+        "xOffset": 0.6,
+        "direction": "downstream to upstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      }
+    ],
+    "overheadDiagnostics": [
+      {
+        "y": 1.6,
+        "xOffset": 0,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      },
+      {
+        "y": 2,
+        "xOffset": 0,
+        "direction": "upstream to downstream",
+        "segments": 120,
+        "clear": true,
+        "intersectionCount": 0,
+        "examples": []
+      }
+    ]
+  },
+  "deck": {
+    "method": "Topmost bridge and meadow triangle raycast along x at bridge center z, spacing <= 0.02 m. A supported deck crossing of bank height 2.22 must exist at both banks; bank and deck union must have no gaps or sampled step over 0.15 m.",
+    "bankHeight": 2.22,
+    "sampleCount": 351,
+    "crossings": [
+      {
+        "side": "west",
+        "x": -1.41279,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      },
+      {
+        "side": "west",
+        "x": -1.33913,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      },
+      {
+        "side": "west",
+        "x": -1.21798,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      },
+      {
+        "side": "east",
+        "x": 3.82647,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      },
+      {
+        "side": "east",
+        "x": 3.8567,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      },
+      {
+        "side": "east",
+        "x": 3.93662,
+        "y": 2.22,
+        "z": 1.5,
+        "onBank": true
+      }
+    ],
+    "westContact": {
+      "side": "west",
+      "x": -1.41279,
+      "y": 2.22,
+      "z": 1.5,
+      "onBank": true
+    },
+    "eastContact": {
+      "side": "east",
+      "x": 3.93662,
+      "y": 2.22,
+      "z": 1.5,
+      "onBank": true
+    },
+    "missingSurfaceX": [],
+    "maxAdjacentHeightChange": 0.14758,
+    "westToEastContinuous": true,
+    "eastToWestContinuous": true,
+    "centerline": [
+      {
+        "x": -2.25,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.23,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.21,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.19,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.17,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.15,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.13,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.11,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.09,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.07,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.05,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.03,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -2.01,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.99,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.97,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.95,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.93,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.91,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.89,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.87,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.85,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.83,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.81,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.79,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.77,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.75,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.73,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.71,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.69,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.67,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.65,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.63,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.61,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.59,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.57,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.55,
+        "deckY": 1.90915,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.53,
+        "deckY": 2.02653,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.51,
+        "deckY": 2.14097,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.49,
+        "deckY": 2.16693,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.47,
+        "deckY": 2.18107,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.45,
+        "deckY": 2.19515,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.43,
+        "deckY": 2.20895,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.41,
+        "deckY": 2.22179,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.39,
+        "deckY": 2.23197,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.37,
+        "deckY": 2.23072,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.35,
+        "deckY": 2.22433,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.33,
+        "deckY": 2.21636,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.31,
+        "deckY": 2.19465,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.29,
+        "deckY": 2.13742,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.27,
+        "deckY": 2.1108,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.25,
+        "deckY": 2.11017,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.23,
+        "deckY": 2.1049,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.21,
+        "deckY": 2.29635,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.19,
+        "deckY": 2.31113,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.17,
+        "deckY": 2.32592,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.15,
+        "deckY": 2.34229,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.13,
+        "deckY": 2.36299,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.11,
+        "deckY": 2.37739,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.09,
+        "deckY": 2.38814,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.07,
+        "deckY": 2.39889,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.05,
+        "deckY": 2.41037,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.03,
+        "deckY": 2.42521,
+        "bankY": 2.22
+      },
+      {
+        "x": -1.01,
+        "deckY": 2.44004,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.99,
+        "deckY": 2.45488,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.97,
+        "deckY": 2.46656,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.95,
+        "deckY": 2.47722,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.93,
+        "deckY": 2.48841,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.91,
+        "deckY": 2.50042,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.89,
+        "deckY": 2.5108,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.87,
+        "deckY": 2.5163,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.85,
+        "deckY": 2.52481,
+        "bankY": 2.22
+      },
+      {
+        "x": -0.83,
+        "deckY": 2.53557,
+        "bankY": null
+      },
+      {
+        "x": -0.81,
+        "deckY": 2.54633,
+        "bankY": null
+      },
+      {
+        "x": -0.79,
+        "deckY": 2.55812,
+        "bankY": null
+      },
+      {
+        "x": -0.77,
+        "deckY": 2.57127,
+        "bankY": null
+      },
+      {
+        "x": -0.75,
+        "deckY": 2.58538,
+        "bankY": null
+      },
+      {
+        "x": -0.73,
+        "deckY": 2.5972,
+        "bankY": null
+      },
+      {
+        "x": -0.71,
+        "deckY": 2.60902,
+        "bankY": null
+      },
+      {
+        "x": -0.69,
+        "deckY": 2.62085,
+        "bankY": null
+      },
+      {
+        "x": -0.67,
+        "deckY": 2.63267,
+        "bankY": null
+      },
+      {
+        "x": -0.65,
+        "deckY": 2.64502,
+        "bankY": null
+      },
+      {
+        "x": -0.63,
+        "deckY": 2.65746,
+        "bankY": null
+      },
+      {
+        "x": -0.61,
+        "deckY": 2.66992,
+        "bankY": null
+      },
+      {
+        "x": -0.59,
+        "deckY": 2.68327,
+        "bankY": null
+      },
+      {
+        "x": -0.57,
+        "deckY": 2.69663,
+        "bankY": null
+      },
+      {
+        "x": -0.55,
+        "deckY": 2.70998,
+        "bankY": null
+      },
+      {
+        "x": -0.53,
+        "deckY": 2.72271,
+        "bankY": null
+      },
+      {
+        "x": -0.51,
+        "deckY": 2.73514,
+        "bankY": null
+      },
+      {
+        "x": -0.49,
+        "deckY": 2.74758,
+        "bankY": null
+      },
+      {
+        "x": -0.47,
+        "deckY": 2.76001,
+        "bankY": null
+      },
+      {
+        "x": -0.45,
+        "deckY": 2.77123,
+        "bankY": null
+      },
+      {
+        "x": -0.43,
+        "deckY": 2.76968,
+        "bankY": null
+      },
+      {
+        "x": -0.41,
+        "deckY": 2.75827,
+        "bankY": null
+      },
+      {
+        "x": -0.39,
+        "deckY": 2.74727,
+        "bankY": null
+      },
+      {
+        "x": -0.37,
+        "deckY": 2.73369,
+        "bankY": null
+      },
+      {
+        "x": -0.35,
+        "deckY": 2.78654,
+        "bankY": null
+      },
+      {
+        "x": -0.33,
+        "deckY": 2.80153,
+        "bankY": null
+      },
+      {
+        "x": -0.31,
+        "deckY": 2.81095,
+        "bankY": null
+      },
+      {
+        "x": -0.29,
+        "deckY": 2.82038,
+        "bankY": null
+      },
+      {
+        "x": -0.27,
+        "deckY": 2.82852,
+        "bankY": null
+      },
+      {
+        "x": -0.25,
+        "deckY": 2.83566,
+        "bankY": null
+      },
+      {
+        "x": -0.23,
+        "deckY": 2.84279,
+        "bankY": null
+      },
+      {
+        "x": -0.21,
+        "deckY": 2.84993,
+        "bankY": null
+      },
+      {
+        "x": -0.19,
+        "deckY": 2.85706,
+        "bankY": null
+      },
+      {
+        "x": -0.17,
+        "deckY": 2.8642,
+        "bankY": null
+      },
+      {
+        "x": -0.15,
+        "deckY": 2.8713,
+        "bankY": null
+      },
+      {
+        "x": -0.13,
+        "deckY": 2.8772,
+        "bankY": null
+      },
+      {
+        "x": -0.11,
+        "deckY": 2.88311,
+        "bankY": null
+      },
+      {
+        "x": -0.09,
+        "deckY": 2.88901,
+        "bankY": null
+      },
+      {
+        "x": -0.07,
+        "deckY": 2.89492,
+        "bankY": null
+      },
+      {
+        "x": -0.05,
+        "deckY": 2.90082,
+        "bankY": null
+      },
+      {
+        "x": -0.03,
+        "deckY": 2.90736,
+        "bankY": null
+      },
+      {
+        "x": -0.01,
+        "deckY": 2.91423,
+        "bankY": null
+      },
+      {
+        "x": 0.01,
+        "deckY": 2.9211,
+        "bankY": null
+      },
+      {
+        "x": 0.03,
+        "deckY": 2.92797,
+        "bankY": null
+      },
+      {
+        "x": 0.05,
+        "deckY": 2.93484,
+        "bankY": null
+      },
+      {
+        "x": 0.07,
+        "deckY": 2.94171,
+        "bankY": null
+      },
+      {
+        "x": 0.09,
+        "deckY": 2.95011,
+        "bankY": null
+      },
+      {
+        "x": 0.11,
+        "deckY": 2.95722,
+        "bankY": null
+      },
+      {
+        "x": 0.13,
+        "deckY": 2.96259,
+        "bankY": null
+      },
+      {
+        "x": 0.15,
+        "deckY": 2.96546,
+        "bankY": null
+      },
+      {
+        "x": 0.17,
+        "deckY": 2.96833,
+        "bankY": null
+      },
+      {
+        "x": 0.19,
+        "deckY": 2.95811,
+        "bankY": null
+      },
+      {
+        "x": 0.21,
+        "deckY": 2.93898,
+        "bankY": null
+      },
+      {
+        "x": 0.23,
+        "deckY": 2.92269,
+        "bankY": null
+      },
+      {
+        "x": 0.25,
+        "deckY": 2.90641,
+        "bankY": null
+      },
+      {
+        "x": 0.27,
+        "deckY": 2.88599,
+        "bankY": null
+      },
+      {
+        "x": 0.29,
+        "deckY": 2.86273,
+        "bankY": null
+      },
+      {
+        "x": 0.31,
+        "deckY": 2.84015,
+        "bankY": null
+      },
+      {
+        "x": 0.33,
+        "deckY": 2.98773,
+        "bankY": null
+      },
+      {
+        "x": 0.35,
+        "deckY": 3.00931,
+        "bankY": null
+      },
+      {
+        "x": 0.37,
+        "deckY": 3.01795,
+        "bankY": null
+      },
+      {
+        "x": 0.39,
+        "deckY": 3.02659,
+        "bankY": null
+      },
+      {
+        "x": 0.41,
+        "deckY": 3.03298,
+        "bankY": null
+      },
+      {
+        "x": 0.43,
+        "deckY": 3.03868,
+        "bankY": null
+      },
+      {
+        "x": 0.45,
+        "deckY": 3.04439,
+        "bankY": null
+      },
+      {
+        "x": 0.47,
+        "deckY": 3.05009,
+        "bankY": null
+      },
+      {
+        "x": 0.49,
+        "deckY": 3.05565,
+        "bankY": null
+      },
+      {
+        "x": 0.51,
+        "deckY": 3.06009,
+        "bankY": null
+      },
+      {
+        "x": 0.53,
+        "deckY": 3.06453,
+        "bankY": null
+      },
+      {
+        "x": 0.55,
+        "deckY": 3.06853,
+        "bankY": null
+      },
+      {
+        "x": 0.57,
+        "deckY": 3.0721,
+        "bankY": null
+      },
+      {
+        "x": 0.59,
+        "deckY": 3.07568,
+        "bankY": null
+      },
+      {
+        "x": 0.61,
+        "deckY": 3.08033,
+        "bankY": null
+      },
+      {
+        "x": 0.63,
+        "deckY": 3.08207,
+        "bankY": null
+      },
+      {
+        "x": 0.65,
+        "deckY": 3.06784,
+        "bankY": null
+      },
+      {
+        "x": 0.67,
+        "deckY": 3.04689,
+        "bankY": null
+      },
+      {
+        "x": 0.69,
+        "deckY": 3.02007,
+        "bankY": null
+      },
+      {
+        "x": 0.71,
+        "deckY": 2.9979,
+        "bankY": null
+      },
+      {
+        "x": 0.73,
+        "deckY": 3.07583,
+        "bankY": null
+      },
+      {
+        "x": 0.75,
+        "deckY": 3.09198,
+        "bankY": null
+      },
+      {
+        "x": 0.77,
+        "deckY": 3.09986,
+        "bankY": null
+      },
+      {
+        "x": 0.79,
+        "deckY": 3.10583,
+        "bankY": null
+      },
+      {
+        "x": 0.81,
+        "deckY": 3.11014,
+        "bankY": null
+      },
+      {
+        "x": 0.83,
+        "deckY": 3.11362,
+        "bankY": null
+      },
+      {
+        "x": 0.85,
+        "deckY": 3.11711,
+        "bankY": null
+      },
+      {
+        "x": 0.87,
+        "deckY": 3.12059,
+        "bankY": null
+      },
+      {
+        "x": 0.89,
+        "deckY": 3.12408,
+        "bankY": null
+      },
+      {
+        "x": 0.91,
+        "deckY": 3.12739,
+        "bankY": null
+      },
+      {
+        "x": 0.93,
+        "deckY": 3.13009,
+        "bankY": null
+      },
+      {
+        "x": 0.95,
+        "deckY": 3.13236,
+        "bankY": null
+      },
+      {
+        "x": 0.97,
+        "deckY": 3.13463,
+        "bankY": null
+      },
+      {
+        "x": 0.99,
+        "deckY": 3.13285,
+        "bankY": null
+      },
+      {
+        "x": 1.01,
+        "deckY": 3.1285,
+        "bankY": null
+      },
+      {
+        "x": 1.03,
+        "deckY": 3.12391,
+        "bankY": null
+      },
+      {
+        "x": 1.05,
+        "deckY": 3.11671,
+        "bankY": null
+      },
+      {
+        "x": 1.07,
+        "deckY": 3.12112,
+        "bankY": null
+      },
+      {
+        "x": 1.09,
+        "deckY": 3.1403,
+        "bankY": null
+      },
+      {
+        "x": 1.11,
+        "deckY": 3.14534,
+        "bankY": null
+      },
+      {
+        "x": 1.13,
+        "deckY": 3.14667,
+        "bankY": null
+      },
+      {
+        "x": 1.15,
+        "deckY": 3.15088,
+        "bankY": null
+      },
+      {
+        "x": 1.17,
+        "deckY": 3.15509,
+        "bankY": null
+      },
+      {
+        "x": 1.19,
+        "deckY": 3.15538,
+        "bankY": null
+      },
+      {
+        "x": 1.21,
+        "deckY": 3.15076,
+        "bankY": null
+      },
+      {
+        "x": 1.23,
+        "deckY": 3.14614,
+        "bankY": null
+      },
+      {
+        "x": 1.25,
+        "deckY": 3.14487,
+        "bankY": null
+      },
+      {
+        "x": 1.27,
+        "deckY": 3.14447,
+        "bankY": null
+      },
+      {
+        "x": 1.29,
+        "deckY": 3.14187,
+        "bankY": null
+      },
+      {
+        "x": 1.31,
+        "deckY": 3.13922,
+        "bankY": null
+      },
+      {
+        "x": 1.33,
+        "deckY": 3.14275,
+        "bankY": null
+      },
+      {
+        "x": 1.35,
+        "deckY": 3.1453,
+        "bankY": null
+      },
+      {
+        "x": 1.37,
+        "deckY": 3.14459,
+        "bankY": null
+      },
+      {
+        "x": 1.39,
+        "deckY": 3.14388,
+        "bankY": null
+      },
+      {
+        "x": 1.41,
+        "deckY": 3.14316,
+        "bankY": null
+      },
+      {
+        "x": 1.43,
+        "deckY": 3.14227,
+        "bankY": null
+      },
+      {
+        "x": 1.45,
+        "deckY": 3.14089,
+        "bankY": null
+      },
+      {
+        "x": 1.47,
+        "deckY": 3.13175,
+        "bankY": null
+      },
+      {
+        "x": 1.49,
+        "deckY": 3.11946,
+        "bankY": null
+      },
+      {
+        "x": 1.51,
+        "deckY": 3.07369,
+        "bankY": null
+      },
+      {
+        "x": 1.53,
+        "deckY": 3.06488,
+        "bankY": null
+      },
+      {
+        "x": 1.55,
+        "deckY": 3.10569,
+        "bankY": null
+      },
+      {
+        "x": 1.57,
+        "deckY": 3.12193,
+        "bankY": null
+      },
+      {
+        "x": 1.59,
+        "deckY": 3.13095,
+        "bankY": null
+      },
+      {
+        "x": 1.61,
+        "deckY": 3.13108,
+        "bankY": null
+      },
+      {
+        "x": 1.63,
+        "deckY": 3.13109,
+        "bankY": null
+      },
+      {
+        "x": 1.65,
+        "deckY": 3.13081,
+        "bankY": null
+      },
+      {
+        "x": 1.67,
+        "deckY": 3.13054,
+        "bankY": null
+      },
+      {
+        "x": 1.69,
+        "deckY": 3.1298,
+        "bankY": null
+      },
+      {
+        "x": 1.71,
+        "deckY": 3.12869,
+        "bankY": null
+      },
+      {
+        "x": 1.73,
+        "deckY": 3.12736,
+        "bankY": null
+      },
+      {
+        "x": 1.75,
+        "deckY": 3.12582,
+        "bankY": null
+      },
+      {
+        "x": 1.77,
+        "deckY": 3.11798,
+        "bankY": null
+      },
+      {
+        "x": 1.79,
+        "deckY": 3.04397,
+        "bankY": null
+      },
+      {
+        "x": 1.81,
+        "deckY": 3.06203,
+        "bankY": null
+      },
+      {
+        "x": 1.83,
+        "deckY": 3.07559,
+        "bankY": null
+      },
+      {
+        "x": 1.85,
+        "deckY": 3.08051,
+        "bankY": null
+      },
+      {
+        "x": 1.87,
+        "deckY": 3.08167,
+        "bankY": null
+      },
+      {
+        "x": 1.89,
+        "deckY": 3.08051,
+        "bankY": null
+      },
+      {
+        "x": 1.91,
+        "deckY": 3.0763,
+        "bankY": null
+      },
+      {
+        "x": 1.93,
+        "deckY": 3.07192,
+        "bankY": null
+      },
+      {
+        "x": 1.95,
+        "deckY": 3.06753,
+        "bankY": null
+      },
+      {
+        "x": 1.97,
+        "deckY": 3.06315,
+        "bankY": null
+      },
+      {
+        "x": 1.99,
+        "deckY": 3.05876,
+        "bankY": null
+      },
+      {
+        "x": 2.01,
+        "deckY": 3.05435,
+        "bankY": null
+      },
+      {
+        "x": 2.03,
+        "deckY": 3.04983,
+        "bankY": null
+      },
+      {
+        "x": 2.05,
+        "deckY": 3.04532,
+        "bankY": null
+      },
+      {
+        "x": 2.07,
+        "deckY": 3.0408,
+        "bankY": null
+      },
+      {
+        "x": 2.09,
+        "deckY": 3.03629,
+        "bankY": null
+      },
+      {
+        "x": 2.11,
+        "deckY": 3.03177,
+        "bankY": null
+      },
+      {
+        "x": 2.13,
+        "deckY": 3.02725,
+        "bankY": null
+      },
+      {
+        "x": 2.15,
+        "deckY": 3.02233,
+        "bankY": null
+      },
+      {
+        "x": 2.17,
+        "deckY": 3.01727,
+        "bankY": null
+      },
+      {
+        "x": 2.19,
+        "deckY": 3.01261,
+        "bankY": null
+      },
+      {
+        "x": 2.21,
+        "deckY": 3.01003,
+        "bankY": null
+      },
+      {
+        "x": 2.23,
+        "deckY": 3.00745,
+        "bankY": null
+      },
+      {
+        "x": 2.25,
+        "deckY": 3.00487,
+        "bankY": null
+      },
+      {
+        "x": 2.27,
+        "deckY": 3.00228,
+        "bankY": null
+      },
+      {
+        "x": 2.29,
+        "deckY": 2.99833,
+        "bankY": null
+      },
+      {
+        "x": 2.31,
+        "deckY": 2.98659,
+        "bankY": null
+      },
+      {
+        "x": 2.33,
+        "deckY": 2.97888,
+        "bankY": null
+      },
+      {
+        "x": 2.35,
+        "deckY": 2.88009,
+        "bankY": null
+      },
+      {
+        "x": 2.37,
+        "deckY": 2.90035,
+        "bankY": null
+      },
+      {
+        "x": 2.39,
+        "deckY": 2.92062,
+        "bankY": null
+      },
+      {
+        "x": 2.41,
+        "deckY": 2.91975,
+        "bankY": null
+      },
+      {
+        "x": 2.43,
+        "deckY": 2.91763,
+        "bankY": null
+      },
+      {
+        "x": 2.45,
+        "deckY": 2.91551,
+        "bankY": null
+      },
+      {
+        "x": 2.47,
+        "deckY": 2.90894,
+        "bankY": null
+      },
+      {
+        "x": 2.49,
+        "deckY": 2.90199,
+        "bankY": null
+      },
+      {
+        "x": 2.51,
+        "deckY": 2.89641,
+        "bankY": null
+      },
+      {
+        "x": 2.53,
+        "deckY": 2.89083,
+        "bankY": null
+      },
+      {
+        "x": 2.55,
+        "deckY": 2.88521,
+        "bankY": null
+      },
+      {
+        "x": 2.57,
+        "deckY": 2.87918,
+        "bankY": null
+      },
+      {
+        "x": 2.59,
+        "deckY": 2.87315,
+        "bankY": null
+      },
+      {
+        "x": 2.61,
+        "deckY": 2.86712,
+        "bankY": null
+      },
+      {
+        "x": 2.63,
+        "deckY": 2.86097,
+        "bankY": null
+      },
+      {
+        "x": 2.65,
+        "deckY": 2.85471,
+        "bankY": null
+      },
+      {
+        "x": 2.67,
+        "deckY": 2.84845,
+        "bankY": null
+      },
+      {
+        "x": 2.69,
+        "deckY": 2.84219,
+        "bankY": null
+      },
+      {
+        "x": 2.71,
+        "deckY": 2.83788,
+        "bankY": null
+      },
+      {
+        "x": 2.73,
+        "deckY": 2.835,
+        "bankY": null
+      },
+      {
+        "x": 2.75,
+        "deckY": 2.83192,
+        "bankY": null
+      },
+      {
+        "x": 2.77,
+        "deckY": 2.83021,
+        "bankY": null
+      },
+      {
+        "x": 2.79,
+        "deckY": 2.82881,
+        "bankY": null
+      },
+      {
+        "x": 2.81,
+        "deckY": 2.8274,
+        "bankY": null
+      },
+      {
+        "x": 2.83,
+        "deckY": 2.82395,
+        "bankY": null
+      },
+      {
+        "x": 2.85,
+        "deckY": 2.81807,
+        "bankY": null
+      },
+      {
+        "x": 2.87,
+        "deckY": 2.80141,
+        "bankY": null
+      },
+      {
+        "x": 2.89,
+        "deckY": 2.77141,
+        "bankY": null
+      },
+      {
+        "x": 2.91,
+        "deckY": 2.77162,
+        "bankY": null
+      },
+      {
+        "x": 2.93,
+        "deckY": 2.77028,
+        "bankY": null
+      },
+      {
+        "x": 2.95,
+        "deckY": 2.76378,
+        "bankY": null
+      },
+      {
+        "x": 2.97,
+        "deckY": 2.75591,
+        "bankY": null
+      },
+      {
+        "x": 2.99,
+        "deckY": 2.74582,
+        "bankY": null
+      },
+      {
+        "x": 3.01,
+        "deckY": 2.73572,
+        "bankY": null
+      },
+      {
+        "x": 3.03,
+        "deckY": 2.72531,
+        "bankY": null
+      },
+      {
+        "x": 3.05,
+        "deckY": 2.716,
+        "bankY": null
+      },
+      {
+        "x": 3.07,
+        "deckY": 2.70518,
+        "bankY": null
+      },
+      {
+        "x": 3.09,
+        "deckY": 2.69424,
+        "bankY": null
+      },
+      {
+        "x": 3.11,
+        "deckY": 2.68329,
+        "bankY": null
+      },
+      {
+        "x": 3.13,
+        "deckY": 2.67235,
+        "bankY": null
+      },
+      {
+        "x": 3.15,
+        "deckY": 2.66218,
+        "bankY": null
+      },
+      {
+        "x": 3.17,
+        "deckY": 2.6529,
+        "bankY": null
+      },
+      {
+        "x": 3.19,
+        "deckY": 2.64362,
+        "bankY": null
+      },
+      {
+        "x": 3.21,
+        "deckY": 2.63434,
+        "bankY": null
+      },
+      {
+        "x": 3.23,
+        "deckY": 2.62517,
+        "bankY": null
+      },
+      {
+        "x": 3.25,
+        "deckY": 2.61634,
+        "bankY": null
+      },
+      {
+        "x": 3.27,
+        "deckY": 2.60752,
+        "bankY": null
+      },
+      {
+        "x": 3.29,
+        "deckY": 2.59869,
+        "bankY": null
+      },
+      {
+        "x": 3.31,
+        "deckY": 2.59025,
+        "bankY": null
+      },
+      {
+        "x": 3.33,
+        "deckY": 2.55939,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.35,
+        "deckY": 2.5199,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.37,
+        "deckY": 2.53169,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.39,
+        "deckY": 2.53432,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.41,
+        "deckY": 2.53665,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.43,
+        "deckY": 2.52915,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.45,
+        "deckY": 2.51788,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.47,
+        "deckY": 2.50691,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.49,
+        "deckY": 2.49593,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.51,
+        "deckY": 2.48496,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.53,
+        "deckY": 2.4728,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.55,
+        "deckY": 2.46063,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.57,
+        "deckY": 2.44882,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.59,
+        "deckY": 2.43702,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.61,
+        "deckY": 2.42522,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.63,
+        "deckY": 2.41368,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.65,
+        "deckY": 2.40316,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.67,
+        "deckY": 2.39264,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.69,
+        "deckY": 2.38211,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.71,
+        "deckY": 2.37041,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.73,
+        "deckY": 2.3589,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.75,
+        "deckY": 2.34807,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.77,
+        "deckY": 2.33725,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.79,
+        "deckY": 2.32642,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.81,
+        "deckY": 2.30865,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.83,
+        "deckY": 2.20097,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.85,
+        "deckY": 2.21638,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.87,
+        "deckY": 2.22719,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.89,
+        "deckY": 2.2313,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.91,
+        "deckY": 2.23316,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.93,
+        "deckY": 2.22368,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.95,
+        "deckY": 2.21255,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.97,
+        "deckY": 2.20114,
+        "bankY": 2.22
+      },
+      {
+        "x": 3.99,
+        "deckY": 2.18766,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.01,
+        "deckY": 2.17142,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.03,
+        "deckY": 2.15252,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.05,
+        "deckY": 2.12775,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.07,
+        "deckY": 2.00712,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.09,
+        "deckY": 1.8708,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.11,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.13,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.15,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.17,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.19,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.21,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.23,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.25,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.27,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.29,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.31,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.33,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.35,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.37,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.39,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.41,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.43,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.45,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.47,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.49,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.51,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.53,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.55,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.57,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.59,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.61,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.63,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.65,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.67,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.69,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.71,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.73,
+        "deckY": null,
+        "bankY": 2.22
+      },
+      {
+        "x": 4.75,
+        "deckY": null,
+        "bankY": 2.22
+      }
+    ]
+  }
+}

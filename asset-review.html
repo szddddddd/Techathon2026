@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#9cae9d">
+  <title>林间物件 · 三维资产查看器</title>
+  <style>
+    :root{color-scheme:light;font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;color:#243d32;background:#9cae9d}
+    *{box-sizing:border-box}body{margin:0;overflow:hidden}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer}
+    #viewport{position:fixed;inset:0;touch-action:none}#viewport canvas{display:block;width:100%;height:100%;outline:none}
+    header{position:fixed;left:36px;top:29px;z-index:2;pointer-events:none}header>*{pointer-events:auto}.eyebrow{margin:0 0 8px;font-size:10px;letter-spacing:.24em;font-weight:650;color:#496451}h1{font-family:Georgia,"Songti SC","SimSun",serif;font-weight:500;font-size:30px;margin:0 0 10px;letter-spacing:.04em}.subtitle{margin:0;font-size:12px;color:#405f4b}
+    nav{max-width:550px;display:flex;gap:6px;margin-top:24px;flex-wrap:wrap}button{border:1px solid #f1f5e852;background:#ecf0e3a8;color:#2e4b39;padding:9px 17px;border-radius:22px;backdrop-filter:blur(14px);transition:background .15s,transform .15s}button:hover{background:#f5f5e6;transform:translateY(-1px)}button[aria-pressed="true"]{background:#304f3e;color:#f3f1dd;border-color:#304f3e}button:focus-visible,a:focus-visible{outline:2px solid #274f43;outline-offset:4px}
+    .back{display:inline-block;color:#3c5b46;text-decoration:none;font-size:11px;margin-top:18px;border-bottom:1px solid #51715a60;padding-bottom:3px}
+    #status{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;padding:16px 22px;background:#eef1e5e8;border:1px solid #ffffff6b;box-shadow:0 12px 45px #233f3620;border-radius:14px;max-width:calc(100vw - 48px);font-size:13px;text-align:center;line-height:1.7}#status[hidden]{display:none}#status.error{color:#6b3d2a}#retry{display:block;margin:12px auto 0;padding:6px 17px}
+    footer{position:fixed;bottom:25px;left:36px;right:36px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;pointer-events:none}.details{font-size:11px;color:#3c5846;line-height:1.9;letter-spacing:.025em}.details strong{font-size:14px;font-weight:550;color:#284535}.tools{display:flex;gap:7px;pointer-events:auto}.tools button{padding:8px 13px;font-size:11px}#model-stats{font-variant-numeric:tabular-nums}
+    @media(max-width:600px){header{left:21px;top:24px}h1{font-size:25px}nav{margin-top:17px;gap:5px}nav button{padding:8px 14px;font-size:12px}.subtitle{font-size:11px}.back{margin-top:13px}footer{bottom:20px;left:21px;right:21px;align-items:flex-end;gap:12px}.details{font-size:10px}.details strong{font-size:12px}.tools{flex-direction:column;gap:5px}.tools button{padding:7px 11px}#model-stats{max-width:220px}}
+    @media(prefers-reduced-motion:reduce){button{transition:none}}
+  </style>
+</head>
+<body>
+  <main id="viewport" aria-label="可拖动旋转的三维资产预览"></main>
+  <header>
+    <p class="eyebrow">FOREST OBJECTS / 01—13</p>
+    <h1>林间物件</h1>
+    <p class="subtitle">十三类独立模型，近看每一处细节。</p>
+    <nav aria-label="选择三维资产">
+      <button type="button" data-asset="cart" aria-pressed="true">推车</button>
+      <button type="button" data-asset="tree" aria-pressed="false">古树</button>
+      <button type="button" data-asset="rock" aria-pressed="false">苔石</button>
+      <button type="button" data-asset="grass" aria-pressed="false">草丛</button>
+<button type="button" data-asset="cottage" aria-pressed="false">森林木屋</button><button type="button" data-asset="tent" aria-pressed="false">帆布帐篷</button><button type="button" data-asset="barrel" aria-pressed="false">橡木桶</button><button type="button" data-asset="crate" aria-pressed="false">补给木箱</button><button type="button" data-asset="chest" aria-pressed="false">宝箱</button><button type="button" data-asset="bridge" aria-pressed="false">石拱桥</button><button type="button" data-asset="outcrop" aria-pressed="false">苔藓假山</button><button type="button" data-asset="crystal" aria-pressed="false">蓝色晶簇</button><button type="button" data-asset="fern_large" aria-pressed="false">大蕨草</button>    </nav>
+    <a class="back" href="./index.html">← 返回翡翠溪谷</a>
+  </header>
+  <div id="status" role="status" aria-live="polite"><span id="status-text">正在加载推车…</span><button id="retry" type="button" hidden>重新加载</button></div>
+  <footer>
+    <div class="details"><strong id="model-name">推车</strong><div id="model-stats">本地三维模型 · 正在加载</div><div>拖动旋转 · 滚轮缩放 · 双指移动</div></div>
+    <div class="tools"><button id="rotate" type="button" aria-pressed="false">自动旋转</button><button id="reset" type="button">重置视角</button></div>
+  </footer>
+  <script type="module" src="./dist/review.js?v=expansion1"></script>
+</body>
+</html>

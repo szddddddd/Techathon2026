@@ -1,0 +1,24 @@
+{
+  "reviewed": "front and back of all four current scene.glb files",
+  "image": "validation/social-assets-reviewed.jpg",
+  "curation": "records/rodin-friends/curation.json",
+  "consumedCredits": 2.0,
+  "models": {
+    "kangaroo": {
+      "path": "assets/rodin-friends/kangaroo/scene.glb",
+      "sha256": "b00302e0ad8f4ef5d6e07eba92a715c8d0dd051f943cd22eccd20821c836b17e"
+    },
+    "fox": {
+      "path": "assets/rodin-friends/fox/scene.glb",
+      "sha256": "d3d0261af0e552c5ac515b34be16fbbe6430bcc8af171b49cfed65831aa28e2e"
+    },
+    "rabbit": {
+      "path": "assets/rodin-friends/rabbit/scene.glb",
+      "sha256": "f032301cd42db6b62fcd70dafbf6001b5217c551cfb32211d450c75af4edff46"
+    },
+    "bear": {
+      "path": "assets/rodin-friends/bear/scene.glb",
+      "sha256": "63dc881475d311c15b4c24bf2915ff9a3191529cdac01934ab2e5c60a471489a"
+    }
+  }
+}
