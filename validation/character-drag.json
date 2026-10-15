@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-10-15T07:04:20.817Z",
+  "createdAt": "2026-10-15T07:15:11.064Z",
   "checks": [
     "real model drag commits supported position, preserves camera, does not open chat",
     "river placement rejected, returns to origin",

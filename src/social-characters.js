@@ -7,6 +7,7 @@ import {createCharacterDrag} from './character-drag.js';
 const ANIMALS=['kangaroo','fox','rabbit','bear'];
 const PREFERRED={kangaroo:[-5.9,-3],fox:[-9.5,5.4],rabbit:[-6,7.5],bear:[8,4.4]};
 const down=new THREE.Vector3(0,-1,0);
+export const characterBodyRadius=radius=>Math.max(.3,Math.min(.65,radius*.65));
 const segmentDistance=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],d=dx*dx+dz*dz,t=d?THREE.MathUtils.clamp(((x-a[0])*dx+(z-a[1])*dz)/d,0,1):0;return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);};
 function triangleDistance(x,z,t){
   const cross=(a,b)=>(b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0]);
@@ -56,24 +57,25 @@ export function createPlacementContext({scene,terrain,generated}){
         }
       }
     });
-    obstacles.push({id:owner.userData.layoutId||owner.name,bounds,triangles,solidMeshes});
+    obstacles.push({id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes});
   }
   const ray=new THREE.Raycaster();
-  function inspect(x,z,radius,used=[],{walking=false}={}){
+  function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
     const walkway=WALKWAYS.find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
-    if(walkway&&!walking)return {ok:false,reason:'walkway',id:walkway.id};
-    if(Math.hypot(x+8.5,z-1.5)<1.7+radius+.35)return {ok:false,reason:'campfire'};
-    if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+.6))return {ok:false,reason:'friend clearance'};
+    if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
+    if(Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
+    if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+(manual?.15:.6)))return {ok:false,reason:'friend clearance'};
     let groundY=2.22;
     for(let i=0;i<13;i++){
-      const r=i?radius+.12:0,a=(i-1)/12*Math.PI*2;
+      const r=i?radius+(manual?.02:.12):0,a=(i-1)/12*Math.PI*2;
       ray.set(new THREE.Vector3(x+Math.cos(a)*r,8,z+Math.sin(a)*r),down);ray.far=8;
       const hit=ray.intersectObjects(meadows,false)[0];
       if(!hit)return {ok:false,reason:'no meadow support'};
       groundY=Math.max(groundY,hit.point.y);
     }
-    const point=new THREE.Vector2(x,z),clearance=radius+.35;
+    const point=new THREE.Vector2(x,z),clearance=radius+(manual?.06:.35);
     for(const obstacle of obstacles){
+      if(manual&&['grass','fern_large'].includes(obstacle.kind))continue;
       if(obstacle.bounds.distanceToPoint(point)>=clearance)continue;
       for(const triangle of obstacle.triangles){
         if(triangle.box.distanceToPoint(point)>=clearance)continue;
@@ -177,7 +179,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:0xe4ecac,size:.09,transparent:true,opacity:1,depthWrite:false}));group.add(motes);
     group.name=`Friend · ${friend.id}`;group.userData.friendId=friend.id;group.userData.placeholder=!!body.userData.placeholder;
     group.traverse(o=>{o.userData.socialCharacter=true;o.userData.friendId=friend.id;});root.add(group);
-    return {friend,group,bodyHolder,ring,outline,motes,motePositions,height,radius:Math.max(.35,radius),spawn:performance.now(),occluded:false,gait,walk:null};
+    return {friend,group,bodyHolder,ring,outline,motes,motePositions,height,radius:Math.max(.35,radius),bodyRadius:characterBodyRadius(radius),spawn:performance.now(),occluded:false,gait,walk:null};
   }
   function resetWalk(record,slot){
     record.slot=slot;const graph=buildWalkingGraph(context,slot);
@@ -198,8 +200,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       if(!record){record=create(friend);records.set(friend.id,record);}
       const custom=savedPlacements[friend.id];let slot;
       if(custom&&Number.isFinite(custom.x)&&Number.isFinite(custom.z)){
-        const check=context.inspect(custom.x,custom.z,record.radius+.12,used);
-        if(check.ok)slot={id:friend.id,animal:friend.animal,x:custom.x,y:check.y,z:custom.z,radius:record.radius,height:record.height};
+        const check=inspectPlacement(record,custom.x,custom.z);
+        if(check.ok)slot={id:friend.id,animal:friend.animal,x:custom.x,y:check.y,z:custom.z,radius:record.radius,height:record.height,manualPlacement:true,placementRadius:characterBodyRadius(record.radius)};
       }
       if(!slot){const reserved={inspect:(x,z,radius,others,options)=>context.inspect(x,z,radius,[...used,...others],options)};slot=pickCharacterSlots(reserved,[{...friend,radius:record.radius}])[0];}
       record.group.visible=!slot.unplaced;record.slot=slot;
@@ -231,9 +233,9 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     if(!hit)return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
     return records.get(hit.object.userData.friendId)||null;
   }
-  function inspectPlacement(record,x,z){return context.inspect(x,z,record.radius+.12,[...records.values()].filter(r=>r!==record&&r.group.visible).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12})));}
+  function inspectPlacement(record,x,z){return context.inspect(x,z,characterBodyRadius(record.radius),[...records.values()].filter(r=>r!==record&&r.group.visible&&!r.slot?.unplaced&&r.slot).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:characterBodyRadius(r.radius)})),{manual:true});}
   const drag=createCharacterDrag({scene,camera,controls,canvas:renderer.domElement,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:onPlace,onError:onPlacementError,onPlaced(record,point){
-    const slot={...record.slot,...point};savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
+    const slot={...record.slot,...point,manualPlacement:true,placementRadius:characterBodyRadius(record.radius)};savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
   }});
   const placement={
     snapshot(){return{...drag.snapshot(),characters:[...records.values()].map(r=>({id:r.friend.id,position:r.group.position.toArray(),home:r.slot,radius:r.radius,walking:!!r.walk?.route.length}))};},
@@ -261,8 +263,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
         if(walk.route.length&&walk.wait===0){
           const dest=walk.graph.nodes[walk.route[0]],dx=dest.x-r.group.position.x,dz=dest.z-r.group.position.z,distance=Math.hypot(dx,dz),amount=Math.min(distance,delta*walk.speed);
           const next={x:r.group.position.x+dx/Math.max(distance,1e-6)*amount,z:r.group.position.z+dz/Math.max(distance,1e-6)*amount};
-          const others=[...records.values()].filter(other=>other!==r&&other.group.visible).map(other=>({x:other.group.position.x,z:other.group.position.z,radius:other.radius+.08}));
-          if(canWalkStep(r.group.position,next,r.radius+.08,others)){
+          const others=[...records.values()].filter(other=>other!==r&&other.group.visible).map(other=>({x:other.group.position.x,z:other.group.position.z,radius:r.slot.manualPlacement?characterBodyRadius(other.radius):other.radius+.08}));
+          if(canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
             r.group.position.set(next.x,dest.y,next.z);walk.heading=Math.atan2(dx,dz);moving=amount>0;walk.phase+=amount*17;
             if(distance<.015||amount>=distance){walk.node=walk.route.shift();if(!walk.route.length)walk.wait=2+(walk.sequence%4);}
           }else walk.wait=.7;

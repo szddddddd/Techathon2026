@@ -19,7 +19,7 @@ async function moveTo(x,z){const p=await page.evaluate(({x,z})=>{const s=__chara
 async function end(){await page.mouse.up();await page.waitForFunction(()=>!__characterPlacement.snapshot().active);return snapshot();}
 async function safeDestination(id){return page.evaluate(id=>{
  const r=__characterPlacement.snapshot().characters.find(r=>r.id===id),[x,,z]=r.position;
- for(const radius of [1.4,2,2.6,3.3,4.2])for(let a=0;a<Math.PI*2;a+=Math.PI/8){const nx=x+Math.cos(a)*radius,nz=z+Math.sin(a)*radius;if(__characterPlacement.inspect(id,nx,nz).ok)return{x:nx,z:nz};}return null;
+ for(const radius of [1.4,2,2.6,3.3,4.2])for(let a=Math.PI/2;a<Math.PI*2.5;a+=Math.PI/8){const nx=x+Math.cos(a)*radius,nz=z+Math.sin(a)*radius;if(__characterPlacement.inspect(id,nx,nz).ok&&[[.7,0],[-.7,0],[0,.7],[0,-.7]].every(([dx,dz])=>__characterPlacement.inspect(id,nx+dx,nz+dz).ok))return{x:nx,z:nz};}return null;
 },id);}
 try{
  await page.goto('http://localhost:8080/');await page.waitForFunction(()=>window.__characterPlacement&&window.__socialUI,null,{timeout:180000});

@@ -2,8 +2,9 @@
 // along their entire length, not only at the destination.
 export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
   const nodes=[{x:slot.x,z:slot.z,y:slot.y,links:[]}],seen=new Map([['0,0',0]]),queue=[[0,0,0]],padding=.12;
-  const safe=(x,z)=>context.inspect(x,z,slot.radius+padding,[],{walking:true});
-  if(!safe(slot.x,slot.z).ok)return {nodes,radius:slot.radius+padding};
+  const radius=slot.placementRadius??slot.radius+padding;
+  const safe=(x,z)=>context.inspect(x,z,radius,[],{walking:true,manual:!!slot.manualPlacement});
+  if(!safe(slot.x,slot.z).ok)return {nodes,radius};
   for(let q=0;q<queue.length;q++){
     const [ix,iz,index]=queue[q];
     for(const [dx,dz] of [[1,0],[0,1],[-1,0],[0,-1]]){
@@ -17,7 +18,7 @@ export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
       if(clear&&!a.links.includes(next)){a.links.push(next);nodes[next].links.push(index);}
     }
   }
-  return {nodes,radius:slot.radius+padding};
+  return {nodes,radius};
 }
 
 export function walkingRoute(graph,start,sequence=0){
@@ -29,10 +30,10 @@ export function walkingRoute(graph,start,sequence=0){
   while(end!==start){route.push(end);end=parents.get(end);}return route.reverse();
 }
 
-export function canWalkStep(position,next,radius,others){
+export function canWalkStep(position,next,radius,others,gap=.6){
   return others.every(other=>{
     const dx=next.x-position.x,dz=next.z-position.z,d=dx*dx+dz*dz;
     const t=d?Math.max(0,Math.min(1,((other.x-position.x)*dx+(other.z-position.z)*dz)/d)):0;
-    return Math.hypot(position.x+dx*t-other.x,position.z+dz*t-other.z)>=radius+other.radius+.6;
+    return Math.hypot(position.x+dx*t-other.x,position.z+dz*t-other.z)>=radius+other.radius+gap;
   });
 }

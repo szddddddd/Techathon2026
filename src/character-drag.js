@@ -34,7 +34,7 @@ export function createCharacterDrag({scene,camera,controls,canvas,pick,inspect,o
     gesture.candidate=candidate?{x:candidate.x,z:candidate.z,...check}:check;
     if(check.ok)record.group.position.set(candidate.x,check.y+.16,candidate.z);
     else record.group.position.copy(gesture.origin).add(new THREE.Vector3(0,.16,0));
-    marker.visible=!!candidate;marker.scale.setScalar(record.radius+.2);if(candidate)marker.position.set(candidate.x,(check.y??gesture.origin.y)+.035,candidate.z);marker.material.color.set(check.ok?0xa7d58c:0xd78b71);
+    marker.visible=!!candidate;marker.scale.setScalar(record.bodyRadius+.08);if(candidate)marker.position.set(candidate.x,(check.y??gesture.origin.y)+.035,candidate.z);marker.material.color.set(check.ok?0xa7d58c:0xd78b71);
     record.ring.material.color.set(check.ok?0xcce5ad:0xe9aa8e);
     hint.dataset.valid=String(check.ok);hint.querySelector('strong').textContent=check.ok?'松手，放在这里':reasons[check.reason]||'这里暂时放不下';hint.querySelector('span').textContent='Esc 取消 · 位置会自动保存';
   }
@@ -43,6 +43,7 @@ export function createCharacterDrag({scene,camera,controls,canvas,pick,inspect,o
     // Flush old orbit damping without letting it move the restored camera.
     controls.enableDamping=false;controls.update();freeze();controls.enableDamping=current.damping;controls.enabled=current.enabled;
     current.record.placing=false;current.record.ring.visible=false;current.record.outline.visible=false;current.record.ring.material.color.set(0xffe3a0);
+    current.record.group.updateMatrixWorld(true);
     gesture=null;marker.visible=false;hint.hidden=true;canvas.classList.remove('placing-character');canvas.style.cursor='';
     if(canvas.hasPointerCapture(current.id))canvas.releasePointerCapture(current.id);
   }
