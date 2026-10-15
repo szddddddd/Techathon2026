@@ -16,7 +16,8 @@
     "test:anchors": "node scripts/test-social-anchors.mjs",
     "test:camera": "node scripts/test-camera-pan.mjs",
     "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs",
-    "test:pet": "node scripts/test-web-pet.mjs"
+    "test:pet": "node scripts/test-web-pet.mjs",
+    "test:drag": "node scripts/test-character-drag.mjs"
   },
   "keywords": [],
   "author": "",

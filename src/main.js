@@ -35,9 +35,11 @@ const generated=rodinAssets?placeRodinProps(scene,rodinAssets):null;
 const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});
 const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
 const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
-let socialUI;
-const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id)});
-const store=captureIndex?null:await createSocialStore();
+let socialUI,store;
+const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
+store=captureIndex?null:await createSocialStore();
+characters.setPlacements(store?.state.characterPositions);
+window.__characterPlacement=characters.placement;
 socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls});
 if(!captureIndex){
   window.__webPet=createWebPet({store,onOpenFriend:id=>socialUI.openFriend(id)});

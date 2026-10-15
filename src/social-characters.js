@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {buildWalkingGraph,walkingRoute,canWalkStep} from './companion-walk.js';
 import {WALKWAYS,distanceToSegment} from './layout.js';
+import {createCharacterDrag} from './character-drag.js';
 
 const ANIMALS=['kangaroo','fox','rabbit','bear'];
 const PREFERRED={kangaroo:[-5.9,-3],fox:[-9.5,5.4],rabbit:[-6,7.5],bear:[8,4.4]};
@@ -138,14 +139,14 @@ export function createCharacterPlaceholder(friend){
   root.userData.placeholder=true;return root;
 }
 
-export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,reduced}){
+export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced}){
   const context=createPlacementContext({scene,terrain,generated});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
   const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster();
   await Promise.all(ANIMALS.map(async animal=>{
     try{const gltf=await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`);models.set(animal,gltf.scene);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
   }));
-  let selected=null,saved=null,transition=null,lastOcclusion=0,pointerDown=null,anchors=[];
+  let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={};
   const isReduced=()=>typeof reduced==='boolean'?reduced:!!reduced?.matches;
   const audit={method:'Ground disk raycasts; actual obstacle triangles clipped to 2.27–4.45m; body radius plus 0.35m; WALKWAYS; 0.6m inter-character separation.',slots:[],missingModels:ANIMALS.filter(a=>!models.has(a)),unplaced:[]};
   function create(friend){
@@ -178,17 +179,34 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     group.traverse(o=>{o.userData.socialCharacter=true;o.userData.friendId=friend.id;});root.add(group);
     return {friend,group,bodyHolder,ring,outline,motes,motePositions,height,radius:Math.max(.35,radius),spawn:performance.now(),occluded:false,gait,walk:null};
   }
+  function resetWalk(record,slot){
+    record.slot=slot;const graph=buildWalkingGraph(context,slot);
+    record.walk={graph,node:0,route:[],sequence:slot.id.length,wait:4,phase:0,heading:record.walk?.heading??.35,speed:.24+(slot.id.length%3)*.025};
+  }
+  function refreshAudit(){
+    audit.slots=[...records.values()].map(r=>r.slot);
+    audit.unplaced=audit.slots.filter(s=>s?.unplaced).map(s=>s.id);
+    audit.walking=[...records.values()].map(r=>({id:r.friend.id,nodes:r.walk?.graph.nodes.length||0,edges:r.walk?.graph.nodes.reduce((n,p)=>n+p.links.length,0)||0}));
+  }
   function sync(friends){
     const visible=friends.slice(0,8),wanted=new Set(visible.map(f=>f.id));
     for(const [id,record] of records)if(!wanted.has(id)){record.group.removeFromParent();records.delete(id);}
-    for(const friend of visible)if(!records.has(friend.id))records.set(friend.id,create(friend));
-    const slots=pickCharacterSlots(context,visible.map(f=>({...f,radius:records.get(f.id).radius})));
-    for(const slot of slots){const r=records.get(slot.id);r.slot=slot;r.group.visible=!slot.unplaced;if(!slot.unplaced){r.group.position.set(slot.x,slot.y,slot.z);const graph=buildWalkingGraph(context,slot);r.walk={graph,node:0,route:[],sequence:slot.id.length,wait:.8+(slot.id.length%4)*.7,phase:0,heading:.35,speed:.24+(slot.id.length%3)*.025};}}
-    audit.walking=[...records.values()].map(r=>({id:r.friend.id,nodes:r.walk?.graph.nodes.length||0,edges:r.walk?.graph.nodes.reduce((n,p)=>n+p.links.length,0)||0}));
-    audit.slots=slots;audit.unplaced=slots.filter(s=>s.unplaced).map(s=>s.id);
-    scene.updateMatrixWorld(true);
-    if(selected&&!wanted.has(selected))restore();
-    return slots;
+    const used=[...records.values()].filter(r=>r.group.visible&&r.slot&&!r.slot.unplaced).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12}));
+    const order=visible.slice().sort((a,b)=>Number(!!savedPlacements[b.id])-Number(!!savedPlacements[a.id]));
+    for(const friend of order){
+      let record=records.get(friend.id);if(record?.slot&&!record.slot.unplaced)continue;
+      if(!record){record=create(friend);records.set(friend.id,record);}
+      const custom=savedPlacements[friend.id];let slot;
+      if(custom&&Number.isFinite(custom.x)&&Number.isFinite(custom.z)){
+        const check=context.inspect(custom.x,custom.z,record.radius+.12,used);
+        if(check.ok)slot={id:friend.id,animal:friend.animal,x:custom.x,y:check.y,z:custom.z,radius:record.radius,height:record.height};
+      }
+      if(!slot){const reserved={inspect:(x,z,radius,others,options)=>context.inspect(x,z,radius,[...used,...others],options)};slot=pickCharacterSlots(reserved,[{...friend,radius:record.radius}])[0];}
+      record.group.visible=!slot.unplaced;record.slot=slot;
+      if(!slot.unplaced){record.group.position.set(slot.x,slot.y,slot.z);resetWalk(record,slot);used.push({x:slot.x,z:slot.z,radius:slot.radius+.12});}
+    }
+    refreshAudit();scene.updateMatrixWorld(true);
+    if(selected&&!wanted.has(selected))restore();return audit.slots;
   }
   function blocked(from,to){const delta=to.clone().sub(from),distance=delta.length();ray.set(from,delta.normalize());ray.far=Math.max(0,distance-.12);return ray.intersectObjects(context.occluders,false).length>0;}
   function animateCamera(position,target,done){transition={start:performance.now(),fromPosition:camera.position.clone(),fromTarget:controls.target.clone(),position,target,done};controls.enabled=false;}
@@ -206,22 +224,25 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     selected=null;for(const r of records.values()){r.ring.visible=false;r.outline.visible=false;}
     if(saved){const original=saved;animateCamera(original.position,original.target,()=>{controls.enabled=original.enabled;saved=null;});}
   }
-  function onDown(event){if(event.button===0)pointerDown={x:event.clientX,y:event.clientY,id:event.pointerId};}
-  function onUp(event){
-    if(!pointerDown||pointerDown.id!==event.pointerId)return;
-    const previous=pointerDown;pointerDown=null;if(Math.hypot(event.clientX-previous.x,event.clientY-previous.y)>6)return;
-    const rect=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1),camera);
-    ray.far=Infinity;
+  function pick(x,y){
+    const rect=renderer.domElement.getBoundingClientRect();camera.updateMatrixWorld(true);
+    ray.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,1-(y-rect.top)/rect.height*2),camera);ray.far=Infinity;
     const hit=ray.intersectObjects([...records.values()].filter(r=>r.group.visible).map(r=>r.bodyHolder),true).find(h=>h.object.isMesh);
-    if(hit){
-      ray.far=Math.max(0,hit.distance-.02);
-      if(ray.intersectObjects(context.occluders,false).length)return;
-      const id=hit.object.userData.friendId;if(id)onSelect?.(id);
-    }
+    if(!hit)return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
+    return records.get(hit.object.userData.friendId)||null;
   }
-  renderer.domElement.addEventListener('pointerdown',onDown);renderer.domElement.addEventListener('pointerup',onUp);
-  const cancelPointer=()=>{pointerDown=null;};renderer.domElement.addEventListener('pointercancel',cancelPointer);
+  function inspectPlacement(record,x,z){return context.inspect(x,z,record.radius+.12,[...records.values()].filter(r=>r!==record&&r.group.visible).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12})));}
+  const drag=createCharacterDrag({scene,camera,controls,canvas:renderer.domElement,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:onPlace,onError:onPlacementError,onPlaced(record,point){
+    const slot={...record.slot,...point};savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
+  }});
+  const placement={
+    snapshot(){return{...drag.snapshot(),characters:[...records.values()].map(r=>({id:r.friend.id,position:r.group.position.toArray(),home:r.slot,radius:r.radius,walking:!!r.walk?.route.length}))};},
+    project(x,y,z){const p=new THREE.Vector3(x,y,z).project(camera),rect=renderer.domElement.getBoundingClientRect();return{x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(.5-p.y*.5)*rect.height};},
+    inspect(id,x,z){const r=records.get(id);return r?inspectPlacement(r,x,z):{ok:false};},
+    pick(x,y){return pick(x,y)?.friend.id||null;},
+  };
   function update(now,dt){
+    drag.update();
     const mobileFocus=selected&&renderer.domElement.clientWidth<=850;
     if(mobileFocus){const w=renderer.domElement.clientWidth,h=renderer.domElement.clientHeight;if(!camera.view?.enabled||camera.view.offsetY!==h*.26)camera.setViewOffset(w,h,0,h*.26,w,h);}
     else if(camera.view?.enabled)camera.clearViewOffset();
@@ -234,7 +255,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       if(!r.group.visible)continue;
       const seconds=now/1000,age=(now-r.spawn)/1000,motion=isReduced()?0:1;
       const walk=r.walk,delta=Math.min(dt||0,.05);let moving=false;
-      if(walk&&selected!==id&&motion&&!document.hidden&&age>1){
+      if(walk&&!drag.busy&&selected!==id&&motion&&!document.hidden&&age>1){
         walk.wait=Math.max(0,walk.wait-delta);
         if(!walk.route.length&&walk.wait===0){walk.route=walkingRoute(walk.graph,walk.node,walk.sequence++);if(!walk.route.length)walk.wait=3;}
         if(walk.route.length&&walk.wait===0){
@@ -254,7 +275,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       r.bodyHolder.position.y=age<.7?Math.sin(age/.7*Math.PI)*.16*motion:messageAge<.55?Math.sin(messageAge/.55*Math.PI)*.12*motion:0;
       const facing=Math.atan2(camera.position.x-r.group.position.x,camera.position.z-r.group.position.z);
       // Shortest-angle turn follows the route, or faces the camera during a chat.
-      const desired=selected===id?facing:(walk?.heading??.35),angle=Math.atan2(Math.sin(desired-r.bodyHolder.rotation.y),Math.cos(desired-r.bodyHolder.rotation.y));
+      const desired=selected===id||r.placing?facing:(walk?.heading??.35),angle=Math.atan2(Math.sin(desired-r.bodyHolder.rotation.y),Math.cos(desired-r.bodyHolder.rotation.y));
       r.bodyHolder.rotation.y+=angle*Math.min(1,delta*3);
       r.motes.visible=age<1.7&&!isReduced();
       if(r.motes.visible){for(let i=0;i<12;i++){const a=i*2.399+age*2;r.motePositions[i*3]=Math.cos(a)*(r.radius+.15);r.motePositions[i*3+1]=.15+age*.8+i%3*.15;r.motePositions[i*3+2]=Math.sin(a)*(r.radius+.15);}r.motes.geometry.attributes.position.needsUpdate=true;r.motes.material.opacity=Math.max(0,1-age/1.7);}
@@ -264,6 +285,6 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       const p=world.project(camera);anchors.push({id,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder});
     }
   }
-  function dispose(){renderer.domElement.removeEventListener('pointerdown',onDown);renderer.domElement.removeEventListener('pointerup',onUp);renderer.domElement.removeEventListener('pointercancel',cancelPointer);root.removeFromParent();records.clear();}
-  return {sync,focus,restore,update,pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  function dispose(){drag.dispose();root.removeFromParent();records.clear();}
+  return {sync,focus,restore,update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

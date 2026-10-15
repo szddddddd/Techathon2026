@@ -21,6 +21,12 @@ assert.ok(store.state.statuses.tuantuan.expiresAt>Date.now());
 await assert.rejects(store.addFriend('unknown'));
 await assert.rejects(store.sendMessage('ali',{type:'text',text:'not a friend'}));
 await assert.rejects(store.sendMessage('tuantuan',{type:'text',text:'   '}));
+await store.setCharacterPosition('tuantuan',{x:-5.5,z:4.2});
+await assert.rejects(store.setCharacterPosition('ali',{x:1,z:2}));
+await assert.rejects(store.setCharacterPosition('tuantuan',{x:NaN,z:2}));
+await assert.rejects(store.setCharacterPosition('tuantuan',{x:1,z:Infinity}));
+await assert.rejects(store.setCharacterPosition('tuantuan',{x:100,z:2}));
+assert.deepEqual(store.state.characterPositions.tuantuan,{x:-5.5,z:4.2});
 
 await Promise.all(Array.from({length:12},(_,i)=>store.sendMessage('tuantuan',{type:'text',text:`message ${i}`})));
 assert.equal(store.state.messages.length,12,'queued commits must not overwrite messages');
