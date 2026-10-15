@@ -165,7 +165,7 @@ function buildMenu() {
 if(singleInstance)app.whenReady().then(async () => {
   loadSettings();
   try { const data=JSON.parse(require('node:fs').readFileSync(path.join(app.getPath('userData'),'pet-social-snapshot.json'),'utf8'));if(Array.isArray(data.state?.friends)&&Array.isArray(data.state?.messages)){latestState=data.state;unreadCount=Number(data.unreadCount)||0;} } catch (_) {}
-  try { webBridge=await startPetBridge({root:ROOT,port:Number(process.env.FOREST_PET_PORT)||47831,onState:acceptWebState,onShow:showDesktopPet}); }
+  try { webBridge=await startPetBridge({root:ROOT,port:Number(process.env.FOREST_PET_PORT)||47831,onState:acceptWebState,onShow:showDesktopPet,onHide:()=>{petWindow?.hide();tray?.setContextMenu(buildMenu());},isVisible:()=>!!petWindow&&!petWindow.isDestroyed()&&petWindow.isVisible()}); }
   catch(error) { require('electron').dialog.showErrorBox('桌宠暂时无法启动',`本机桌宠连接未能建立：${error.message}`);app.quit();return; }
   tray = new Tray(createIcon());
   tray.setContextMenu(buildMenu());
@@ -178,6 +178,15 @@ if(singleInstance)app.whenReady().then(async () => {
   });
   ipcMain.on('social-state', (event, payload) => { if (event.sender !== mainWindow?.webContents || !validState(payload)) return; acceptWebState(payload); tray.setContextMenu(buildMenu()); });
   ipcMain.on('pet-open-main', (event, friendId) => { if (event.sender === petWindow?.webContents && validFriend(friendId)) focusMain(friendId); });
+  ipcMain.handle('get-desktop-pet-visible', event => {
+    if (event.sender !== mainWindow?.webContents) return false;
+    return !!petWindow && !petWindow.isDestroyed() && petWindow.isVisible();
+  });
+  ipcMain.handle('set-desktop-pet-visible', (event, visible) => {
+    if (event.sender !== mainWindow?.webContents || typeof visible !== 'boolean') return false;
+    if (visible) showDesktopPet(); else { petWindow?.hide(); tray?.setContextMenu(buildMenu()); }
+    return !!petWindow && !petWindow.isDestroyed() && petWindow.isVisible();
+  });
   ipcMain.on('show-desktop-pet', event => { if (event.sender !== mainWindow?.webContents) return; if (!petWindow || petWindow.isDestroyed()) createPetWindow(); else petWindow.showInactive(); tray?.setContextMenu(buildMenu()); broadcast(); });
   ipcMain.on('pet-context-menu', event => { if (event.sender === petWindow?.webContents && !petWindow.isDestroyed()) buildMenu().popup({ window: petWindow }); });
   // Read cursor and window positions in the same DIP coordinate system. Moving a

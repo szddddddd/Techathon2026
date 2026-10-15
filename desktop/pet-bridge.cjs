@@ -4,7 +4,7 @@ const path = require('node:path');
 const { webPort, validState } = require('./runtime-config.cjs');
 
 // Loopback only. Only this project's web origin can exchange social state.
-function startPetBridge({ root, port = 47831, onState, onShow }) {
+function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}, isVisible = () => false }) {
   let server, currentClient = null, pendingOpen = null, lastSeen = 0, sequence = 0;
   const configuredPort = webPort(root);
   const origins = new Set([`http://localhost:${configuredPort}`, `http://127.0.0.1:${configuredPort}`]);
@@ -22,7 +22,7 @@ function startPetBridge({ root, port = 47831, onState, onShow }) {
         if (url.pathname === '/api/status' && req.method === 'GET') {
           const client = url.searchParams.get('client');
           if (client && client === currentClient) lastSeen = Date.now();
-          return reply(res, 200, {online:true,instance,open:client === currentClient ? pendingOpen : null});
+          return reply(res, 200, {online:true,instance,visible:!!isVisible(),open:client === currentClient ? pendingOpen : null});
         }
         if (req.method !== 'POST') return reply(res, 405, {error:'method not allowed'});
         let raw = '', size = 0;
@@ -35,7 +35,8 @@ function startPetBridge({ root, port = 47831, onState, onShow }) {
             if(currentClient !== data.client)pendingOpen=null;
             currentClient=data.client;lastSeen=Date.now();onState(data);
           } else if (url.pathname === '/api/show') onShow();
-          else if (url.pathname === '/api/ack') { if(data.client===currentClient && data.sequence===pendingOpen?.sequence)pendingOpen=null; }
+          else if (url.pathname === '/api/hide') onHide();
+           else if (url.pathname === '/api/ack') { if(data.client===currentClient && data.sequence===pendingOpen?.sequence)pendingOpen=null; }
           else return reply(res,404,{error:'not found'});
           return reply(res,200,{ok:true,instance});
         } catch { return reply(res,400,{error:'invalid request'}); }

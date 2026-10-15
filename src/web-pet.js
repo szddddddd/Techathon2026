@@ -2,44 +2,66 @@ import { petPayload } from './pet-state.js';
 
 export function createWebPet({store,onOpenFriend,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
   const root=document.createElement('aside');root.id='web-pet';root.setAttribute('aria-label','Windows 桌宠');
-  root.innerHTML=`<button id="pet-toggle" type="button" title="在 Windows 桌面唤出桌宠"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4C9 3 4 8 5 14s10 8 13 0c1-3 0-6 1-10Z"/><path d="m7 18 8-9M10 14l-1-4m3 2 4 1"/></svg><span>桌宠</span><b hidden></b></button><p id="pet-launch-status" role="status" hidden></p>`;
+  root.innerHTML=`<button id="pet-toggle" type="button" role="switch" aria-checked="false" title="打开桌宠"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4C9 3 4 8 5 14s10 8 13 0c1-3 0-6 1-10Z"/><path d="m7 18 8-9M10 14l-1-4m3 2 4 1"/></svg><span>桌宠</span><i class="pet-switch" aria-hidden="true"></i><b hidden></b></button><p id="pet-launch-status" role="status" hidden></p>`;
   document.body.append(root);
   const toggle=root.querySelector('#pet-toggle'),notice=root.querySelector('#pet-launch-status');
   let client;try{client=sessionStorage.getItem('forest-desktop-client');if(!client){client=crypto.randomUUID();sessionStorage.setItem('forest-desktop-client',client);}}catch{client=crypto.randomUUID();}
-  let online=false,instance=null,lastSignature='',launching=false,disposed=false,noticeTimer,syncTimer,polling=false,lastOpen=0;
+  let online=false,visible=false,initialShow=true,instance=null,lastSignature='',launching=false,disposed=false,noticeTimer,syncTimer,polling=false,lastOpen=0;
   async function request(route,data,timeout=800){
     const response=await fetch(bridgeOrigin+'/api/'+route,{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:undefined,body:data?JSON.stringify(data):undefined,signal:AbortSignal.timeout(timeout)});
     if(!response.ok)throw new Error('桌宠连接暂不可用');return response.json();
   }
   function say(text){notice.textContent=text;notice.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{notice.hidden=true;},6500);}
   function payload(){return {client,...petPayload(store.state)};}
-  function badge(){const count=payload().unreadCount,b=toggle.querySelector('b');b.hidden=!count;b.textContent=count>99?'99+':count;toggle.setAttribute('aria-label',`唤出电脑桌宠${count?`，${count}条未读消息`:''}`);}
+  function badge(){const count=payload().unreadCount,b=toggle.querySelector('b');b.hidden=!count;b.textContent=count>99?'99+':count;toggle.setAttribute('aria-checked',String(visible));toggle.title=visible?'关闭桌宠':'打开桌宠';toggle.setAttribute('aria-label',`桌宠${visible?'已打开':'已关闭'}${count?`，${count}条未读消息`:''}`);}
   async function sync(){
     if(disposed||!online||window.desktopMain)return;
     const data=payload(),signature=JSON.stringify(data);if(lastSignature===signature)return;
     try{await request('state',data);lastSignature=signature;}catch{online=false;lastSignature='';}
   }
+  async function setVisible(value){
+    if(window.desktopMain?.setPetVisible)visible=await window.desktopMain.setPetVisible(value);
+    else{await request(value?'show':'hide',{});visible=value;}
+    if(!disposed)badge();
+  }
   async function poll(){
-    if(disposed||window.desktopMain||polling)return;
+    if(disposed||polling||launching)return;
     polling=true;
     try{
-      const status=await request('status?client='+encodeURIComponent(client));online=true;
-      if(instance!==status.instance){instance=status.instance;lastSignature='';lastOpen=0;}
-      await sync();
-      if(status.open&&status.open.sequence>lastOpen){lastOpen=status.open.sequence;window.focus();if(store.state.friends.includes(status.open.friendId))await onOpenFriend(status.open.friendId);await request('ack',{client,sequence:lastOpen});}
-    }catch{online=false;lastSignature='';}finally{polling=false;}
+      if(window.desktopMain?.getPetVisible){online=true;visible=await window.desktopMain.getPetVisible();}
+      else{
+        const status=await request('status?client='+encodeURIComponent(client));online=true;visible=!!status.visible;
+        if(instance!==status.instance){instance=status.instance;lastSignature='';lastOpen=0;}
+        await sync();
+        if(status.open&&status.open.sequence>lastOpen){lastOpen=status.open.sequence;window.focus();if(store.state.friends.includes(status.open.friendId))await onOpenFriend(status.open.friendId);await request('ack',{client,sequence:lastOpen});}
+      }
+      if(initialShow&&!disposed){initialShow=false;await setVisible(true);}
+    }catch{online=false;visible=false;lastSignature='';}finally{polling=false;if(!disposed)badge();}
   }
   async function launch(){
-    if(launching)return;launching=true;toggle.disabled=true;
+    if(launching||disposed)return;initialShow=false;launching=true;toggle.disabled=true;
     try{
-      if(window.desktopMain?.showPet){window.desktopMain.showPet();say('已唤出 Windows 桌宠');return;}
-      try{await request('status',undefined,350);online=true;await sync();await request('show',{});say('已唤出桌宠，看看电脑桌面右下角');return;}catch{}
+      if(window.desktopMain?.setPetVisible){await setVisible(true);return;}
+      try{await request('status',undefined,350);online=true;await sync();await setVisible(true);return;}catch{}
       say('正在唤出 Windows 桌宠，请确认浏览器的「打开应用」提示');launchProtocol();
-      let connected=false;for(let i=0;i<18&&!disposed;i++){await new Promise(resolve=>setTimeout(resolve,750));await poll();if(online){await request('show',{});connected=true;break;}}
-      if(connected)say('桌宠已在电脑桌面打开');else if(!disposed)say('尚未连接到桌宠。首次使用请运行项目中的 npm run desktop:install，然后再点击桌宠。');
-    }catch(error){say('桌宠未能唤出，请重试。');onNotice(error.message);}finally{launching=false;toggle.disabled=false;}
+      let connected=false;
+      for(let i=0;i<18&&!disposed;i++){
+        await new Promise(resolve=>setTimeout(resolve,750));if(disposed)break;
+        try{await request('status');online=true;await sync();await setVisible(true);connected=true;break;}catch{}
+      }
+      if(connected)say('桌宠已打开');else if(!disposed)say('尚未连接到桌宠。首次使用请运行项目中的 npm run desktop:install，然后再点击桌宠。');
+    }catch(error){say('桌宠未能打开，请重试。');onNotice(error.message);}finally{launching=false;if(!disposed){toggle.disabled=false;badge();}}
   }
-  toggle.addEventListener('click',launch);
+  async function change(){
+    if(launching||polling)return;
+    initialShow=false;launching=true;toggle.disabled=true;
+    // Read native visibility at click time so tray changes cannot invert the action.
+    try{visible=window.desktopMain?.getPetVisible?await window.desktopMain.getPetVisible():!!(await request('status')).visible;}catch{visible=false;}
+    if(disposed)return;
+    if(!visible){launching=false;return launch();}
+    try{await setVisible(false);}catch(error){say('桌宠未能关闭，请重试。');onNotice(error.message);}finally{launching=false;if(!disposed){toggle.disabled=false;badge();}}
+  }
+  toggle.addEventListener('click',change);
   const unsubscribe=store.subscribe(()=>{badge();clearTimeout(syncTimer);syncTimer=setTimeout(sync,100);});
   badge();poll();const interval=setInterval(poll,1500);
   return{launch,get connected(){return online;},dispose(){disposed=true;unsubscribe();clearInterval(interval);clearTimeout(noticeTimer);clearTimeout(syncTimer);root.remove();}};
