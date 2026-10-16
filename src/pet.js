@@ -10,6 +10,7 @@ const FRIEND_META = {
 };
 const query = new URLSearchParams(location.search);
 const minimalMode = query.get('mode') === 'minimal';
+document.documentElement.dataset.petMode = minimalMode ? 'minimal' : 'full';
 const embedded = query.has('embedded') && parent !== window;
 const parentOrigin = location.protocol === 'file:' ? '*' : location.origin;
 const sendParent = message => parent.postMessage({channel:'forest-web-pet',...message}, parentOrigin);
@@ -239,10 +240,13 @@ function renderNotifications(items) {
       const node = document.createElement('button'); node.type = 'button'; node.className = 'notice-role';
       node.innerHTML = `<span class="role" aria-hidden="true">${meta.emoji}</span><span class="notice"></span>`;
       node.dataset.friend = item.friendId;
+      if(!minimalMode){
       const tag = document.createElement('span'); tag.className = 'friend-tag'; tag.textContent = meta.name; node.append(tag);
       const letter = document.createElement('span'); letter.className = 'letter';
       const sender = document.createElement('strong'); sender.textContent = meta.name;
-      const summary = document.createElement('span'); summary.className = 'summary'; letter.append(sender, summary); node.append(letter); notices.append(node);
+      const summary = document.createElement('span'); summary.className = 'summary'; letter.append(sender, summary); node.append(letter);
+      }
+      notices.append(node);
       record = { node, model:null, index, position:new THREE.Vector3(slots[index].x, slots[index].y, slots[index].z), scale:slots[index].scale, messageId:null, letterUntil:0, acknowledgedAt:0 };
       notificationRecords.set(item.friendId, record); setPhase(record, 'entering'); loadRole(item.friendId, record, index);
     } else if (record.phase === 'leaving') setPhase(record, 'entering');
@@ -250,9 +254,11 @@ function renderNotifications(items) {
     record.messageId = item.id; record.text = item.text; record.index = index;
     record.node.dataset.slot = String(index);
     record.node.querySelector('.notice').textContent = meta.name;
-    record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
-    record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
-    record.node.setAttribute('aria-label', `打开${meta.name}会话：${item.text || '有一条新消息'}`);
+    if(!minimalMode){
+      record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
+      record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
+    }
+    record.node.setAttribute('aria-label', minimalMode ? `打开${meta.name}会话` : `打开${meta.name}会话：${item.text || '有一条新消息'}`);
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
@@ -413,7 +419,7 @@ function frame(now) {
     record.node.style.height = `${Math.max(12,(head.y - foot.y) * 50)}%`;
     record.node.style.setProperty('--visibility', String(visibility));
     record.node.style.zIndex = String(record.index === 0 ? 3 : 2);
-    record.node.dataset.letter = String(record === letterRecord && visibility > .9);
+    record.node.dataset.letter = String(!minimalMode && record === letterRecord && visibility > .9);
     record.node.dataset.hovered = String(hover);
     record.node.tabIndex = record.phase === 'leaving' ? -1 : 0;
   }

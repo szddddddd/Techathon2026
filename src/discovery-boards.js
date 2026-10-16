@@ -39,12 +39,13 @@ export function createDiscoveryBoards({camera,facilities,contentUI,player,before
     for(const property of ['left','top','width','height'])hero.style[property]=r[property]+'px';
     hero.style.opacity=String(reverse?Math.sin(Math.PI*p):ease(p/.12)*(1-ease((p-.78)/.22)));
   }
-  function open(nextKind,route){
+  async function open(nextKind,route){
+    await beforeFocus?.();
     finish?.(false);finish=null;
     if(kind){facilities.setEmphasis(kind,0);facilities.setBoardActive(kind,false);}
     contentUI.stopScene();frame.hidden=true;hero.hidden=true;player.pause();
     kind=nextKind==='accounts'?'accounts':'scene-video';openingRoute=route;start=performance.now();restoreStarted=false;
-    setStage('approaching');document.body.classList.add('in-scene-board');beforeFocus?.();
+    setStage('approaching');document.body.classList.add('in-scene-board');
     facilities.setBoardActive(kind,false);facilities.setEmphasis(kind,1);facilities.focus(kind,{duration:reduced()?0:750});
     audit.entries.push({kind,at:start,original:facilities.pose()});
     return new Promise(resolve=>{finish=resolve;});

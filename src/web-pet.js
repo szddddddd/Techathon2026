@@ -2,8 +2,9 @@ import {petPayload} from './pet-state.js';
 export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
 
   const root=document.createElement('aside');root.id='web-pet';root.setAttribute('aria-label','Windows 桌宠');
-  root.innerHTML=`<button id="pet-toggle" type="button" role="switch" aria-checked="false" title="打开桌宠"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4C9 3 4 8 5 14s10 8 13 0c1-3 0-6 1-10Z"/><path d="m7 18 8-9M10 14l-1-4m3 2 4 1"/></svg><span>桌宠</span><i class="pet-switch" aria-hidden="true"></i><b hidden></b></button><p id="pet-launch-status" role="status" hidden></p>`;
-  document.body.append(root);
+  root.innerHTML=`<button id="pet-toggle" type="button" role="switch" aria-checked="false" title="打开桌宠"><span>♧ 桌宠</span><i class="pet-switch" aria-hidden="true"></i></button><p id="pet-launch-status" role="status" hidden></p>`;
+  // Keep a single live control mounted inside Settings; never expose a scene shortcut.
+  root.hidden=true;document.body.append(root);
   const toggle=root.querySelector('#pet-toggle'),notice=root.querySelector('#pet-launch-status');
   let client;try{client=sessionStorage.getItem('forest-desktop-client');if(!client){client=crypto.randomUUID();sessionStorage.setItem('forest-desktop-client',client);}}catch{client=crypto.randomUUID();}
   let online=false,visible=false,instance=null,lastSignature='',launching=false,disposed=false,noticeTimer,syncTimer,polling=false,lastOpen=0;
@@ -13,7 +14,7 @@ export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0
   }
   function say(text){notice.textContent=text;notice.hidden=false;ui?.transition(notice);clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{notice.hidden=true;},6500);}
   function payload(){return {client,...petPayload(store.state)};}
-  function badge(){const count=payload().unreadCount,b=toggle.querySelector('b');b.hidden=!count;b.textContent=count>99?'99+':count;toggle.setAttribute('aria-checked',String(visible));toggle.title=visible?'关闭桌宠':'打开桌宠';toggle.setAttribute('aria-label',`桌宠${visible?'已打开':'已关闭'}${count?`，${count}条未读消息`:''}`);}
+  function badge(){toggle.setAttribute('aria-checked',String(visible));toggle.title=visible?'关闭桌宠':'打开桌宠';toggle.setAttribute('aria-label',`桌宠${visible?'已打开':'已关闭'}`);}
   let visibilityRevision=0,visibilityStream=null;
   function receiveVisibility(value){
     if(disposed||typeof value!=='boolean')return;
@@ -74,5 +75,5 @@ export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0
   toggle.addEventListener('click',change);
   const unsubscribe=store.subscribe(()=>{badge();clearTimeout(syncTimer);syncTimer=setTimeout(sync,100);});
   badge();poll();const interval=setInterval(poll,1500);
-  return{launch,get connected(){return online;},dispose(){disposed=true;offVisibility?.();visibilityStream?.close();unsubscribe();clearInterval(interval);clearTimeout(noticeTimer);clearTimeout(syncTimer);root.remove();}};
+  return{launch,mount(container){container.append(root);root.hidden=false;},get connected(){return online;},dispose(){disposed=true;offVisibility?.();visibilityStream?.close();unsubscribe();clearInterval(interval);clearTimeout(noticeTimer);clearTimeout(syncTimer);root.remove();}};
 }

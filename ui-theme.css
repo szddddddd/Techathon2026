@@ -30,8 +30,8 @@
 #social .ui-close,#discovery-dialog .ui-close,.valley-popover .ui-close,#social .ui-back{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;padding:0;border:0;border-radius:50%;background:#637b5910;color:#67775f;font:22px/1 var(--ui-font);cursor:pointer;letter-spacing:0}
 #social .ui-close:hover,#discovery-dialog .ui-close:hover,.valley-popover .ui-close:hover{background:#b77c6526;color:#8e5140}
 #social .ui-back{font-size:18px}
-#social #social-dialog,#social #compose-dialog,#social #content-share-dialog{position:fixed;inset:0;margin:auto;box-sizing:border-box;pointer-events:auto;padding:24px;width:min(540px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:auto;border-radius:22px;color:var(--ui-ink);scrollbar-width:thin}
-#social #social-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-24px -24px 22px;border-radius:22px 22px 0 0;position:sticky;top:-24px;z-index:4;backdrop-filter:blur(18px)}
+#social #social-dialog,#social #settings-dialog,#social #compose-dialog,#social #content-share-dialog{position:fixed;inset:0;margin:auto;box-sizing:border-box;pointer-events:auto;padding:24px;width:min(540px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:auto;border-radius:22px;color:var(--ui-ink);scrollbar-width:thin}
+#social #social-dialog>.ui-titlebar,#social #settings-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-24px -24px 22px;border-radius:22px 22px 0 0;position:sticky;top:-24px;z-index:4;backdrop-filter:blur(18px)}
 #social #social-dialog.public-moments-dialog{padding:0;width:min(740px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:hidden;background:var(--ui-paper)}
 #social #social-dialog.public-moments-dialog>.ui-titlebar{margin:0;position:relative;top:0}
 #social .public-moments-shell{max-height:calc(var(--ui-height,100dvh) - 205px);min-height:0}
@@ -39,7 +39,7 @@
 #social .public-moments-header small{display:none}
 #social .public-moments-header h2{font-size:20px}
 #social .public-moments-header p{font-size:12px;margin-top:5px}
-#social #compose-dialog::backdrop,#social #content-share-dialog::backdrop,#photo-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
+#social #settings-dialog::backdrop,#social #compose-dialog::backdrop,#social #content-share-dialog::backdrop,#photo-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
 #social #photo-dialog{position:fixed;inset:0;margin:auto;overflow:visible;border:0;padding:0;background:transparent;outline:0}
 #social #photo-dialog>.ui-close{position:absolute;right:10px;top:10px;z-index:2;background:#fafbf5ed}
 #social #photo-dialog img{max-height:86dvh;max-width:90vw;object-fit:contain;border-radius:18px;box-shadow:var(--ui-shadow)}
@@ -86,7 +86,7 @@
 .valley-popover>.ui-close{position:absolute;right:10px;top:10px}
 .valley-popover>.valley-eyebrow{padding-right:25px;display:block}
 .valley-return{min-height:44px;transition:background 140ms;bottom:105px}
-#pet-toggle{background:var(--ui-glass);border-color:var(--ui-line);min-height:44px;box-shadow:0 5px 22px #163b2420}
+#pet-toggle{min-height:44px}
 @media(hover:hover) and (pointer:fine){#social .dock-button:hover{transform:translateY(-4px) scale(1.06);background:#fff9}#social .dock-button:active{transform:translateY(-1px) scale(.96)}}
 @media(max-width:760px){
  #social .social-dock{bottom:max(12px,env(safe-area-inset-bottom));gap:2px;padding:6px;border-radius:22px}
@@ -99,8 +99,8 @@
  #social #moments-toggle{padding:6px;font-size:10px}
  #social .meeting-close{right:7px;top:8px}
  #social .meeting-title p{max-width:120px}
- #social #social-dialog,#social #compose-dialog,#social #content-share-dialog{width:calc(100vw - 24px);max-height:calc(var(--ui-height,100dvh) - 145px);padding:20px;border-radius:20px}
- #social #social-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-20px -20px 18px;top:-20px}
+ #social #social-dialog,#social #settings-dialog,#social #compose-dialog,#social #content-share-dialog{width:calc(100vw - 24px);max-height:calc(var(--ui-height,100dvh) - 145px);padding:20px;border-radius:20px}
+ #social #social-dialog>.ui-titlebar,#social #settings-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-20px -20px 18px;top:-20px}
  #social #social-dialog.public-moments-dialog{width:calc(100vw - 24px);padding:0;max-height:calc(var(--ui-height,100dvh) - 145px)}
  #social #social-dialog.public-moments-dialog>.ui-titlebar{margin:0;top:0}
  #social .public-moments-shell{max-height:calc(var(--ui-height,100dvh) - 195px)}
