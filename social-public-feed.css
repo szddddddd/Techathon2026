@@ -46,7 +46,6 @@
 #social .public-moments-end{padding:25px 25px 34px;text-align:center;font-size:10px;line-height:1.9;color:#a2ae97;letter-spacing:1px}
 #social .public-moments-end:before{content:'—';margin-right:12px;color:#c2ccb9}
 #social .public-moments-end:after{content:'—';margin-left:12px;color:#c2ccb9}
-#social .dock-button[data-action="public-moments"]{position:relative}
 #social #public-feed-unread{display:block;width:7px;height:7px;min-width:7px;padding:0;border-radius:50%;background:#b78a62;box-shadow:0 0 0 3px #fcfdf3;position:absolute;right:13px;top:9px;font-size:0}
 @media(max-width:760px){
   #social #social-dialog.public-moments-dialog{width:calc(100vw - 32px)}
@@ -87,8 +86,5 @@
   #social .public-moment-body .comment-form input{flex:1;min-width:95px;font-size:10px!important;padding:9px!important}
   #social .public-moment-body .comment-form .secondary{font-size:9px;padding:7px 9px}
   #social .public-moments-end{font-size:9px;padding-top:18px}
-  #social .social-dock{left:12px;right:12px;gap:7px}
-  #social .social-dock .dock-button{padding:10px 13px;gap:7px;letter-spacing:1px;font-size:11px!important}
-  #social .social-dock .dock-button>span{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){#social .public-moments-scroll{scroll-behavior:auto}}

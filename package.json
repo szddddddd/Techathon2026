@@ -1,17 +1,22 @@
 {
   "name": "world",
-  "version": "1.1.0",
+  "version": "1.3.1",
   "description": "林间来信：三维森林社交与 Windows 桌宠",
   "main": "desktop/main.cjs",
   "scripts": {
     "build": "node scripts/build.mjs",
     "start": "node scripts/serve.mjs",
     "desktop": "electron .",
-    "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs",
+    "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
+    "test:regression": "node scripts/run-regression.mjs",
     "audit:social": "node scripts/audit-social-characters.mjs",
     "record:discovery": "node scripts/record-discovery.mjs",
     "audit:discovery": "node scripts/audit-discovery.mjs",
+    "test:presence": "node scripts/test-presence-policy.mjs && node scripts/test-social-presence.mjs",
+    "test:actions": "node scripts/test-character-actions.mjs && node scripts/test-action-interactions.mjs",
+    "test:interactions": "node scripts/test-ui-interactions.mjs && node scripts/test-ui-edge-cases.mjs",
     "test:browser": "node scripts/test-discovery-browser.mjs",
+    "test:discovery-icons": "node scripts/test-discovery-scene-icons.mjs",
     "test:boards": "node scripts/test-discovery-boards.mjs",
     "test:anchors": "node scripts/test-social-anchors.mjs",
     "test:camera": "node scripts/test-camera-pan.mjs",
@@ -21,7 +26,9 @@
     "test:placement": "node scripts/test-placement-clearance.mjs",
     "desktop:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-desktop-launcher.ps1",
     "launch": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/launch.ps1",
-    "test:launch": "node scripts/test-launch.mjs"
+    "test:launch": "node scripts/test-launch.mjs",
+    "test:river": "node scripts/test-river.mjs && node scripts/test-river-browser.mjs",
+    "test:valley": "node scripts/test-valley.mjs && node scripts/test-valley-browser.mjs"
   },
   "keywords": [],
   "author": "",
@@ -31,9 +38,10 @@
     "three": "^0.180.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.10",
     "electron": "^36.3.2",
-    "fake-indexeddb": "^6.2.5"
+    "esbuild": "^0.25.10",
+    "fake-indexeddb": "^6.2.5",
+    "playwright": "^1.64.1"
   },
   "engines": {
     "node": ">=22"

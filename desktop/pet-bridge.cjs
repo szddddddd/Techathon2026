@@ -1,11 +1,13 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
+const { webPort, validState } = require('./runtime-config.cjs');
 
 // Loopback only. Only this project's web origin can exchange social state.
-function startPetBridge({ root, port = 47831, onState, onShow }) {
+function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}, isVisible = () => false }) {
   let server, currentClient = null, pendingOpen = null, lastSeen = 0, sequence = 0;
-  const origins = new Set(['http://localhost:8080', 'http://127.0.0.1:8080']);
+  const configuredPort = webPort(root);
+  const origins = new Set([`http://localhost:${configuredPort}`, `http://127.0.0.1:${configuredPort}`]);
   const instance = require('node:crypto').randomUUID();
   const mime = {'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.glb':'model/gltf-binary','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.webm':'video/webm','.json':'application/json'};
   const reply = (res, status, data) => { res.writeHead(status, {'Content-Type':'application/json','Cache-Control':'no-store'}); res.end(JSON.stringify(data)); };
@@ -20,7 +22,7 @@ function startPetBridge({ root, port = 47831, onState, onShow }) {
         if (url.pathname === '/api/status' && req.method === 'GET') {
           const client = url.searchParams.get('client');
           if (client && client === currentClient) lastSeen = Date.now();
-          return reply(res, 200, {online:true,instance,open:client === currentClient ? pendingOpen : null});
+          return reply(res, 200, {online:true,instance,visible:!!isVisible(),open:client === currentClient ? pendingOpen : null});
         }
         if (req.method !== 'POST') return reply(res, 405, {error:'method not allowed'});
         let raw = '', size = 0;
@@ -28,11 +30,13 @@ function startPetBridge({ root, port = 47831, onState, onShow }) {
           for await (const chunk of req) { size += chunk.length;if(size > 1024*1024) { reply(res,413,{error:'payload too large'});return; }raw += chunk; }
           const data = JSON.parse(raw || '{}');
           if (url.pathname === '/api/state') {
-            if (typeof data.client !== 'string' || !/^[\w-]{1,80}$/.test(data.client) || !Array.isArray(data.state?.friends) || !Array.isArray(data.state?.messages)) return reply(res,400,{error:'invalid state'});
+            if (typeof data.client !== 'string' || !/^[\w-]{1,80}$/.test(data.client) || !validState(data)) return reply(res,400,{error:'invalid state'});
+            if(currentClient && currentClient !== data.client && Date.now()-lastSeen < 8000) return reply(res,409,{error:'another client is active'});
             if(currentClient !== data.client)pendingOpen=null;
             currentClient=data.client;lastSeen=Date.now();onState(data);
           } else if (url.pathname === '/api/show') onShow();
-          else if (url.pathname === '/api/ack') { if(data.client===currentClient && data.sequence===pendingOpen?.sequence)pendingOpen=null; }
+          else if (url.pathname === '/api/hide') onHide();
+           else if (url.pathname === '/api/ack') { if(data.client===currentClient && data.sequence===pendingOpen?.sequence)pendingOpen=null; }
           else return reply(res,404,{error:'not found'});
           return reply(res,200,{ok:true,instance});
         } catch { return reply(res,400,{error:'invalid request'}); }

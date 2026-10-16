@@ -13,7 +13,7 @@ export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
       if(next===-1)continue;
       const x=slot.x+nx*step,z=slot.z+nz*step;
       if(next===undefined){const check=safe(x,z);if(!check.ok){seen.set(key,-1);continue;}next=nodes.length;seen.set(key,next);nodes.push({x,z,y:check.y,links:[]});queue.push([nx,nz,next]);}
-      const a=nodes[index];let clear=true;
+      const a=nodes[index];let clear=Math.abs(nodes[next].y-a.y)<=Math.hypot(x-a.x,z-a.z)*Math.tan(22*Math.PI/180)+.025;
       for(let t=.25;t<1;t+=.25)if(!safe(a.x+(x-a.x)*t,a.z+(z-a.z)*t).ok){clear=false;break;}
       if(clear&&!a.links.includes(next)){a.links.push(next);nodes[next].links.push(index);}
     }
@@ -21,10 +21,10 @@ export function buildWalkingGraph(context,slot,{range=3.2,step=.4}={}){
   return {nodes,radius};
 }
 
-export function walkingRoute(graph,start,sequence=0){
+export function walkingRoute(graph,start,sequence=0,{range=Infinity,home=graph.nodes[0]}={}){
   const {nodes}=graph,parents=new Map([[start,-1]]),queue=[start];
   for(let i=0;i<queue.length;i++)for(const next of nodes[queue[i]].links)if(!parents.has(next)){parents.set(next,queue[i]);queue.push(next);}
-  const origin=nodes[start];const candidates=queue.filter(i=>i!==start).sort((a,b)=>Math.hypot(nodes[b].x-origin.x,nodes[b].z-origin.z)-Math.hypot(nodes[a].x-origin.x,nodes[a].z-origin.z));
+  const origin=nodes[start];const candidates=queue.filter(i=>i!==start&&Math.hypot(nodes[i].x-home.x,nodes[i].z-home.z)<=range).sort((a,b)=>Math.hypot(nodes[b].x-origin.x,nodes[b].z-origin.z)-Math.hypot(nodes[a].x-origin.x,nodes[a].z-origin.z));
   if(!candidates.length)return [];
   let end=candidates[(sequence*7)%Math.min(12,candidates.length)],route=[];
   while(end!==start){route.push(end);end=parents.get(end);}return route.reverse();

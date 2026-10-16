@@ -1,7 +1,9 @@
 // Authored local editorial content. Stable IDs are also used by saved share cards.
+import {HYPER3D_ACCOUNT,HYPER3D_ARTICLES} from './hyper3d-content.js';
 const image=name=>`assets/discovery/video-${({forest:1,camp:5,river:6,sky:4})[name]||1}.jpg`;
 const start=Date.UTC(2026,9,14,8);
 export const ACCOUNTS=[
+  HYPER3D_ACCOUNT,
   {id:'valley',name:'溪谷生活志',emoji:'🌿',description:'记录木屋、营地与溪水之间，那些值得慢慢生活的时刻。',cover:image('forest')},
   {id:'roam',name:'阿栗的漫游手册',emoji:'🦊',description:'跟着阿栗走一小段路，把沿途的发现写成下一次出发的邀请。',cover:image('camp')},
   {id:'letters',name:'慢慢来信',emoji:'✉',description:'写给想休息一下的你。这里不催促抵达，也欢迎没有答案的一天。',cover:image('sky')},
@@ -73,7 +75,10 @@ const afterwords=[
   '收好信纸之前，也可以给未来的自己留一句话，记住今天是怎样慢慢走过来的。过些时候再看，也许有些问题已经变化，有些感受仍然清楚；这些都是真实生活留下的痕迹。',
   '山山后来把那张照片放进自己的收藏。每次重新看见，想起的已经不只是光线，还有朋友当时简短的回复。愿你也能慢慢存下这些时刻，在普通的日子里，知道自己与别人仍然相连。',
 ];
-export const ARTICLES=drafts.map(([accountId,title,summary,scene,videoId,sections],i)=>({id:`article-${i+1}`,accountId,title,summary,cover:image(scene),videoId,createdAt:start-i*86400000,publishedAt:start-i*86400000,blocks:[...sections.flatMap(([heading,text],j)=>[{type:'heading',text:heading},{type:'paragraph',text},...(j===1?[{type:'image',src:image(scene),caption:'林间来信 · 溪谷中的一个普通日子'}]:[])]),{type:'paragraph',text:afterwords[i]}]}));
+export const ARTICLES=[...HYPER3D_ARTICLES,...drafts.map(([accountId,title,summary,scene,videoId,sections],i)=>({id:`article-${i+1}`,accountId,title,summary,cover:image(scene),videoId,createdAt:start-i*86400000,publishedAt:start-i*86400000,blocks:[...sections.flatMap(([heading,text],j)=>[{type:'heading',text:heading},{type:'paragraph',text},...(j===1?[{type:'image',src:image(scene),caption:'林间来信 · 溪谷中的一个普通日子'}]:[])]),{type:'paragraph',text:afterwords[i]}]}))];
+// Older local articles keep stable links for saved shares, outside the current feed.
+export const JOURNAL_ACCOUNTS=[HYPER3D_ACCOUNT];
+export const JOURNAL_ARTICLES=HYPER3D_ARTICLES;
 export const CREATORS=[
   {id:'tuantuan',friendId:'tuantuan',name:'团团的木屋日常',emoji:'🦘',description:'把小事过成好日子。',cover:image('forest')},
   {id:'ali',friendId:'ali',name:'阿栗慢慢走',emoji:'🦊',description:'今天也想走远一点。',cover:image('camp')},

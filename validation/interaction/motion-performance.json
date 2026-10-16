@@ -1,0 +1,26 @@
+{
+  "baselineRevision": "7f23cfbbb3e3976bd159478f6e0b0860fab88b7e",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "workload": "Six status open/close cycles; same paused four-friend scene, Edge D3D11; no video recording.",
+  "runs": {
+    "before": {
+      "samples": 928,
+      "median": 16.699999999999818,
+      "p95": 16.799999999999272,
+      "max": 33.5,
+      "runningAnimationsAfter": 0,
+      "errors": []
+    },
+    "after": {
+      "samples": 894,
+      "median": 16.699999999999818,
+      "p95": 16.800000000000182,
+      "max": 17,
+      "runningAnimationsAfter": 0,
+      "errors": []
+    }
+  }
+}

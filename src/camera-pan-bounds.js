@@ -1,24 +1,13 @@
 import * as THREE from 'three';
-
-/** Restrict the point of interest before OrbitControls computes the camera pose. */
+import {WORLD_BOUNDS} from './world-surface.js';
+/** Keep the orbit point over the expanded town, including its elevated places. */
 export function constrainCameraPan(controls,camera){
-  const center=new THREE.Vector3(0,2.1,0),originalUpdate=controls.update.bind(controls);
-  controls.cursor.copy(center);
-  const limit=()=>{
-    const distance=camera.position.distanceTo(controls.target);
-    const halfView=distance*Math.tan(THREE.MathUtils.degToRad(camera.fov)/2)*Math.min(1,camera.aspect);
-    return Math.min(6.5,Math.max(.1,halfView*.45));
-  };
-  controls.update=(...args)=>{
-    // Scripted close-ups own the camera until the user regains orbit control.
-    controls.maxTargetRadius=controls.enabled?limit():Infinity;
-    return originalUpdate(...args);
-  };
-  return {
-    snapshot(){
-      camera.updateMatrixWorld(true);const projected=center.clone().project(camera);
-      return {enabled:controls.enabled,target:controls.target.toArray(),center:center.toArray(),offset:controls.target.distanceTo(center),limit:limit(),projected:projected.toArray()};
-    },
-    dispose(){controls.update=originalUpdate;controls.maxTargetRadius=Infinity;},
-  };
+  const center=new THREE.Vector3(5,2.22,-4),originalUpdate=controls.update.bind(controls),old=new THREE.Vector3(),correction=new THREE.Vector3();
+  controls.maxTargetRadius=Infinity;
+  // Pan on a fixed horizontal plane. Following terrain height or projecting onto
+  // a concave bank outline makes the view snap when crossing a slope or inlet.
+  controls.screenSpacePanning=false;
+  const bounds={minX:WORLD_BOUNDS.minX+4,maxX:WORLD_BOUNDS.maxX-4,minZ:WORLD_BOUNDS.minZ+8,maxZ:WORLD_BOUNDS.maxZ-3};
+  controls.update=(...args)=>{const result=originalUpdate(...args);if(controls.enabled){old.copy(controls.target);controls.target.x=THREE.MathUtils.clamp(old.x,bounds.minX,bounds.maxX);controls.target.z=THREE.MathUtils.clamp(old.z,bounds.minZ,bounds.maxZ);correction.subVectors(controls.target,old);if(correction.lengthSq()>0){camera.position.add(correction);camera.lookAt(controls.target);}}return result;};
+  return{snapshot(){camera.updateMatrixWorld(true);return{enabled:controls.enabled,target:controls.target.toArray(),center:center.toArray(),bounds,offset:controls.target.distanceTo(center),limit:Math.hypot(bounds.maxX-center.x,bounds.minZ-center.z),projected:center.clone().project(camera).toArray()};},dispose(){controls.update=originalUpdate;}};
 }

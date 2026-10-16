@@ -1,0 +1,71 @@
+/* Conversation book and message presence, using the shared woodland material. */
+#social #directory{width:min(500px,calc(100vw - 28px));height:min(680px,calc(var(--ui-height,100dvh) - 155px));padding:0;display:flex;flex-direction:column;overflow:hidden}
+#social .contacts-title{display:flex;align-items:center;gap:10px;padding:22px 20px 12px;border-bottom:0;flex-shrink:0}
+#social #directory>.contacts-title{padding-right:14px}
+#social .contacts-title>div{flex:1}#social .contacts-title h2{font-size:23px;margin:4px 0!important}
+#social .contacts-title small{font-size:8px;letter-spacing:.14em;color:#94a18a}
+#social .contacts-add{width:36px;height:36px;border-radius:50%;font-size:25px;background:#7a956014;flex-shrink:0}
+#social #directory>.search{margin:5px 20px 12px;flex-shrink:0;background:#7e966511;border:0;border-radius:10px;font-size:20px}
+#social #directory .search input{padding:10px;font-size:12px!important}
+#social #directory>.directory-tabs{margin:0;padding:0 20px;gap:24px;flex-shrink:0}
+#social .directory-tabs button{font-size:13px!important;min-height:42px}
+#social .directory-tabs span{font-size:10px;margin-left:4px;color:#9aa38e}
+#social #friend-list{overflow:auto;overscroll-behavior:contain;min-height:0;flex:1;padding:6px 10px;scrollbar-width:thin}
+#social .contacts-footnote{font-size:10px;color:#9aa58c;text-align:center;padding:12px 10px;border-top:1px solid #6c84500e}
+#social .conversation-row{position:relative;display:flex;align-items:center;gap:0;border-radius:12px;margin:2px 0;min-width:0}
+#social .conversation-row.is-pinned{background:#dfe8d578}#social .conversation-row.active{background:#d9e6ce}
+#social .conversation-row:hover{background:#e6edde8f}
+#social .conversation-open{display:flex;align-items:center;gap:13px;min-width:0;width:100%;padding:12px 4px 12px 10px;background:transparent;text-align:left;border-radius:12px}
+#social .conversation-avatar{width:49px;height:49px;position:relative;flex-shrink:0;background:#e9efdf;border-radius:11px}
+#social .conversation-avatar img{width:100%;height:100%;object-fit:contain;border-radius:11px;display:block}
+#social .conversation-unread{position:absolute;right:-5px;top:-5px;min-width:17px;height:17px;padding:0 4px;border:1px solid #f7f9f0;background:#cb655d;color:white;border-radius:12px;font:10px/15px var(--ui-font);text-align:center;font-weight:500}
+#social .conversation-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+#social .conversation-top{display:flex;align-items:center;gap:10px;min-width:0}
+#social .conversation-top strong{font-size:14px;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+#social .conversation-top time{font-size:10px;color:#a1aa97;white-space:nowrap}
+#social .conversation-preview{font-size:11px;color:#91a087;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.6}
+#social .conversation-preview em{font-style:normal;color:#b66c58}
+#social .conversation-more{width:32px;height:44px;flex-shrink:0;border-radius:9px;background:transparent;color:#9ca992;font-size:17px;font-weight:600}
+#social .conversation-pin{align-self:flex-start;color:#96aa88;font-size:13px}
+#social .friend-context-menu{position:fixed;z-index:85;pointer-events:auto;width:180px;border-radius:14px;padding:7px;outline:none}
+#social .friend-context-menu small{display:block;padding:5px 9px;color:#9aa58f;font-size:10px}
+#social .friend-context-menu button{display:block;background:transparent;border-radius:9px;width:100%;min-height:40px;text-align:left;padding:8px 12px;font-size:13px}
+#social .friend-context-menu button:hover{background:#e1ead5}
+#social #add-friends-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100vw - 28px));max-height:calc(var(--ui-height,100dvh) - 130px);padding:0;overflow:auto;border-radius:22px;color:var(--ui-ink);pointer-events:auto}
+#social #add-friends-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
+#social #add-friends-dialog>.ui-titlebar{position:sticky;top:0;z-index:3;backdrop-filter:blur(16px)}
+#social .add-friends-list{padding:8px 20px 22px}
+#social .add-friend-row{display:flex;align-items:center;gap:15px;padding:16px 0;border-bottom:1px solid #5d785512}
+#social .add-friend-row>img{width:58px;height:66px;object-fit:contain;border-radius:13px;background:#e6eddd}
+#social .add-friend-row>span{flex:1;min-width:0}#social .add-friend-row strong{font-size:14px}#social .add-friend-row p{font-size:11px;line-height:1.8;color:#92a088;margin-top:4px}#social .add-friend-row small{font-size:9px;color:#a3ad97}
+#social .add-friend-row>button{font-size:11px;padding:8px 12px}
+#social .meeting-friends>header .text-button{padding-top:10px}
+#social .is-compact .conversation-avatar{width:39px;height:39px}
+#social .is-compact .conversation-open{gap:10px;padding:12px 3px 12px 7px}
+#social .is-compact .conversation-top strong{font-size:12px}#social .is-compact .conversation-top time{font-size:8px}#social .is-compact .conversation-preview{font-size:10px}
+#social .is-compact .conversation-more{width:22px;font-size:14px}
+#social .friend-anchor{--unread-size:14px;--unread-color:#c9675e}
+#social .friend-anchor[data-unread-tier="2"]{--unread-size:18px;--unread-color:#cc6058}
+#social .friend-anchor[data-unread-tier="3"]{--unread-size:22px;--unread-color:#d0524d}
+#social .friend-anchor[data-unread-tier="4"]{--unread-size:26px;--unread-color:#d44845}
+#social .unread-visual{position:relative;display:flex;align-items:center;justify-content:center;height:37px;gap:0;pointer-events:auto}
+#social .friend-anchor .letter-stack{position:relative;display:block;width:48px;height:36px;background:transparent;pointer-events:auto}
+#social .letter-stack>i{position:absolute;left:9px;top:calc(11px - var(--letter)*3px);width:29px;height:19px;background:#fff9e9;border:1px solid #d4c6a9;border-radius:4px;transform:translateX(calc(var(--letter)*2px)) rotate(calc(var(--letter)*-5deg));box-shadow:0 2px 5px #243c2320;z-index:calc(5 - var(--letter));pointer-events:none}
+#social .letter-stack>i::after{content:'';position:absolute;left:6px;top:-1px;width:14px;height:11px;border-left:1px solid #cec2a5;border-bottom:1px solid #cec2a5;transform:rotate(-45deg)}
+#social .friend-anchor .unread-visual .unread-dot{position:relative!important;inset:auto!important;display:grid!important;place-items:center;width:44px;height:36px;min-width:44px;max-width:none;padding:0;background:transparent;border:0;box-shadow:none;isolation:isolate;font-size:10px;color:white;line-height:1;border-radius:18px;opacity:1;transform:none;pointer-events:auto}
+#social .unread-visual .unread-dot::before{content:'';position:absolute;width:var(--unread-size);height:var(--unread-size);border-radius:50%;background:var(--unread-color);z-index:-1;box-shadow:0 2px 6px #7c332131;transition:width .25s,height .25s,background .25s}
+#social .friend-anchor[data-unread-tier="4"] .unread-dot::before{box-shadow:0 0 0 4px #ce655b26,0 3px 8px #7c33212b}
+#social .anchor-pin{font-style:normal;font-size:11px;color:#91a380;margin-left:4px}
+#social .friend-anchor.has-unread .head-message{display:block;opacity:1;max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0;pointer-events:auto}
+#social .friend-anchor[data-presence="leaving"]{pointer-events:none}
+#social .friend-anchor .unread-visual[hidden]{display:none!important}
+@media(max-width:760px){
+ #social .is-compact .conversation-open{display:flex;flex-direction:column;padding:10px 2px;gap:5px}
+ #social .is-compact .conversation-avatar{width:33px;height:33px}
+ #social .is-compact .conversation-copy{width:100%;text-align:center}#social .is-compact .conversation-top{display:block}#social .is-compact .conversation-top strong{font-size:9px;font-weight:400}
+ #social .is-compact .conversation-top time,#social .is-compact .conversation-preview,#social .is-compact .conversation-more,#social .is-compact .conversation-pin{display:none}
+ #social .contacts-title{padding:17px 15px 10px}#social .contacts-title small{font-size:7px}
+ #social #directory>.search{margin-left:15px;margin-right:15px}#social .conversation-open{gap:11px}#social .conversation-top strong{font-size:13px}
+ #social .conversation-more{min-width:32px}#social .friend-anchor.has-unread .head-message{max-width:140px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){#social .unread-dot::before{transition:none}}

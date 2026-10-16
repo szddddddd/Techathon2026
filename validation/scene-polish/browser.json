@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "both generated variants loaded in main scene; frame and return button absent",
+    "right drag crosses terrain with fixed target height and unchanged view direction",
+    "mobile scene fits without obsolete return control",
+    "both Rodin trees visually captured front/back"
+  ],
+  "errors": []
+}

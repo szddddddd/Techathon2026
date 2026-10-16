@@ -1,0 +1,7 @@
+#viewport canvas.placing-character{cursor:grabbing}
+#character-drag-hint{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:75;pointer-events:none;padding:13px 24px;border:1px solid #d4e0c1;border-radius:19px;background:#f5f6e9ed;box-shadow:0 8px 32px #102d292b;color:#49613f;text-align:center;font:13px/1.6 system-ui,"Microsoft YaHei",sans-serif;min-width:175px;backdrop-filter:blur(14px)}
+#character-drag-hint[hidden]{display:none}
+#character-drag-hint strong{font-weight:500;display:block}
+#character-drag-hint span{font-size:10px;color:#8a957c}
+#character-drag-hint[data-valid="false"]{border-color:#dbb49c;color:#9b654b}
+@media(max-width:600px){#character-drag-hint{bottom:100px;max-width:calc(100vw - 75px);padding:10px 17px}}

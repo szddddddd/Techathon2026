@@ -1,0 +1,7 @@
+import fs from 'node:fs/promises';
+
+import {chromium,baseURL} from './test-runtime.mjs';
+const label=process.argv[2]||'after';if(!['before','after'].includes(label))throw new Error('Use before or after');
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
+try{const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto(baseURL);await page.waitForFunction(()=>window.__socialUI,null,{timeout:180000});await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){await __socialStore.addFriend(id);await __socialStore.setFriendPinned(id,true);}});await page.waitForTimeout(1500);
+const frames=await page.evaluate(()=>new Promise(resolve=>{const times=[];let last=performance.now();function step(now){times.push(now-last);last=now;if(times.length<180)requestAnimationFrame(step);else resolve(times.slice(5));}requestAnimationFrame(step);}));frames.sort((a,b)=>a-b);await fs.mkdir('validation/interaction',{recursive:true});await page.screenshot({path:`validation/interaction/${label}-desktop.jpg`,type:'jpeg',quality:88});await fs.writeFile(`validation/interaction/${label}-performance.json`,JSON.stringify({viewport:[1440,1000],samples:frames.length,median:frames[Math.floor(frames.length*.5)],p95:frames[Math.floor(frames.length*.95)],frames},null,2));console.log(label+' performance captured');}finally{await browser.close();}

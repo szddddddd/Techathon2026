@@ -1,0 +1,151 @@
+{
+  "provider": "Hyper3D Rodin",
+  "tier": "Gen-2.5-Medium",
+  "totalCredits": 4,
+  "assets": {
+    "curved_seat": {
+      "taskId": "549d4a17-da7b-4d40-b3c9-6c2fd53e0bd0",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "9000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "431",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One low gently curved two-tier stone sitting step, a short 45-degree arc section. Pale warm limestone blocks with readable staggered masonry joints, rounded weathered corners and tiny moss-filled seams. Width 4 metres, depth .9 metres, maximum height .55 metres. Two continuous flat walkable horizontal levels. Low curved seating terrace, no backrest, no railing, no vegetation, no plinth, no extra objects."
+      },
+      "file": "assets/rodin-valley/curved_seat/scene.glb",
+      "bytes": 1284204,
+      "sha256": "790accbb9b690c289f105b75cb0c657089e7d0eea6e6d5d2e54a68a03621d752",
+      "inspection": "validation/rodin-valley/curved_seat-front.jpg"
+    },
+    "letter_tree": {
+      "taskId": "2d6c131a-0715-4d03-b9a8-d460e6661360",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "12000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "430",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One handcrafted forest gathering lamp support, a slender gently twisting wooden tree trunk with FOUR clearly separated short upward branches ending in rounded empty attachment tips. Warm carved oak bark, subtle spiral wood grain, spreading short roots fitting a compact flat base. Small wooden letterbox built into the lower trunk. Height 4 metres, branch spread 1.6 metres. NO leaves, NO foliage, NO lamps, NO light bulbs: this is the wooden support only. No writing, no accessories, no surrounding ground."
+      },
+      "file": "assets/rodin-valley/letter_tree/scene.glb",
+      "bytes": 1957104,
+      "sha256": "d1a05395876828e2b290de62e3d40be56e2c384b50921a16fda63484273d052b",
+      "inspection": "validation/rodin-valley/letter_tree-front.jpg"
+    },
+    "mountain_crag": {
+      "taskId": "d80fcfed-8307-4a8f-8353-6aa5cabd2fae",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "20000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "428",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One large isolated natural mountain massif, taller than wide, with an asymmetric broken summit and three staggered rocky shoulders. Massive fractured grey-green rock faces, irregular horizontal geological strata and wide mossy ledges. Rounded weathered edges but strong faceted planes. Broad low base blending into terrain, complete volume from every side. A believable rugged mountain, NOT a cone, NOT a pile of small pebbles. No trees, buildings, snow, waterfall or ground slab."
+      },
+      "file": "assets/rodin-valley/mountain_crag/scene.glb",
+      "bytes": 2217944,
+      "sha256": "49cc54d8845c0f581cd482a55e2be6c079acf55f7376bf88431f89a6380f7d72",
+      "inspection": "validation/rodin-valley/mountain_crag-front.jpg"
+    },
+    "mountain_ridge": {
+      "taskId": "a5594fec-58bd-4043-9b4a-08815826c4fa",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "20000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "429",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One isolated mountain ridge with one broad high off-center summit and two lower irregular buttresses. Wide asymmetrical silhouette, layered sedimentary grey sage rock, deep vertical fractures, stepped shelves with restrained olive moss. Height about equal to width, sloping broken shoulders, grounded broad base, complete back and sides. NOT a cone or a thin backdrop. No trees, buildings, snow, waterfall or ground slab."
+      },
+      "file": "assets/rodin-valley/mountain_ridge/scene.glb",
+      "bytes": 2360900,
+      "sha256": "8add1b42923287f394528e7944647f67352c01d94ab53c890785aa7af37ca3ee",
+      "inspection": "validation/rodin-valley/mountain_ridge-front.jpg"
+    },
+    "notice_board": {
+      "taskId": "8c52c135-6567-4e28-8da1-aab3ce199584",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "12000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "434",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One small freestanding forest notice board. Two sturdy weathered oak posts, warm timber frame around a rectangular flat dark sage wooden bulletin surface, small pitched wooden shingle canopy. Three plain cream paper sheets pinned neatly to the front with no writing. A small carved leaf at the top. Overall height 2 metres and width 1.3 metres, shallow depth .35 metres. Visible complete backside, flat feet. No legible text, no people, no ground slab, no surrounding props."
+      },
+      "file": "assets/rodin-valley/notice_board/scene.glb",
+      "bytes": 1731860,
+      "sha256": "41aa1e41cbf46f0daf5915aac3ddb133ad83f74147b9f8854560efb2c9206c3a",
+      "inspection": "validation/rodin-valley/notice_board-front.jpg"
+    },
+    "stone_ring": {
+      "taskId": "0253c40e-556d-4b95-9f76-fbb8fdf36b93",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "6000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "433",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One very flat gently curved section of a forest stone path, seven pale limestone paving slabs arranged in a single contiguous shallow arc of 45 degrees. Distinct irregular slab edges, thin narrow moss seams, uneven natural shapes but a level top surface. Arc length 3 metres, radial depth .45 metres, thickness .08 metres. Low ground paving, NOT stairs, NOT a wall, NOT a circular disk. No plants, roots, soil block or extra objects."
+      },
+      "file": "assets/rodin-valley/stone_ring/scene.glb",
+      "bytes": 1168076,
+      "sha256": "0ff0410cfe83fd0da1685b7388523304da247e1c040bb820f73c3fae369fe079",
+      "inspection": "validation/rodin-valley/stone_ring-front.jpg"
+    },
+    "viewing_frame": {
+      "taskId": "06325bea-dacc-422a-ab18-6d51e84930ce",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "9000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "435",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One low freestanding landscape viewing frame for a woodland viewpoint. Two warm weathered oak posts supporting an EMPTY wide rectangular aperture, smooth carved wood top beam with a small leaf relief, narrow bottom sill. Opening clearly empty and see-through, no glass, no panel. Overall width 2.2 metres and height 1.45 metres, depth .2 metres, flat feet. Subtle oak grain and rounded hand-hewn joints. No roof, text, landscape, stone foundation or extra objects."
+      },
+      "file": "assets/rodin-valley/viewing_frame/scene.glb",
+      "bytes": 1356148,
+      "sha256": "7bceee6a1ae3b4f4339faa769e5bac5e516908b361e80e428bbc5feb1deb164c",
+      "inspection": "validation/rodin-valley/viewing_frame-front.jpg"
+    },
+    "wood_bench": {
+      "taskId": "263bf682-588d-4381-af2b-4aaeea6fb60d",
+      "consumed": 0.5,
+      "parameters": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": "10000",
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "medium",
+        "seed": "432",
+        "prompt": "Stylized hand-painted fantasy woodland game asset, matching a warm miniature forest diorama. Muted sage and olive moss, desaturated grey-green stone, warm weathered oak. Broad crafted shapes, graceful asymmetry, clean silhouette, matte surfaces, restrained carved details. No photoreal noise, no black outlines, no characters, no surrounding environment, no pedestal. One inviting woodland bench, three broad warm oak seat planks, gently curved low timber backrest with a small carved leaf ornament at the center. Two sturdy grey-green stone support feet, rounded worn corners, tasteful visible wood grain, restrained moss at the stone bottoms. Width 2.5 metres, depth .6 metres, seat height .55 metres, overall height 1.05 metres. No trees, cushions, accessories, plants or ground slab."
+      },
+      "file": "assets/rodin-valley/wood_bench/scene.glb",
+      "bytes": 1750820,
+      "sha256": "fa9b2c5c5a3a1df52221b68edcc2a3057fda5c2258c950c2efe3fe1841acbc5e",
+      "inspection": "validation/rodin-valley/wood_bench-front.jpg"
+    }
+  }
+}

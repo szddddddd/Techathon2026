@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-10-15T11:57:09.189Z",
+  "checks": [
+    "real model drag changes only this stay, preserves camera and stored historical positions",
+    "river placement rejected, returns to origin",
+    "friend overlap rejected",
+    "Escape cancels and restores controls",
+    "refresh creates a new valid entry without writing coordinates; single click still chats",
+    "adding another friend preserves existing placements",
+    "real mobile touch drag places character",
+    "walking resumes around the newly placed home"
+  ],
+  "errors": []
+}

@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-15T13:50:56.137Z",
+  "errors": [],
+  "checks": [
+    "kiosk: automatic open, themed frame, closer fit, one-click exit and exact camera restore",
+    "cinema: automatic open, themed frame, closer fit, one-click exit and exact camera restore",
+    "article, scroll and comment draft restored",
+    "single video, seek, progress and paused intent preserved",
+    "late media fetch stays paused after exit",
+    "rapid switch keeps last selection",
+    "391px mobile and orientation changes",
+    "reduced motion fade",
+    "dock entry preserves camera"
+  ]
+}

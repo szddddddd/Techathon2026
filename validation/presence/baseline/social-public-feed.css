@@ -1,0 +1,90 @@
+/* The shared Moments feed keeps the same quiet paper-and-sage language. */
+#social #social-dialog.public-moments-dialog{width:min(740px,calc(100vw - 44px));max-height:85dvh;padding:0;overflow:hidden;background:#fffefa;border-radius:20px}
+#social .public-moments-shell{display:flex;flex-direction:column;max-height:83dvh;min-height:320px;overflow:hidden}
+#social .public-moments-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:25px 32px 23px;border-bottom:1px solid #e5eade;background:#fcfdf8;flex-shrink:0;position:relative;z-index:2}
+#social .public-moments-header small{display:block;font-size:8px;letter-spacing:2px;color:#9ba68e;margin-bottom:7px}
+#social .public-moments-header h2{font-family:system-ui,-apple-system,'Microsoft YaHei',sans-serif;font-weight:550;font-size:21px;letter-spacing:2px}
+#social .public-moments-header p{color:#96a08e;font-size:10px;letter-spacing:.4px;line-height:1.8;margin-top:7px}
+#social .public-moments-header .primary{flex-shrink:0;border-radius:12px;padding:11px 18px;background:#718963;font-size:11px;letter-spacing:1px}
+#social .public-moments-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#d2dbca transparent;background:#fffefa}
+#social .public-moments-intro{padding-bottom:22px}
+#social .public-moments-intro .moments-cover{height:168px;background:#b1c09a}
+#social .public-moments-intro .moments-cover img{filter:saturate(.88)}
+#social .public-owner{position:relative;display:flex;gap:14px;align-items:center;justify-content:flex-end;padding:0 32px;margin-top:-25px;min-height:75px}
+#social .public-owner>.avatar{width:67px;height:67px;font-size:40px;border:4px solid #fffefa;border-radius:16px;box-shadow:0 3px 12px #30452b0d;flex-shrink:0}
+#social .public-owner>div{max-width:70%;padding-top:25px;text-align:right}
+#social .public-owner strong{display:block;font-size:15px;font-weight:550;letter-spacing:1px}
+#social .public-owner p{font-size:10px;color:#919e87;line-height:1.8;margin-top:7px;overflow-wrap:anywhere}
+#social #public-moments-list{padding:0 32px}
+#social .public-moment{position:relative;padding:25px 0 24px;border-top:1px solid #e8ede1;min-width:0}
+#social .public-moment-author{display:flex;align-items:center;gap:13px;background:none;padding:0;text-align:left;max-width:100%;min-height:43px}
+#social .public-moment-author>.avatar{width:43px;height:43px;flex-shrink:0;font-size:27px;border-radius:11px}
+#social .public-moment-author>span:not(.avatar){min-width:0}
+#social .public-moment-author strong{display:block;font-size:13px;font-weight:550;color:#5a7656;letter-spacing:.5px;line-height:1.7}
+#social .public-moment-author small{display:block;font-size:9px;color:#a0aa94;letter-spacing:.3px;line-height:1.6;margin-top:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:430px}
+#social .public-moment-author:hover strong{color:#334d33}
+#social .public-moment-body{margin:2px 0 0 56px;min-width:0}
+#social .public-moment-body .post-text{font-size:13px;line-height:1.95;color:#40533f;margin:0 0 13px!important;overflow-wrap:anywhere}
+#social .public-moment-body .post-photos{max-width:340px;gap:5px;margin-top:12px}
+#social .public-moment-body .post-photos button{padding:0;background:none;border-radius:5px;overflow:hidden;min-width:0;aspect-ratio:1}
+#social .public-moment-body .post-photos img{display:block;width:100%;height:100%;border-radius:5px;object-fit:cover}
+#social .public-moment-body .post-photos.count-1{max-width:300px}
+#social .public-moment-body .post-photos.count-1 button{aspect-ratio:4/3}
+#social .public-moment-body .post-photos.count-1 img{max-height:280px;aspect-ratio:4/3}
+#social .public-moment-body .post-actions{border:0;padding:14px 0 11px;gap:22px;flex-wrap:wrap}
+#social .public-moment-body .post-actions button{font-size:10px!important;color:#7b8f70;letter-spacing:.3px;padding:2px 0}
+#social .public-moment-body .post-actions .liked{color:#b28062!important}
+#social .public-moment-time{font-size:9px;color:#a0aa95;line-height:1.8;display:block;margin:0 0 9px;letter-spacing:.3px}
+#social .public-moment-body .post-likes{padding:10px 12px;background:#f0f4e9;border-radius:7px 7px 0 0;font-size:10px;line-height:1.8;gap:5px;color:#73876c}
+#social .public-moment-body .post-likes span{background:none;padding:0;border-radius:0}
+#social .public-moment-body .comments{padding:1px 12px 8px;background:#f0f4e9;border-radius:0 0 7px 7px}
+#social .public-moment-body .comments p{font-size:11px!important;line-height:1.85;overflow-wrap:anywhere}
+#social .public-moment-body .comments strong{color:#647f5d}
+#social .public-moment-body .comment-form{margin-top:11px;gap:7px}
+#social .public-moment-body .comment-form input{padding:10px 12px!important;background:#f8faf4;border-radius:9px;font-size:10px!important}
+#social .public-moment-body .comment-form .secondary{border-radius:9px;font-size:10px;padding:8px 13px}
+#social .public-moments-end{padding:25px 25px 34px;text-align:center;font-size:10px;line-height:1.9;color:#a2ae97;letter-spacing:1px}
+#social .public-moments-end:before{content:'—';margin-right:12px;color:#c2ccb9}
+#social .public-moments-end:after{content:'—';margin-left:12px;color:#c2ccb9}
+#social #public-feed-unread{display:block;width:7px;height:7px;min-width:7px;padding:0;border-radius:50%;background:#b78a62;box-shadow:0 0 0 3px #fcfdf3;position:absolute;right:13px;top:9px;font-size:0}
+@media(max-width:760px){
+  #social #social-dialog.public-moments-dialog{width:calc(100vw - 32px)}
+  #social .public-moments-header{padding:23px 25px 20px}
+  #social #public-moments-list{padding:0 25px}
+  #social .public-owner{padding:0 25px}
+  #social .public-moments-intro .moments-cover{height:150px}
+  #social .public-moment-author small{max-width:calc(100vw - 155px)}
+}
+@media(max-width:480px){
+  #social #social-dialog.public-moments-dialog{width:calc(100vw - 24px);max-height:calc(100dvh - 100px);border-radius:17px}
+  #social .public-moments-shell{max-height:calc(100dvh - 102px);min-height:270px}
+  #social .public-moments-header{padding:19px 20px 17px;gap:12px}
+  #social .public-moments-header small{font-size:7px;margin-bottom:6px}
+  #social .public-moments-header h2{font-size:18px}
+  #social .public-moments-header p{font-size:9px;margin-top:5px}
+  #social .public-moments-header .primary{padding:10px 12px;font-size:10px;border-radius:10px}
+  #social .public-moments-intro .moments-cover{height:125px}
+  #social .public-owner{padding:0 20px;gap:10px;margin-top:-22px}
+  #social .public-owner>.avatar{width:58px;height:58px;font-size:35px;border-radius:14px}
+  #social .public-owner>div{padding-top:24px}
+  #social .public-owner strong{font-size:13px}
+  #social .public-owner p{font-size:9px;line-height:1.7;margin-top:5px}
+  #social #public-moments-list{padding:0 18px}
+  #social .public-moment{padding-top:21px;padding-bottom:20px}
+  #social .public-moment-author{gap:9px;min-height:35px}
+  #social .public-moment-author>.avatar{width:34px;height:34px;font-size:23px;border-radius:9px}
+  #social .public-moment-author strong{font-size:12px}
+  #social .public-moment-author small{font-size:8px;max-width:calc(100vw - 122px);margin-top:2px}
+  #social .public-moment-body{margin-left:43px;margin-top:5px}
+  #social .public-moment-body .post-text{font-size:12px;line-height:1.9}
+  #social .public-moment-time{margin-left:0;font-size:8px}
+  #social .public-moment-body .post-actions{gap:16px;padding-top:12px}
+  #social .public-moment-body .post-actions button{font-size:9px!important}
+  #social .public-moment-body .post-likes,#social .public-moment-body .comments{padding-left:9px;padding-right:9px;font-size:9px}
+  #social .public-moment-body .comments p{font-size:10px!important}
+  #social .public-moment-body .comment-form{gap:5px;flex-wrap:wrap}
+  #social .public-moment-body .comment-form input{flex:1;min-width:95px;font-size:10px!important;padding:9px!important}
+  #social .public-moment-body .comment-form .secondary{font-size:9px;padding:7px 9px}
+  #social .public-moments-end{font-size:9px;padding-top:18px}
+}
+@media(prefers-reduced-motion:reduce){#social .public-moments-scroll{scroll-behavior:auto}}
