@@ -4,6 +4,7 @@ __pycache__/
 *.py[cod]
 .cache/
 .forest-runtime.json
+.forest-avatar-data/
 .test-results/
 *.log
 validation/**/raw/

@@ -4,9 +4,9 @@ import { ASSET_NAMES, PLACEMENTS, setReservedFootprints } from './layout.js';
 import {TREE_VARIANTS,isTree,treeAssetPath,groundTree,lightTreeFoliage} from './tree-assets.js';
 
 /** Local, generated assets. API access is exclusively in the offline Python script. */
-export async function loadRodinProps(){
+export async function loadRodinProps({kinds=Object.keys(ASSET_NAMES)}={}){
   const loader=new GLTFLoader();
-  const entries=await Promise.all(Object.keys(ASSET_NAMES).map(async name=>{
+  const entries=await Promise.all([...new Set(kinds)].filter(name=>name!=='cottage').map(async name=>{
     const gltf=await loader.loadAsync(treeAssetPath(name));
     const model=gltf.scene;
     model.name=`Rodin ${name} source`;
@@ -49,7 +49,7 @@ export function placeRodinProps(scene,assets,terrain){
     if(p.kind==='grass'){group.scale.x*=1.35;group.scale.z*=1.35;}
     if(p.height)group.scale.y=p.height/size.y;
     if(p.depth)group.scale.z=p.depth/size.z;
-    group.rotation.y=p.rotation||0;group.position.set(p.x,p.y??(isTree(p.kind)&&terrain?terrain.sample(p.x,p.z).height:p.kind==='grass'?2.18:2.225),p.z);
+    group.rotation.y=p.rotation||0;group.position.set(p.x,p.y??(p.buried&&terrain?terrain.sample(p.x,p.z).height-p.size*.4:isTree(p.kind)&&terrain?terrain.sample(p.x,p.z).height:p.kind==='grass'?2.18:2.225),p.z);
     if(isTree(p.kind)&&terrain)groundTree(group,terrain.sample);
     group.traverse(o=>{o.userData.generatedProp=true;});root.add(group);group.updateMatrixWorld(true);
     const actual=new THREE.Box3().setFromObject(group);

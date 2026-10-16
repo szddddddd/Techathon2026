@@ -1,0 +1,62 @@
+{
+  "createdAt": "2026-10-15T18:57:42.084Z",
+  "browser": "155.0.4283.45",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "reducedMotion": false,
+  "method": "Serial same-device Edge D3D11 runs, same random seed, default camera, four pinned actors, 30 warmup and 300 measured rAF intervals. Vsync-limited frame intervals are not GPU execution timings.",
+  "results": [
+    {
+      "mode": "before",
+      "bundleSha256": "2a5d5dcfdb62641328790a4c61a1502b196f469e1f2dc599e8d208fdb1768862",
+      "initialPose": {
+        "position": [
+          41.99999999999999,
+          41.99999999999999,
+          57.00000000000001
+        ],
+        "target": [
+          5,
+          3,
+          -4
+        ],
+        "enabled": true
+      },
+      "metrics": {
+        "median": 16.69999999999891,
+        "p95": 16.800000000000182,
+        "samples": 300,
+        "calls": 304,
+        "triangles": 775992,
+        "characters": 4
+      }
+    },
+    {
+      "mode": "after",
+      "bundleSha256": "5700fc1d8e21c9d51f7dec134bc6a76c768522d52707e512f1f638a6888a2715",
+      "initialPose": {
+        "position": [
+          41.99999999999999,
+          41.99999999999999,
+          57.00000000000001
+        ],
+        "target": [
+          5,
+          3,
+          -4
+        ],
+        "enabled": true
+      },
+      "metrics": {
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182,
+        "samples": 300,
+        "calls": 307,
+        "triangles": 794699,
+        "characters": 4
+      }
+    }
+  ]
+}

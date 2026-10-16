@@ -9,7 +9,13 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
   const configuredPort = webPort(root);
   const origins = new Set([`http://localhost:${configuredPort}`, `http://127.0.0.1:${configuredPort}`]);
   const instance = require('node:crypto').randomUUID();
-  const mime = {'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.glb':'model/gltf-binary','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.webm':'video/webm','.json':'application/json'};
+  const listeners = new Set();
+  const visibility = () => ({visible:!!isVisible()});
+  function visibilityChanged(){
+    const data = `data: ${JSON.stringify(visibility())}\n\n`;
+    for(const response of listeners) response.write(data);
+  }
+  const mime = {'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.glb':'model/gltf-binary','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg','.webm':'video/webm','.json':'application/json'};
   const reply = (res, status, data) => { res.writeHead(status, {'Content-Type':'application/json','Cache-Control':'no-store'}); res.end(JSON.stringify(data)); };
   return new Promise((resolve, reject) => {
     server = http.createServer(async (req, res) => {
@@ -19,6 +25,12 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
         res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');res.setHeader('Access-Control-Allow-Private-Network','true');
         if (req.method === 'OPTIONS') { res.writeHead(204);res.end();return; }
+        if (url.pathname === '/api/visibility' && req.method === 'GET') {
+          res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache','Connection':'keep-alive'});
+          listeners.add(res);res.write(`data: ${JSON.stringify(visibility())}\n\n`);
+          const heartbeat=setInterval(()=>res.write(': keepalive\n\n'),15000);
+          res.on('close',()=>{clearInterval(heartbeat);listeners.delete(res);});return;
+        }
         if (url.pathname === '/api/status' && req.method === 'GET') {
           const client = url.searchParams.get('client');
           if (client && client === currentClient) lastSeen = Date.now();
@@ -55,7 +67,8 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
     server.listen(port,'127.0.0.1',()=>resolve({
       origin:`http://127.0.0.1:${server.address().port}`,
       openFriend(friendId){if(Date.now()-lastSeen>8000||!currentClient)return false;pendingOpen={friendId:friendId||null,sequence:++sequence};return true;},
-      close(){server.close();},
+      visibilityChanged,
+      close(){for(const response of listeners)response.end();listeners.clear();server.close();},
     }));
   });
 }

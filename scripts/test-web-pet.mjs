@@ -27,7 +27,23 @@ try{
  const alpha=await desktop.evaluate(async({BrowserWindow})=>(await BrowserWindow.getAllWindows()[0].webContents.capturePage()).toBitmap()[3]);assert.equal(alpha,0,'native pet window corner is actually transparent');checks.push('captured native window has transparent corner alpha');await pet.screenshot({path:outputPath('native-pet-window.png')});await page.screenshot({path:outputPath('native-pet-button.jpg'),type:'jpeg',quality:88});
  await pet.locator('[data-friend=tuantuan]').click();await page.waitForFunction(()=>__socialUI.activeFriend==='tuantuan');await page.waitForFunction(()=>__socialStore.state.messages.find(m=>m.id==='native-pet-validation').read);checks.push('native pet receives unread and clicking its real friend opens browser chat and marks read');
  await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].hide());await page.locator('#pet-toggle').click();await page.waitForFunction(()=>!document.querySelector('#pet-toggle').disabled);assert.ok(await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isVisible()));assert.equal(await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().length),1);checks.push('repeat click shows existing hidden pet without duplicate windows');
- const allowed=await fetch('http://127.0.0.1:47832/api/status',{headers:{Origin:baseURL+""}});assert.equal(allowed.status,200);
+ await desktop.evaluate(({Menu,BrowserWindow})=>{
+    const build=Menu.buildFromTemplate.bind(Menu);
+    Menu.buildFromTemplate=template=>{if(template.some(item=>item.label==='打开林间来信'))globalThis.__petMenuTemplate=template;return build(template);};
+    BrowserWindow.getAllWindows()[0].hide();
+  });
+  await page.waitForFunction(()=>document.querySelector('#pet-toggle').getAttribute('aria-checked')==='false',null,{timeout:1200});
+  await desktop.evaluate(()=>globalThis.__petMenuTemplate.find(item=>item.label==='显示桌宠').click());
+  await page.waitForFunction(()=>document.querySelector('#pet-toggle').getAttribute('aria-checked')==='true',null,{timeout:1200});
+  await desktop.evaluate(()=>globalThis.__petMenuTemplate.find(item=>item.label==='隐藏桌宠').click());
+  await page.waitForFunction(()=>document.querySelector('#pet-toggle').getAttribute('aria-checked')==='false',null,{timeout:1200});
+  await page.evaluate(async()=>{__webPet.dispose();const {createWebPet}=await import('/src/web-pet.js');window.__webPet=createWebPet({store:__socialStore,onOpenFriend:id=>__socialUI.openFriend(id),bridgeOrigin:'http://127.0.0.1:47832'});});
+  await page.waitForFunction(()=>__webPet.connected);await page.waitForTimeout(1600);
+  assert.equal(await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isVisible()),false,'reconnecting respects tray-hidden state');
+  await page.locator('#pet-toggle').click();await page.waitForFunction(()=>document.querySelector('#pet-toggle').getAttribute('aria-checked')==='true');
+  assert.ok(await desktop.evaluate(()=>globalThis.__petMenuTemplate.some(item=>item.label==='隐藏桌宠')));
+  checks.push('tray show/hide pushes switch state, reconnect preserves hidden state, web action updates tray menu');
+  const allowed=await fetch('http://127.0.0.1:47832/api/status',{headers:{Origin:baseURL+""}});assert.equal(allowed.status,200);
  const blocked=await fetch('http://127.0.0.1:47832/api/hide',{method:'POST',headers:{Origin:'https://example.com','Content-Type':'application/json'},body:'{}'});assert.equal(blocked.status,403);checks.push('loopback bridge denies unrelated website origins');
  await desktop.close();desktop=null;
  await page.evaluate(async()=>{__webPet.dispose();const {createWebPet}=await import('/src/web-pet.js');window.__webPet=createWebPet({store:__socialStore,onOpenFriend:id=>__socialUI.openFriend(id),bridgeOrigin:'http://127.0.0.1:47832',launchProtocol:()=>{window.__protocolRequested=true;}});});

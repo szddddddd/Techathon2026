@@ -29,13 +29,21 @@ body.in-scene-board #first-invitation{display:none!important}
 
 /* World-attached content icons retain a 44px touch target at every zoom. */
 #discovery-scene-icons{position:fixed;inset:0;pointer-events:none;z-index:18}
-#discovery-scene-icons[hidden],.scene-content-icon[hidden]{display:none}
-.scene-content-icon{position:absolute;top:0;left:0;margin-left:-86px;margin-top:-22px;display:flex;align-items:center;gap:8px;width:172px;min-height:48px;padding:7px 11px;border:1px solid #ffffffb0;border-radius:15px;background:rgba(248,250,236,.94);box-shadow:0 5px 20px #203d3226;color:#456346;font:12px/1.45 system-ui;pointer-events:auto;cursor:pointer;text-align:left;backdrop-filter:blur(12px);transition:background .14s,box-shadow .14s}
-.scene-content-icon:hover{background:#fffff4;box-shadow:0 7px 23px #203d3238}
-.scene-content-icon:active{background:#e8eedc}.scene-content-icon:focus-visible{outline:2px solid #66865b;outline-offset:3px}
+#discovery-scene-icons[hidden],.scene-entry-icon[hidden]{display:none}
+.scene-entry-icon{position:absolute;top:0;left:0;margin-left:-22px;margin-top:-22px;display:flex;align-items:center;gap:0;width:44px;height:44px;padding:6px;border:1px solid #ffffffb0;border-radius:15px;background:rgba(248,250,236,.94);box-shadow:0 5px 20px #203d3226;color:#456346;font:12px/1.45 system-ui;pointer-events:auto;cursor:pointer;text-align:left;backdrop-filter:blur(12px);overflow:hidden;transition:width .22s ease,margin-left .22s ease,background .14s,box-shadow .14s}
+.scene-entry-icon:hover{background:#fffff4;box-shadow:0 7px 23px #203d3238}
+.scene-entry-icon:active{background:#e8eedc}.scene-entry-icon:focus-visible{outline:2px solid #66865b;outline-offset:3px}
 .scene-content-glyph{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:10px;background:#dfe9d4;color:#55764c}.scene-content-glyph svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
-.scene-content-copy{min-width:0}.scene-content-copy strong{display:block;font-size:11px;font-weight:600}.scene-content-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;font-size:9px;color:#8a987d}
+.scene-content-copy{min-width:0;max-width:0;margin-left:0;opacity:0;visibility:hidden;white-space:nowrap;transition:max-width .22s ease,margin-left .22s ease,opacity .14s ease,visibility .22s}.scene-content-copy strong{display:block;font-size:11px;font-weight:600}.scene-content-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;font-size:9px;color:#8a987d}
 .d-content-kind{position:absolute;left:10px;top:10px;background:#f6f8edeb;color:#506c49;font-size:10px;padding:4px 9px;border-radius:20px;box-shadow:0 2px 9px #223c3020}.d-card-cover{position:relative}
 .d-source-note{padding:18px 20px;border-radius:14px;background:#eaf0e1;color:#7b8e70;font-size:12px;line-height:1.8}.d-source-note a{color:#4e734b;text-decoration:underline;text-underline-offset:3px}
-@media(prefers-reduced-motion:reduce){.scene-content-icon{transition:none}}
-@supports not (backdrop-filter:blur(1px)){.scene-content-icon{background:#f7f9eb}}
+@media(prefers-reduced-motion:reduce){.scene-entry-icon{transition:none}}
+@supports not (backdrop-filter:blur(1px)){.scene-entry-icon{background:#f7f9eb}}
+
+.scene-entry-icon:focus-visible{width:172px;margin-left:-86px}
+.scene-entry-icon:focus-visible .scene-content-copy{max-width:116px;margin-left:8px;opacity:1;visibility:visible}
+@media(hover:hover){
+ .scene-entry-icon:hover{width:172px;margin-left:-86px}
+ .scene-entry-icon:hover .scene-content-copy{max-width:116px;margin-left:8px;opacity:1;visibility:visible}
+}
+@media(prefers-reduced-motion:reduce){.scene-content-copy{transition:none}}

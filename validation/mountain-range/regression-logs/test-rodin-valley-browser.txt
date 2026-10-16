@@ -1,0 +1,8 @@
+{
+  checks: [
+    'same camera, same brighter lighting, four friends, original assets loaded; four active new assets versus authored baseline; authored paving and seating',
+    'new notice board opens gathering invitation; Escape dismisses',
+    'individual mountain and tree failures retain functional authored fallback with other two active assets'
+  ],
+  errors: []
+}

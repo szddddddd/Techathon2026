@@ -1,0 +1,13 @@
+{
+  "fixture": "Existing local kangaroo image/GLB; provider calls simulated, no visual-generation claim.",
+  "checks": [
+    "concurrent request deduplication; full image → upload → Rodin → validated local GLB; no signed URL or secret exposure",
+    "optional front-view confirmation; continue uses saved image",
+    "image ambiguous submission/restart never repeats paid work",
+    "rodin ambiguous submission/restart never repeats paid work",
+    "recover original Rodin ID without regenerating",
+    "generated contact pin, deduplication, chat, draft and identity survive IDB reopen; reject arbitrary model URL",
+    "image service reads project-local config only; never reads Codex config/auth or falls back to global credentials",
+    "same-origin API, no client configuration endpoint, local model serving and redacted status"
+  ]
+}

@@ -1,16 +1,45 @@
-import {build} from 'esbuild';
+import {build,version as esbuildVersion} from 'esbuild';
+import {createHash} from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const {version}=JSON.parse(await fs.readFile(path.join(root,'package.json'),'utf8'));
-await Promise.all(['main','asset-review','pet'].map(name=>build({entryPoints:[path.join(root,'src',name+'.js')],bundle:true,format:'iife',minify:true,outfile:path.join(root,'dist',name==='main'?'world.js':name==='asset-review'?'review.js':'pet.js'),logLevel:'info'})));
+const digest=data=>createHash('sha256').update(data).digest('hex');
+const cacheFile=path.join(root,'.cache/build-state.json');
+const fingerprint=async files=>Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(path.join(root,name)))])));
+const tools=['scripts/build.mjs','package.json','package-lock.json'];
+let cached,unchanged=false;
+try{
+ cached=JSON.parse(await fs.readFile(cacheFile,'utf8'));
+ const required=[...tools,'src/main.js','src/asset-review.js','src/pet.js','dist/world.js','dist/review.js','dist/pet.js'];
+ if(!process.argv.includes('--force')&&cached.esbuild===esbuildVersion&&cached.node===process.versions.node&&required.every(name=>typeof cached.files?.[name]==='string')){
+  const current=await fingerprint(Object.keys(cached.files));
+  unchanged=Object.entries(cached.files).every(([name,hash])=>current[name]===hash);
+ }
+}catch{/* A fresh checkout, missing output or invalid cache always builds. */}
+if(!unchanged){
+ const results=await Promise.all(Object.entries({world:'main',review:'asset-review',pet:'pet'}).map(([output,entry])=>build({absWorkingDir:root,entryPoints:[`src/${entry}.js`],bundle:true,format:'iife',minify:true,outfile:`dist/${output}.js`,metafile:true,write:false,logLevel:'info'})));
+ // Include imported dependencies and the outputs: deleted or edited bundles cannot
+ // produce a false cache hit, even when source file timestamps are preserved.
+ const files=await fingerprint([...new Set([...tools,...results.flatMap(result=>Object.keys(result.metafile.inputs))])]);
+ await fs.mkdir(path.join(root,'dist'),{recursive:true});
+ await Promise.all(results.flatMap(result=>result.outputFiles).map(async output=>{
+  // Hash esbuild's exact bytes in memory: rereading just-written bundles costs
+  // extra IO on Windows, especially while antivirus inspects the new files.
+  files[path.relative(root,output.path).split(path.sep).join('/')]=digest(output.contents);
+  let existing;try{existing=await fs.readFile(output.path);}catch{}
+  if(!existing?.equals(output.contents))await fs.writeFile(output.path,output.contents);
+ }));
+ await fs.mkdir(path.dirname(cacheFile),{recursive:true});
+ await fs.writeFile(cacheFile,JSON.stringify({esbuild:esbuildVersion,node:process.versions.node,files}));
+}
 for(const filename of ['index.html','pet.html']){
  const full=path.join(root,filename);let source=await fs.readFile(full,'utf8');
  source=source.replace(/((?:src|href)="[^"?]+\.(?:js|css))(?:\?[^" ]*)?"/g,`$1?v=${version}"`);
  source=source.replace(/<meta name="forest-version" content="[^"]*">/,'');
  source=source.replace(/<title>[^<]*<\/title>/,`<title>林间来信 v${version}${filename==='pet.html'?' · 桌宠':' · 朋友住在风景里'}</title>`);
  source=source.replace('</head>',`<meta name="forest-version" content="${version}"></head>`);
- await fs.writeFile(full,source);
+ if(source!==await fs.readFile(full,'utf8'))await fs.writeFile(full,source);
 }
-console.log(`Built Forest Letters v${version}`);
+console.log(`${unchanged?'Reused unchanged build for':'Built'} Forest Letters v${version}`);

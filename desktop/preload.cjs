@@ -13,6 +13,11 @@ contextBridge.exposeInMainWorld('desktopMain', {
   showPet() { ipcRenderer.send('show-desktop-pet'); },
   setPetVisible(visible) { return ipcRenderer.invoke('set-desktop-pet-visible', visible); },
   getPetVisible() { return ipcRenderer.invoke('get-desktop-pet-visible'); },
+  onPetVisible(callback) {
+    const listener=(_event,visible)=>callback(visible);
+    ipcRenderer.on('pet-visibility',listener);
+    return ()=>ipcRenderer.removeListener('pet-visibility',listener);
+  },
   publishState(payload) { ipcRenderer.send('social-state', payload); },
   onOpenFriend(callback) { ipcRenderer.on('open-friend', (_event, id) => callback(id)); ipcRenderer.send('main-ready'); }
 });

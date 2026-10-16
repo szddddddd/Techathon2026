@@ -1,0 +1,41 @@
+{
+  "build": "passed",
+  "existingDataTests": "passed: store/feed/discovery/pet",
+  "avatarTests": "passed: backend, contact-first coordination, desktop/mobile browser",
+  "presence": {
+    "checks": [
+      "all added contacts are initially collected",
+      "more menu pins and orders WeChat-style conversations",
+      "unread tiers and capped envelope stack track incoming messages",
+      "reading holds through chat; delayed collection stops hidden actor updates",
+      "pinning during fade restores the same actor and position",
+      "opening a collected contact does not summon them",
+      "reload derives presence from unread and preserves historical placement data",
+      "gathering only summons eligible friends",
+      "mobile list fits; context menu supports keyboard activation",
+      "touch long-press opens pin menu without opening chat"
+    ],
+    "errors": []
+  },
+  "existingUI": {
+    "checks": [
+      "idle Dock collapses",
+      "keyboard focus reveals Dock",
+      "pointer proximity reveals Dock",
+      "status source expansion, photo stack and focus return",
+      "scene drag dismisses status",
+      "nested composer retains draft and parent; modal locks Dock",
+      "one active workspace and unsaved profile retained",
+      "chat draft and personal timeline",
+      "rapid open-close-open resolves latest intent without orphan animation",
+      "narrow, mobile and reduced-height viewport bounds",
+      "reduced-motion has no scale/translate animation"
+    ],
+    "errors": []
+  },
+  "frameTimings": {
+    "median": 16.700000000000728,
+    "p95": 16.799999999999272
+  },
+  "frameTimingLimit": "Current run only; no controlled before/after claim."
+}

@@ -1,0 +1,36 @@
+{
+  "type": "cafe",
+  "provider": "Hyper3D MCP OAuth",
+  "phase": "downloaded",
+  "generationId": "c4d20d75-bcef-4a3a-855e-dbadb95c63d4",
+  "displayUrl": "https://hyper3d.ai/workspace/rodin/c4d20d75-bcef-4a3a-855e-dbadb95c63d4",
+  "parameters": {
+    "prompt": "One complete small 咖啡馆 building for a bright cozy low-poly woodland social diorama. A cozy woodland cafe with a rounded corner turret and low conical roof, caramel timber storefront, sage-and-cream striped canvas awning, a small cup-shaped sign above the doorway and curved panoramic windows. Welcoming rounded silhouette, no loose furniture outside the footprint. Use the supplied two views as massing guidance, enrich with appealing handmade architectural details. Warm light wood, pale cream stone, muted sage greens, soft faceted shapes, readable front door toward positive Z, complete back and sides. Approximate footprint 4 by 3.5 and height 3 to 4.2. Flat grounded bottom. Isolated building only, no ground slab, no landscape, no people, no readable text, no baked shadows, no separate loose props. Cohesive miniature architecture, light matte materials, no dark realistic concrete. Do not create an interior or a cutaway.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "sha256": "4dd3720da92a7a604f04491b492d392cf396247d3e1c201d8fdc384483036300",
+  "bytes": 7820988,
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "references": [
+    "reference-front.png",
+    "reference-rear.png"
+  ],
+  "adoption": "adopted after front/rear and nine-building in-scene review",
+  "sceneSha256": "4dd3720da92a7a604f04491b492d392cf396247d3e1c201d8fdc384483036300",
+  "normalization": {
+    "rotationY": 0,
+    "type": "cafe",
+    "triangles": 30000,
+    "dimensions": [
+      3.808920961721869,
+      3.4415025682711375,
+      3.5
+    ],
+    "scale": 2.003527721987993
+  },
+  "note": "Original Rodin geometry and texture retained. Orientation, uniform scale and floor alignment are applied at runtime; no new generation for individual groups."
+}

@@ -3,13 +3,14 @@
     "all added contacts are initially collected",
     "more menu pins and orders WeChat-style conversations",
     "unread tiers and capped envelope stack track incoming messages",
-    "reading holds through chat; delayed collection stops hidden actor updates",
-    "pinning during fade restores the same actor and position",
+    "reading and closing chat retain recent friends",
+    "list pins do not change presence",
     "opening a collected contact does not summon them",
-    "reload derives presence from unread and preserves historical placement data",
+    "reload derives presence from recent messages and preserves historical placement data",
     "gathering only summons eligible friends",
     "mobile list fits; context menu supports keyboard activation",
-    "touch long-press opens pin menu without opening chat"
+    "touch long-press opens pin menu without opening chat",
+    "nine real actors appear after reload; a new message replaces the oldest conversation"
   ],
   "errors": []
 }

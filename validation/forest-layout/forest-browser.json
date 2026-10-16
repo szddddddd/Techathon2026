@@ -1,0 +1,405 @@
+{
+  "createdAt": "2026-10-16T11:24:27.574Z",
+  "reports": [
+    {
+      "fallback": false,
+      "inventory": {
+        "forest": [
+          {
+            "id": "west-01",
+            "x": -25.6,
+            "z": -10,
+            "grounded": true
+          },
+          {
+            "id": "west-02",
+            "x": -26.1,
+            "z": -5.5,
+            "grounded": true
+          },
+          {
+            "id": "west-03",
+            "x": -25.5,
+            "z": -0.8,
+            "grounded": true
+          },
+          {
+            "id": "west-04",
+            "x": -25.4,
+            "z": 2.8,
+            "grounded": true
+          },
+          {
+            "id": "west-05",
+            "x": -16.4,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "west-06",
+            "x": -13.4,
+            "z": 9.6,
+            "grounded": true
+          },
+          {
+            "id": "west-07",
+            "x": -10.5,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "west-08",
+            "x": -7.3,
+            "z": 9.8,
+            "grounded": true
+          },
+          {
+            "id": "east-01",
+            "x": 25.6,
+            "z": -10,
+            "grounded": true
+          },
+          {
+            "id": "east-02",
+            "x": 26.5,
+            "z": -6.8,
+            "grounded": true
+          },
+          {
+            "id": "east-03",
+            "x": 27,
+            "z": -3.7,
+            "grounded": true
+          },
+          {
+            "id": "east-04",
+            "x": 28.2,
+            "z": 0.6,
+            "grounded": true
+          },
+          {
+            "id": "east-05",
+            "x": 27.9,
+            "z": 4.9,
+            "grounded": true
+          },
+          {
+            "id": "east-06",
+            "x": 25.5,
+            "z": 7.8,
+            "grounded": true
+          },
+          {
+            "id": "east-07",
+            "x": 22.8,
+            "z": 9.5,
+            "grounded": true
+          },
+          {
+            "id": "east-08",
+            "x": 19.4,
+            "z": 10.2,
+            "grounded": true
+          },
+          {
+            "id": "east-09",
+            "x": 16,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "east-10",
+            "x": 12.5,
+            "z": 10.2,
+            "grounded": true
+          },
+          {
+            "id": "east-11",
+            "x": 8.9,
+            "z": 9.5,
+            "grounded": true
+          },
+          {
+            "id": "east-12",
+            "x": 9.6,
+            "z": -7.5,
+            "grounded": true
+          },
+          {
+            "id": "foothill-01",
+            "x": -23.6,
+            "z": -16,
+            "grounded": true
+          },
+          {
+            "id": "foothill-02",
+            "x": -17.4,
+            "z": -16.1,
+            "grounded": true
+          },
+          {
+            "id": "foothill-03",
+            "x": 8.3,
+            "z": -13.5,
+            "grounded": true
+          },
+          {
+            "id": "foothill-04",
+            "x": 15.1,
+            "z": -12.6,
+            "grounded": true
+          }
+        ],
+        "street": [
+          [
+            -12.35,
+            2.22,
+            -7.9
+          ],
+          [
+            -3.75,
+            2.22,
+            -6.7
+          ],
+          [
+            -24.5,
+            2.22,
+            3.1
+          ],
+          [
+            -24.8,
+            2.22,
+            -11
+          ],
+          [
+            -13.3,
+            2.22,
+            -11.8
+          ],
+          [
+            -5.9,
+            2.22,
+            -11.9
+          ]
+        ],
+        "crystals": [],
+        "rocks": [
+          "valley-rock-01",
+          "valley-rock-02"
+        ],
+        "rodin": true
+      },
+      "checks": [
+        "24 forest trees and 6 street trees",
+        "shared coordinates after rendering and batching",
+        "roots grounded",
+        "2 decorative rocks and no crystals or crystal downloads",
+        "two companions spawn and gather",
+        "nine building types visible in normal mode",
+        "desktop and mobile screenshots",
+        "no horizontal overflow"
+      ],
+      "errors": []
+    },
+    {
+      "fallback": true,
+      "inventory": {
+        "forest": [
+          {
+            "id": "west-01",
+            "x": -25.6,
+            "z": -10,
+            "grounded": true
+          },
+          {
+            "id": "west-02",
+            "x": -26.1,
+            "z": -5.5,
+            "grounded": true
+          },
+          {
+            "id": "west-03",
+            "x": -25.5,
+            "z": -0.8,
+            "grounded": true
+          },
+          {
+            "id": "west-04",
+            "x": -25.4,
+            "z": 2.8,
+            "grounded": true
+          },
+          {
+            "id": "west-05",
+            "x": -16.4,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "west-06",
+            "x": -13.4,
+            "z": 9.6,
+            "grounded": true
+          },
+          {
+            "id": "west-07",
+            "x": -10.5,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "west-08",
+            "x": -7.3,
+            "z": 9.8,
+            "grounded": true
+          },
+          {
+            "id": "east-01",
+            "x": 25.6,
+            "z": -10,
+            "grounded": true
+          },
+          {
+            "id": "east-02",
+            "x": 26.5,
+            "z": -6.8,
+            "grounded": true
+          },
+          {
+            "id": "east-03",
+            "x": 27,
+            "z": -3.7,
+            "grounded": true
+          },
+          {
+            "id": "east-04",
+            "x": 28.2,
+            "z": 0.6,
+            "grounded": true
+          },
+          {
+            "id": "east-05",
+            "x": 27.9,
+            "z": 4.9,
+            "grounded": true
+          },
+          {
+            "id": "east-06",
+            "x": 25.5,
+            "z": 7.8,
+            "grounded": true
+          },
+          {
+            "id": "east-07",
+            "x": 22.8,
+            "z": 9.5,
+            "grounded": true
+          },
+          {
+            "id": "east-08",
+            "x": 19.4,
+            "z": 10.2,
+            "grounded": true
+          },
+          {
+            "id": "east-09",
+            "x": 16,
+            "z": 10,
+            "grounded": true
+          },
+          {
+            "id": "east-10",
+            "x": 12.5,
+            "z": 10.2,
+            "grounded": true
+          },
+          {
+            "id": "east-11",
+            "x": 8.9,
+            "z": 9.5,
+            "grounded": true
+          },
+          {
+            "id": "east-12",
+            "x": 9.6,
+            "z": -7.5,
+            "grounded": true
+          },
+          {
+            "id": "foothill-01",
+            "x": -23.6,
+            "z": -16,
+            "grounded": true
+          },
+          {
+            "id": "foothill-02",
+            "x": -17.4,
+            "z": -16.1,
+            "grounded": true
+          },
+          {
+            "id": "foothill-03",
+            "x": 8.3,
+            "z": -13.5,
+            "grounded": true
+          },
+          {
+            "id": "foothill-04",
+            "x": 15.1,
+            "z": -12.6,
+            "grounded": true
+          }
+        ],
+        "street": [
+          [
+            -12.35,
+            2.22,
+            -7.9
+          ],
+          [
+            -3.75,
+            2.22,
+            -6.7
+          ],
+          [
+            -24.5,
+            2.22,
+            3.1
+          ],
+          [
+            -24.8,
+            2.22,
+            -11
+          ],
+          [
+            -13.3,
+            2.22,
+            -11.8
+          ],
+          [
+            -5.9,
+            2.22,
+            -11.9
+          ]
+        ],
+        "crystals": [],
+        "rocks": [
+          "valley-rock-01",
+          "valley-rock-02"
+        ],
+        "rodin": false
+      },
+      "checks": [
+        "24 forest trees and 6 street trees",
+        "shared coordinates after rendering and batching",
+        "roots grounded",
+        "2 decorative rocks and no crystals or crystal downloads",
+        "two companions spawn and gather",
+        "nine building types visible in normal mode",
+        "desktop and mobile screenshots",
+        "no horizontal overflow"
+      ],
+      "errors": []
+    }
+  ]
+}

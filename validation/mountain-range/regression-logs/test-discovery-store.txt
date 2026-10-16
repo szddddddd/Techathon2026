@@ -1,0 +1,1 @@
+Discovery catalog/store tests passed: 9 original articles, 3 sourced Hyper3D summaries, 6 linked videos, content sharing, persistence, legacy migration, validation.

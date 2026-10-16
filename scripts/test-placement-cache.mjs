@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import * as T from 'three';
+import {createPlacementContext} from '../src/social-characters.js';
+const scene=new T.Scene(),ground=new T.Group(),generated=new T.Group(),owner=new T.Group();
+const mesh=new T.Mesh(new T.BoxGeometry(2,2,2),new T.MeshBasicMaterial());mesh.position.set(15,3.2,8);owner.add(mesh);generated.add(owner);scene.add(ground,generated);
+const terrain={root:ground,sample:()=>({height:2.22,walkable:true,normal:{x:0,y:1,z:0}})},obstacleCache=new WeakMap();
+const make=()=>createPlacementContext({scene,terrain,generated,obstacleCache});
+const first=make(),second=make();assert.equal(first.obstacles[0],second.obstacles[0]);
+const uncached=createPlacementContext({scene,terrain,generated});assert.deepEqual(uncached.inspect(15,8,.3,[],{manual:true}),first.inspect(15,8,.3,[],{manual:true}));
+assert.equal(first.inspect(15,8,.3,[],{manual:true}).ok,false);
+mesh.position.x+=5;const moved=make();assert.notEqual(moved.obstacles[0],first.obstacles[0]);assert.equal(moved.inspect(15,8,.3,[],{manual:true}).ok,true);
+assert.equal(moved.inspect(20,8,.3,[],{manual:true}).ok,false);
+mesh.geometry.attributes.position.setX(0,3);mesh.geometry.attributes.position.needsUpdate=true;const edited=make();assert.notEqual(edited.obstacles[0],moved.obstacles[0]);
+mesh.geometry.setIndex([...mesh.geometry.index.array].reverse());const indexed=make();assert.notEqual(indexed.obstacles[0],edited.obstacles[0]);
+mesh.userData.interactionOnly=true;const removed=make();assert.equal(removed.obstacles[0].triangles.length,0);
+console.log('PASS: exact placement snapshots reuse unchanged props and invalidate transforms, vertices, indices and interaction exclusions.');

@@ -1,0 +1,46 @@
+{
+  "geometry": [
+    {
+      "name": "mountain_range",
+      "triangles": 36529,
+      "bytes": 12318364
+    },
+    {
+      "name": "letter_tree",
+      "triangles": 11716,
+      "bytes": 1957104
+    },
+    {
+      "name": "curved_seat",
+      "triangles": 8782,
+      "bytes": 1284204
+    },
+    {
+      "name": "wood_bench",
+      "triangles": 9724,
+      "bytes": 1750820
+    },
+    {
+      "name": "stone_ring",
+      "triangles": 5864,
+      "bytes": 1168076
+    },
+    {
+      "name": "notice_board",
+      "triangles": 11860,
+      "bytes": 1731860
+    },
+    {
+      "name": "viewing_frame",
+      "triangles": 8628,
+      "bytes": 1356148
+    }
+  ],
+  "checks": [
+    "active valley GLBs are finite and readable",
+    "one continuous 36 by 14 mountain range with supported footprint or submerged channel floor",
+    "new fixture geometry participates in collision",
+    "ramp and terrace heights unchanged",
+    "full-width main ramp remains supported and clear"
+  ]
+}

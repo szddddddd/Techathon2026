@@ -1,0 +1,1 @@
+PASS: store persistence, duplicate prevention, queued writes, failed commit rollback, message types, statuses, posts, likes/comments, demo replay, background scheduling, 500-message history and per-friend isolation.

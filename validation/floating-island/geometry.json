@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "shared angular shoreline meets meadow",
+    "single tapered rock body with embedded hanging rock masses",
+    "all nine buildings remain level on dry land",
+    "riverside full-body passage",
+    "old slab extrusions removed"
+  ],
+  "shoreChecks": 64,
+  "cornerChecks": 36,
+  "pathChecks": 85,
+  "minRiverClearance": 3.2196475236070192,
+  "rockTriangles": 1140,
+  "bottom": -18
+}

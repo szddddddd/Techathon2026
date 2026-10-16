@@ -1,0 +1,47 @@
+{
+  "type": "music",
+  "provider": "Hyper3D MCP OAuth",
+  "phase": "downloaded",
+  "generationId": "746012fd-192b-4c03-b9c1-0b8270515169",
+  "displayUrl": "https://hyper3d.ai/workspace/rodin/746012fd-192b-4c03-b9c1-0b8270515169",
+  "parameters": {
+    "prompt": "One complete small 音乐厅 building for a bright cozy low-poly woodland social diorama. A small woodland concert hall with a single continuous closed fan-shaped roof sweeping upward at the rear, roof edges physically joined to full-height side and rear walls, no floating panels or air gaps, curved front colonnade, lavender accents, broad glazed entrance and a sculpted musical note emblem. Low broad auditorium silhouette, not a house with a gable roof. Use the supplied two views as massing guidance, enrich with appealing handmade architectural details. Warm light wood, pale cream stone, muted sage greens, soft faceted shapes, readable front door toward positive Z, complete back and sides. Approximate footprint 4 by 3.5 and height 3 to 4.2. Flat grounded bottom. Isolated building only, no ground slab, no landscape, no people, no readable text, no baked shadows, no separate loose props. Cohesive miniature architecture, light matte materials, no dark realistic concrete. Do not create an interior or a cutaway.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "sha256": "b8d8657705f4441f85827c91a48af5932d388150fc5eced22b8aaf630a9ac935",
+  "bytes": 7862348,
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "references": [
+    "reference-front.png",
+    "reference-rear.png"
+  ],
+  "adoption": "adopted after front/rear and nine-building in-scene review",
+  "sceneSha256": "b8d8657705f4441f85827c91a48af5932d388150fc5eced22b8aaf630a9ac935",
+  "normalization": {
+    "rotationY": 0,
+    "type": "music",
+    "triangles": 30000,
+    "dimensions": [
+      3.9999999999999996,
+      3.6236099049891406,
+      3.1737943266349276
+    ],
+    "scale": 2.1292605842160452
+  },
+  "note": "Original Rodin geometry and texture retained. Orientation, uniform scale and floor alignment are applied at runtime; no new generation for individual groups.",
+  "attempts": [
+    {
+      "generationId": "4ece74e9-c9ec-4f71-8b5d-9ea041becb87",
+      "adoption": "rejected: detached roof",
+      "directory": "attempt-1"
+    },
+    {
+      "generationId": "746012fd-192b-4c03-b9c1-0b8270515169",
+      "adoption": "adopted: connected roof"
+    }
+  ]
+}

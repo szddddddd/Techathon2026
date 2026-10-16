@@ -1,8 +1,10 @@
 import * as THREE from 'three';
-import { isReserved } from './layout.js';
+import { isReserved,setReservedFootprints } from './layout.js';
+import {FOREST_TREES,FOREST_ROCKS} from './forest-layout.js';
+import {groundTree} from './tree-assets.js';
 
 // Authored vegetation and forest details. All geometry is constructed here.
-export function buildNature(scene, { rodin = false, expanded = false } = {}) {
+export function buildNature(scene, { rodin = false, expanded = false, terrain } = {}) {
   let seed = 81397;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const between = (a, b) => a + random() * (b - a);
@@ -17,6 +19,7 @@ export function buildNature(scene, { rodin = false, expanded = false } = {}) {
   const plantLeaf = mat('#4e9b7c', { side: THREE.DoubleSide });
   const gold = mat('#ffda83', { emissive: '#ffb954', emissiveIntensity: .5 });
   const root = new THREE.Group(); root.name = 'Authored forest and flora'; scene.add(root);
+  const props=new THREE.Group();props.name='Procedural woodland props';root.add(props);
   const sphere = new THREE.IcosahedronGeometry(1, 2);
   const smallSphere = new THREE.SphereGeometry(1, 8, 6);
   const point = v => new THREE.Vector3(...v);
@@ -41,7 +44,7 @@ export function buildNature(scene, { rodin = false, expanded = false } = {}) {
   }
   crownGeo.computeVertexNormals();
   function tree(x, z, height, width, tint) {
-    const g = new THREE.Group(); g.name = 'Branching ancient broadleaf'; g.position.set(x, 2.2, z); root.add(g);
+    const g = new THREE.Group(); g.name = 'Branching ancient broadleaf'; g.position.set(x, terrain?.sample(x,z).height??2.22, z); props.add(g);
     const lean = between(-.5, .5), leanZ = between(-.3, .3);
     segment([0, 0, 0], [lean * .5, height * .5, leanZ], width * .52, width * .32, bark[0], g, 11);
     segment([lean * .5, height * .5, leanZ], [lean, height * .87, 0], width * .33, width * .15, bark[1], g, 10);
@@ -84,29 +87,33 @@ export function buildNature(scene, { rodin = false, expanded = false } = {}) {
       const a = j * .61;
       const l = ellipsoid([Math.cos(a) * width * .48, .35 + j * .29, Math.sin(a) * width * .48], [.16, .23, .055], plantLeaf, g, smallSphere); l.rotation.z = a;
     }
+    return g;
   }
-  if (!rodin) [[-9,-8.5,8.2,1.05,0],[-4.8,-10,8.6,.92,1],[0,-10.5,9.6,.92,4],[4.8,-10,8.4,1.05,0],
-    [9.4,-9,10,1.1,3],[-13.5,-2.2,8.5,1,0],[-13.5,3.9,6.4,.78,1],[13.7,-3.8,8.3,.85,2],
-    [-7.8,-10.3,9.2,.73,2],[7.9,-9.8,8.9,.76,1]].forEach(p => tree(...p));
+  if(!rodin)for(const [i,p] of FOREST_TREES.entries()){
+    const g=tree(p.x,p.z,p.size,p.size*.065,i%leaves.length);
+    g.name=p.id;g.rotation.y=p.rotation;g.userData.layoutId=p.id;g.userData.kind=p.kind;
+    if(terrain)groundTree(g,terrain.sample);
+    // Collision captures these meshes before main.js batches their shared materials.
+  }
 
   function rock(x, z, size, parent = root, y = 2.2) {
     const r = ellipsoid([x, y + size * .28, z], [size, size * .62, size * .75], stoneMats[Math.floor(random() * stoneMats.length)], parent);
     r.rotation.set(between(-.2,.2),random()*6.28,between(-.12,.12));
     ellipsoid([x - size*.09, y + size * .65, z], [size*.83,size*.12,size*.61], moss, parent);
   }
-  if (!rodin) [[-8,7,1.2],[-4.2,8.2,1.2],[-2.4,8.7,.85],[4.6,8.6,1],[8.8,6.3,1.3],[8,-5,1.1],[-8.9,-5.5,.7],[6.5,-7.7,1.3]].forEach(r => rock(...r));
-  function crystalCluster(x, z, scale) {
-    const g = new THREE.Group(); g.position.set(x,2.2,z); g.name='Luminous blue crystal growth'; root.add(g);
-    rock(0,0,scale*.7,g,0);
-    for(let i=0;i<7;i++) {
-      const a=i*2.399, r=i===0?0:scale*between(.2,.6), h=scale*between(.5,1.4);
-      const c = mesh(new THREE.CylinderGeometry(0,scale*.17,h,5,1), i%3===0?deepBlue:blue,g);
-      c.position.set(Math.cos(a)*r,h*.46+.15,Math.sin(a)*r); c.rotation.z=Math.cos(a)*.18; c.rotation.x=Math.sin(a)*.18;
-      const base = mesh(new THREE.CylinderGeometry(scale*.17,scale*.13,h*.53,5),blue,g);base.position.copy(c.position);base.position.y-=h*.25;base.rotation.copy(c.rotation);
-    }
-    const glow = new THREE.PointLight('#55d7ff',1.5,3.6,2); glow.position.set(0,.8,0);g.add(glow);
+  if(!rodin)for(const p of FOREST_ROCKS){
+    const g=new THREE.Group();g.name=p.id;g.position.set(p.x,terrain?.sample(p.x,p.z).height??2.22,p.z);g.rotation.y=p.rotation;
+    g.userData.layoutId=p.id;g.userData.kind='rock';props.add(g);
+    rock(0,0,p.size*.65,g,-p.size*.15);
   }
-  if (!expanded) { crystalCluster(7,-3,1); crystalCluster(9,5,.9); crystalCluster(-8.8,5.8,.65); }
+  if(!rodin){
+    props.updateWorldMatrix(true,true);
+    props.userData.inventory=props.children.map(g=>{
+      const bounds=new THREE.Box3().setFromObject(g);
+      return{id:g.userData.layoutId,kind:g.userData.kind,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()}};
+    });
+    setReservedFootprints(props.userData.inventory.map(({bounds:b})=>({minX:b.min[0],maxX:b.max[0],minZ:b.min[2],maxZ:b.max[2]})));
+  }
   const leafShape = new THREE.Shape(); leafShape.moveTo(0,0);leafShape.quadraticCurveTo(.33,.42,0,1);leafShape.quadraticCurveTo(-.29,.38,0,0);
   const leafGeo = new THREE.ShapeGeometry(leafShape,5);
   function fern(x,z,scale) {
@@ -159,7 +166,6 @@ export function buildNature(scene, { rodin = false, expanded = false } = {}) {
     grass(x,z,between(.45,1.05));
     if(i%9===0)fern(x+.2,z,between(.6,1));
     if(i%(expanded ? 10 : 5)===0)flower(x-.1,z,between(.7,1));
-    if(!expanded && i%13===0)rock(x,z,between(.18,.35));
   }
   [[-8,5.7,1.2],[-7.8,7.8,1.25],[-2.1,7.3,.8],[4.3,7.8,1.2],[9.1,2.9,1.1],[-8.7,-1.3,1]].forEach(p=>fern(...p));
   [[-7.5,6.3,1.2],[-6.9,7.5,1],[-2.3,6.7,.9],[4.4,7.3,1],[8.4,4.7,1.1],[7.8,-3.7,1]].filter(p=>!expanded || (suitable(p[0],p[1])&&!isReserved(p[0],p[1],p[2]*.3))).forEach(p=>flower(...p));
@@ -212,16 +218,11 @@ export function buildNature(scene, { rodin = false, expanded = false } = {}) {
         previous=current;
       }
     }
-    // A few crystals rooted in fissures, without extra point lights.
-    if(phase!==1)for(let i=0;i<3;i++) {
-      const c=mesh(new THREE.ConeGeometry(.09+i*.015,.38+i*.12,5),blue,escarpment);
-      c.position.set(x-rx*.27+i*.15,2.2+height*.46+i*.08,z+rz*.85);c.rotation.z=(i-1)*.25;
-    }
   }
   cliffColumn(7.45,-5.7,3.15,1.08,.91,0);
   cliffColumn(8.9,-6.95,4.85,1.12,1.02,1);
   cliffColumn(6.65,-7.75,4.05,.93,.86,2);
   cliffColumn(9.45,-5.45,2.4,.73,.71,3);
   }
-  return {butterflies};
+  return {butterflies,props};
 }

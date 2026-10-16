@@ -1,0 +1,26 @@
+{
+  "errors": [],
+  "network": [
+    {
+      "url": "http://127.0.0.1:47831/api/state",
+      "status": 409
+    },
+    {
+      "url": "http://127.0.0.1:47831/api/visibility",
+      "status": 405
+    },
+    {
+      "url": "http://127.0.0.1:47831/api/state",
+      "status": 409
+    },
+    {
+      "url": "http://127.0.0.1:47831/api/state",
+      "status": 409
+    }
+  ],
+  "checks": [
+    "animated waterfall and shader render",
+    "desktop overview and outlet close-up",
+    "391px portrait and reduced-motion mode"
+  ]
+}

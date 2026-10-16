@@ -1,0 +1,9 @@
+{
+  "globalModelProviderAndSettingsRestored": true,
+  "globalAuthRestoredByteForByte": true,
+  "originalProvider": "deemos",
+  "originalModel": "gpt-6-astra",
+  "hyper3dMcpPreserved": true,
+  "concurrentProjectTrustEntriesPreserved": true,
+  "imageConfigScope": "project-only private .forest-avatar-data/image-config.json"
+}

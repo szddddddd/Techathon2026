@@ -13,7 +13,7 @@ const escape=async id=>{await page.keyboard.press('Escape');await settled(id,'cl
 const inside=async selector=>assert.ok(await page.locator(selector).evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1;}),selector+' stays inside viewport');
 try{
  await page.goto(baseURL);await page.waitForFunction(()=>window.__socialUI,null,{timeout:180000});
- await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){await __socialStore.addFriend(id);await __socialStore.setFriendPinned(id,true);}});
+ await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){await __socialStore.addFriend(id);await __socialStore.receiveMessage(id,{text:'界面检查来信'},'ui-seed-'+id);await __socialStore.markRead(id);}});
  await page.mouse.move(10,10);await page.waitForFunction(()=>document.querySelector('#social').dataset.dock==='collapsed');await shot('desktop-idle');checks.push('idle Dock collapses');
  await page.locator('#dock-reveal').focus();assert.equal(await page.locator('#social').getAttribute('data-dock'),'expanded');checks.push('keyboard focus reveals Dock');
  await page.locator('#viewport').focus();await page.mouse.move(10,10);await page.waitForFunction(()=>document.querySelector('#social').dataset.dock==='collapsed');
