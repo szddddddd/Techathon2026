@@ -1,0 +1,41 @@
+{
+  "name": "world",
+  "version": "1.1.0",
+  "description": "林间来信：三维森林社交与 Windows 桌宠",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/serve.mjs",
+    "desktop": "electron .",
+    "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs",
+    "audit:social": "node scripts/audit-social-characters.mjs",
+    "record:discovery": "node scripts/record-discovery.mjs",
+    "audit:discovery": "node scripts/audit-discovery.mjs",
+    "test:browser": "node scripts/test-discovery-browser.mjs",
+    "test:boards": "node scripts/test-discovery-boards.mjs",
+    "test:anchors": "node scripts/test-social-anchors.mjs",
+    "test:camera": "node scripts/test-camera-pan.mjs",
+    "test:desktop-bridge": "node scripts/test-desktop-bridge.mjs",
+    "test:pet": "node scripts/test-web-pet.mjs",
+    "test:drag": "node scripts/test-character-drag.mjs",
+    "test:placement": "node scripts/test-placement-clearance.mjs",
+    "desktop:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-desktop-launcher.ps1",
+    "launch": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/launch.ps1",
+    "test:launch": "node scripts/test-launch.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "electron": "^36.3.2",
+    "fake-indexeddb": "^6.2.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

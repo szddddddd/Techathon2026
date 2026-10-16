@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-10-15T07:15:11.064Z",
+  "checks": [
+    "real model drag commits supported position, preserves camera, does not open chat",
+    "river placement rejected, returns to origin",
+    "friend overlap rejected",
+    "Escape cancels and restores controls",
+    "storage failure rolls back physical and stored position",
+    "refresh restores saved home, single click still chats",
+    "adding another friend preserves existing placements",
+    "real mobile touch drag places character",
+    "walking resumes around the newly placed home"
+  ],
+  "errors": []
+}

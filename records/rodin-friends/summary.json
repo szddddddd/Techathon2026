@@ -1,0 +1,53 @@
+{
+  "assets": {
+    "bear": {
+      "state": "downloaded",
+      "uuid": "f8d9ab25-e3ff-4482-b814-d5b7545dcb1c",
+      "consumed": 0.5,
+      "files": [
+        {
+          "file": "assets/rodin-friends/bear/base_basic_pbr.glb",
+          "bytes": 1141832,
+          "sha256": "1967cc57ea1db47146ec665f63b8a18a44ba062347d4884ce1630f9a379d11ea"
+        }
+      ]
+    },
+    "fox": {
+      "state": "downloaded",
+      "uuid": "1ea58cbc-d708-4237-9145-fec1ffbebaca",
+      "consumed": 0.5,
+      "files": [
+        {
+          "file": "assets/rodin-friends/fox/base_basic_pbr.glb",
+          "bytes": 1311364,
+          "sha256": "be630ac995b936c7ed9de1bf707eba0eccda61c3d09dbcbcadd03db8d1df7236"
+        }
+      ]
+    },
+    "kangaroo": {
+      "state": "downloaded",
+      "uuid": "42713e35-4394-461a-88e3-d61fc4093b2d",
+      "consumed": 0.5,
+      "files": [
+        {
+          "file": "assets/rodin-friends/kangaroo/base_basic_pbr.glb",
+          "bytes": 1045524,
+          "sha256": "b00302e0ad8f4ef5d6e07eba92a715c8d0dd051f943cd22eccd20821c836b17e"
+        }
+      ]
+    },
+    "rabbit": {
+      "state": "downloaded",
+      "uuid": "b67eea52-394c-4a43-9ca1-7c4b4869ba58",
+      "consumed": 0.5,
+      "files": [
+        {
+          "file": "assets/rodin-friends/rabbit/base_basic_pbr.glb",
+          "bytes": 1219548,
+          "sha256": "c1ad7bec6b75f4d717162318156670bf192e2151f7c31c0981dc7801babe4392"
+        }
+      ]
+    }
+  },
+  "consumed": 2.0
+}

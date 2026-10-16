@@ -1,0 +1,21 @@
+{
+  "createdAt": "2026-10-15T07:33:20.452Z",
+  "native": [
+    {
+      "backgroundColor": "#000000",
+      "visible": true,
+      "alwaysOnTop": true,
+      "url": "http://127.0.0.1:47832/pet.html"
+    }
+  ],
+  "checks": [
+    "real native Electron transparent pet-only window, no second forest window",
+    "web button opens OS pet directly and shares current browser friends",
+    "captured native window has transparent corner alpha",
+    "native pet receives unread and clicking its real friend opens browser chat and marks read",
+    "repeat click shows existing hidden pet without duplicate windows",
+    "loopback bridge denies unrelated website origins",
+    "offline helper invokes registered forestletters protocol"
+  ],
+  "errors": []
+}

@@ -1,0 +1,208 @@
+{
+  "createdAt": "2026-10-15T07:16:08.859Z",
+  "method": "13 support rays and projected body-band obstacle triangles, invariant WALKWAYS; facilities become companion obstacles before graph construction.",
+  "facilities": [
+    {
+      "kind": "scene-video",
+      "position": [
+        -5.099999999999985,
+        2.220000000000001,
+        -1.2000000000000013
+      ],
+      "radius": 1.3,
+      "bounds": {
+        "min": [
+          -6.206999999999986,
+          2.2199999804496775,
+          -1.4870000048875822
+        ],
+        "max": [
+          -3.9929999999999852,
+          5.315500000733138,
+          0.12839999560117585
+        ]
+      },
+      "support": true
+    },
+    {
+      "kind": "accounts",
+      "position": [
+        -3.2999999999999865,
+        2.22,
+        4.1999999999999975
+      ],
+      "radius": 1.1,
+      "bounds": {
+        "min": [
+          -4.2499999880790575,
+          2.2199999761581424,
+          3.7945108214120613
+        ],
+        "max": [
+          -2.3500000119209155,
+          4.584558682614981,
+          4.66000000119209
+        ]
+      },
+      "support": true
+    }
+  ],
+  "bboxIntersections": [
+    {
+      "kind": "scene-video",
+      "intersections": []
+    },
+    {
+      "kind": "accounts",
+      "intersections": []
+    }
+  ],
+  "four": [
+    {
+      "id": "tuantuan",
+      "animal": "kangaroo",
+      "x": -4.599999999999994,
+      "y": 2.22,
+      "z": -6.899999999999999,
+      "radius": 0.8210504965803462,
+      "height": 2.1,
+      "nodes": 42,
+      "routeLength": 11,
+      "valid": true
+    },
+    {
+      "id": "ali",
+      "animal": "fox",
+      "x": -7.849999999999996,
+      "y": 2.22,
+      "z": 8.050000000000004,
+      "radius": 0.9659456071911773,
+      "height": 1.9,
+      "nodes": 6,
+      "routeLength": 3,
+      "valid": true
+    },
+    {
+      "id": "xiaomian",
+      "animal": "rabbit",
+      "x": -8.499999999999996,
+      "y": 2.22,
+      "z": 5.450000000000003,
+      "radius": 0.6261862515110711,
+      "height": 1.85,
+      "nodes": 9,
+      "routeLength": 3,
+      "valid": true
+    },
+    {
+      "id": "shanshan",
+      "animal": "bear",
+      "x": 7.100000000000007,
+      "y": 2.22,
+      "z": 3.500000000000002,
+      "radius": 0.825188737754986,
+      "height": 2,
+      "nodes": 32,
+      "routeLength": 11,
+      "valid": true
+    }
+  ],
+  "eight": [
+    {
+      "id": "tuantuan",
+      "animal": "kangaroo",
+      "x": -4.599999999999994,
+      "y": 2.22,
+      "z": -6.899999999999999,
+      "radius": 0.8210504965803462,
+      "height": 2.1,
+      "nodes": 42,
+      "routeLength": 11,
+      "valid": true
+    },
+    {
+      "id": "ali",
+      "animal": "fox",
+      "x": -7.849999999999996,
+      "y": 2.22,
+      "z": 8.050000000000004,
+      "radius": 0.9659456071911773,
+      "height": 1.9,
+      "nodes": 6,
+      "routeLength": 3,
+      "valid": true
+    },
+    {
+      "id": "xiaomian",
+      "animal": "rabbit",
+      "x": -8.499999999999996,
+      "y": 2.22,
+      "z": 5.450000000000003,
+      "radius": 0.6261862515110711,
+      "height": 1.85,
+      "nodes": 9,
+      "routeLength": 3,
+      "valid": true
+    },
+    {
+      "id": "shanshan",
+      "animal": "bear",
+      "x": 7.100000000000007,
+      "y": 2.22,
+      "z": 3.500000000000002,
+      "radius": 0.825188737754986,
+      "height": 2,
+      "nodes": 32,
+      "routeLength": 11,
+      "valid": true
+    },
+    {
+      "id": "tuantuan-stress",
+      "animal": "kangaroo",
+      "x": -5.249999999999995,
+      "y": 2.22,
+      "z": 1.5500000000000025,
+      "radius": 0.8210504965803462,
+      "height": 2.1,
+      "nodes": 8,
+      "routeLength": 4,
+      "valid": true
+    },
+    {
+      "id": "ali-stress",
+      "animal": "fox",
+      "x": -6.549999999999995,
+      "y": 2.220000000000001,
+      "z": -8.85,
+      "radius": 0.9659456071911773,
+      "height": 1.9,
+      "nodes": 37,
+      "routeLength": 9,
+      "valid": true
+    },
+    {
+      "id": "xiaomian-stress",
+      "animal": "rabbit",
+      "x": -3.9499999999999944,
+      "y": 2.220000000000001,
+      "z": -2.9999999999999973,
+      "radius": 0.6261862515110711,
+      "height": 1.85,
+      "nodes": 16,
+      "routeLength": 8,
+      "valid": true
+    },
+    {
+      "id": "shanshan-stress",
+      "animal": "bear",
+      "x": 9.700000000000008,
+      "y": 2.22,
+      "z": 2.2000000000000024,
+      "radius": 0.825188737754986,
+      "height": 2,
+      "nodes": 48,
+      "routeLength": 10,
+      "valid": true
+    }
+  ]
+}

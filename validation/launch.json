@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-10-15T07:49:15.744Z",
+  "version": "1.1.0",
+  "checks": [
+    "double-click launcher exists",
+    "launch workflow completes against current running server",
+    "package, lock, page and resource versions match",
+    "current scene and video assets load",
+    "new Node server serves latest scene and video ranges",
+    "server hides project configuration",
+    "obsolete root code removed"
+  ],
+  "output": "\n> world@1.1.0 build\n> node scripts/build.mjs\n\n\n  dist\\pet.js  570.6kb\n\nDone in 103ms\n\n  dist\\review.js  582.1kb\n\nDone in 104ms\n\n  dist\\world.js  820.9kb\n\nDone in 106ms\nBuilt Forest Letters v1.1.0\nRegistered forestletters://pet for the current Windows user.\r\nThe current Forest Letters page is ready: http://localhost:8080/\n"
+}

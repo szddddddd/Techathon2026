@@ -1,0 +1,15 @@
+{
+  "page": "https://www.digitaling.com/projects/212519.html",
+  "image": "https://file.digitaling.com/eImg/uimages/20220630/1656582401216918.gif",
+  "frames": 26,
+  "selected_image": "https://file.digitaling.com/eImg/uimages/20220630/1656582518681010.gif",
+  "selected_frame": 22,
+  "selected_crop": [
+    35,
+    25,
+    475,
+    495
+  ],
+  "input": "kangaroo-input.png",
+  "reason": "Full body, both feet planted, both ears visible and tail silhouette visible. No generative preprocessing."
+}
