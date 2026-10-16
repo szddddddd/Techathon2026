@@ -21,6 +21,7 @@ import { createWebPet } from './web-pet.js';
 import { petPayload } from './pet-state.js';
 import {createSound,createSoundSettings} from './sound.js';
 import {createRecordPlayer} from './record-player.js';
+import {createSoundCamera} from './sound-camera.js';
 
 async function boot(){
 
@@ -53,9 +54,10 @@ store=captureIndex?null:await createSocialStore();
 window.__characterPlacement=characters.placement;
 window.__river={...terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
 const sound=captureIndex?null:createSound({store});
-const soundSettings=sound?createSoundSettings({sound,ui}):null;
-window.__sound=sound;
-const recordPlayer=createRecordPlayer({scene,camera,canvas:renderer.domElement,terrain,generated,ui,sound,reduced,onOpen:origin=>soundSettings?.open(origin)});
+const soundCamera=createSoundCamera({camera,controls,getRoot:()=>recordPlayer.root,reduced});
+const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:()=>{valley.finishCamera();characters.finishCamera();for(const b of nature.butterflies||[])b.group.visible=false;soundCamera.open();},onSceneClose:immediate=>{for(const b of nature.butterflies||[])b.group.visible=true;soundCamera.close(immediate);}}):null;
+window.__sound=sound;window.__soundCamera=soundCamera;
+const recordPlayer=await createRecordPlayer({scene,camera,canvas:renderer.domElement,terrain,generated,ui,sound,reduced,onOpen:origin=>soundSettings?.open(origin,{scene:true})});
 window.__recordPlayer=recordPlayer;
 socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onOpenSound:origin=>soundSettings.open(origin)});
 const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});window.__valley=valley;
@@ -106,6 +108,7 @@ function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}
   for(let i=0;i<flyCount;i++){flyPositions[i*3]=flySeed[i][0]+Math.sin(clockTime*.4+i)*.3;flyPositions[i*3+1]=flySeed[i][1]+Math.sin(clockTime*.6+i)*.25;flyPositions[i*3+2]=flySeed[i][2]+Math.cos(clockTime*.3+i)*.2;}flyGeo.attributes.position.needsUpdate=true;
+  soundCamera.update(now);
   renderer.render(scene,camera);fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsStart=now;fpsFrames=0;}requestAnimationFrame(frame);
 }
 renderer.render(scene,camera);$('viewport').dataset.loaded='true';requestAnimationFrame(frame);
