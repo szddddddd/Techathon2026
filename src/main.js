@@ -1,3 +1,4 @@
+import {createCommunityGround,createGroupScene} from './group-scene.js';
 import {createUIInteractions} from './ui-interactions.js';
 import {loadValleyAssets} from './valley-assets.js';
 import * as THREE from 'three';
@@ -30,27 +31,30 @@ const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-per
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;
 $('viewport').append(renderer.domElement);
 const camera=new THREE.PerspectiveCamera(37,innerWidth/innerHeight,.1,500);
-const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.065;controls.minDistance=6;controls.maxDistance=165;controls.maxPolarAngle=Math.PI*.485;controls.minPolarAngle=.15;controls.autoRotateSpeed=.35;controls.target.set(0,2,0);controls.enablePan=true;
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.065;controls.minDistance=6;controls.maxDistance=240;controls.maxPolarAngle=Math.PI*.485;controls.minPolarAngle=.15;controls.autoRotateSpeed=.35;controls.target.set(0,2,0);controls.enablePan=true;
 window.__cameraPanBounds=constrainCameraPan(controls,camera);
 const hemi=new THREE.HemisphereLight(0xc7e3d2,0x3e5233,2.2);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffe3a1,3.7);sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;scene.add(sun);
 const rim=new THREE.DirectionalLight(0x9acbc5,1.2);rim.position.set(12,8,-15);scene.add(rim);
+const undersideFill=new THREE.DirectionalLight(0x9bb6ad,.8);undersideFill.position.set(-12,-10,22);scene.add(undersideFill);
 let rodinAssets=null;try{rodinAssets=await loadRodinProps();}catch(error){console.warn('Local Rodin assets unavailable; retaining procedural props.',error);}
 const valleyAssets=new URLSearchParams(location.search).has('native-valley')?{}:await loadValleyAssets();
 $('viewport').dataset.valleyAssets=Object.keys(valleyAssets).join(',');
 const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,valleyAssets,reduced});
 const generated=rodinAssets?placeRodinProps(scene,rodinAssets,terrain):null;
-const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:!!rodinAssets?.cottage});
+const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:true});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:true});
+createCommunityGround(scene);
 const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
 const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,ui,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
 const landmarks=buildValleyLandmarks({scene,terrain,generated,assets:rodinAssets,valleyAssets});
-let socialUI,store;
-const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
+let socialUI,store,groupBuildings;
+const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
 store=captureIndex?null:await createSocialStore();
 // Main-app placements are session-only; historical coordinates remain in storage.
 window.__characterPlacement=characters.placement;
 window.__river={...terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
 socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui});
+if(!captureIndex){groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,obstacles:()=>discoveryScene.labelAnchors});window.__groupBuildings=groupBuildings;}
 const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});window.__valley=valley;
 const focusFriend=characters.focus;characters.focus=id=>{valley.finishCamera();return focusFriend(id);};
 if(!captureIndex){
@@ -83,17 +87,17 @@ scene.traverse(object=>{if(!object.isMesh||object.userData.riverOwned||object.us
 for(const objects of buckets.values()){if(objects.length<8)continue;const geometries=objects.map(o=>{let g=o.geometry.clone();if(g.index)g=g.toNonIndexed();g.applyMatrix4(o.matrixWorld);for(const key of Object.keys(g.attributes))if(!['position','normal','uv'].includes(key))g.deleteAttribute(key);if(!g.attributes.uv)g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});const combined=mergeGeometries(geometries,false);if(!combined)continue;const mesh=new THREE.Mesh(combined,objects[0].material);mesh.name='Batched detail · '+objects[0].name;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;scene.add(mesh);objects.forEach(o=>o.removeFromParent());geometries.forEach(g=>g.dispose());}
 if(generated){$('viewport').dataset.rodinInstances=String(generated.userData.inventory.length);$('viewport').dataset.rodinKinds=Object.keys(rodinAssets).join(',');}
 $('viewport').dataset.people='0';$('viewport').dataset.landArea=String(terrain.root.userData.landArea?.total||567.807833);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),new THREE.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-3.07;ground.receiveShadow=true;ground.name='Matte forest display ground';scene.add(ground);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),new THREE.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-25;ground.receiveShadow=false;ground.name='Distant ground beneath floating island';scene.add(ground);
 const flyCount=42,flyPositions=new Float32Array(flyCount*3),flySeed=[];for(let i=0;i<flyCount;i++){const a=(i*2.399),r=3+(i%9)*.8;flySeed.push([Math.cos(a)*r,2.6+(i%5)*.45,Math.sin(a)*r]);}
 const flyGeo=new THREE.BufferGeometry();flyGeo.setAttribute('position',new THREE.BufferAttribute(flyPositions,3));const fireflies=new THREE.Points(flyGeo,new THREE.PointsMaterial({color:0xe6f5a3,size:.075,transparent:true,opacity:.75,depthWrite:false,sizeAttenuation:true}));fireflies.name='Floating firefly lights';fireflies.frustumCulled=false;scene.add(fireflies);
 let clockTime=0,last=performance.now();
-function resetCamera(){controls.target.set(5,3,-4);camera.position.set(42,42,57);if(innerWidth<700)camera.position.set(57,100,115);controls.update();}
-window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){const offset=camera.position.clone().sub(controls.target),s=new THREE.Spherical().setFromVector3(offset);if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(e.key==='+'||e.key==='=')s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=THREE.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=THREE.MathUtils.clamp(s.radius,6,165);camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
+function resetCamera(){controls.target.set(0,0,-5);camera.position.set(40,36,66);if(innerWidth<700){camera.position.set(60,106,152);controls.target.set(0,0,-7);}controls.update();}
+window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){const offset=camera.position.clone().sub(controls.target),s=new THREE.Spherical().setFromVector3(offset);if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(e.key==='+'||e.key==='=')s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=THREE.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=THREE.MathUtils.clamp(s.radius,6,240);camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
 let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();scene.fog.density=innerWidth<700?.003:.0065;renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!window.__discoveryBoards?.kind){wasMobile=innerWidth<700;resetCamera();if(socialUI.activeFriend)characters.focus(socialUI.activeFriend);}});
 resetCamera();
 let fpsFrames=0,fpsStart=performance.now();
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
-  controls.update(dt);if(!stressMode)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
+  controls.update(dt);if(!stressMode)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
   for(let i=0;i<architecture.flames.length;i++){const flame=architecture.flames[i];flame.scale.y=.85+Math.sin(clockTime*7+i*1.6)*.16;flame.rotation.y=clockTime*.3+i;}
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}

@@ -29,8 +29,9 @@ try{
  const zoomed=await check('zoomed boundary');assert.deepEqual(zoomed.bounds,moved.bounds,'near zoom still permits travel to plaza and terrace');
  await drag(8000,8000);await check('extreme pan after zoom');
  await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowUp');await page.waitForTimeout(300);await check('rotation remains usable');
- const before=await page.evaluate(()=>__discoveryScene.pose());
- await page.evaluate(()=>{__openSceneDiscovery('accounts');});await page.waitForFunction(()=>__discoveryBoards.stage==='browsing');
+ // Capture the trigger pose atomically: an intervening animation frame may still
+ // consume residual pan damping, which is not a failure of close-up restoration.
+ const before=await page.evaluate(()=>{const pose=__discoveryScene.pose();__openSceneDiscovery('accounts');return pose;});await page.waitForFunction(()=>__discoveryBoards.stage==='browsing');
  assert.equal((await snapshot()).enabled,false,'scripted close-up keeps control of the camera');
  await page.keyboard.press('Escape');await page.waitForFunction(()=>__discoveryBoards.stage==='closed');await page.waitForTimeout(300);
  const after=await page.evaluate(()=>__discoveryScene.pose());

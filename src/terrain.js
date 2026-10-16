@@ -1,8 +1,10 @@
-import {valleyInstance} from './valley-assets.js';
+import {createMountainGeometry} from './mountain-profile.js';
+import {TERRACE_EXTENSION,terraceHeight} from './terrace-profile.js';
 import * as THREE from 'three';
 import {bankOutlines,landAreaAudit,querySurface,surfaceHeight,WORLD_BOUNDS} from './world-surface.js';
 import {createRiver} from './river.js';
 import {riverCenter,riverHalfWidth} from './river-profile.js';
+import {createFloatingIsland} from './floating-island.js';
 export {riverCenter,riverHalfWidth} from './river-profile.js';
 
 const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.92,flatShading:true,...extra});
@@ -15,8 +17,9 @@ const BANK_SHIFT=1.5;
 export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAssets=null,reduced=false}={}){
   seed=194;
   const root=new THREE.Group();root.name='Terrain · sculpted river canyon';scene.add(root);
-  const mountainOptions={west:!valleyAssets?.mountain_crag,east:!valleyAssets?.mountain_ridge},visualHeight=(x,z)=>surfaceHeight(x,z,mountainOptions),mountains=[];
+  const visualHeight=(x,z)=>surfaceHeight(x,z,{mountain:false}),mountains=[];
   const outlines=bankOutlines();
+  root.add(createFloatingIsland(visualHeight));
   const leftOutline=outlines.west.map(([x,z])=>[x+BANK_SHIFT,z]),rightOutline=outlines.east.map(([x,z])=>[x-BANK_SHIFT,z]);
   const area=landAreaAudit();
   const landArea={west:area.west,east:area.east,total:area.after,previousTotal:area.before,ratio:area.ratio,increasePercent:(area.ratio-1)*100};root.userData.landArea=landArea;
@@ -35,7 +38,6 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
   function bank(points,name){
     const bankRoot=new THREE.Group();bankRoot.name=name+' translated bank';bankRoot.position.x=name==='West'?-BANK_SHIFT:BANK_SHIFT;root.add(bankRoot);
     const shape=new THREE.Shape(points.map(([x,z])=>new THREE.Vector2(x,-z)));
-    const body=new THREE.ExtrudeGeometry(shape,{depth:4.55,bevelEnabled:true,bevelThickness:.25,bevelSize:.2,bevelSegments:1,curveSegments:1});body.rotateX(-Math.PI/2);mesh(bankRoot,name+' rock body',body,[grassMats[0],rockMats[0]],0,-2.6,0);
     const source=new THREE.ShapeGeometry(shape),vertices=[],colors=[];
     const pos=source.attributes.position,idx=source.index;
     const shift=bankRoot.position.x;
@@ -50,7 +52,9 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
     for(let i=0;i<idx.count;i+=3)triangle(...[0,1,2].map(k=>new THREE.Vector2(pos.getX(idx.getX(i+k)),pos.getY(idx.getX(i+k)))));
     source.dispose();const top=new THREE.BufferGeometry();top.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));top.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));top.computeVertexNormals();
     const surface=mesh(bankRoot,name+' meadow',top,mat(0xffffff,{vertexColors:true}),0,2.22,0);surface.userData.terrainSurface=true;
-    const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=visualHeight(x+shift,z),yy=visualHeight(xx+shift,zz);sides.push(x,1.94,z,xx,yy,zz,x,y,z,x,1.94,z,xx,1.94,zz,xx,yy,zz);}}
+    // Only the river cut needs an interior wall; the outer coast belongs to the shared rock volume.
+    const onRiver=p=>Math.abs(Math.abs(p[0]+shift-riverCenter(p[1]))-riverHalfWidth(p[1]))<.02;
+    const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];if(!onRiver(a)||!onRiver(b))continue;const steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=visualHeight(x+shift,z),yy=visualHeight(xx+shift,zz);sides.push(x,-1.8,z,xx,yy,zz,x,y,z,x,-1.8,z,xx,-1.8,zz,xx,yy,zz);}}
     const skirt=new THREE.BufferGeometry();skirt.setAttribute('position',new THREE.Float32BufferAttribute(sides,3));skirt.computeVertexNormals();mesh(bankRoot,name+' sculpted escarpment',skirt,mat(0x687b6e,{side:THREE.DoubleSide}));
     // Triangular earth-color variations keep a painted surface without photo textures.
     for(let i=0;i<70;i++){const x=(name==='West'?-11:3.4)+rnd()*7.4,z=-10.5+rnd()*21;
@@ -62,16 +66,27 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
     }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
-  for(const p of [{kind:'mountain_crag',x:-11,z:-19,width:16.2,height:18.5,depth:12.45},{kind:'mountain_ridge',x:12,z:-21,width:16.8,height:20.8,depth:11.55}]){const mountain=valleyInstance(valleyAssets,p.kind,p);if(!mountain)continue;mountain.position.set(p.x,1.4,p.z);mountain.userData.kind='mountain';mountain.userData.layoutId=p.kind;root.add(mountain);mountains.push(mountain);}
+  const mountain=new THREE.Group();mountain.name='Continuous spring mountain range';mountain.userData.kind='mountain';mountain.userData.layoutId='mountain_range';
+  if(valleyAssets?.mountain_range)mountain.add(valleyAssets.mountain_range.model.clone(true));
+  else{const fallback=new THREE.Mesh(createMountainGeometry(),mat(0xffffff,{vertexColors:true,side:THREE.DoubleSide}));fallback.castShadow=true;fallback.receiveShadow=true;mountain.add(fallback);mountain.userData.fallback=true;}
+  mountain.traverse(o=>{o.userData.generatedProp=true;});root.add(mountain);mountains.push(mountain);
+  // Clip the support mesh at the slope breaks so render, ray picking and
+  // analytical walking elevations agree exactly without dense tessellation.
+  const deckShape=new THREE.Shape(TERRACE_EXTENSION.map(([x,z])=>new THREE.Vector2(x,-z)));
+  const flatDeck=new THREE.ShapeGeometry(deckShape).toNonIndexed(),deckVertices=[];
+  function clip(points,x,above){const out=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],ain=above?a.x>=x:a.x<=x,bin=above?b.x>=x:b.x<=x;if(ain)out.push(a);if(ain!==bin)out.push(a.clone().lerp(b,(x-a.x)/(b.x-a.x)));}return out;}
+  for(let i=0;i<flatDeck.attributes.position.count;i+=3){const tri=[0,1,2].map(j=>new THREE.Vector3().fromBufferAttribute(flatDeck.attributes.position,i+j));for(const [lo,hi] of [[-100,16],[16,20],[20,100]]){const p=clip(clip(tri,lo,true),hi,false);for(let j=1;j+1<p.length;j++)for(const v of [p[0],p[j],p[j+1]])deckVertices.push(v.x,terraceHeight(v.x),-v.y);}}
+  flatDeck.dispose();const deckGeometry=new THREE.BufferGeometry();deckGeometry.setAttribute('position',new THREE.Float32BufferAttribute(deckVertices,3));deckGeometry.computeVertexNormals();
+  const deck=mesh(root,'Mountain terrace meadow',deckGeometry,mat(0xbba27c,{side:THREE.DoubleSide}));deck.userData.terraceExtension=true;
   root.updateMatrixWorld(true);
   const mountainRay=new THREE.Raycaster(),heightCache=new Map();
-  function sample(x,z){const value=querySurface(x,z);if(!mountains.length)return value;if(value.region!=='mountain'){const height=visualHeight(x,z),e=.025,dx=(visualHeight(x+e,z)-visualHeight(x-e,z))/(2*e),dz=(visualHeight(x,z+e)-visualHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);return{...value,height,normal:{x:-dx/n,y:1/n,z:-dz/n},walkable:value.walkable&&Math.hypot(dx,dz)<=Math.tan(22*Math.PI/180)};}const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
+  function sample(x,z){const value=querySurface(x,z);if(!mountains.length||value.region==='terrace-extension')return value;if(value.region!=='mountain'){const height=visualHeight(x,z),e=.025,dx=(visualHeight(x+e,z)-visualHeight(x-e,z))/(2*e),dz=(visualHeight(x,z+e)-visualHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);return{...value,height,normal:{x:-dx/n,y:1/n,z:-dz/n},walkable:value.walkable&&Math.hypot(dx,dz)<=Math.tan(22*Math.PI/180)};}const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
 
   // A continuous ochre track winds from the foreground to the cottage and bridge.
   const pathMat=mat(0xc6b47e),pebble=mat(0xb3b18c);
   function path(points,width){const shift=points[0][0]<0?-BANK_SHIFT:BANK_SHIFT;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0]+shift,2.255,p[1])));const positions=[],indices=[];for(let i=0;i<=64;i++){const p=curve.getPoint(i/64),t=curve.getTangent(i/64),n=new THREE.Vector3(-t.z,0,t.x).multiplyScalar(width*(.95+.07*Math.sin(i)));positions.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);if(i<64){const j=i*2;indices.push(j,j+2,j+1,j+1,j+2,j+3);}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();const p=mesh(root,'Winding woodland path',g,pathMat);p.castShadow=false;}
   path([[-12.6,8.4],[-10.3,8],[-8.2,7.3],[-6.5,7],[-5.4,4.8],[-4.5,2.2],[-3.7,1.5],[-1,1.5]],.68);
-  path([[-4.6,3],[-5.1,1],[-5.3,-1.5]],.63);
+  path([[-3.7,1.5],[-3.7,-.6],[-9.6,-.6]],.55);
   path([[3,1.5],[5.2,1.8],[7.3,1],[9.9,-.2]],.6);
   for(let i=0;i<50;i++){const z=-1+rnd()*10,x=-5.4-BANK_SHIFT+Math.sin(z*.5)*.8+(rnd()-.5)*2.5;const o=mesh(root,'Path stepping stone',new THREE.CylinderGeometry(.14+rnd()*.13,.2,.06,5),pebble,x,2.29,z);o.rotation.y=rnd()*6;o.scale.z=.65+rnd()*.4;}
   const river=createRiver(root,{assets:riverAssets,reduced});

@@ -1,0 +1,14 @@
+{
+  "beforeTriangles": 30000,
+  "afterTriangles": 36529,
+  "adjustedVertices": 15771,
+  "maximumChannelCut": 2.297092411534366,
+  "rearRimAdjustedVertices": 1127,
+  "maximumRearRimLift": 2.2964957111791833,
+  "bounds": [
+    36,
+    13.715660452842712,
+    14
+  ],
+  "operation": "World-coordinate fit; local adaptive subdivision, riverbed clearance and spring rear-rim closure; original GLB retained."
+}

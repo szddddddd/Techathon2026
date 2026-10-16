@@ -1,4 +1,5 @@
 import {inWorld} from './world-surface.js';
+import {groupStoreMethods} from './group-store.js';
 import {getContent,getAccount,getCreator,validContentRef} from './discovery-catalog.js';
 // All visible social data is local. A mutation becomes visible only after IDB commits.
 export const FRIENDS = [
@@ -7,6 +8,9 @@ export const FRIENDS = [
   {id:'xiaomian',name:'小眠',animal:'rabbit',emoji:'🐰',color:'#b5c2a5',signature:'慢一点，也会抵达。',height:1.85},
   {id:'shanshan',name:'山山',animal:'bear',emoji:'🐻',color:'#aa8265',signature:'收集森林里的好天气。',height:2},
 ].map(friend=>({...friend,modelUrl:`assets/rodin-friends/${friend.animal}/scene.glb`}));
+export const friendOf=(state,id)=>FRIENDS.find(f=>f.id===id)||state.customFriends?.[id]||null;
+export const allFriends=state=>[...FRIENDS,...Object.values(state.customFriends||{})];
+export const friendAvatar=friend=>friend?.avatarUrl||`assets/rodin-friends/${friend?.animal||'bear'}/portrait.webp`;
 
 export const STATES = [
   {id:'happy',label:'开心',icon:'☀'}, {id:'emo',label:'emo',icon:'☁'},
@@ -19,7 +23,7 @@ const clone=value=>structuredClone(value);
 const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const assets=['forest','river','camp','sky'].map(name=>`assets/social/${name}.svg`);
 const discoveryDefaults=()=>({accountFollows:['hyper3d'],accountFeedVersion:1,creatorFollows:[],likes:[],collections:[],comments:{},progress:{},history:[],fontSize:18});
-const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
+const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],pinnedGroups:[],residentGroups:[],conversationAttachments:{},messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
 const requestValue=request=>new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
 function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('本地保存失败'));tx.onabort=()=>reject(tx.error||new Error('本地保存已中断'));});}
 function storageError(error){const wrapped=new Error(error?.name==='QuotaExceededError'?'本地空间不足，请释放浏览器存储空间后重试。':'无法保存到此浏览器，请检查存储权限后重试。');wrapped.cause=error;return wrapped;}
@@ -62,14 +66,41 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
     });queue=task.catch(()=>{});return task;
   }
   const store={
+    ...groupStoreMethods({mutate,person:friendOf,payload:messagePayload}),
     get state(){return state;},
+    getFriend(id){return friendOf(state,id);},
+    addAvatarContact(profile){return mutate('friend-added',next=>{
+      const account=String(profile.account||'').trim(),name=String(profile.name||'').trim();
+      if(!/^[a-zA-Z0-9_.-]{3,64}$/.test(account)||!name||! /^[a-f0-9-]{36}$/.test(profile.jobId||''))throw new Error('请填写昵称和有效账号（3–64 位字母、数字、点、下划线或短横线）。');
+      if(allFriends(next).some(f=>(f.account||f.id).toLowerCase()===account.toLowerCase()))throw new Error('这个账号已经在联系人中。');
+      const avatarUrl=String(profile.avatarUrl||'');if(!/^data:image\/(png|jpeg|webp);base64,[a-zA-Z0-9+/]+=*$/.test(avatarUrl)||avatarUrl.length>8*1024*1024)throw new Error('请选择有效的好友头像。');
+      const id=`avatar-${profile.jobId}`;
+      (next.customFriends??={})[id]={id,account,name:name.slice(0,40),signature:String(profile.signature||'').trim().slice(0,100),animal:'custom',emoji:'🌱',color:'#a7b98d',height:1.85,avatarUrl,jobId:profile.jobId,modelUrl:null,modelPhase:'queued',modelError:''};
+      next.friends.push(id);return id;
+    },{friendId:`avatar-${profile.jobId}`});},
+    updateFriendModel(id,job){return mutate('friend-model',next=>{
+      requireFriend(next,id);const friend=next.customFriends?.[id];if(!friend||job.id!==friend.jobId)throw new Error('形象任务与好友不匹配。');
+      if(friend.modelPhase==='ready'&&job.phase!=='ready')return false;
+      const base=`/api/avatar/assets/${friend.jobId}/`;
+      if(job.phase==='ready'&&job.modelUrl!==base+'scene.glb')throw new Error('形象模型地址无效。');
+      const patch={modelPhase:String(job.phase),modelError:String(job.error||'').slice(0,300)};
+      if(job.phase==='ready'){patch.modelUrl=job.modelUrl;if(job.referenceUrl===base+'reference.img')patch.portraitUrl=job.referenceUrl;}
+      if(Object.entries(patch).every(([k,v])=>friend[k]===v))return false;Object.assign(friend,patch);
+    },{friendId:id});},
+    addGeneratedFriend(profile){return mutate('friend-added',next=>{
+      const id=`avatar-${profile.jobId}`,base=`/api/avatar/assets/${profile.jobId}/`;
+      if(!/^[a-f0-9-]{36}$/.test(profile.jobId||'')||profile.modelUrl!==base+'scene.glb'||profile.avatarUrl!==base+'avatar.img'||!String(profile.name||'').trim())throw new Error('生成好友资料无效。');
+      if(next.friends.includes(id))return false;
+      (next.customFriends??={})[id]={id,name:String(profile.name).trim().slice(0,40),animal:'custom',emoji:'🌱',color:'#a7b98d',height:1.85,signature:'从一张头像，走进这片森林。',avatarUrl:profile.avatarUrl,portraitUrl:profile.referenceUrl,modelUrl:profile.modelUrl,jobId:profile.jobId};
+      next.friends.push(id);if(profile.pinned!==false)next.pinnedFriends.push(id);
+    },{friendId:`avatar-${profile.jobId}`});},
     subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);},
     addFriend(id){return mutate('friend-added',next=>{if(!FRIENDS.some(friend=>friend.id===id))throw new Error('未找到这位好友。');if(next.friends.includes(id))return false;next.friends.push(id);seedFriend(next,id);},{friendId:id});},
     setFriendPinned(id,pinned){return mutate('friend-pinned',next=>{requireFriend(next,id);const ids=new Set(next.pinnedFriends||[]);if(pinned)ids.add(id);else ids.delete(id);next.pinnedFriends=[...ids];},{friendId:id});},
     setCharacterPosition(id,position){return mutate('character-position',next=>{requireFriend(next,id);if(!inWorld(position?.x,position?.z))throw new Error('无效的人物位置。');(next.characterPositions??={})[id]={x:position.x,z:position.z};},{friendId:id});},
     sendMessage(friendId,payload){return mutate('message-sent',next=>{requireFriend(next,friendId);const data=messagePayload(payload);if(data.type==='moment'&&!next.posts.some(post=>post.id===data.momentId))throw new Error('这条回忆不存在。');const message={id:uid(),friendId,senderId:'me',...data,createdAt:Date.now(),read:true};next.messages.push(message);return message;},{friendId,payload});},
     receiveMessage(friendId,payload,eventId){return mutate('message-received',next=>{requireFriend(next,friendId);if(eventId&&next.events.includes(eventId))return false;const message={id:eventId||uid(),friendId,senderId:friendId,...messagePayload(payload),createdAt:Date.now(),read:false};next.messages.push(message);if(eventId)next.events.push(eventId);return message;},{friendId,eventId});},
-    markRead(friendId){return mutate('read',next=>{let changed=false;for(const message of next.messages)if(message.friendId===friendId&&!message.read){message.read=true;changed=true;}return changed;},{friendId});},
+    markRead(friendId,ids=null){return mutate('read',next=>{let changed=false;for(const message of next.messages)if(message.friendId===friendId&&!message.read&&(!ids||ids.includes(message.id))){message.read=true;changed=true;}return changed;},{friendId});},
     setDraft(friendId,text){return mutate('draft',next=>{requireFriend(next,friendId);next.drafts[friendId]=String(text||'').slice(0,4000);},{friendId});},
     setScroll(friendId,value){return mutate('scroll',next=>{next.scrolls[friendId]=Math.max(0,Number(value)||0);},{friendId});},
     publishStatus(payload,authorId='me'){return mutate('status',next=>{requirePerson(next,authorId);next.statuses[authorId]=makeStatus(payload);},{authorId});},
@@ -125,15 +156,17 @@ const CHATTY_FRIENDS={
 
 export function startDemo(store,{random=Math.random}={}){
   let disposed=false,busy=false,last=performance.now(),ambientRemaining=60000;
+  const groupTimers=new Map(),groupReplies=new Map();
   const pending=new Map(),chatter=new Map();let chatterCooldown=0;
-  const interval=id=>{const [min,max]=CHATTY_FRIENDS[id].interval;return min+random()*(max-min);};
-  function addChatter(id){if(CHATTY_FRIENDS[id]&&!chatter.has(id))chatter.set(id,{remaining:10000+FRIENDS.findIndex(f=>f.id===id)*4500+random()*7000,index:Math.floor(random()*CHATTY_FRIENDS[id].texts.length)});}
+  const chatterFor=id=>CHATTY_FRIENDS[id]||CHATTY_FRIENDS.shanshan;
+  const interval=id=>{const [min,max]=chatterFor(id).interval;return min+random()*(max-min);};
+  function addChatter(id){if(!chatter.has(id))chatter.set(id,{remaining:10000+Math.max(0,FRIENDS.findIndex(f=>f.id===id))*4500+random()*7000,index:Math.floor(random()*chatterFor(id).texts.length)});}
   function schedule(key,friendId,payload,delay){if(!store.state.events.includes(key)&&!pending.has(key))pending.set(key,{key,friendId,payload,remaining:delay});}
-  function greeting(id){schedule(`greeting-${id}`,id,{type:'text',text:`你好呀，我是${FRIENDS.find(friend=>friend.id===id)?.name||'你的朋友'}。很高兴在这片森林遇见你 🌿`},2000);}
-  function scheduleReply(message){const index=FRIENDS.findIndex(friend=>friend.id===message.friendId);const texts=['收到你的来信啦！今天的阳光也分你一半。','记下了！下次一起去溪边走走吧。','嗯嗯，我在认真听。慢慢说，不着急。','看见你的消息，今天又多了一点温暖。'];const payload=message.type==='sticker'?{type:'sticker',text:['🌻','🦊','🐰','🐻'][index]}:message.type==='image'?{type:'text',text:'这张照片真好看，谢谢你把这一刻分享给我。'}:message.type==='moment'?{type:'text',text:'你也喜欢这段回忆呀！看到它，我又想起那天了。'}:{type:'text',text:texts[index]};schedule(`reply-${message.id}`,message.friendId,payload,1000+(message.createdAt%2001));}
+  function greeting(id){schedule(`greeting-${id}`,id,{type:'text',text:`你好呀，我是${friendOf(store.state,id)?.name||'你的朋友'}。很高兴在这片森林遇见你 🌿`},2000);}
+  function scheduleReply(message){const index=Math.max(0,FRIENDS.findIndex(friend=>friend.id===message.friendId));const texts=['收到你的来信啦！今天的阳光也分你一半。','记下了！下次一起去溪边走走吧。','嗯嗯，我在认真听。慢慢说，不着急。','看见你的消息，今天又多了一点温暖。'];const payload=message.type==='sticker'?{type:'sticker',text:['🌻','🦊','🐰','🐻'][index]}:message.type==='image'?{type:'text',text:'这张照片真好看，谢谢你把这一刻分享给我。'}:message.type==='moment'?{type:'text',text:'你也喜欢这段回忆呀！看到它，我又想起那天了。'}:{type:'text',text:texts[index]};schedule(`reply-${message.id}`,message.friendId,payload,1000+(message.createdAt%2001));}
   for(const id of store.state.friends){greeting(id);addChatter(id);}
   for(const message of store.state.messages)if(message.senderId==='me')scheduleReply(message);
-  const unsubscribe=store.subscribe((state,event)=>{if(event.type==='friend-added'){greeting(event.friendId);addChatter(event.friendId);}if(event.type==='message-sent'){const message=state.messages[state.messages.length-1];scheduleReply(message);}if(event.type==='demo-restart'){ambientRemaining=2000;chatter.clear();chatterCooldown=0;for(const id of state.friends){greeting(id);addChatter(id);}}});
+  const unsubscribe=store.subscribe((state,event)=>{if(event.type==='group-message-sent')groupReplies.set(event.groupId,1800+random()*2200);if(event.type==='friend-added'){greeting(event.friendId);addChatter(event.friendId);}if(event.type==='message-sent'){const message=state.messages[state.messages.length-1];scheduleReply(message);}if(event.type==='demo-restart'){ambientRemaining=2000;chatter.clear();chatterCooldown=0;for(const id of state.friends){greeting(id);addChatter(id);}}});
   async function tick(){
     const now=performance.now(),delta=Math.min(500,Math.max(0,now-last));last=now;
     if(disposed||busy)return;
@@ -141,16 +174,23 @@ export function startDemo(store,{random=Math.random}={}){
     try{
       for(const [id,status] of Object.entries(store.state.statuses))if(status.expiresAt<=Date.now())await store.clearStatus(id);
       if(globalThis.document?.hidden||store.state.settings.demoPaused)return;
+      for(const g of store.state.groups.filter(g=>!g.leftAt)){
+        let timer=groupTimers.get(g.id);if(!timer){timer={remaining:45000+random()*45000,index:0};groupTimers.set(g.id,timer);}timer.remaining-=delta;
+        if(groupReplies.has(g.id))groupReplies.set(g.id,groupReplies.get(g.id)-delta);
+        const reply=groupReplies.has(g.id)&&groupReplies.get(g.id)<=0;
+        if(reply||(g.demo&&timer.remaining<=0)){const members=g.memberIds.filter(id=>id!=='me'),sender=members[timer.index%members.length];if(sender){await store.receiveGroupMessage(g.id,sender,{text:reply?'收到啦，一起商量！':['大家有空时来聊聊今天的安排。','刚有个新想法，想听听大家的意见。','把小小的进展分享给大家 🌿'][timer.index%3]});timer.index++;timer.remaining=45000+random()*45000;groupReplies.delete(g.id);break;}}
+      }
+      for(const id of groupTimers.keys())if(!store.state.groups.some(g=>g.id===id&&!g.leftAt)){groupTimers.delete(id);groupReplies.delete(id);}
       for(const item of pending.values()){item.remaining-=delta;if(item.remaining<=0){await store.receiveMessage(item.friendId,item.payload,item.key);pending.delete(item.key);break;}}
       chatterCooldown=Math.max(0,chatterCooldown-delta);
       for(const item of chatter.values())item.remaining-=delta;
       if(!chatterCooldown){
         const due=[...chatter].filter(([id,item])=>store.state.friends.includes(id)&&item.remaining<=0).sort((a,b)=>a[1].remaining-b[1].remaining)[0];
-        if(due){const [id,item]=due,texts=CHATTY_FRIENDS[id].texts;await store.receiveMessage(id,{type:'text',text:texts[item.index%texts.length]},`proactive-${uid()}`);item.index++;item.remaining=interval(id);chatterCooldown=3000;}
+        if(due){const [id,item]=due,texts=chatterFor(id).texts;await store.receiveMessage(id,{type:'text',text:texts[item.index%texts.length]},`proactive-${uid()}`);item.index++;item.remaining=interval(id);chatterCooldown=3000;}
       }
       if(store.state.friends.length){ambientRemaining-=delta;if(ambientRemaining<=0){const cursor=store.state.settings.demoCursor||0,id=store.state.friends[cursor%store.state.friends.length];await store.demoEvent(id,cursor);ambientRemaining=45000+((cursor*7919+15317)%30001);}}
     }catch(error){console.warn('Local demo paused after a storage failure',error);ambientRemaining=60000;}finally{busy=false;}
   }
   const timer=setInterval(tick,250);
-  return {dispose(){disposed=true;clearInterval(timer);unsubscribe();pending.clear();chatter.clear();}};
+  return {dispose(){disposed=true;clearInterval(timer);unsubscribe();pending.clear();chatter.clear();groupTimers.clear();groupReplies.clear();}};
 }

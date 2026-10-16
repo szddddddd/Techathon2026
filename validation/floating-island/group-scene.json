@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "old cottage removed",
+    "all nine building templates fit every slot",
+    "empty plots remain reserved",
+    "0.63 radius actor passes both courtyard streets",
+    "queue sign footprint blocks placement"
+  ],
+  "pathSamples": 414
+}

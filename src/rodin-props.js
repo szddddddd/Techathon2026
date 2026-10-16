@@ -6,7 +6,7 @@ import {TREE_VARIANTS,isTree,treeAssetPath,groundTree,lightTreeFoliage} from './
 /** Local, generated assets. API access is exclusively in the offline Python script. */
 export async function loadRodinProps(){
   const loader=new GLTFLoader();
-  const entries=await Promise.all(Object.keys(ASSET_NAMES).map(async name=>{
+  const entries=await Promise.all(Object.keys(ASSET_NAMES).filter(name=>name!=='cottage').map(async name=>{
     const gltf=await loader.loadAsync(treeAssetPath(name));
     const model=gltf.scene;
     model.name=`Rodin ${name} source`;

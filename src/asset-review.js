@@ -6,7 +6,10 @@ const $ = id => document.getElementById(id);
 import { ASSET_NAMES as originalNames } from './layout.js';
 import {TREE_VARIANTS,treeAssetPath,lightTreeFoliage} from './tree-assets.js';
 import {VALLEY_ASSET_NAMES} from './valley-assets.js';
-const names={...originalNames,...VALLEY_ASSET_NAMES};
+const avatarJob=new URLSearchParams(location.search).get('avatar-job');
+const validAvatarJob=/^[a-f0-9-]{36}$/.test(avatarJob||'');
+const names={...originalNames,...VALLEY_ASSET_NAMES,...(validAvatarJob?{'generated-avatar':'新朋友的形象'}:{})};
+if(validAvatarJob&&new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('avatar-embed');
 const status = $('status');
 const viewport = $('viewport');
 let renderer;
@@ -132,7 +135,7 @@ function boot() {
     renderer.renderLists.dispose();
     let loaded = null;
     try {
-      const gltf = await loader.loadAsync(Object.hasOwn(TREE_VARIANTS,name)?treeAssetPath(name):`./assets/${Object.hasOwn(VALLEY_ASSET_NAMES,name)?'rodin-valley':'rodin'}/${name}/scene.glb`);
+      const gltf = await loader.loadAsync(name==='generated-avatar'?`/api/avatar/assets/${avatarJob}/scene.glb`:name==='mountain_range'?'./assets/rodin-mountain/scene.glb':Object.hasOwn(TREE_VARIANTS,name)?treeAssetPath(name):`./assets/${Object.hasOwn(VALLEY_ASSET_NAMES,name)?'rodin-valley':'rodin'}/${name}/scene.glb`);
       loaded = gltf.scene;
       if (request !== generation || stopped) { disposeObject(loaded); return; }
       let triangles = 0, meshCount = 0;
@@ -225,7 +228,7 @@ function boot() {
   }, { once: true });
   requestAnimationFrame(frame);
   window.__assetReview={view(theta=0,elevation=.4){const offset=new THREE.Vector3(Math.sin(theta)*Math.cos(elevation),Math.sin(elevation),Math.cos(theta)*Math.cos(elevation)).multiplyScalar(radius*3.3);camera.position.copy(center).add(offset);controls.target.copy(center);controls.update();},get bounds(){return current?new THREE.Box3().setFromObject(current):null;}};
-  selectAsset(new URLSearchParams(location.search).get('asset') in names?new URLSearchParams(location.search).get('asset'):'cart');
+  selectAsset(validAvatarJob?'generated-avatar':new URLSearchParams(location.search).get('asset') in names?new URLSearchParams(location.search).get('asset'):'cart');
 }
 
 try { boot(); }

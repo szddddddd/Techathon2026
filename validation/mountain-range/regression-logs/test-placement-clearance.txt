@@ -1,0 +1,16 @@
+node:internal/fs/promises:640
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open 'C:\Users\user\Desktop\world\assets\rodin\tree_birch\scene.glb'
+    at async open (node:internal/fs/promises:640:25)
+    at async Object.readFile (node:internal/fs/promises:1290:14)
+    at async loadGeometryGLB (file:///C:/Users/user/Desktop/world/scripts/glb-geometry.mjs:8:15)
+    at async file:///C:/Users/user/Desktop/world/scripts/test-placement-clearance.mjs:13:67 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\user\\Desktop\\world\\assets\\rodin\\tree_birch\\scene.glb'
+}
+
+Node.js v24.18.0

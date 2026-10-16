@@ -1,0 +1,19 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+null !== 'tuantuan'
+
+    at start (file:///C:/Users/user/Desktop/world/scripts/test-character-drag.mjs:16:169)
+    at async file:///C:/Users/user/Desktop/world/scripts/test-character-drag.mjs:35:46 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: null,
+  expected: 'tuantuan',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.18.0

@@ -1,0 +1,19 @@
+{
+  "viewport": [
+    1440,
+    1000
+  ],
+  "browser": "155.0.4283.45",
+  "reducedMotion": false,
+  "metrics": {
+    "median": 16.69999999999891,
+    "p95": 16.80000000000109,
+    "samples": 300,
+    "calls": 345,
+    "triangles": 958233,
+    "characters": 4,
+    "buildings": 9,
+    "queue": 3
+  },
+  "note": "Single-device active scene sample; vsync frame intervals are not GPU execution timings or physical phone measurements."
+}

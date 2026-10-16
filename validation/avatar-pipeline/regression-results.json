@@ -1,0 +1,28 @@
+{
+  "existingDataTests": "passed: store/feed/discovery/pet",
+  "presencePolicy": "passed",
+  "uiInteractionChecks": [
+    "idle Dock collapses",
+    "keyboard focus reveals Dock",
+    "pointer proximity reveals Dock",
+    "status source expansion, photo stack and focus return",
+    "scene drag dismisses status",
+    "nested composer retains draft and parent; modal locks Dock",
+    "one active workspace and unsaved profile retained",
+    "chat draft and personal timeline",
+    "rapid open-close-open resolves latest intent without orphan animation",
+    "narrow, mobile and reduced-height viewport bounds",
+    "reduced-motion has no scale/translate animation"
+  ],
+  "uiErrors": [],
+  "frameTimings": {
+    "samples": 175,
+    "median": 16.700000000000728,
+    "p95": 16.799999999999272
+  },
+  "frameTimingLimit": "Single current-scene run; no controlled before/after performance claim.",
+  "existingStateActions": {
+    "snapshots": 32,
+    "errors": []
+  }
+}

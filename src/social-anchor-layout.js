@@ -4,7 +4,7 @@ const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 export function createAnchorLayout(){
   const states=new Map();let lastLayout=-Infinity,wasMoving=false;
   return {
-    update(anchors,{now,moving,width,height,dt=1/60}){
+    update(anchors,{now,moving,width,height,dt=1/60,maxLanes=3}){
       const ids=new Set(anchors.map(a=>a.id));for(const id of states.keys())if(!ids.has(id))states.delete(id);
       const items=anchors.filter(a=>a.visible).map(a=>{
         if(!states.has(a.id))states.set(a.id,{offset:0,target:0});
@@ -16,10 +16,10 @@ export function createAnchorLayout(){
         for(const item of items)item.state.target=item.state.offset;
       }else if(wasMoving||now-lastLayout>=120){
         lastLayout=now;const placed=[];
-        for(const item of [...items].sort((a,b)=>a.id.localeCompare(b.id))){
+        for(const item of [...items].sort((a,b)=>Number(!!b.fixed)-Number(!!a.fixed)||a.id.localeCompare(b.id))){
           const crowded=items.some(other=>other!==item&&Math.abs(item.x-other.x)<((item.width||150)+(other.width||150))/2+24&&Math.abs(item.y-other.y)<100);
           const preferred=crowded?item.state.target:0;
-          const step=Math.max(38,item.height||38),candidates=[preferred,0,-step,step,-step*2,step*2,-step*3];let best=preferred,bestScore=Infinity;
+          const step=Math.max(38,(item.height||38)+(maxLanes>3?8:0)),candidates=item.fixed?[0]:maxLanes===3?[preferred,0,-step,step,-step*2,step*2,-step*3]:[preferred,0,...Array.from({length:maxLanes},(_,i)=>[-step*(i+1),step*(i+1)]).flat()];let best=preferred,bestScore=Infinity;
           for(const candidate of candidates){
             const y=clamp(item.y+candidate,60,height-90),offset=y-item.y;
             const score=placed.reduce((sum,p)=>sum+(Math.abs(item.x-p.x)<((item.width||150)+p.width)/2+12?Math.max(0,((item.height||34)+p.height)/2+6-Math.abs(y-p.y)):0),0);

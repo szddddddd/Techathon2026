@@ -1,0 +1,24 @@
+{
+  "reports": [
+    {
+      "fallback": false,
+      "samples": 84,
+      "maxSlope": 19.290046219188728,
+      "maxSurfaceError": 9.536743128535363e-8,
+      "walkNodes": 681
+    },
+    {
+      "fallback": true,
+      "samples": 84,
+      "maxSlope": 19.290046219188728,
+      "maxSurfaceError": 9.536743128535363e-8,
+      "walkNodes": 681
+    }
+  ],
+  "checks": [
+    "continuous full-body route from original terrace to mountain platform",
+    "visible deck and shared query agree",
+    "rails reject unsafe edge placement",
+    "generated mountain and fallback both supported"
+  ]
+}

@@ -34,11 +34,6 @@
 #social #add-friends-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100vw - 28px));max-height:calc(var(--ui-height,100dvh) - 130px);padding:0;overflow:auto;border-radius:22px;color:var(--ui-ink);pointer-events:auto}
 #social #add-friends-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
 #social #add-friends-dialog>.ui-titlebar{position:sticky;top:0;z-index:3;backdrop-filter:blur(16px)}
-#social .add-friends-list{padding:8px 20px 22px}
-#social .add-friend-row{display:flex;align-items:center;gap:15px;padding:16px 0;border-bottom:1px solid #5d785512}
-#social .add-friend-row>img{width:58px;height:66px;object-fit:contain;border-radius:13px;background:#e6eddd}
-#social .add-friend-row>span{flex:1;min-width:0}#social .add-friend-row strong{font-size:14px}#social .add-friend-row p{font-size:11px;line-height:1.8;color:#92a088;margin-top:4px}#social .add-friend-row small{font-size:9px;color:#a3ad97}
-#social .add-friend-row>button{font-size:11px;padding:8px 12px}
 #social .meeting-friends>header .text-button{padding-top:10px}
 #social .is-compact .conversation-avatar{width:39px;height:39px}
 #social .is-compact .conversation-open{gap:10px;padding:12px 3px 12px 7px}

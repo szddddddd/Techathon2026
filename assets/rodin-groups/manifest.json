@@ -1,0 +1,83 @@
+{
+  "provider": "Hyper3D MCP OAuth",
+  "generationCalls": 10,
+  "thisExpansionCalls": 6,
+  "reusedModels": 4,
+  "newTypes": 5,
+  "revisions": 1,
+  "billing": "Actual billed credits were not included in the returned results.",
+  "entries": [
+    {
+      "type": "club",
+      "name": "社团会馆",
+      "generationId": "8e273234-f98d-43f5-bc6a-d4a9e2e15230",
+      "manifest": "club/manifest.json",
+      "model": "club/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "classroom",
+      "name": "小教室",
+      "generationId": "1f053b81-13da-4bc2-ad40-f7210baf9ac7",
+      "manifest": "classroom/manifest.json",
+      "model": "classroom/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "sport",
+      "name": "体育馆",
+      "generationId": "41e86f83-7bce-4946-b3aa-1441f57f5b46",
+      "manifest": "sport/manifest.json",
+      "model": "sport/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "lab",
+      "name": "实验室",
+      "generationId": "2161f1e4-b0d9-46f4-9ce5-d9598607133d",
+      "manifest": "lab/manifest.json",
+      "model": "lab/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "library",
+      "name": "图书馆",
+      "generationId": "7e4e2429-6991-49d5-bf73-328e899cc30f",
+      "manifest": "library/manifest.json",
+      "model": "library/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "music",
+      "name": "音乐厅",
+      "generationId": "746012fd-192b-4c03-b9c1-0b8270515169",
+      "manifest": "music/manifest.json",
+      "model": "music/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "art",
+      "name": "美术工坊",
+      "generationId": "d776aeeb-1218-4294-916e-8633340d0a83",
+      "manifest": "art/manifest.json",
+      "model": "art/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "cafe",
+      "name": "咖啡馆",
+      "generationId": "c4d20d75-bcef-4a3a-855e-dbadb95c63d4",
+      "manifest": "cafe/manifest.json",
+      "model": "cafe/scene.glb",
+      "triangles": 30000
+    },
+    {
+      "type": "observatory",
+      "name": "天文台",
+      "generationId": "194ac8a1-66e9-4c53-bb4d-8a51421356fd",
+      "manifest": "observatory/manifest.json",
+      "model": "observatory/scene.glb",
+      "triangles": 30000
+    }
+  ]
+}

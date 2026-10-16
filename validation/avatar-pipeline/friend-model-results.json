@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "contact saved and chat/draft available before any generation; normal default unpinned; account deduplication",
+    "offline image service never rolls back contact; retry discovers original ID before submitting",
+    "refresh resumes original job without new paid submission; ready updates original friend in place and stops polling; avatar/chat/unread/pin preserved",
+    "ambiguous paid result remains paused, including retry click; friendship and messaging remain usable"
+  ]
+}

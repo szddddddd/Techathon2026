@@ -1,0 +1,34 @@
+{
+  "provider": "Hyper3D Rodin MCP OAuth",
+  "generationId": "35484f46-06dc-4a9f-85cd-32abda763e22",
+  "displayUrl": "https://hyper3d.ai/workspace/rodin/35484f46-06dc-4a9f-85cd-32abda763e22",
+  "parameters": {
+    "prompt": "One coherent broad mountain RANGE for a cozy stylized woodland diorama. Match the supplied TWO VIEWS of the SAME landform and dry ravine. One dominant rounded summit on the left, one lower shoulder on the right, joined by a continuous rear ridge. Width 36, height 13.5, depth 14 proportions. A clearly open winding steep DRY stream gorge descends from a recessed high spring basin inside the rear ridge toward the front center, with three small rock steps. Wide continuous solid lower slopes, no detached peaks, no upright pillars. Pale grey sage rock, light olive moss ledges, broad weathered faceted geological planes, warm hand-painted matte material. Complete back and sides. No blue water mesh, no painted water, no waterfall sheets, no trees, buildings, snow, ground slab or pedestal. Preserve the open visible ravine and low broad silhouette; a single connected mountainous landmass.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "referenceImages": [
+    "reference/front.png",
+    "reference/top.png"
+  ],
+  "originalFile": "source.glb",
+  "sha256": "9964fdc5bf58d8c72f7b6dede96d47286ad59fa29f7a44b57890183c2490c943",
+  "bytes": 7132864,
+  "adoption": "rejected; see review.json and adopted second attempt in ../manifest.json",
+  "sceneFile": "scene.glb",
+  "sceneSha256": "1777fc0e890a6f4aa758781636c44e3da0a61ccbfa74f761bc98866657368e9f",
+  "preparation": {
+    "beforeTriangles": 30000,
+    "afterTriangles": 36797,
+    "adjustedVertices": 17168,
+    "maximumChannelCut": 4.161367615806382,
+    "bounds": [
+      36,
+      13.944372594356537,
+      14
+    ],
+    "operation": "World-coordinate fit; local adaptive subdivision and riverbed clearance only; original GLB retained."
+  }
+}

@@ -129,10 +129,10 @@ export function createCharacterPlaceholder(friend){
   root.userData.placeholder=true;return root;
 }
 
-export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced}){
+export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder}){
   const context=createPlacementContext({scene,terrain,generated});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
-  const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster();
+  const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
   await Promise.all(ANIMALS.map(async animal=>{
     try{const gltf=await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`);models.set(animal,gltf.scene);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
   }));
@@ -143,7 +143,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   const residents=()=>[...records.values()].filter(r=>r.group.visible&&!r.slot?.unplaced);
   let socialState={statuses:{}};
   function create(friend){
-    const group=new THREE.Group(),body=(models.get(friend.animal)?.clone(true)||createCharacterPlaceholder(friend));
+    const group=new THREE.Group(),body=((models.get(friend.id)||models.get(friend.animal))?.clone(true)||createCharacterPlaceholder(friend));
     const box=new THREE.Box3().setFromObject(body),size=box.getSize(new THREE.Vector3()),height=friend.height||1.9;
     const scale=height/size.y;body.scale.multiplyScalar(scale);
     body.position.sub(new THREE.Vector3((box.min.x+box.max.x)/2,box.min.y,(box.min.z+box.max.z)/2).multiplyScalar(scale));
@@ -178,6 +178,14 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     for(const [id,r] of records)if(!wanted.has(id)&&r.group.visible){if(r.placing)drag.cancel();r.group.visible=false;r.slot=null;r.walk=null;r.actions.meshes.forEach(m=>m.morphTargetInfluences.fill(0));}
     const used=residents().map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12}));
     for(const friend of friends.slice(0,8)){
+      if(friend.animal==='custom'&&!models.has(friend.id)){
+        if(!friend.modelUrl)continue;
+        if(!loadingCustom.has(friend.id)){
+          const load=loader.loadAsync(friend.modelUrl).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
+          loadingCustom.set(friend.id,load);
+        }
+        continue;
+      }
       let r=records.get(friend.id);if(r?.group.visible&&r.slot&&!r.slot.unplaced)continue;
       if(!r){r=create(friend);records.set(friend.id,r);}
       let slot;const custom=!transient&&savedPlacements[friend.id];
@@ -198,7 +206,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     refreshAudit();scene.updateMatrixWorld(true);if(selected&&!wanted.has(selected))restore();return audit.slots;
   }
   function setPresence(entries,friends){
-    const ids=entries.map(e=>e.id).join('|');if(ids!==audit.rosterKey||(audit.unplaced.length&&performance.now()>(audit.retryAt||0))){audit.retryAt=performance.now()+2000;audit.rosterKey=ids;sync(entries.map(e=>({...friends.find(f=>f.id===e.id),id:e.id})),{transient:true});}
+    const ids=entries.map(e=>e.id).join('|');if(ids!==audit.rosterKey||((audit.unplaced.length||entries.some(e=>!records.has(e.id)))&&performance.now()>(audit.retryAt||0))){audit.retryAt=performance.now()+2000;audit.rosterKey=ids;sync(entries.map(e=>({...friends.find(f=>f.id===e.id),id:e.id})),{transient:true});}
     for(const e of entries){const r=records.get(e.id);if(r)r.presentation=e;}
   }
   function blocked(from,to){const delta=to.clone().sub(from),distance=delta.length();ray.set(from,delta.normalize());ray.far=Math.max(0,distance-.12);return ray.intersectObjects(context.occluders,false).length>0;}
@@ -213,15 +221,16 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     audit.lastFocus={id,angle:view.angle,visibleBodySamples:view.visibleSamples};
     animateCamera(view.position,target,()=>{});return true;
   }
-  function restore(){
+  function restore({preserveCamera=false}={}){
     selected=null;for(const r of records.values()){r.ring.visible=false;r.outline.visible=false;}
+    if(preserveCamera){transition=null;controls.enabled=saved?.enabled??controls.enabled;saved=null;return;}
     if(saved){const original=saved;animateCamera(original.position,original.target,()=>{controls.enabled=original.enabled;saved=null;});}
   }
   function pick(x,y){
     const rect=renderer.domElement.getBoundingClientRect();camera.updateMatrixWorld(true);
     ray.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,1-(y-rect.top)/rect.height*2),camera);ray.far=Infinity;
     const hit=ray.intersectObjects([...records.values()].filter(r=>r.group.visible).map(r=>r.bodyHolder),true).find(h=>h.object.isMesh);
-    if(!hit)return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
+    if(!hit||hit.distance>(pickOccluder?.(x,y)??Infinity))return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
     return records.get(hit.object.userData.friendId)||null;
   }
   function inspectPlacement(record,x,z){return context.inspect(x,z,characterBodyRadius(record.radius),[...records.values()].filter(r=>r!==record&&r.group.visible&&!r.slot?.unplaced&&r.slot).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:Math.max(characterBodyRadius(r.radius),(r.pose?.lie||0)>.05?r.height*.65:0)})),{manual:true});}
@@ -252,7 +261,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       const seconds=now/1000,age=(now-r.spawn)/1000,motion=isReduced()?0:1;
       const walk=r.walk,delta=Math.min(dt||0,.05),status=socialState.statuses?.[id],currentStatus=status?.expiresAt>Date.now()?status:null,policy=r.actions.policy(now,currentStatus,isReduced());let moving=false;
       if(walk&&r.lastStatusKind!==currentStatus?.kind){r.lastStatusKind=currentStatus?.kind;walk.route=[];walk.wait=.3;}
-      for(const m of r.materials)m.opacity=r.presentation.alpha;
+      const displayAlpha=r.presentation.alpha*(r.friend.animal==='custom'?Math.min(1,age/(isReduced()?.1:.65)):1);
+      for(const m of r.materials)m.opacity=displayAlpha;
       const poseRadius=Math.max(r.bodyRadius,r.height*.65);
       if(currentStatus?.kind==='tired'&&(!r.restInfo||now-r.restInfo.at>450||Math.hypot(r.group.position.x-r.restInfo.x,r.group.position.z-r.restInfo.z)>.1)){
         const c=context.inspect(r.group.position.x,r.group.position.z,poseRadius,residents().filter(o=>o!==r).map(o=>({x:o.group.position.x,z:o.group.position.z,radius:Math.max(o.bodyRadius,(o.pose?.lie||0)>.05?o.height*.65:0)})),{manual:true});
@@ -285,7 +295,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       r.group.updateMatrixWorld(true);
       const anchor=r.pose.anchor;const world=r.group.position.clone().add(new THREE.Vector3(anchor.x,anchor.y,anchor.z));
       if(checkOcclusion)r.occluded=blocked(camera.position,r.group.position.clone().add(new THREE.Vector3(0,r.height*.7,0)));
-      const p=world.project(camera);anchors.push({id,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder,alpha:r.presentation.alpha,phase:r.presentation.phase,pose:r.pose.kind});
+      const p=world.project(camera);anchors.push({id,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder,alpha:displayAlpha,phase:r.presentation.phase,pose:r.pose.kind});
     }
   }
   function findGatherSlot(r,used){

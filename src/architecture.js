@@ -191,7 +191,7 @@ export function buildArchitecture(scene, { rodin=false, expanded=false }={}) {
     f.rotation.z=Math.sin(i)*.18;f.userData.baseY=f.position.y;f.userData.phase=i*1.71;f.castShadow=false;flames.push(f);
   }
   const fireLight=new THREE.PointLight('#ff9c43',11,7,2);fireLight.position.set(0,.85,0);campfire.add(fireLight);
-  const doorLight=new THREE.PointLight('#ffd38c',4,5,2);doorLight.position.set(...(expanded ? [-8,4.0,-1.7] : [-3.7,4.2,-1.7]));root.add(doorLight);
+  const doorLight=new THREE.PointLight('#ffd38c',expanded?0:4,5,2);doorLight.position.set(...(expanded ? [-8,4.0,-1.7] : [-3.7,4.2,-1.7]));root.add(doorLight);
   for(const p of (expanded ? [[-9.65,2.2,1.5],[-8.7,2.2,2.7]] : [[-3.55,2.2,.65],[-1.37,2.2,.63]])){
     const st=group('Camp tree stump stool',p);cyl('Stump bark',[0,.24,0],.30,.38,.48,wood,st,9);cyl('Stump cut wood',[0,.49,0],.29,.29,.035,edge,st,12);
     for(const r of [.1,.2]){const ring=mesh(new THREE.TorusGeometry(r,.008,3,16),wood,'Tree stump growth ring',[0,.514,0],st);ring.rotation.x=Math.PI/2;}

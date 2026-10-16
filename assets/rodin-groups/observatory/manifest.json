@@ -1,0 +1,36 @@
+{
+  "type": "observatory",
+  "provider": "Hyper3D MCP OAuth",
+  "phase": "downloaded",
+  "generationId": "194ac8a1-66e9-4c53-bb4d-8a51421356fd",
+  "displayUrl": "https://hyper3d.ai/workspace/rodin/194ac8a1-66e9-4c53-bb4d-8a51421356fd",
+  "parameters": {
+    "prompt": "One complete small 天文台 building for a bright cozy low-poly woodland social diorama. A miniature astronomical observatory with a round pale stone drum, large muted blue hemispherical dome, a narrow open roof slit and short tilted telescope, plus a small rectangular entrance annex. Clearly circular dome silhouette, subtle brass star details, no tall tower. Use the supplied two views as massing guidance, enrich with appealing handmade architectural details. Warm light wood, pale cream stone, muted sage greens, soft faceted shapes, readable front door toward positive Z, complete back and sides. Approximate footprint 4 by 3.5 and height 3 to 4.2. Flat grounded bottom. Isolated building only, no ground slab, no landscape, no people, no readable text, no baked shadows, no separate loose props. Cohesive miniature architecture, light matte materials, no dark realistic concrete. Do not create an interior or a cutaway.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "sha256": "779e58de8a3eb81f234ce75b329e55c756c9f0ce9df079e9448981cf2f7ac20d",
+  "bytes": 8038268,
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "references": [
+    "reference-front.png",
+    "reference-rear.png"
+  ],
+  "adoption": "adopted after front/rear and nine-building in-scene review",
+  "sceneSha256": "779e58de8a3eb81f234ce75b329e55c756c9f0ce9df079e9448981cf2f7ac20d",
+  "normalization": {
+    "rotationY": 0,
+    "type": "observatory",
+    "triangles": 30000,
+    "dimensions": [
+      3.1572965188577364,
+      3.5160011455861215,
+      3.5
+    ],
+    "scale": 1.8504926915311461
+  },
+  "note": "Original Rodin geometry and texture retained. Orientation, uniform scale and floor alignment are applied at runtime; no new generation for individual groups."
+}

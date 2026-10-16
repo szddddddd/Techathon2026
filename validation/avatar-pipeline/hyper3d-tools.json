@@ -1,0 +1,708 @@
+{
+  "name": "hyper3d",
+  "runtimeStatus": "starting",
+  "pluginId": null,
+  "serverInfo": {
+    "name": "hyper3d-rodin",
+    "title": null,
+    "version": "1.0.0",
+    "description": null,
+    "icons": null,
+    "websiteUrl": null
+  },
+  "tools": {
+    "rodin_import_images": {
+      "name": "rodin_import_images",
+      "title": "Import Rodin reference images",
+      "description": "For ChatGPT Chat only: import 1-5 user-provided conversation image attachments through OpenAI file parameters. Use the file_id and download_url supplied by ChatGPT. file_name may include a local path such as /mnt/data/reference.jpg; Hyper3D keeps only the final filename (up to 128 characters). Hyper3D downloads and stores the images. On success, call rodin_generate with uploads[].upload_id in the same order as reference_upload_ids. If attachments cannot be passed, tell the user that the model environment cannot upload images and they can upload and generate at https://hyper3d.ai.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "download_url": {
+                  "type": "string"
+                },
+                "file_id": {
+                  "type": "string"
+                },
+                "mime_type": {
+                  "type": "string"
+                },
+                "file_name": {
+                  "type": "string",
+                  "description": "Original filename or local path, such as reference.jpg or /mnt/data/reference.jpg. Only the final filename is stored, up to 128 characters."
+                }
+              },
+              "required": [
+                "download_url",
+                "file_id"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 5
+          }
+        },
+        "required": [
+          "images"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "uploads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "upload_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "upload_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "uploads"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:generate"
+            ]
+          }
+        ],
+        "openai/fileParams": [
+          "images"
+        ]
+      }
+    },
+    "rodin_get_result": {
+      "name": "rodin_get_result",
+      "title": "Get Rodin model result",
+      "description": "Return a permanent Hyper3D result page plus temporary signed URLs for permitted Rodin output files. When presenting a link to the user, always use display_url and never expose files[].url. Only use files[].url to download a file when the user explicitly asks.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "generation_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "display_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "model",
+                    "preview",
+                    "texture",
+                    "sidecar"
+                  ]
+                },
+                "mime_type": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "name",
+                "role",
+                "mime_type",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "display_url",
+          "files"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:read"
+            ]
+          }
+        ]
+      }
+    },
+    "rodin_create_uploads": {
+      "name": "rodin_create_uploads",
+      "title": "Create Rodin reference image uploads",
+      "description": "Create one-hour presigned PUT URLs for 1-5 reference images. After uploading each image successfully, call rodin_generate with the returned upload IDs. ChatGPT Chat mode supports conversation attachments through rodin_import_images. If HTTP PUT is blocked and you know your environment supports granting network access, use its supported permission flow to request access to the hostname of the returned presigned upload URL, then retry PUT after access is granted. If PUT remains unavailable or your environment cannot grant access, tell the user in their language: \"My model environment cannot upload images. You can upload your images and generate a model at https://hyper3d.ai.\"",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "mime_type": {
+                  "type": "string",
+                  "enum": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/tiff",
+                    "image/gif",
+                    "image/avif",
+                    "image/heic",
+                    "image/heif",
+                    "image/bmp",
+                    "image/jp2",
+                    "image/jpx",
+                    "image/jpm",
+                    "image/mj2"
+                  ]
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "required": [
+                "filename",
+                "mime_type",
+                "size_bytes"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 5
+          }
+        },
+        "required": [
+          "files"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "uploads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "upload_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "upload_url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "method": {
+                  "type": "string",
+                  "const": "PUT"
+                },
+                "headers": {
+                  "type": "object",
+                  "properties": {
+                    "Content-Type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "Content-Type"
+                  ],
+                  "additionalProperties": false
+                },
+                "expires_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "upload_id",
+                "upload_url",
+                "method",
+                "headers",
+                "expires_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "uploads"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:generate"
+            ]
+          }
+        ]
+      }
+    },
+    "rodin_wait": {
+      "name": "rodin_wait",
+      "title": "Wait briefly for a Rodin generation",
+      "description": "Wait up to 45 seconds for a terminal state. A timeout returns the latest state and does not mean generation failed. Progress is reported as stage name/current/total, not a percentage.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 45,
+            "default": 30
+          }
+        },
+        "required": [
+          "generation_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "processing",
+              "completed",
+              "failed"
+            ]
+          },
+          "stage": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "current": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "name",
+              "current",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string"
+          },
+          "timed_out": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "generation_id",
+          "status",
+          "stage",
+          "timed_out"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:read"
+            ]
+          }
+        ]
+      }
+    },
+    "rodin_get_status": {
+      "name": "rodin_get_status",
+      "title": "Get Rodin generation status",
+      "description": "Read the current state and stage of a Rodin generation. stage contains a user-facing name plus a 1-based current position and stable total; current is 0 before the first stage starts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "generation_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "processing",
+              "completed",
+              "failed"
+            ]
+          },
+          "stage": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "current": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "name",
+              "current",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "generation_id",
+          "status",
+          "stage"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:read"
+            ]
+          }
+        ]
+      }
+    },
+    "rodin_generate": {
+      "name": "rodin_generate",
+      "title": "Generate a Rodin 3D model",
+      "description": "Start a Rodin Gen-2.5 generation from a non-empty prompt, one or more reference images, or both. At least one of prompt or reference_upload_ids is required. For image references in ChatGPT Chat, first call rodin_import_images and pass the returned uploads[].upload_id values as reference_upload_ids in order. The presigned upload workflow uses rodin_create_uploads followed by successful HTTP PUT uploads. texture_delight defaults to false; setting it to true is recommended when reference images contain highly reflective surfaces. This consumes credits. The response includes display_url; present that URL only after the generation completes. If this call times out, do not retry it automatically; ask the user to check Hyper3D Mine.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "description": "A non-empty text description. Required when reference_upload_ids is omitted."
+          },
+          "reference_upload_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "One to five uploaded reference image IDs. Obtain these from rodin_import_images in ChatGPT Chat, or rodin_create_uploads followed by successful PUT uploads. Preserve the intended image order. Required when prompt is omitted."
+          },
+          "mesh_mode": {
+            "type": "string",
+            "enum": [
+              "Raw",
+              "Quad"
+            ],
+            "default": "Raw"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "Gen-2.5-Medium",
+              "Gen-2.5-High",
+              "Gen-2.5-Extreme-Low"
+            ],
+            "default": "Gen-2.5-Medium"
+          },
+          "texture_delight": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable texture de-lighting. Defaults to false; recommended when reference images contain highly reflective surfaces."
+          },
+          "quality_override": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 1000000,
+            "description": "Target polygon count. Raw accepts 500 to 1,000,000; Quad accepts 1,000 to 50,000."
+          },
+          "geometry_file_format": {
+            "type": "string",
+            "enum": [
+              "glb",
+              "usdz",
+              "fbx",
+              "obj",
+              "stl"
+            ],
+            "default": "glb"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "queued"
+          },
+          "display_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "generation_id",
+          "status",
+          "display_url"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:generate"
+            ]
+          }
+        ]
+      }
+    },
+    "rodin_generate_bang": {
+      "name": "rodin_generate_bang",
+      "title": "Generate BANG from a Rodin generation",
+      "description": "Split a completed Rodin generation into parts with BANG. Pass the generation_id returned by rodin_generate as asset_id. This consumes credits. The response includes display_url; present that URL only after the BANG generation completes. If this call times out, do not retry it automatically; ask the user to check Hyper3D Mine.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The generation_id returned by rodin_generate for the completed model to split."
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Optional part-split instruction naming the parts to separate, applied to the source generation image. Omit unless the user describes which parts they want; omitting it uses the automatic split planner."
+          },
+          "strength": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12,
+            "default": 5,
+            "description": "Soft target for how many parts BANG should produce."
+          },
+          "explode_strength": {
+            "type": "number",
+            "minimum": 0,
+            "default": 1,
+            "description": "Guidance strength for the BANG split plan."
+          },
+          "escore": {
+            "type": "number",
+            "description": "Optional texture complexity control."
+          },
+          "reference_scale": {
+            "type": "number",
+            "description": "Optional reference-image adherence control."
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "geometry_file_format": {
+            "type": "string",
+            "enum": [
+              "glb",
+              "usdz",
+              "fbx",
+              "obj",
+              "stl"
+            ],
+            "default": "glb"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "Basic",
+              "High"
+            ],
+            "default": "Basic"
+          }
+        },
+        "required": [
+          "asset_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "queued"
+          },
+          "display_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "generation_id",
+          "status",
+          "display_url"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "rodin:generate"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "resources": [],
+  "resourceTemplates": [],
+  "authStatus": "oAuth"
+}
