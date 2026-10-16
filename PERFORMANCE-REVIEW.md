@@ -1,6 +1,6 @@
 # 构建、加载与渲染性能验证
 
-2026-10-16（Asia/Shanghai）。基线为 `origin/main` 的 `814ed55`，包含滨河小镇、小车、近期会话和岛底瀑布更新。优化在独立的 `agent/forest-performance` 分支完成。
+2026-10-16（Asia/Shanghai）。基线为 `origin/main` 的 `814ed55`，包含滨河小镇、小车、近期会话和岛底瀑布更新。优化已并入 `main`，后续开发统一在 `main` 进行。
 
 ## 实测结果
 
