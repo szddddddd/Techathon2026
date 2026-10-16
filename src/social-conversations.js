@@ -5,7 +5,7 @@ import {conversationIds,unreadCounts} from './social-presence.js';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const stamp=t=>!t?'':new Date(t).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-export function createConversations({root,store,friends,ui,onError=console.error,onViewProfile=()=>{},onNewContact=()=>{},onCreateGroup=()=>{},onGroups=()=>{},onGroupInfo=()=>{},onResident=()=>{}}){
+export function createConversations({root,store,friends,ui,onError=console.error,onViewProfile=()=>{},onNewContact=()=>{},onCreateGroup=()=>{},onGroups=()=>{},onGroupInfo=()=>{}}){
   const directory=root.querySelector('#directory');let tab='messages',menuId=null,addQuery='',pressStart=null,longPress=null,suppressedUntil=0;
   directory.innerHTML='<header class="contacts-title"><div><small>LETTERS FROM THE WOODS</small><h2>消息</h2></div><button class="contacts-add" data-action="add-directory" aria-label="添加好友或发起群聊">＋</button><button class="ui-close" data-ui-close="directory" aria-label="关闭好友列表">×</button></header><label class="search">⌕ <input id="friend-search" placeholder="搜索好友、群聊或消息" aria-label="搜索好友"></label><div class="directory-tabs" role="tablist"><button role="tab" data-conversation-tab="messages" aria-selected="true">消息 <span id="friend-unread-count"></span></button><button role="tab" data-conversation-tab="contacts" aria-selected="false">通讯录 <span id="friend-count"></span></button></div><div id="friend-list" role="list" aria-label="好友会话"></div><p class="contacts-footnote">朋友与群聊，都住在风景里</p>';
   const menu=document.createElement('section');menu.id='friend-context-menu';menu.className='paper friend-context-menu';menu.hidden=true;menu.setAttribute('role','menu');menu.setAttribute('aria-label','好友选项');root.append(menu);
@@ -30,7 +30,7 @@ export function createConversations({root,store,friends,ui,onError=console.error
   }
   function showMenu(id,source,point){
     menuId=id;const ref=conversationRef(id),isGroup=ref.kind==='group',pinned=(isGroup?store.state.pinnedGroups:store.state.pinnedFriends||[]).includes(ref.id);
-    menu.innerHTML=`<small>${esc(person(id)?.name)}</small><button role="menuitem" ${isGroup?'data-profile-group':'data-profile-friend'}="${id}">查看资料</button><button role="menuitem" data-pin-friend="${id}">${pinned?'取消置顶':'置顶聊天'}</button>${isGroup?`<button role="menuitem" data-resident-group="${ref.id}">${store.state.residentGroups.includes(ref.id)?'取消常驻场景':'常驻场景'}</button>`:''}`;
+    menu.innerHTML=`<small>${esc(person(id)?.name)}</small><button role="menuitem" ${isGroup?'data-profile-group':'data-profile-friend'}="${id}">查看资料</button><button role="menuitem" data-pin-friend="${id}">${pinned?'取消置顶':'置顶聊天'}</button>`;
     const r=source.getBoundingClientRect();menu.style.left=Math.max(12,Math.min(innerWidth-190,point?.x??r.right-170))+'px';menu.style.top=Math.max(12,Math.min(innerHeight-130,point?.y??r.bottom+6))+'px';
     ui.open('friend-menu',{origin:()=>root.querySelector(`[data-action="friend-menu"][data-id="${id}"]`)}).then(()=>menu.querySelector('button')?.focus({preventScroll:true}));
   }
@@ -58,7 +58,6 @@ export function createConversations({root,store,friends,ui,onError=console.error
     if(e.target.closest('[data-create-group]')){ui.close('friend-menu',{immediate:true,restoreFocus:false});onCreateGroup(directory.querySelector('.contacts-add'));}
     if(e.target.closest('[data-show-groups]'))onGroups(e.target.closest('button'));
     const group=e.target.closest('[data-profile-group]');if(group){ui.close('friend-menu',{immediate:true,restoreFocus:false});onGroupInfo(group.dataset.profileGroup.slice(6));}
-    const resident=e.target.closest('[data-resident-group]');if(resident){ui.close('friend-menu',{immediate:true,restoreFocus:false});onResident(resident.dataset.residentGroup,directory.querySelector('.contacts-add'));}
   };
   const context=e=>{const row=e.target.closest('[data-friend-row]');if(!row)return;e.preventDefault();showMenu(row.dataset.friendRow,row,{x:e.clientX,y:e.clientY});};
   const cancel=()=>{clearTimeout(longPress);longPress=null;};

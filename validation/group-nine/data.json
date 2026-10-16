@@ -1,10 +1,11 @@
 {
   "checks": [
     "twelve demo groups do not add friends; mixed pinning and namespaced drafts",
-    "stable slots, chat holds read building, close waits and fills FIFO",
-    "opening queued group never summons it",
-    "fade reversal and resident priority; three-resident replacement preserves independent pins",
+    "latest nine ranked by message time; read and closed buildings remain in stable slots",
+    "an outside arrival replaces only the least recent building; opening or reading alone does not promote",
+    "rapid latest-message changes reverse fading without a slot jump",
+    "legacy resident flags and chat pins cannot override recency",
     "creation, member validation, mentions, deduplication, selective read, edit and leave",
-    "persistence and refresh recompute residents without deleting friend data"
+    "refresh restores latest conversations without deleting friend data"
   ]
 }

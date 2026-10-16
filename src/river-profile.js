@@ -18,3 +18,12 @@ export function riverLevel(z){
 export const riverDepth=(u,z)=>{const f=Math.pow(Math.max(0,1-u*u),1.6),lower=.17+.94*f+.05*Math.sin(z*.8)*(1-u*u),upper=.13+.32*f;return THREE.MathUtils.lerp(upper,lower,smooth(-17,RIVER_JOIN,z));};
 export function sampleRiver(u,z){const y=riverLevel(z);return{x:riverCenter(z)+u*riverHalfWidth(z),y,z,depth:riverDepth(u,z),bedY:y-riverDepth(u,z)};}
 export const riverWave=(x,z,time,u=0)=>.045*(Math.sin(z*2.1-time*1.15+x*1.3)*.65+Math.sin(z*3.6-time*1.8-x*2)*.35)*(1-Math.pow(Math.abs(u),6))*(1-smooth(10.55,RIVER_END,z));
+
+// The outlet rolls forward before falling beyond the lowest floating rock roots.
+export const ISLAND_WATERFALL_DROP=22;
+export function sampleIslandWaterfall(u,t){
+  const taper=1-.22*t;
+  return {x:riverCenter(RIVER_END)+u*riverHalfWidth(RIVER_END)*taper+.18*Math.sin(t*4)*t,
+    y:riverLevel(RIVER_END)-ISLAND_WATERFALL_DROP*Math.pow(t,1.55),
+    z:RIVER_END+.9*(1-Math.exp(-12*t))+1.8*t+.1*Math.sin(u*9)*t*(1-t)};
+}

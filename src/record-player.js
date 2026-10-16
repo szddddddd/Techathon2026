@@ -57,7 +57,7 @@ export async function createRecordPlayer({scene,camera,canvas,terrain,generated,
   const motion=createRecordMotion();
   scene.add(root);root.updateMatrixWorld(true);
   if(generated){const box=new THREE.Box3().setFromObject(root);setReservedFootprints([...generated.userData.inventory.map(p=>({minX:p.bounds.min[0],maxX:p.bounds.max[0],minZ:p.bounds.min[2],maxZ:p.bounds.max[2]})),{minX:box.min.x,maxX:box.max.x,minZ:box.min.z,maxZ:box.max.z}]);}
-  const button=document.createElement('button');button.id='record-player-control';button.type='button';button.setAttribute('aria-label','唱片机：声音设置');button.textContent='♫ 唱片机';document.body.append(button);
+  const button=document.createElement('button');button.id='record-player-control';button.type='button';button.setAttribute('aria-label','唱片机：声音设置');button.className='scene-entry-icon';button.innerHTML='<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="7"/><circle cx="10" cy="12" r="2"/><path d="M20 5v10l-4 3M18 5h4"/></svg></span><span class="scene-content-copy"><strong>唱片机</strong><small>音乐与声音设置</small></span>';document.body.append(button);
   let locked=false,down=null;const ray=new THREE.Raycaster(),pointer=new THREE.Vector2(),point=new THREE.Vector3();
   const off=ui.subscribe(s=>{locked=!!s.main||!!s.modal;button.hidden=locked;});
   const open=()=>onOpen(button);button.addEventListener('click',open);

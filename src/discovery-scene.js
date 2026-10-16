@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {createPlacementContext} from './social-characters.js';
 import {createDiscoveryPreview} from './discovery-previews.js';
 import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
-import {communityPoint} from './community-layout.js';
+import {COMMUNITY_FACILITIES} from './community-layout.js';
 
 /** Authored timber props: every board remains individually editable. */
 export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui}){
@@ -55,9 +55,9 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   const lens=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.16,12),mats.dark);lens.rotation.x=Math.PI/2;lens.position.set(.62,.55,.87);cinema.add(lens);
   for(const [x,z,c] of [[-.65,1.02,mats.orange],[-.06,1.38,mats.green]])box(cinema,'Hand stitched seat cushion',x,.1,z,.48,.18,.48,c);
   cinema.scale.setScalar(.82);
-  const cinemaSpot=communityPoint(-24.5,2.2);register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
+  const cinemaSpot=COMMUNITY_FACILITIES.cinema;register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
   // Reserve the larger screen first, then stagger the journal beside the front path.
-  const kioskSpot=communityPoint(-21.5,4.3);register(kiosk,'accounts',[kioskSpot.x,kioskSpot.z],1.1,[1.9,.9,.05]);
+  const kioskSpot=COMMUNITY_FACILITIES.kiosk;register(kiosk,'accounts',[kioskSpot.x,kioskSpot.z],1.1,[1.9,.9,.05]);
   let saved=null,transition=null,down=null,focusKind=null,focusedPose=null;
   const reduced=()=>typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   function surface(kind){

@@ -121,15 +121,19 @@ assert.equal(store.state.events.includes('greeting-tuantuan'),true);
 demo.dispose();
 // All added friends initiate conversation repeatedly, without a user message.
 await store.addFriend('xiaomian');await store.addFriend('shanshan');
+const regularGroups=[await store.createGroup({name:'自己创建的实验室',type:'lab',memberIds:['tuantuan','ali']}),await store.createGroup({name:'自己创建的音乐群',type:'music',memberIds:['xiaomian','shanshan']})];
+assert.ok(regularGroups.every(g=>!g.demo));
 const proactive=startDemo(store,{random:()=>.5}),arrivals=[];
 const observe=store.subscribe((state,event)=>{if(event.type==='message-received'&&event.eventId?.startsWith('proactive-'))arrivals.push({friendId:event.friendId,at:clock,text:state.messages.at(-1).text});});
 for(let i=0;i<1200;i++){clock+=250;await tick();}
 for(const friendId of store.state.friends){const messages=arrivals.filter(m=>m.friendId===friendId);assert.ok(messages.length>=4,`${friendId} keeps initiating messages`);assert.ok(new Set(messages.map(m=>m.text)).size>=4,'messages have varied personal content');}
+for(const g of regularGroups){const messages=store.state.messagesByGroup[g.id];assert.ok(messages.length>=5,'ordinary groups initiate repeatedly without an outgoing message');assert.ok(new Set(messages.map(m=>m.senderId)).size>=2,'group members take turns speaking');assert.ok(messages.every(m=>!m.read),'proactive group arrivals retain unread semantics');}
+const groupMessageCount=()=>regularGroups.reduce((n,g)=>n+store.state.messagesByGroup[g.id].length,0);const groupCountBeforePause=groupMessageCount();
 for(let i=1;i<arrivals.length;i++)assert.ok(arrivals[i].at-arrivals[i-1].at>=3000,'proactive messages do not arrive in a simultaneous burst');
 await store.setDemoPaused(true);const pausedCount=arrivals.length;
-for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);
+for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);assert.equal(groupMessageCount(),groupCountBeforePause,'group timers also stop while paused or in the background');
 await store.setDemoPaused(false);globalThis.document.hidden=true;
-for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);
+for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);assert.equal(groupMessageCount(),groupCountBeforePause,'group timers also stop while paused or in the background');
 globalThis.document.hidden=false;clock+=3600000;await tick();assert.ok(arrivals.length<=pausedCount+1,'returning to the tab does not backfill an hour of messages');
 proactive.dispose();observe();const disposedCount=arrivals.length;
 for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,disposedCount,'disposed scheduler stops sending');

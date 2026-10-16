@@ -19,3 +19,5 @@ export function mixedConversations(state){
  const pin=r=>(r.kind==='group'?state.pinnedGroups:state.pinnedFriends)?.includes(r.id)||false;
  return items.sort((a,b)=>Number(pin(b))-Number(pin(a))||last(b)-last(a)||conversationKey(a).localeCompare(conversationKey(b)));
 }
+
+export const recentGroups=state=>(state.groups||[]).filter(g=>!g.leftAt&&state.messagesByGroup?.[g.id]?.length).sort((a,b)=>(state.messagesByGroup[b.id].at(-1)?.createdAt||0)-(state.messagesByGroup[a.id].at(-1)?.createdAt||0)||a.id.localeCompare(b.id));

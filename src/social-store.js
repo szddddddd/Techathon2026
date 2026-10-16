@@ -150,15 +150,17 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
 
 // Active-time timers do not produce a burst after a background tab resumes.
 const CHATTY_FRIENDS={
-  tuantuan:{interval:[20000,35000],texts:['刚刚看到一片很像小船的叶子，想拿给你看。','你现在在忙什么呀？我在广场晒太阳。','今天也要记得喝水，我已经替你提醒自己了 🌿','想邀请你去桥边走走，不赶时间的那种。','我发现森林里又长出了一簇小花！','没有什么大事，就是想找你说说话。']},
-  ali:{interval:[28000,45000],texts:['刚沿着山路走了一圈，风景很好。','下次想走远一点，你愿意一起吗？','我在整理小背包，带些什么好呢？','溪边有一条没走过的小路，先记在我的地图上。','走到树荫下休息了，顺便给你写封信。','你有没有特别想去的地方？']},
-  xiaomian:{interval:[40000,65000],texts:['刚刚发了一会儿呆……现在来看看你。','这里很安静，分你一点安静的时间。','忙的话晚点回我也没关系。','我在听叶子和风说话，好像有点困了。','今天有没有好好休息呀？','给你留了一个树荫下的位置，慢慢来。']},
-  shanshan:{interval:[32000,55000],texts:['篝火照看好了，等你有空来坐坐。','刚收集到一束很好看的光，想分享给你。','今天有什么值得记下的小事吗？','我在广场附近，随时可以找我。','走累了就停一会儿吧，我陪你。','森林里的天气很好，希望你那里也是。']},
+  tuantuan:{interval:[16000,28000],texts:['刚刚看到一片很像小船的叶子，想拿给你看。','你现在在忙什么呀？我在广场晒太阳。','今天也要记得喝水，我已经替你提醒自己了 🌿','想邀请你去桥边走走，不赶时间的那种。','我发现森林里又长出了一簇小花！','没有什么大事，就是想找你说说话。']},
+  ali:{interval:[22000,36000],texts:['刚沿着山路走了一圈，风景很好。','下次想走远一点，你愿意一起吗？','我在整理小背包，带些什么好呢？','溪边有一条没走过的小路，先记在我的地图上。','走到树荫下休息了，顺便给你写封信。','你有没有特别想去的地方？']},
+  xiaomian:{interval:[30000,48000],texts:['刚刚发了一会儿呆……现在来看看你。','这里很安静，分你一点安静的时间。','忙的话晚点回我也没关系。','我在听叶子和风说话，好像有点困了。','今天有没有好好休息呀？','给你留了一个树荫下的位置，慢慢来。']},
+  shanshan:{interval:[24000,40000],texts:['篝火照看好了，等你有空来坐坐。','刚收集到一束很好看的光，想分享给你。','今天有什么值得记下的小事吗？','我在广场附近，随时可以找我。','走累了就停一会儿吧，我陪你。','森林里的天气很好，希望你那里也是。']},
 };
 
 export function startDemo(store,{random=Math.random}={}){
   let disposed=false,busy=false,last=performance.now(),ambientRemaining=60000;
-  const groupTimers=new Map(),groupReplies=new Map();
+  const groupTimers=new Map(),groupReplies=new Map();let groupCooldown=0;
+  const groupInterval=()=>18000+random()*20000;
+  const groupTopics={club:'这周的社团活动，大家有什么想法？',classroom:'今天课上的那个问题，大家弄明白了吗？',sport:'晚点一起活动一下？记得带水。',lab:'刚把实验的新进展记下来了，想和大家讨论。',library:'刚读到一段很喜欢的话，想分享给大家。',music:'发现一首很好听的歌，等你们来听。',art:'今天画了一张小速写，大家最近在创作什么？',cafe:'下午想泡一杯咖啡，来聊聊天吧。',observatory:'今晚想看看星星，有人一起吗？'};
   const pending=new Map(),chatter=new Map();let chatterCooldown=0;
   const chatterFor=id=>CHATTY_FRIENDS[id]||CHATTY_FRIENDS.shanshan;
   const interval=id=>{const [min,max]=chatterFor(id).interval;return min+random()*(max-min);};
@@ -168,7 +170,7 @@ export function startDemo(store,{random=Math.random}={}){
   function scheduleReply(message){const index=Math.max(0,FRIENDS.findIndex(friend=>friend.id===message.friendId));const texts=['收到你的来信啦！今天的阳光也分你一半。','记下了！下次一起去溪边走走吧。','嗯嗯，我在认真听。慢慢说，不着急。','看见你的消息，今天又多了一点温暖。'];const payload=message.type==='sticker'?{type:'sticker',text:['🌻','🦊','🐰','🐻'][index]}:message.type==='image'?{type:'text',text:'这张照片真好看，谢谢你把这一刻分享给我。'}:message.type==='moment'?{type:'text',text:'你也喜欢这段回忆呀！看到它，我又想起那天了。'}:{type:'text',text:texts[index]};schedule(`reply-${message.id}`,message.friendId,payload,1000+(message.createdAt%2001));}
   for(const id of store.state.friends){greeting(id);addChatter(id);}
   for(const message of store.state.messages)if(message.senderId==='me')scheduleReply(message);
-  const unsubscribe=store.subscribe((state,event)=>{if(event.type==='group-message-sent')groupReplies.set(event.groupId,1800+random()*2200);if(event.type==='friend-added'){greeting(event.friendId);addChatter(event.friendId);}if(event.type==='message-sent'){const message=state.messages[state.messages.length-1];scheduleReply(message);}if(event.type==='demo-restart'){ambientRemaining=2000;chatter.clear();chatterCooldown=0;for(const id of state.friends){greeting(id);addChatter(id);}}});
+  const unsubscribe=store.subscribe((state,event)=>{if(event.type==='group-message-sent')groupReplies.set(event.groupId,1800+random()*2200);if(event.type==='friend-added'){greeting(event.friendId);addChatter(event.friendId);}if(event.type==='message-sent'){const message=state.messages[state.messages.length-1];scheduleReply(message);}if(event.type==='demo-restart'){ambientRemaining=2000;chatter.clear();chatterCooldown=0;groupTimers.clear();groupReplies.clear();groupCooldown=0;for(const id of state.friends){greeting(id);addChatter(id);}}});
   async function tick(){
     const now=performance.now(),delta=Math.min(500,Math.max(0,now-last));last=now;
     if(disposed||busy)return;
@@ -176,13 +178,19 @@ export function startDemo(store,{random=Math.random}={}){
     try{
       for(const [id,status] of Object.entries(store.state.statuses))if(status.expiresAt<=Date.now())await store.clearStatus(id);
       if(globalThis.document?.hidden||store.state.settings.demoPaused)return;
-      for(const g of store.state.groups.filter(g=>!g.leftAt)){
-        let timer=groupTimers.get(g.id);if(!timer){timer={remaining:45000+random()*45000,index:0};groupTimers.set(g.id,timer);}timer.remaining-=delta;
+      groupCooldown=Math.max(0,groupCooldown-delta);
+      const activeGroups=store.state.groups.filter(g=>!g.leftAt);
+      for(const [index,g] of activeGroups.entries()){
+        let timer=groupTimers.get(g.id);if(!timer){timer={remaining:8000+(index%10)*900+random()*4000,index:0};groupTimers.set(g.id,timer);}timer.remaining-=delta;
         if(groupReplies.has(g.id))groupReplies.set(g.id,groupReplies.get(g.id)-delta);
-        const reply=groupReplies.has(g.id)&&groupReplies.get(g.id)<=0;
-        if(reply||(g.demo&&timer.remaining<=0)){const members=g.memberIds.filter(id=>id!=='me'),sender=members[timer.index%members.length];if(sender){await store.receiveGroupMessage(g.id,sender,{text:reply?'收到啦，一起商量！':['大家有空时来聊聊今天的安排。','刚有个新想法，想听听大家的意见。','把小小的进展分享给大家 🌿'][timer.index%3]});timer.index++;timer.remaining=45000+random()*45000;groupReplies.delete(g.id);break;}}
       }
-      for(const id of groupTimers.keys())if(!store.state.groups.some(g=>g.id===id&&!g.leftAt)){groupTimers.delete(id);groupReplies.delete(id);}
+      for(const id of groupTimers.keys())if(!activeGroups.some(g=>g.id===id)){groupTimers.delete(id);groupReplies.delete(id);}
+      const dueGroups=activeGroups.filter(g=>g.memberIds.some(id=>id!=='me')).map(g=>({g,timer:groupTimers.get(g.id),reply:groupReplies.has(g.id)&&groupReplies.get(g.id)<=0})).filter(({timer,reply})=>reply||(!groupCooldown&&timer.remaining<=0)).sort((a,b)=>Number(b.reply)-Number(a.reply)||a.timer.remaining-b.timer.remaining);
+      if(dueGroups.length){
+        const {g,timer,reply}=dueGroups[0],members=g.memberIds.filter(id=>id!=='me'),sender=members[timer.index%members.length];
+        const texts=[groupTopics[g.type]||'大家最近在忙什么？有空来聊聊吧。','刚有个新想法，想听听大家的意见。','把小小的进展分享给大家 🌿','不着急回复，等大家有空时再聊。'];
+        await store.receiveGroupMessage(g.id,sender,{text:reply?'收到啦，一起商量！':texts[timer.index%texts.length]});timer.index++;timer.remaining=groupInterval();groupReplies.delete(g.id);groupCooldown=3000;
+      }
       for(const item of pending.values()){item.remaining-=delta;if(item.remaining<=0){await store.receiveMessage(item.friendId,item.payload,item.key);pending.delete(item.key);break;}}
       chatterCooldown=Math.max(0,chatterCooldown-delta);
       for(const item of chatter.values())item.remaining-=delta;

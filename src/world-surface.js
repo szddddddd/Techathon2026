@@ -2,7 +2,7 @@
 import {riverCenter,riverHalfWidth} from './river-profile.js';
 import {mountainHeight,foothillHeight} from './mountain-profile.js';
 import {onTerraceExtension,terraceHeight} from './terrace-profile.js';
-import {groupPlotAt,GROUP_QUEUE,communityBlend,inCommunity} from './community-layout.js';
+import {groupPlotAt,communityObstacleAt,communityBlend,inCommunity} from './community-layout.js';
 import {islandBanks,ISLAND_BOUNDS} from './island-profile.js';
 export const WORLD_BOUNDS=ISLAND_BOUNDS;
 export const polygonArea=p=>Math.abs(p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a[0]*b[1]-b[0]*a[1];},0))/2;
@@ -23,7 +23,8 @@ export function surfaceHeight(x,z,{mountain=true}={}){
 }
 export function inWorld(x,z){return Number.isFinite(x)&&Number.isFinite(z)&&(insidePolygon(outlines.west,x,z)||insidePolygon(outlines.east,x,z));}
 export function querySurface(x,z){
-  if(groupPlotAt(x,z)>=0||Math.hypot(x-GROUP_QUEUE.x,z-GROUP_QUEUE.z)<.42)return{height:2.22,normal:{x:0,y:1,z:0},region:'group-plot',walkable:false};
+  if(groupPlotAt(x,z)>=0)return{height:2.22,normal:{x:0,y:1,z:0},region:'group-plot',walkable:false};
+  const townObstacle=communityObstacleAt(x,z);if(townObstacle)return{height:2.22,normal:{x:0,y:1,z:0},region:'community-'+townObstacle,walkable:false};
   if(inCommunity(x,z))return{height:2.22,normal:{x:0,y:1,z:0},region:'community',walkable:inWorld(x,z)};
   if(onTerraceExtension(x,z)){const dx=x>16&&x<20?-.35:0,n=Math.hypot(dx,1);return{height:terraceHeight(x),normal:{x:-dx/n,y:1/n,z:0},region:'terrace-extension',walkable:true};}
   const height=surfaceHeight(x,z),e=.025,dx=(surfaceHeight(x+e,z)-surfaceHeight(x-e,z))/(2*e),dz=(surfaceHeight(x,z+e)-surfaceHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);

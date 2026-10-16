@@ -7,7 +7,7 @@ export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,inter
   const root=document.createElement('div');root.id='discovery-scene-icons';root.setAttribute('aria-label','场景内容入口');document.body.append(root);
   let locked=false,focusOnReturn=null,anchors=[];const unsubscribe=ui?.subscribe(s=>{locked=!!s.main||!!s.modal;root.hidden=locked||!interactive();});
   const entries=Object.entries(groups).map(([kind,group])=>{
-    const button=document.createElement('button');button.type='button';button.className='scene-content-icon';button.dataset.sceneContent=kind;
+    const button=document.createElement('button');button.type='button';button.className='scene-content-icon scene-entry-icon';button.dataset.sceneContent=kind;
     const name=kind==='accounts'?'公众号':'视频号';button.setAttribute('aria-label',`打开场景${name}`);
     button.innerHTML=`<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true">${icons[kind]}</svg></span><span class="scene-content-copy"><strong>${name}${kind==='accounts'?' · Hyper3D':''}</strong><small></small></span>`;
     button.addEventListener('click',()=>{focusOnReturn=button;onOpen(kind);});root.append(button);
@@ -22,12 +22,13 @@ export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,inter
       const x=(e.point.x*.5+.5)*innerWidth,y=(.5-e.point.y*.5)*innerHeight;
       e.button.hidden=e.point.z< -1||e.point.z>1||x<8||x>innerWidth-8||y<8||y>innerHeight-50;
       if(e.button.hidden)continue;
-      const title=preview(e.kind)?.title||'';if(e.previous!==title){e.button.querySelector('small').textContent=title;e.button.title=title;e.previous=title;}
-      visible.push({entry:e,x:Math.max(innerWidth<=760?30:88,Math.min(innerWidth-(innerWidth<=760?30:88),x)),y:Math.max(12,y)});
+      const title=preview(e.kind)?.title||'';if(e.previous!==title){e.button.querySelector('small').textContent=title;e.previous=title;}
+      const width=e.button.matches(':focus-visible')||(matchMedia('(hover:hover)').matches&&e.button.matches(':hover'))?172:44;
+      visible.push({entry:e,width,x:Math.max(width/2+8,Math.min(innerWidth-width/2-8,x)),y:Math.max(30,y)});
     }
-    if(visible.length===2&&Math.abs(visible[0].x-visible[1].x)<170&&Math.abs(visible[0].y-visible[1].y)<52)visible.sort((a,b)=>a.y-b.y)[0].y=Math.max(8,Math.min(visible[0].y,visible[1].y)-54);
+    if(visible.length===2&&Math.abs(visible[0].x-visible[1].x)<(visible[0].width+visible[1].width)/2+8&&Math.abs(visible[0].y-visible[1].y)<52)visible.sort((a,b)=>a.y-b.y)[0].y=Math.max(8,Math.min(visible[0].y,visible[1].y)-54);
     if(focusOnReturn&&!focusOnReturn.hidden){focusOnReturn.focus({preventScroll:true});focusOnReturn=null;}
-    anchors=visible.map(({entry:e,x,y})=>({id:'discovery-'+e.kind,x,y,width:innerWidth<=760?44:172,height:52,visible:true,fixed:true}));
+    anchors=visible.map(({entry:e,width,x,y})=>({id:'discovery-'+e.kind,x,y,width,height:44,visible:true,fixed:true}));
     for(const {entry:e,x,y} of visible){const transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;if(e.button.style.transform!==transform)e.button.style.transform=transform;}
   }
   return{update,get anchors(){return anchors;},dispose(){unsubscribe?.();root.remove();}};

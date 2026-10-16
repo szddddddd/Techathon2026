@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {riverCenter,riverHalfWidth,riverLevel,riverDepth,sampleRiver,riverWave,RIVER_START,RIVER_END,UPPER_CASCADES} from './river-profile.js';
+import {riverCenter,riverHalfWidth,riverLevel,riverDepth,sampleRiver,riverWave,RIVER_START,RIVER_END,UPPER_CASCADES,sampleIslandWaterfall,ISLAND_WATERFALL_DROP} from './river-profile.js';
 
 /** River-owned geometry, materials and animation. Imported GLBs remain shared. */
 export function createRiver(parent,{assets=null,reduced=false}={}){
@@ -26,7 +26,7 @@ export function createRiver(parent,{assets=null,reduced=false}={}){
   const bedBase=material('#526e61');
   // Closed thickness at the exposed front and rear of the diorama.
   for(const z of [RIVER_END]){
-    const positions=[],indices=[];for(let i=0;i<=32;i++){const p=sampleRiver(i/16-1,z);positions.push(p.x,p.bedY,z,p.x,-2.82,z);if(i<32){const a=i*2;indices.push(a,a+1,a+2,a+2,a+1,a+3);}}
+    const positions=[],indices=[];for(let i=0;i<=32;i++){const p=sampleRiver(i/16-1,z);positions.push(p.x,p.bedY,z,p.x,-2.5-.3*Math.sin(i*.65),z);if(i<32){const a=i*2;indices.push(a,a+1,a+2,a+2,a+1,a+3);}}
     const g=ownGeo(new THREE.BufferGeometry());g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();add('Riverbed exposed rock thickness',g,bedBase).material.side=THREE.DoubleSide;
   }
   const waterMat=ownMat(new THREE.MeshStandardMaterial({color:'#86c9b6',emissive:'#256459',emissiveIntensity:.08,roughness:.28,metalness:.02,transparent:true,opacity:.7,depthWrite:false,side:THREE.FrontSide}));
@@ -95,27 +95,33 @@ export function createRiver(parent,{assets=null,reduced=false}={}){
   const spring=add('Recessed mountain spring pool',ownGeo(new THREE.CircleGeometry(1,48)),springMat);spring.rotation.x=-Math.PI/2;spring.scale.set(.83,.35,1);spring.position.set(riverCenter(RIVER_START),riverLevel(RIVER_START)+.005,RIVER_START-.12);spring.renderOrder=3;
   for(const side of [-1,1]){const rock=add('Spring wet rock lip',ownGeo(new THREE.DodecahedronGeometry(.22,1)),wet);rock.position.set(riverCenter(RIVER_START)+side*.96,riverLevel(RIVER_START)+.04,RIVER_START-.12);rock.scale.set(.85,.6,1.5);}
   // Curved sheets roll over the edge; each sheet connects exactly at the waterline.
-  const fallMat=ownMat(new THREE.MeshStandardMaterial({color:'#8bc6b0',roughness:.4,metalness:0,transparent:true,opacity:.77,depthWrite:false,side:THREE.DoubleSide}));
+  const fallMat=ownMat(new THREE.MeshStandardMaterial({color:'#8bc6b0',roughness:.4,metalness:0,transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));
   fallMat.onBeforeCompile=shader=>{shader.uniforms.uRiverTime=uniform;shader.vertexShader='varying vec2 vFallUv;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFallUv=uv;');shader.fragmentShader='uniform float uRiverTime;varying vec2 vFallUv;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-    float stream=sin(vFallUv.x*21.0+sin(vFallUv.y*5.0-uRiverTime*2.4))*.5+.5;
-    float pulse=sin(vFallUv.y*24.0-uRiverTime*5.0+vFallUv.x*6.0)*.5+.5;
+    float stream=sin(vFallUv.x*105.0+sin(vFallUv.x*43.0)*2.0+sin(vFallUv.y*12.0-uRiverTime*2.4+vFallUv.x*23.0)*.65)*.5+.5;
+    float pulse=sin(vFallUv.y*90.0-uRiverTime*9.0+vFallUv.x*16.0)*.5+.5;
     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.8,.92,.79),pow(stream,6.0)*(.15+pulse*.35));
-    diffuseColor.a*=1.0-smoothstep(.8,1.0,vFallUv.y);`);};
+    float tail=.76+.22*sin(vFallUv.x*67.0+sin(vFallUv.x*29.0)*2.0);
+    diffuseColor.a*=mix(1.0,.48+.52*stream,smoothstep(.2,.8,vFallUv.y));
+    diffuseColor.a*=1.0-smoothstep(tail-.18,tail,vFallUv.y);`);};
   const span=riverHalfWidth(RIVER_END)*2,cx=riverCenter(RIVER_END);
   for(let section=0;section<5;section++){
-    const positions=[],uv=[],indices=[],start=-span/2+section/5*span,end=-span/2+(section+1)/5*span;
-    for(let j=0;j<=28;j++)for(let k=0;k<=8;k++){const t=j/28,s=k/8,center=(start+end)/2,x=cx+center+(s-.5)*(end-start)*(1-.13*t);positions.push(x,riverLevel(RIVER_END)-t*t*2.72,RIVER_END+Math.sin(t*Math.PI*.55)*(.32+section%2*.09+Math.sin(s*Math.PI)*.12));uv.push(s,t);if(j<28&&k<8){const a=j*9+k;indices.push(a,a+9,a+1,a+1,a+9,a+10);}}
+    const positions=[],uv=[],indices=[],rows=56;
+    for(let j=0;j<=rows;j++)for(let k=0;k<=8;k++){
+      const t=j/rows,u=-1+2*(section+k/8)/5,p=sampleIslandWaterfall(u,t);
+      positions.push(p.x,p.y,p.z);uv.push((u+1)/2,t);
+      if(j<rows&&k<8){const a=j*9+k;indices.push(a,a+9,a+1,a+1,a+9,a+10);}
+    }
     const g=ownGeo(new THREE.BufferGeometry());g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();const m=add('Curved foreground waterfall '+section,g,fallMat);m.renderOrder=3;falls.push(m);
   }
   const lip=[];for(let i=0;i<=48;i++){const p=sampleRiver(i/24-1,RIVER_END-.035);lip.push([p.x,p.y+.025,p.z]);}ribbon('Waterfall rolling lip',lip,.035);
-  const mistMat=ownMat(new THREE.PointsMaterial({color:'#c5e3cb',size:.17,transparent:true,opacity:.19,depthWrite:false,sizeAttenuation:true}));
+  const mistMat=ownMat(new THREE.PointsMaterial({color:'#c5e3cb',size:.62,transparent:true,opacity:.16,depthWrite:false,sizeAttenuation:true}));
   mistMat.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\nfloat r=length(gl_PointCoord-.5)*2.;diffuseColor.a*=pow(max(0.,1.-r),2.);');};
-  const mistPositions=new Float32Array(24*3),mistSeed=[];for(let i=0;i<24;i++)mistSeed.push({x:cx+(random()-.5)*span*.9,z:RIVER_END+.25+random()*.16,phase:random()*6});
+  const mistPositions=new Float32Array(72*3),mistSeed=[];for(let i=0;i<72;i++)mistSeed.push({u:(random()-.5)*1.7,drift:random()-.5,phase:random()});
   const mistGeo=ownGeo(new THREE.BufferGeometry());mistGeo.setAttribute('position',new THREE.BufferAttribute(mistPositions,3));const mist=new THREE.Points(mistGeo,mistMat);mist.name='Quiet waterfall spray';mist.renderOrder=5;root.add(mist);
   root.traverse(o=>{o.userData.riverOwned=true;});
   function update(seconds,dt=0){if(disposed)return;const still=typeof reduced==='boolean'?reduced:!!reduced?.matches;if(still&&frozen)return;frozen=still;time=still?0:seconds;uniform.value=time;
     for(const p of foam){const z=RIVER_START+((p.z-RIVER_START+time*.23)%(RIVER_END-RIVER_START-.6)),s=sampleRiver(p.u,z);p.mesh.position.set(s.x,0,z);const pos=p.mesh.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=s.x+pos.getX(i),rz=z+pos.getZ(i);pos.setY(i,riverLevel(rz)+riverWave(x,rz,time,p.u)+.022);}pos.needsUpdate=true;p.mesh.visible=!rocks.some(r=>Math.hypot(r.x-s.x,r.z-z)<r.width*.8);}
-    for(let i=0;i<mistSeed.length;i++){const p=mistSeed[i];mistPositions[i*3]=p.x+Math.sin(time*.8+p.phase)*.1;mistPositions[i*3+1]=-2.65+Math.sin(time*.65+p.phase)*.12;mistPositions[i*3+2]=p.z;}mistGeo.attributes.position.needsUpdate=true;
+    for(let i=0;i<mistSeed.length;i++){const p=mistSeed[i],age=(p.phase+time*.11)%1,t=.64+.36*age,fall=sampleIslandWaterfall(p.u,t);mistPositions[i*3]=fall.x+p.drift*age*1.8;mistPositions[i*3+1]=fall.y;mistPositions[i*3+2]=fall.z+.3+age*.6;}mistGeo.attributes.position.needsUpdate=true;
   }
-  update(0);return{root,update,sample:sampleRiver,level:riverLevel,bounds:z=>({left:riverCenter(z)-riverHalfWidth(z),right:riverCenter(z)+riverHalfWidth(z)}),audit:{surfaceVertices:water.geometry.attributes.position.count,rodinRocks:assets?.rock?rocks.length:0,fallbackRocks:assets?.rock?0:rocks.length,pebbles:160,waterfallSheets:5,mountainCascades:UPPER_CASCADES.length,sourceLevel:riverLevel(RIVER_START),bridgeLevel:riverLevel(1.5),downstreamLevel:riverLevel(7),rocks:rocks.map(({x,z,width})=>({x,z,width}))},snapshot:()=>({time,foam:foam.map(p=>p.mesh.position.toArray())}),dispose(){disposed=true;root.removeFromParent();root.traverse(o=>{if(o.isInstancedMesh)o.dispose();});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
+  update(0);return{root,update,sample:sampleRiver,level:riverLevel,bounds:z=>({left:riverCenter(z)-riverHalfWidth(z),right:riverCenter(z)+riverHalfWidth(z)}),audit:{surfaceVertices:water.geometry.attributes.position.count,rodinRocks:assets?.rock?rocks.length:0,fallbackRocks:assets?.rock?0:rocks.length,pebbles:160,waterfallSheets:5,waterfallDrop:ISLAND_WATERFALL_DROP,mountainCascades:UPPER_CASCADES.length,sourceLevel:riverLevel(RIVER_START),bridgeLevel:riverLevel(1.5),downstreamLevel:riverLevel(7),rocks:rocks.map(({x,z,width})=>({x,z,width}))},snapshot:()=>({time,foam:foam.map(p=>p.mesh.position.toArray())}),dispose(){disposed=true;root.removeFromParent();root.traverse(o=>{if(o.isInstancedMesh)o.dispose();});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
 }

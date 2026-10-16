@@ -1,10 +1,18 @@
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import * as T from 'three';
-import {buildTerrain} from '../src/terrain.js';import {createPlacementContext} from '../src/social-characters.js';import {GROUP_SLOTS,GROUP_QUEUE,COMMUNITY_STREETS,COMMUNITY_BOUNDS} from '../src/community-layout.js';import {PLACEMENTS} from '../src/layout.js';import {loadGeometryGLB} from './glb-geometry.mjs';import {GROUP_TYPES} from '../src/group-catalog.js';
-const scene=new T.Scene(),terrain=buildTerrain(scene),context=createPlacementContext({scene,terrain});
-assert.ok(!PLACEMENTS.some(p=>p.kind==='cottage'));let pathSamples=0;
-for(const slot of GROUP_SLOTS)assert.equal(context.inspect(slot.x,slot.z,.63,[],{manual:true}).ok,false);
-for(const type of GROUP_TYPES){const {model}=await loadGeometryGLB(`assets/rodin-groups/${type.id}/scene.glb`);model.rotation.y=type.rotation||0;model.updateMatrixWorld(true);const box=new T.Box3().setFromObject(model),s=box.getSize(new T.Vector3()),k=Math.min(4/s.x,3.5/s.z,4.2/s.y);assert.ok(s.x*k<=4.001&&s.z*k<=3.501);}
-for(const x of COMMUNITY_STREETS.x)for(let z=COMMUNITY_BOUNDS.minZ+1.1;z<=COMMUNITY_BOUNDS.maxZ-.5;z+=.15){const q=context.inspect(x,z,.63,[],{manual:true});assert.ok(q.ok,JSON.stringify({x,z,q}));pathSamples++;}
-for(const z of COMMUNITY_STREETS.z)for(let x=COMMUNITY_BOUNDS.minX+1.2;x<=COMMUNITY_BOUNDS.maxX;x+=.15){const q=context.inspect(x,z,.63,[],{manual:true});assert.ok(q.ok,JSON.stringify({x,z,q}));pathSamples++;}
-assert.equal(context.inspect(GROUP_QUEUE.x,GROUP_QUEUE.z,.4,[],{manual:true}).ok,false);
-const report={checks:['old cottage removed','all nine building templates fit every slot','empty plots remain reserved','0.63 radius actor passes both courtyard streets','queue sign footprint blocks placement'],pathSamples};await fs.writeFile('validation/floating-island/group-scene.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));
+import {buildTerrain} from '../src/terrain.js';import {createPlacementContext} from '../src/social-characters.js';import {GROUP_SLOTS,GROUP_QUEUE,COMMUNITY_WALKING_PATHS as COMMUNITY_PATHS,COMMUNITY_GARDENS,COMMUNITY_BENCHES,COMMUNITY_TREES,COMMUNITY_LAMPS,plotPoint} from '../src/community-layout.js';import {PLACEMENTS} from '../src/layout.js';import {loadGeometryGLB} from './glb-geometry.mjs';import {GROUP_TYPES} from '../src/group-catalog.js';
+const scene=new T.Scene(),terrain=buildTerrain(scene),context=createPlacementContext({scene,terrain});let pathSamples=0,templateChecks=0;
+assert.ok(!PLACEMENTS.some(p=>p.kind==='cottage'));
+const box=p=>{const corners=[[-p.width/2,-p.depth/2],[-p.width/2,p.depth/2],[p.width/2,-p.depth/2],[p.width/2,p.depth/2]].map(([x,z])=>plotPoint(p,x,z));return new T.Box2().setFromPoints(corners.map(p=>new T.Vector2(p.x,p.z)));};
+for(const [i,p] of GROUP_SLOTS.entries()){
+ assert.equal(context.inspect(p.x,p.z,.63,[],{manual:true}).ok,false);
+ assert.ok(context.inspect(p.entry.x,p.entry.z,.63,[],{manual:true}).ok,'walkable front door '+i);
+ for(const other of GROUP_SLOTS.slice(i+1))assert.equal(box(p).intersectsBox(box(other)),false,'separate building plots');
+ for(const garden of COMMUNITY_GARDENS)assert.equal(box(p).intersectsBox(box({...garden,rotation:0})),false,'garden '+garden.id+' clear of building '+i);
+}
+for(const type of GROUP_TYPES){
+ const {model}=await loadGeometryGLB(`assets/rodin-groups/${type.id}/scene.glb`);model.rotation.y=type.rotation||0;model.updateMatrixWorld(true);const b=new T.Box3().setFromObject(model),s=b.getSize(new T.Vector3()),k=Math.min(4/s.x,3.5/s.z,4.2/s.y);
+ for(const p of GROUP_SLOTS){assert.ok(s.x*k<p.width&&s.z*k<p.depth&&s.y*k<=4.201);templateChecks++;}
+}
+for(const path of COMMUNITY_PATHS)for(let i=1;i<path.points.length;i++){const a=path.points[i-1],b=path.points[i],count=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.15));for(let j=0;j<=count;j++){const x=a[0]+(b[0]-a[0])*j/count,z=a[1]+(b[1]-a[1])*j/count,q=context.inspect(x,z,.63,[],{manual:true});assert.ok(q.ok,JSON.stringify({path:path.id,x,z,q}));pathSamples++;}}
+for(const p of [...COMMUNITY_GARDENS,...COMMUNITY_BENCHES,...COMMUNITY_TREES,...COMMUNITY_LAMPS,GROUP_QUEUE])assert.equal(context.inspect(p.x,p.z,.25,[],{manual:true}).ok,false);
+const report={checks:['nine rotated plots stay separate and fit every template','all entrances meet walking streets','continuous main lane, branches, riverside and civic loop','empty plots and gardens remain protected','benches, trees, lamps and queue sign reject placement'],pathSamples,templateChecks};await fs.mkdir('validation/riverside-town',{recursive:true});await fs.writeFile('validation/riverside-town/geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

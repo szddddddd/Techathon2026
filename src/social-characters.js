@@ -1,3 +1,4 @@
+import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
 import {createCharacterActions} from './character-actions.js';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -85,7 +86,7 @@ export function createPlacementContext({scene,terrain,generated}){
 
 export function pickCharacterSlots(context,friends,{random=false}={}){
   const result=[];
-  for(const [index,friend] of friends.slice(0,8).entries()){
+  for(const [index,friend] of friends.slice(0,FRIEND_SCENE_CAPACITY).entries()){
     const preferred=PREFERRED[friend.animal]||[-5,5],radius=friend.radius??.55;
     const candidates=[];
     for(let z=random?-13:-9.5;z<=(random?12:9.5);z+=.65)for(let x=-15;x<=(random?29:15.5);x+=.65){
@@ -174,10 +175,10 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     audit.walking=[...records.values()].map(r=>({id:r.friend.id,nodes:r.walk?.graph.nodes.length||0,edges:r.walk?.graph.nodes.reduce((n,p)=>n+p.links.length,0)||0}));
   }
   function sync(friends,{transient=false}={}){
-    const wanted=new Set(friends.slice(0,8).map(f=>f.id));
+    const wanted=new Set(friends.slice(0,FRIEND_SCENE_CAPACITY).map(f=>f.id));
     for(const [id,r] of records)if(!wanted.has(id)&&r.group.visible){if(r.placing)drag.cancel();r.group.visible=false;r.slot=null;r.walk=null;r.actions.meshes.forEach(m=>m.morphTargetInfluences.fill(0));}
     const used=residents().map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12}));
-    for(const friend of friends.slice(0,8)){
+    for(const friend of friends.slice(0,FRIEND_SCENE_CAPACITY)){
       if(friend.animal==='custom'&&!models.has(friend.id)){
         if(!friend.modelUrl)continue;
         if(!loadingCustom.has(friend.id)){
@@ -203,7 +204,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
         if(gathering){gathering.set(friend.id,{position:r.group.position.clone(),slot:{...slot},walk:r.walk});const partySlot=findGatherSlot(r,used.filter(p=>p.x!==slot.x||p.z!==slot.z));if(partySlot){r.group.position.set(partySlot.x,partySlot.y,partySlot.z);resetWalk(r,partySlot);}}
       }
     }
-    refreshAudit();scene.updateMatrixWorld(true);if(selected&&!wanted.has(selected))restore();return audit.slots;
+    refreshAudit();scene.updateMatrixWorld(true);if(selected&&!wanted.has(selected))restore({preserveCamera:true});return audit.slots;
   }
   function setPresence(entries,friends){
     const ids=entries.map(e=>e.id).join('|');if(ids!==audit.rosterKey||((audit.unplaced.length||entries.some(e=>!records.has(e.id)))&&performance.now()>(audit.retryAt||0))){audit.retryAt=performance.now()+2000;audit.rosterKey=ids;sync(entries.map(e=>({...friends.find(f=>f.id===e.id),id:e.id})),{transient:true});}
@@ -304,7 +305,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   }
   function beginGather(){
     if(gathering)return {ok:true,count:residents().length,repeated:true};
-    const guests=residents().filter(r=>r.presentation.eligible!==false);if(!guests.length)return {ok:false,reason:'先置顶一位朋友，或等一封未读来信。'};
+    const guests=residents().filter(r=>r.presentation.eligible!==false);if(!guests.length)return {ok:false,reason:'先和好友聊聊天，最近联系的朋友会来到森林。'};
     const slots=new Map(),used=[];
     for(const r of guests){const slot=findGatherSlot(r,used);if(!slot)return {ok:false,reason:'广场暂时没有足够空位。'};slots.set(r.friend.id,slot);used.push({...slot,radius:r.bodyRadius});}
     gathering=new Map(guests.map(r=>[r.friend.id,{position:r.group.position.clone(),slot:{...r.slot},walk:r.walk}]));

@@ -6,6 +6,6 @@
 
 #group-building-labels[hidden]{display:none}.group-anchor-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}.group-anchor-lines line{stroke:#e9efcb;stroke-width:1.2;opacity:.7}
 
-@media(max-width:760px){.scene-content-icon{width:44px;height:48px;margin-left:-22px;padding:8px;justify-content:center}.scene-content-copy{display:none}}
+
 
 @media(max-width:760px){.group-building-anchor{max-width:calc(100vw / 3 - 12px);padding:5px 6px;font-size:9px;gap:4px}.group-building-anchor b{padding:2px 4px;font-size:9px}}

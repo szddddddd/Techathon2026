@@ -1,3 +1,4 @@
+import {recentFriendIds,FRIEND_SCENE_CAPACITY} from './social-presence.js';
 import * as THREE from 'three';
 import {allFriends} from './social-store.js';
 
@@ -14,7 +15,7 @@ export function createValleySocial({landmarks,terrain,scene,camera,controls,canv
   const snapshot=()=>({position:camera.position.clone(),target:controls.target.clone(),enabled:controls.enabled});
   function settleChat(){if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}
   function move(destination){transition={start:performance.now(),from:snapshot(),to:destination};controls.enabled=false;}
-  function render(){const ids=characters.residentIds.filter(id=>(store?.state.pinnedFriends||[]).includes(id)||(store?.state.messages||[]).some(m=>m.friendId===id&&m.senderId!=='me'&&!m.read));panel.innerHTML=`<button class="ui-close" data-ui-close="valley" aria-label="关闭广场邀请">×</button><span class="valley-eyebrow">在年轮之间，坐一会儿</span><h2>山谷会客厅</h2><p>${characters.gathering?'朋友正在广场做客。拖动只调整本次聚会的位置。':'让远处的朋友，来到同一片树荫下。'}</p><div class="valley-guests">${allFriends(store?.state||{}).filter(f=>ids.includes(f.id)).map(f=>`<span title="${f.name}">${f.emoji}<small>${f.name}</small></span>`).join('')||'<p>置顶一位朋友，或等一封未读来信。</p>'}</div><button class="valley-invite">${characters.gathering?'结束聚会':'来广场坐坐'}</button><small class="valley-note">${characters.gathering?'结束后回到原位 · 聚会不保存':'叶片捎来邀请，朋友随时相聚'}</small>`;panel.querySelector('.valley-invite').onclick=()=>characters.gathering?end():gather();}
+  function render(){const ids=characters.residentIds.filter(id=>recentFriendIds(store.state).slice(0,FRIEND_SCENE_CAPACITY).includes(id));panel.innerHTML=`<button class="ui-close" data-ui-close="valley" aria-label="关闭广场邀请">×</button><span class="valley-eyebrow">在年轮之间，坐一会儿</span><h2>山谷会客厅</h2><p>${characters.gathering?'朋友正在广场做客。拖动只调整本次聚会的位置。':'让远处的朋友，来到同一片树荫下。'}</p><div class="valley-guests">${allFriends(store?.state||{}).filter(f=>ids.includes(f.id)).map(f=>`<span title="${f.name}">${f.emoji}<small>${f.name}</small></span>`).join('')||'<p>和好友聊聊天，最近联系的朋友会来到这里。</p>'}</div><button class="valley-invite">${characters.gathering?'结束聚会':'来广场坐坐'}</button><small class="valley-note">${characters.gathering?'结束后回到原位 · 聚会不保存':'叶片捎来邀请，朋友随时相聚'}</small>`;panel.querySelector('.valley-invite').onclick=()=>characters.gathering?end():gather();}
   function open(which='plaza'){
     if(which!=='plaza'||transition||!controls.enabled)return;settleChat();kind=which;if(!pose)pose=snapshot();
     if(which==='plaza'){render();const p=landmarks.lamp.position.clone().project(camera);ui.open('valley',{origin:{left:(p.x*.5+.5)*innerWidth-12,top:(.5-p.y*.5)*innerHeight-12,width:24,height:24}});}

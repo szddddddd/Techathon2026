@@ -1,0 +1,1 @@
+不要读取"C:\Users\user\Desktop\world2"

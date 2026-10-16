@@ -40,7 +40,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   const friendModels=createFriendModels({store});
   const avatarFriends=createAvatarFriendUI({store,ui,models:friendModels,onComplete:name=>toast('已添加 '+name+'，现在可以发消息了。'),onChat:id=>{ui.close('add-friends',{immediate:true,restoreFocus:false});openFriend(id);}});
   let groups;
-  const conversations=createConversations({root,store,friends:FRIENDS,ui,onViewProfile:(friend,origin)=>avatarFriends.open(friend,{origin}),onNewContact:options=>avatarFriends.open(null,options),onError:error=>toast(error.message),onCreateGroup:origin=>groups.openCreate(origin),onGroups:origin=>groups.openQueue(null,origin),onGroupInfo:id=>openConversation({kind:'group',id}).then(()=>groups.showInfo(id,$('moments-toggle'))),onResident:(id,origin)=>groups.toggleResident(id,origin)});
+  const conversations=createConversations({root,store,friends:FRIENDS,ui,onViewProfile:(friend,origin)=>avatarFriends.open(friend,{origin}),onNewContact:options=>avatarFriends.open(null,options),onError:error=>toast(error.message),onCreateGroup:origin=>groups.openCreate(origin),onGroups:origin=>groups.openQueue(null,origin),onGroupInfo:id=>openConversation({kind:'group',id}).then(()=>groups.showInfo(id,$('moments-toggle')))});
   groups=createGroupUI({root,store,ui,onOpen:openConversation,onCloseChat:closeMeeting,onError:toast,onMember:(friend,origin)=>avatarFriends.open(friend,{origin})});
   let actionSource=null,statusOwner=null,statusOrigin=null;
   const formDrafts=new Map(),publishDrafts=new Map(),viewScrolls=new Map();
@@ -277,7 +277,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(action==='feed-author'){if(id==='me'){showOwnMemories();}else{ui.close('social',{immediate:true,restoreFocus:false});await openFriend(id);setMoments(true);}}
     if(action==='directory')showDirectory();
     if(action==='directory-tab'){directoryTab=button.dataset.tab;root.querySelectorAll('.directory-tabs button').forEach(b=>b.classList.toggle('active',b===button));renderDirectory();}
-    if(action==='add-friend'){button.disabled=true;const ok=await attempt(async()=>{await store.addFriend(id);return true;});button.disabled=false;if(ok){renderDirectory();toast(`已添加${person(id).name}，置顶或收到来信后会在森林相见。`);conversations.showAdd();}}
+    if(action==='add-friend'){button.disabled=true;const ok=await attempt(async()=>{await store.addFriend(id);return true;});button.disabled=false;if(ok){renderDirectory();toast(`已添加${person(id).name}，有新消息后会按最近联系顺序来到森林。`);conversations.showAdd();}}
     if(action==='open-friend')openFriend(id,{origin:button});
     if(action==='active-friend-profile'&&active){if(active.startsWith('group:'))groups.showInfo(active.slice(6),button);else avatarFriends.open(person(active),{origin:button});}
     if(action==='status')showStatus(id,button.closest('.friend-anchor')?()=>root.querySelector(`.friend-anchor[data-friend="${CSS.escape(id)}"] .status-badge`):button);
