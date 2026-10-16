@@ -10,9 +10,9 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
   shell.innerHTML='<div class="discovery-window"><header class="discovery-top"></header><div class="discovery-body"></div><p class="discovery-toast" role="status" hidden></p></div>';
   document.body.append(shell);
   const windowNode=shell.querySelector('.discovery-window'),top=windowNode.querySelector('.discovery-top'),body=windowNode.querySelector('.discovery-body'),video=player.video;
-  const layer=ui.register('discovery',{el:shell,surface:shell,kind:'main',nav:'discover',requestClose:()=>close(),onClose({immediate}){savePosition();if(!layer.externalMotion&&current)dockSession={current:structuredClone(current),stack:structuredClone(stack),search,articleTab,videoTab,personalTab,commentsOpen,wantPlay:!video.paused||player.wantsPlayback};player.pause();if(immediate&&sceneKind)window.__discoveryBoards?.dismiss();stage='closed';onClose();}});
+  const layer=ui.register('discovery',{el:shell,surface:shell,kind:'main',nav:'discover',requestClose:()=>close(),onClose({immediate}){savePosition();if(!layer.externalMotion&&ownerNav==='discover'&&current)dockSession={current:structuredClone(current),stack:structuredClone(stack),search,articleTab,videoTab,personalTab,commentsOpen,wantPlay:!video.paused||player.wantsPlayback};player.pause();if(immediate&&sceneKind)window.__discoveryBoards?.dismiss();stage='closed';onClose();}});
   let stage='closed',sceneKind=null,playbackBlocked=false,resumeWanted=true;
-  const sessions=new Map(),commentDrafts=new Map();let dockSession=null;
+  const sessions=new Map(),commentDrafts=new Map();let dockSession=null,ownerNav='discover',returnToOwner=null;
   let stack=[],current=null,commentsOpen=false,search='',articleTab='following',videoTab='recommend',personalTab='article',toastTimer,progressTimer,touchY=null,wheelTime=0,pointerStart=null,unsub,playbackRequested=false;
   const state=()=>store.state.discovery;
   const ref=()=>({type:current.type,id:current.id});
@@ -32,7 +32,7 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
     render();ui.transition(body);
     if(current.type==='article'||current.type==='video')store.visitContent(ref()).catch(error=>notice(error.message));
   }
-  function back(){savePosition();if(stack.length){current=stack.pop();const context=current.context||{};search=context.search||'';articleTab=context.articleTab||articleTab;videoTab=context.videoTab||videoTab;personalTab=context.personalTab||personalTab;commentsOpen=!!context.commentsOpen;if(!['video','videos'].includes(current.type))player.pause();else playbackRequested=true;render();ui.transition(body,-1);}else close();}
+  function back(){savePosition();if(stack.length){current=stack.pop();const context=current.context||{};search=context.search||'';articleTab=context.articleTab||articleTab;videoTab=context.videoTab||videoTab;personalTab=context.personalTab||personalTab;commentsOpen=!!context.commentsOpen;if(!['video','videos'].includes(current.type))player.pause();else playbackRequested=true;render();ui.transition(body,-1);}else if(ownerNav==='me'&&returnToOwner){const restore=returnToOwner;ui.close('discovery',{immediate:true,restoreFocus:false});restore();}else close();}
   function rememberSession(){
     savePosition();if(!sceneKind||!current)return;
     sessions.set(sceneKind,{current:structuredClone(current),stack:structuredClone(stack),search,articleTab,videoTab,personalTab,commentsOpen,wantPlay:playbackBlocked?resumeWanted:(!video.paused||player.wantsPlayback)});
@@ -48,7 +48,7 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
   }
   function normalizeRoute(route){if(route==='videos'){videoTab='recommend';return{type:'video',id:VIDEOS[0]?.id};}return route;}
   function prepareScene(kind,route){
-    rememberSession();player.pause();sceneKind=kind;playbackBlocked=true;stage='opening';
+    rememberSession();player.pause();ownerNav='discover';returnToOwner=null;ui.setNav('discovery','discover');sceneKind=kind;playbackBlocked=true;stage='opening';
     shell.dataset.motion='opening';shell.style.setProperty('--backdrop-alpha','0');windowNode.style.opacity='0';windowNode.inert=true;
     const saved=sessions.get(kind),requested=typeof route==='object'?route:null;
     if(saved&&(!requested||requested.id===saved.current.id)){
@@ -128,11 +128,18 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
   unsub=store.subscribe((_,event)=>{if(stage==='closed'||!current)return;if(/progress|visit|history|draft|scroll|read/.test(event.type))return;if(event.type.startsWith('content-')||event.type.startsWith('discovery-')||event.type==='reading-font'){current.scroll=body.scrollTop;render();}});
   return {
     open(route='discover',options={}){
-      const resume=options.resume&&dockSession;const fresh=stage==='closed'||!!sceneKind;
+      const nextOwner=options.owner==='me'?'me':'discover';
+      const resume=nextOwner==='discover'&&options.resume&&dockSession;
+      const fresh=stage==='closed'||!!sceneKind||nextOwner!==ownerNav;
       if(sceneKind)window.__discoveryBoards?.dismiss();
-      sceneKind=null;playbackBlocked=false;stage='window';layer.externalMotion=false;
+      // Finalize the old workspace before publishing the new route/lifecycle.
+      if(ui.state('discovery')!=='closed')ui.close('discovery',{immediate:true,restoreFocus:false});
+      ownerNav=nextOwner;returnToOwner=options.onBack||null;
+      sceneKind=null;playbackBlocked=false;layer.externalMotion=false;
+      ui.setNav('discovery',ownerNav);
       ui.open('discovery',{origin:options.origin||ui.source()});
-      if(resume){({search,articleTab,videoTab,personalTab,commentsOpen}=dockSession);current=structuredClone(dockSession.current);stack=structuredClone(dockSession.stack);playbackRequested=dockSession.wantPlay;render();}else{if(fresh){stack=[];current=null;}navigate(normalizeRoute(route));}
+      stage='window';
+      if(resume){({search,articleTab,videoTab,personalTab,commentsOpen}=dockSession);current=structuredClone(dockSession.current);stack=structuredClone(dockSession.stack);playbackRequested=dockSession.wantPlay;render();}else{if(fresh||nextOwner==='me'){stack=[];current=null;}navigate(normalizeRoute(route));}
     },
     prepareScene,settleScene,startClosing,reveal,stopScene,dismissBoard:stopScene,
     get shell(){return shell;},get windowNode(){return windowNode;},

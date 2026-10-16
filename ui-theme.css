@@ -30,8 +30,8 @@
 #social .ui-close,#discovery-dialog .ui-close,.valley-popover .ui-close,#social .ui-back{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;padding:0;border:0;border-radius:50%;background:#637b5910;color:#67775f;font:22px/1 var(--ui-font);cursor:pointer;letter-spacing:0}
 #social .ui-close:hover,#discovery-dialog .ui-close:hover,.valley-popover .ui-close:hover{background:#b77c6526;color:#8e5140}
 #social .ui-back{font-size:18px}
-#social #social-dialog,#social #compose-dialog,#social #content-share-dialog{position:fixed;inset:0;margin:auto;box-sizing:border-box;pointer-events:auto;padding:24px;width:min(540px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:auto;border-radius:22px;color:var(--ui-ink);scrollbar-width:thin}
-#social #social-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-24px -24px 22px;border-radius:22px 22px 0 0;position:sticky;top:-24px;z-index:4;backdrop-filter:blur(18px)}
+#social #social-dialog,#social #settings-dialog,#social #compose-dialog,#social #content-share-dialog{position:fixed;inset:0;margin:auto;box-sizing:border-box;pointer-events:auto;padding:24px;width:min(540px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:auto;border-radius:22px;color:var(--ui-ink);scrollbar-width:thin}
+#social #social-dialog>.ui-titlebar,#social #settings-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-24px -24px 22px;border-radius:22px 22px 0 0;position:sticky;top:-24px;z-index:4;backdrop-filter:blur(18px)}
 #social #social-dialog.public-moments-dialog{padding:0;width:min(740px,calc(100vw - 36px));max-height:calc(var(--ui-height,100dvh) - 155px);overflow:hidden;background:var(--ui-paper)}
 #social #social-dialog.public-moments-dialog>.ui-titlebar{margin:0;position:relative;top:0}
 #social .public-moments-shell{max-height:calc(var(--ui-height,100dvh) - 205px);min-height:0}
@@ -39,7 +39,7 @@
 #social .public-moments-header small{display:none}
 #social .public-moments-header h2{font-size:20px}
 #social .public-moments-header p{font-size:12px;margin-top:5px}
-#social #compose-dialog::backdrop,#social #content-share-dialog::backdrop,#photo-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
+#social #settings-dialog::backdrop,#social #compose-dialog::backdrop,#social #content-share-dialog::backdrop,#photo-dialog::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
 #social #photo-dialog{position:fixed;inset:0;margin:auto;overflow:visible;border:0;padding:0;background:transparent;outline:0}
 #social #photo-dialog>.ui-close{position:absolute;right:10px;top:10px;z-index:2;background:#fafbf5ed}
 #social #photo-dialog img{max-height:86dvh;max-width:90vw;object-fit:contain;border-radius:18px;box-shadow:var(--ui-shadow)}
@@ -68,7 +68,8 @@
 #social[data-dock=collapsed] .social-dock{transform:translateY(20px) scale(.72,.35);opacity:0;pointer-events:none;visibility:hidden;transition:transform 260ms var(--ui-ease),opacity 180ms,visibility 0s 260ms}
 #social[data-dock=collapsed] .dock-reveal{pointer-events:auto;opacity:1}
 #social .dock-reveal:focus-visible{opacity:1;pointer-events:auto}
-#social #social-toast{z-index:70;bottom:102px;pointer-events:none;background:var(--ui-paper);border:1px solid var(--ui-line);border-radius:16px;backdrop-filter:blur(16px)}
+#social #social-toast{position:fixed;inset:auto auto 102px 50%;margin:0;width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;z-index:70;pointer-events:none;background:var(--ui-paper);border:1px solid var(--ui-line);border-radius:16px;backdrop-filter:blur(16px);color:var(--ui-ink);white-space:normal;overflow-wrap:anywhere;text-align:center}
+#social #social-toast::backdrop{background:transparent;backdrop-filter:none;pointer-events:none}
 #social #chat-picker{border-radius:16px;background:#f6f8ef;transform-origin:bottom left}
 #social .unavailable{min-height:70px;background:#e5ebdc;color:#66795d}
 #discovery-dialog,#discovery-dialog[data-page=video],#discovery-dialog[data-page=videos]{position:fixed;inset:0;z-index:19;width:min(1180px,calc(100vw - 56px));height:min(820px,calc(var(--ui-height,100dvh) - 155px));max-height:calc(var(--ui-height,100dvh) - 155px);border:1px solid var(--ui-line);border-radius:22px;padding:0;background:var(--ui-paper);background-image:none;box-shadow:var(--ui-shadow);--rail:1px}
@@ -85,7 +86,7 @@
 .valley-popover>.ui-close{position:absolute;right:10px;top:10px}
 .valley-popover>.valley-eyebrow{padding-right:25px;display:block}
 .valley-return{min-height:44px;transition:background 140ms;bottom:105px}
-#pet-toggle{background:var(--ui-glass);border-color:var(--ui-line);min-height:44px;box-shadow:0 5px 22px #163b2420}
+#pet-toggle{min-height:44px}
 @media(hover:hover) and (pointer:fine){#social .dock-button:hover{transform:translateY(-4px) scale(1.06);background:#fff9}#social .dock-button:active{transform:translateY(-1px) scale(.96)}}
 @media(max-width:760px){
  #social .social-dock{bottom:max(12px,env(safe-area-inset-bottom));gap:2px;padding:6px;border-radius:22px}
@@ -98,8 +99,8 @@
  #social #moments-toggle{padding:6px;font-size:10px}
  #social .meeting-close{right:7px;top:8px}
  #social .meeting-title p{max-width:120px}
- #social #social-dialog,#social #compose-dialog,#social #content-share-dialog{width:calc(100vw - 24px);max-height:calc(var(--ui-height,100dvh) - 145px);padding:20px;border-radius:20px}
- #social #social-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-20px -20px 18px;top:-20px}
+ #social #social-dialog,#social #settings-dialog,#social #compose-dialog,#social #content-share-dialog{width:calc(100vw - 24px);max-height:calc(var(--ui-height,100dvh) - 145px);padding:20px;border-radius:20px}
+ #social #social-dialog>.ui-titlebar,#social #settings-dialog>.ui-titlebar,#social #compose-dialog>.ui-titlebar,#social #content-share-dialog>.ui-titlebar{margin:-20px -20px 18px;top:-20px}
  #social #social-dialog.public-moments-dialog{width:calc(100vw - 24px);padding:0;max-height:calc(var(--ui-height,100dvh) - 145px)}
  #social #social-dialog.public-moments-dialog>.ui-titlebar{margin:0;top:0}
  #social .public-moments-shell{max-height:calc(var(--ui-height,100dvh) - 195px)}
@@ -114,6 +115,22 @@
  #discovery-dialog .d-top-local{display:none}
  #discovery-dialog .discovery-top>.ui-close{margin-left:auto}
 }
+#sound-settings{box-sizing:border-box;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 80px);padding:24px;border:1px solid var(--ui-line);border-radius:22px;background:var(--ui-paper);color:var(--ui-ink);font:14px/1.6 var(--ui-font);box-shadow:var(--ui-shadow)}
+#sound-settings{position:fixed;inset:32px 4vw 96px auto;margin:auto 0;width:min(400px,40vw);height:max-content;max-height:calc(100dvh - 128px);overflow:auto;padding:28px;background:#f7f7eefa}
+#sound-settings::backdrop{background:#142d3220;backdrop-filter:none}
+#sound-settings[data-scene=true]::backdrop{background:linear-gradient(90deg,transparent 30%,#203a3220)}
+.sound-eyebrow{font-size:10px;letter-spacing:.22em;color:#7a896b;margin:24px 0 0}
+.sound-library h3{font-size:15px;font-weight:500;margin:24px 0 14px}.sound-track{width:100%;display:flex;align-items:center;gap:14px;text-align:left;border:1px solid #9cae89;border-radius:16px;background:#e5ebdc;padding:16px;color:#354d3a;cursor:pointer;font:inherit}.sound-track strong,.sound-track small{display:block}.sound-track small{font-size:11px;color:#73816b;margin-top:6px}.sound-track:focus-visible{outline:2px solid #52765b;outline-offset:3px}.sound-album{width:54px;height:54px;display:grid;place-items:center;flex:none;border:9px solid #293b32;border-radius:50%;background:#c4cfaa;color:#52765b;font-size:24px}.sound-selected{margin-left:auto;font-size:10px;white-space:nowrap}.sound-library-note{font-size:11px;color:#859079;margin:12px 0 24px}
+body.sound-scene-open #first-invitation{visibility:hidden}
+@media(max-width:699px){#sound-settings{inset:auto 12px 16px;width:calc(100vw - 24px);max-height:55dvh;padding:18px;margin:0}.sound-eyebrow{margin-top:12px}.sound-library h3{margin-top:12px}.sound-row{padding:12px 0}.sound-library-note{margin-bottom:12px}#sound-settings[data-scene=false]{max-height:calc(100dvh - 48px)}}
+#sound-settings[data-scene=false]{inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 48px)}
+.sound-tracks{display:grid;gap:10px}.sound-track[aria-pressed=false]{background:#f2f3e9;border-color:#d7dfcc}.sound-track[aria-pressed=true]{box-shadow:inset 3px 0 #66825f}.sound-track[data-track=spring] .sound-album{background:#ead5b1}
+#sound-settings header{display:flex;align-items:center;gap:12px;border-bottom:1px solid #dce2d5;padding-bottom:14px}#sound-settings h2{flex:1;margin:0;font-size:19px;font-weight:600}
+#sound-settings header button{width:36px;height:36px;border:0;border-radius:50%;background:#637b5910;color:#52734d;cursor:pointer;font-size:20px}
+#sound-settings .sound-intro,#sound-playback-status{color:var(--ui-muted);font-size:12px;line-height:1.8;margin:18px 0}
+.sound-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;border-bottom:1px solid #dce2d5}.sound-row strong,.sound-row small{display:block}.sound-row small{color:var(--ui-muted);font-size:11px;margin-top:5px}.sound-row input{appearance:none;width:42px;height:24px;border-radius:14px;background:#aab5a4;position:relative;flex:none;cursor:pointer;margin:0}.sound-row input:before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fffdf4;transition:transform .18s}.sound-row input:checked{background:#52765b}.sound-row input:checked:before{transform:translateX(18px)}.sound-row input:focus-visible{outline:2px solid #789e72;outline-offset:4px}
+#record-player-control{position:fixed;top:0;left:0;z-index:12;min-height:44px;padding:8px 12px;border:1px solid #fff9;border-radius:15px;background:#f5f5e7ec;color:#4c6545;font:12px var(--ui-font);cursor:pointer;box-shadow:0 4px 14px #203d3220}#record-player-control[hidden]{display:none}#record-player-control[data-playing=true]{border-color:#cbb775}
+@media(prefers-reduced-motion:reduce){.sound-row input:before{transition:none}}
 @supports not (backdrop-filter:blur(1px)){:root{--ui-glass:#eef3e5;--ui-paper:#fafbf6}}
 @media(prefers-reduced-motion:reduce){#social *,#discovery-dialog *,.valley-popover *{transition:none!important;animation:none!important}#social .dock-button:hover,#social button:active,#discovery-dialog button:active{transform:none}#social[data-dock=collapsed] .social-dock{transform:none}}
 

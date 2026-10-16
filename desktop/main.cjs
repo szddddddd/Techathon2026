@@ -14,6 +14,7 @@ let webBridge, stateSaveTimer;
 app.on('second-instance', () => app.whenReady().then(() => showDesktopPet()));
 const DEFAULT_SIZE = 200;
 const SIZE_PRESETS = { small: 160, medium: 200, large: 280 };
+const MINIMAL_SIZE_PRESETS = { small: 118, medium: 148, large: 188 };
 let mainWindow;
 let mainReady = false, pendingFriend = null;
 function validFriend(id) { return id == null || (typeof id === 'string' && latestState.friends.includes(id)); }
@@ -28,7 +29,7 @@ function saveJSON(name, value) {
 }
 let petWindow;
 let tray;
-let settings = { size: DEFAULT_SIZE, reminders: true, alwaysOnTop: true };
+let settings = { size: DEFAULT_SIZE, sizeLevel: 'medium', reminders: true, alwaysOnTop: true, petMode: 'full' };
 let petSize = DEFAULT_SIZE;
 let petSizeChangeInProgress = false;
 let latestState = { friends: [], messages: [], profile: null };
@@ -81,6 +82,11 @@ function broadcast() {
   if (tray) tray.setToolTip(unreadCount ? `林间来信 · ${unreadCount} 条未读` : '林间来信');
   updateTrayFlash();
 }
+function syncPetVisibility() {
+  tray?.setContextMenu(buildMenu());
+  if(mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('pet-visibility',!!petWindow&&!petWindow.isDestroyed()&&petWindow.isVisible());
+  webBridge?.visibilityChanged();
+}
 function showDesktopPet() {
   if (!tray) return;
   if (!petWindow || petWindow.isDestroyed()) createPetWindow();
@@ -111,13 +117,16 @@ function createMainWindow() {
   mainWindow.on('close', event => { if (!app.isQuitting) { event.preventDefault(); mainWindow.hide(); } });
 }
 function createPetWindow() {
-  petSize = Math.max(120, Math.min(480, Number(settings.size) || DEFAULT_SIZE));
+  const activePresets = settings.petMode === 'minimal' ? MINIMAL_SIZE_PRESETS : SIZE_PRESETS;
+  settings.sizeLevel = settings.sizeLevel || sizeLevelFor(settings.size);
+  settings.size = activePresets[settings.sizeLevel] || activePresets.medium;
+  petSize = Math.max(100, Math.min(480, settings.size));
   const size = petSize;
   const display = screen.getPrimaryDisplay();
   const area = display.workArea;
   petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
   secureWindow(petWindow);
-  petWindow.loadURL(webBridge.origin + '/pet.html');
+  petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(settings.petMode));
   petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating');
   petWindow.on('will-resize', event => {
     if (!petSizeChangeInProgress) event.preventDefault();
@@ -128,13 +137,35 @@ function createPetWindow() {
       if (width !== petSize || height !== petSize) petWindow.setContentSize(petSize, petSize, false);
     }
   });
-  petWindow.on('hide', () => tray?.setContextMenu(buildMenu()));
-  petWindow.on('show', () => { tray?.setContextMenu(buildMenu()); broadcast(); });
-  petWindow.on('closed', () => { petWindow = null; tray?.setContextMenu(buildMenu()); });
+  petWindow.on('hide', () => setImmediate(syncPetVisibility));
+  petWindow.on('show', () => { setImmediate(syncPetVisibility); broadcast(); });
+  petWindow.on('closed', () => { petWindow = null; syncPetVisibility(); });
   petWindow.once('ready-to-show', () => { petWindow.showInactive(); petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating'); broadcast(); });
 }
-function setPetSize(size) {
-  petSize = Math.max(120, Math.min(480, Number(size) || DEFAULT_SIZE));
+function sizeLevelFor(value) {
+  for(const [level,preset] of Object.entries(SIZE_PRESETS)) if(preset === value) return level;
+  for(const [level,preset] of Object.entries(MINIMAL_SIZE_PRESETS)) if(preset === value) return level;
+  return 'medium';
+}
+function setPetMode(mode) {
+  if(mode !== 'full' && mode !== 'minimal') return;
+  settings.petMode = mode;
+  const presets = mode === 'minimal' ? MINIMAL_SIZE_PRESETS : SIZE_PRESETS;
+  settings.size = presets[settings.sizeLevel || sizeLevelFor(settings.size)] || presets.medium;
+  persistSettings();
+  if (petWindow && !petWindow.isDestroyed()) {
+    petSizeChangeInProgress = true;
+    petWindow.setContentSize(settings.size, settings.size);
+    petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(mode));
+    setImmediate(() => { petSizeChangeInProgress = false; });
+  }
+  setPetSize(settings.size, settings.sizeLevel);
+  broadcast();
+}
+function setPetSize(size, level = sizeLevelFor(Number(size))) {
+  const presets = settings.petMode === 'minimal' ? MINIMAL_SIZE_PRESETS : SIZE_PRESETS;
+  settings.sizeLevel = ['small','medium','large'].includes(level) ? level : sizeLevelFor(Number(size));
+  petSize = Math.max(100, Math.min(480, Number(size) || presets[settings.sizeLevel] || presets.medium));
   settings.size = petSize; persistSettings();
   if (petWindow && !petWindow.isDestroyed()) {
     petSizeChangeInProgress = true;
@@ -155,7 +186,11 @@ function buildMenu() {
     { label: '打开林间来信', click: () => focusMain() },
     { label: petVisible ? '隐藏桌宠' : '显示桌宠', click: () => togglePet() },
     { type: 'separator' },
-    { label: '桌宠大小', submenu: Object.entries(SIZE_PRESETS).map(([key, value]) => ({ label: `${key === 'small' ? '小' : key === 'medium' ? '中' : '大'} ${value} × ${value}`, type: 'radio', checked: settings.size === value, click: () => setPetSize(value) })) },
+    { label: '桌宠样式', submenu: [
+      { label: '完整桌宠', type: 'radio', checked: settings.petMode !== 'minimal', click: () => setPetMode('full') },
+      { label: '极简桌宠 · 一棵树与风铃', type: 'radio', checked: settings.petMode === 'minimal', click: () => setPetMode('minimal') }
+    ] },
+    { label: '桌宠大小', submenu: Object.entries(settings.petMode === 'minimal' ? MINIMAL_SIZE_PRESETS : SIZE_PRESETS).map(([key, value]) => ({ label: `${key === 'small' ? '小' : key === 'medium' ? '中' : '大'} ${value} × ${value}`, type: 'radio', checked: settings.sizeLevel === key || (!settings.sizeLevel && settings.size === value), click: () => setPetSize(value, key) })) },
     { label: '收到消息时提醒', type: 'checkbox', checked: settings.reminders, click: item => { settings.reminders = item.checked; persistSettings(); broadcast(); } },
     { label: '始终置顶', type: 'checkbox', checked: settings.alwaysOnTop, click: item => { settings.alwaysOnTop = item.checked; persistSettings(); if (petWindow) petWindow.setAlwaysOnTop(item.checked, 'floating'); broadcast(); } },
     { type: 'separator' },

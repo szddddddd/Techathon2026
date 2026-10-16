@@ -8,7 +8,10 @@ const FRIEND_META = {
   xiaomian: { name: '小眠', emoji: '🐰', color: 0xb5c2a5, position: [-.25, .08] },
   shanshan: { name: '山山', emoji: '🐻', color: 0xaa8265, position: [.3, .08] }
 };
-const embedded = new URLSearchParams(location.search).has('embedded') && parent !== window;
+const query = new URLSearchParams(location.search);
+const minimalMode = query.get('mode') === 'minimal';
+document.documentElement.dataset.petMode = minimalMode ? 'minimal' : 'full';
+const embedded = query.has('embedded') && parent !== window;
 const parentOrigin = location.protocol === 'file:' ? '*' : location.origin;
 const sendParent = message => parent.postMessage({channel:'forest-web-pet',...message}, parentOrigin);
 let embeddedState;
@@ -79,7 +82,7 @@ function localWind(object, radius, dt, reduced) {
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const smooth = value => value * value * (3 - 2 * value);
-const slots = [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
+const slots = minimalMode ? [{x:.85,y:.12,z:.75,scale:.75}] : [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
 function setPhase(record, phase) {
   record.phase = phase; record.phaseStart = performance.now(); record.node.dataset.phase = phase;
 }
@@ -108,6 +111,31 @@ function tree(x, z, scale, tint) {
   }
 }
 function buildWoods() {
+  if(minimalMode){
+    const ground=add(new THREE.Mesh(new THREE.SphereGeometry(1,20,10),material(0x688753)),[0,-.12,0]);ground.scale.set(2.05,.15,.96);
+    tree(-.95,-.1,1.25,0x86a355);
+    // Hang in front of and below the crown, rather than inside the foliage.
+    const brass=material(0xe3be66,{metalness:.25,roughness:.5});
+    const branch=add(new THREE.CylinderGeometry(.035,.055,.82,7),material(0x685c43),[-.55,1.28,.38]);branch.rotation.z=-Math.PI/2;
+    const bellGroup=new THREE.Group();bellGroup.name='Minimal hanging wind chime';bellGroup.position.set(-.17,1.28,.55);root.add(bellGroup);
+    add(new THREE.CylinderGeometry(.018,.018,.23,6),material(0x6d5b3d),[0,-.115,0],bellGroup);
+    // Closed shell profile: rounded crown, flared lip and recessed inner wall.
+    // The mouth stays open; both wall surfaces have real thickness.
+    const bellProfile=[
+      [0,.11],[.045,.108],[.085,.092],[.12,.066],[.143,.032],
+      [.156,-.012],[.164,-.057],[.178,-.094],[.196,-.117],
+      [.209,-.123],[.213,-.136],[.205,-.147],[.189,-.148],
+      [.175,-.128],[.157,-.107],[.143,-.07],[.135,-.021],
+      [.121,.022],[.103,.054],[.075,.078],[.04,.09],[0,.09]
+    ].map(([r,y])=>new THREE.Vector2(r,y));
+    const bellShade=add(new THREE.LatheGeometry(bellProfile.reverse(),24),material(0x87ceeb,{roughness:.55,metalness:.08,flatShading:false}),[0,-.31,0],bellGroup);
+    bellShade.name='Sky blue hollow bell shade';
+    for(const [x,length] of [[-.17,.35],[0,.46],[.17,.38]])add(new THREE.CylinderGeometry(.035,.035,length,8),brass,[x,-.46-length/2,0],bellGroup);
+    add(new THREE.SphereGeometry(.055,8,6),material(0x9b7841),[0,-.64,.055],bellGroup);
+    add(new THREE.BoxGeometry(.13,.22,.025),material(0xa7c7b0,{side:THREE.DoubleSide}),[0,-.99,0],bellGroup);
+    animated.push({type:'bell',object:bellGroup,phase:1});
+    return;
+  }
   const ground = add(new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), material(0x688753)), [0, -.12, 0]); ground.scale.set(3.25, .26, 1.65);
   const soil = add(new THREE.Mesh(new THREE.SphereGeometry(1, 18, 9), material(0x647367)), [0, -.3, 0]); soil.scale.set(3.05, .35, 1.5);
   tree(-2.15, -.15, 1.7, 0x86a355);
@@ -199,7 +227,7 @@ async function loadRole(friendId, record, index) {
   } catch (_) {}
 }
 function renderNotifications(items) {
-  const visible = settings.reminders ? items.slice(0, 3) : [];
+  const visible = settings.reminders ? items.slice(0, minimalMode ? 1 : 3) : [];
   const wanted = new Set(visible.map(item => item.friendId));
   for (const [id, record] of notificationRecords) if (!wanted.has(id)) {
     if (!settings.reminders || reducedMotion.matches) clearNotice(id);
@@ -212,10 +240,13 @@ function renderNotifications(items) {
       const node = document.createElement('button'); node.type = 'button'; node.className = 'notice-role';
       node.innerHTML = `<span class="role" aria-hidden="true">${meta.emoji}</span><span class="notice"></span>`;
       node.dataset.friend = item.friendId;
+      if(!minimalMode){
       const tag = document.createElement('span'); tag.className = 'friend-tag'; tag.textContent = meta.name; node.append(tag);
       const letter = document.createElement('span'); letter.className = 'letter';
       const sender = document.createElement('strong'); sender.textContent = meta.name;
-      const summary = document.createElement('span'); summary.className = 'summary'; letter.append(sender, summary); node.append(letter); notices.append(node);
+      const summary = document.createElement('span'); summary.className = 'summary'; letter.append(sender, summary); node.append(letter);
+      }
+      notices.append(node);
       record = { node, model:null, index, position:new THREE.Vector3(slots[index].x, slots[index].y, slots[index].z), scale:slots[index].scale, messageId:null, letterUntil:0, acknowledgedAt:0 };
       notificationRecords.set(item.friendId, record); setPhase(record, 'entering'); loadRole(item.friendId, record, index);
     } else if (record.phase === 'leaving') setPhase(record, 'entering');
@@ -223,9 +254,11 @@ function renderNotifications(items) {
     record.messageId = item.id; record.text = item.text; record.index = index;
     record.node.dataset.slot = String(index);
     record.node.querySelector('.notice').textContent = meta.name;
-    record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
-    record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
-    record.node.setAttribute('aria-label', `打开${meta.name}会话：${item.text || '有一条新消息'}`);
+    if(!minimalMode){
+      record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
+      record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
+    }
+    record.node.setAttribute('aria-label', minimalMode ? `打开${meta.name}会话` : `打开${meta.name}会话：${item.text || '有一条新消息'}`);
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
@@ -280,11 +313,13 @@ function frame(now) {
   const blend = reduced ? 1 : 1 - Math.exp(-dt * 9);
   presence += ((nearby || hoveredFriend ? 1 : 0) - presence) * blend;
   const signal = !reduced && now < signalUntil ? Math.sin((1 - (signalUntil - now) / 1000) * Math.PI) : 0;
-  lantern.material.emissiveIntensity = 1 + presence * 1.8 + signal * 3;
-  lanternLight.intensity = 1.2 + presence * 2.4 + signal * 4;
-  const lampWind = localWind(lantern, .32, dt, reduced);
-  lanternGroup.rotation.z = reduced ? 0 : Math.sin(t * 1.4) * .035 + signal * .08 - lampWind.x * .17;
-  lanternGroup.rotation.x = reduced ? 0 : lampWind.y * .09;
+  if(lantern && lanternLight && lanternGroup){
+    lantern.material.emissiveIntensity = 1 + presence * 1.8 + signal * 3;
+    lanternLight.intensity = 1.2 + presence * 2.4 + signal * 4;
+    const lampWind = localWind(lantern, .32, dt, reduced);
+    lanternGroup.rotation.z = reduced ? 0 : Math.sin(t * 1.4) * .035 + signal * .08 - lampWind.x * .17;
+    lanternGroup.rotation.x = reduced ? 0 : lampWind.y * .09;
+  }
   scene.updateMatrixWorld(true);
   for (const item of animated) {
     const breeze = localWind(item.object || item.group, item.type === 'crown' ? .65 : .28, dt, reduced);
@@ -300,6 +335,10 @@ function frame(now) {
     if (item.type === 'flower') {
       item.object.rotation.z = reduced ? 0 : Math.sin(t * 1.3 + item.phase) * .035 - breeze.x * .12;
       item.object.rotation.x = reduced ? 0 : breeze.y * .08;
+    }
+    if (item.type === 'bell') {
+      item.object.rotation.z = reduced ? 0 : Math.sin(t * 1.7 + item.phase) * .08;
+      item.object.rotation.x = reduced ? 0 : Math.cos(t * 1.25 + item.phase) * .035;
     }
     if (item.type === 'butterfly') {
       const home = item.origin.clone().project(camera);
@@ -338,7 +377,7 @@ function frame(now) {
     record.position.lerp(new THREE.Vector3(slot.x,slot.y,slot.z), blend);
     record.scale += (slot.scale - record.scale) * blend;
     const position = record.position.clone();
-    const direction = record.index === 1 ? -1 : 1;
+    const direction = minimalMode || record.index === 1 ? -1 : 1;
     let turn = 0, lean = 0, squash = 0;
     if (!reduced && entering) {
       const travel = 1 - Math.pow(1 - progress,3);
@@ -380,7 +419,7 @@ function frame(now) {
     record.node.style.height = `${Math.max(12,(head.y - foot.y) * 50)}%`;
     record.node.style.setProperty('--visibility', String(visibility));
     record.node.style.zIndex = String(record.index === 0 ? 3 : 2);
-    record.node.dataset.letter = String(record === letterRecord && visibility > .9);
+    record.node.dataset.letter = String(!minimalMode && record === letterRecord && visibility > .9);
     record.node.dataset.hovered = String(hover);
     record.node.tabIndex = record.phase === 'leaving' ? -1 : 0;
   }

@@ -2,6 +2,7 @@ html,body,#pet-viewport{width:100%;height:100%;margin:0;overflow:hidden;backgrou
 #pet-viewport{position:relative;cursor:grab;user-select:none;touch-action:none;font-family:system-ui,'Microsoft YaHei',sans-serif;letter-spacing:0}
 #pet-viewport.dragging{cursor:grabbing}
 #pet-canvas{display:block;width:100%;height:100%;touch-action:none}
+html[data-pet-mode=minimal] :is(.friend-tag,.letter,.notice){display:none!important}
 #pet-notices{position:absolute;inset:0;pointer-events:none}
 .notice-role{position:absolute;width:21%;min-width:0;transform:translateX(-50%);padding:0;border:0;border-radius:6px;background:transparent;color:#304c40;font:inherit;pointer-events:auto;cursor:pointer;opacity:var(--visibility,0);-webkit-tap-highlight-color:transparent}
 .notice-role[data-phase=leaving]{pointer-events:none}
