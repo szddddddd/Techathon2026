@@ -1,3 +1,4 @@
+import {groupUnread} from './group-catalog.js';
 import * as T from 'three';
 import {GROUP_QUEUE} from './community-layout.js';
 
@@ -14,12 +15,12 @@ export function createGroupMessageBoard({scene,store,position=GROUP_QUEUE}){
  const face=new T.Mesh(new T.PlaneGeometry(2.52,2.6),new T.MeshBasicMaterial({map:texture,toneMapped:false}));face.name='Live group message surface';face.position.set(0,2.2,.09);root.add(face);
  let key='',latestId=null;
  function write(text,x,y,maxWidth,font,color){ctx.font=font;ctx.fillStyle=color;let line='';for(const c of String(text)){if(ctx.measureText(line+c).width>maxWidth){line=line.slice(0,-1)+'…';break;}line+=c;}ctx.fillText(line,x,y);}
- function update(){
-  const groups=store.state.groups.filter(g=>!g.leftAt),rows=groups.map(g=>({group:g,message:store.state.messagesByGroup[g.id]?.at(-1)})).sort((a,b)=>(b.message?.createdAt||b.group.createdAt)-(a.message?.createdAt||a.group.createdAt));
+ function update(queueIds=[]){
+  const groups=queueIds.map(id=>store.state.groups.find(g=>g.id===id&&!g.leftAt)).filter(Boolean).filter(g=>groupUnread(store.state,g.id).length),rows=groups.map(g=>({group:g,message:store.state.messagesByGroup[g.id]?.at(-1)}));
   latestId=rows[0]?.group.id||null;
   const next=JSON.stringify(rows.slice(0,3).map(r=>[r.group.name,r.message?.id]));if(next===key)return;key=next;
   ctx.fillStyle='#f4f2df';ctx.fillRect(0,0,1024,1024);ctx.strokeStyle='#b7c29b';ctx.lineWidth=8;ctx.strokeRect(28,28,968,968);
-  write('林间群聊',76,132,880,'bold 76px sans-serif','#3d6048');write('庭院来信 · 点击查看群聊',78,200,870,'32px sans-serif','#7c8d69');
+  write(rows.length?'群聊候场':'群聊',76,132,880,'bold 76px sans-serif','#3d6048');write('未读来信 · 点击查看群聊',78,200,870,'32px sans-serif','#7c8d69');
   rows.slice(0,3).forEach(({group:g,message:m},i)=>{const y=285+i*212;ctx.fillStyle='#e5e9d5';ctx.fillRect(65,y-20,894,185);write(g.name,90,y+35,840,'bold 43px sans-serif','#49644b');const sender=m?.senderId==='me'?store.state.profile.name:store.getFriend(m?.senderId)?.name||'群友';write(m?sender+'：'+(m.text||'[分享了一条消息]'):'朋友们在这里相聚',90,y+105,830,'34px sans-serif','#6d7e60');});
   if(!rows.length){write('让兴趣在森林里相聚',90,410,850,'44px sans-serif','#5d7855');write('点击立牌，创建或查看群聊',90,490,850,'34px sans-serif','#7c8d69');}
   write('点击打开 · 点击外围返回',80,954,870,'29px sans-serif','#7c8d69');texture.needsUpdate=true;

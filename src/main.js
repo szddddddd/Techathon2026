@@ -17,13 +17,17 @@ import {createSoundCamera} from './sound-camera.js';
 import {createFreeRoam} from './free-roam.js';
 import {constrainCameraPan} from './camera-pan-bounds.js';
 import {readSceneTheme,SCENE_STORAGE_KEY} from './scene-theme.js';
-import {createSceneSwitcher} from './scene-switcher.js';
+import {createSceneSwitcher,sceneIcon} from './scene-switcher.js';
 import {SCENE_REGISTRY,prepareSceneWorld} from './scene-world.js';
 import {assetCacheSnapshot} from './scene-assets.js';
 import {createTrainFollow} from './train-follow.js';
 
 const $=id=>document.getElementById(id);
-function curtain(name){const el=document.createElement('div');el.className='scene-travel';el.setAttribute('role','status');el.innerHTML='<span class="scene-travel-mark" aria-hidden="true">✿</span><strong></strong><span>正在前往新的风景</span>';el.querySelector('strong').textContent=name;document.body.append(el);return el;}
+function curtain(title,{sceneId='forest'}={}){
+ const notice=document.createElement('section');notice.className='scene-travel';notice.dataset.destination=sceneId;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');
+ notice.innerHTML=`<div class="scene-travel-content"><i aria-hidden="true">${sceneIcon(sceneId)}</i><span class="scene-travel-eyebrow">正在切换场景</span><strong></strong><span class="scene-travel-progress" aria-hidden="true"></span><span class="scene-travel-detail">风景正在准备，请稍候</span></div>`;
+ notice.querySelector('strong').textContent=title;document.body.append(notice);return notice;
+}
 async function boot(){
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'),captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0,stress=new URLSearchParams(location.search).has('stress');
  const ui=createUIInteractions();window.__uiInteractions=ui;
@@ -35,14 +39,14 @@ async function boot(){
  sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;rim.position.set(12,8,-15);fill.position.set(-12,-10,22);scene.add(hemi,sun,rim,fill);
  const ground=new T.Mesh(new T.PlaneGeometry(1000,1000),new T.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-25;ground.name='Distant ground beneath floating island';scene.add(ground);
  const store=captureIndex?null:await createSocialStore(),sound=store?createSound({store}):null;
- let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,switching=false,committing=false,switchCount=0,clockTime=0;
+ let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,switching=false,committing=false,switchCount=0,clockTime=0,sceneSwitcher;
  const groupCamera=createGroupCamera({camera,controls,reduced});window.__groupCamera=groupCamera;
  const cameraPoses=new Map();let uiState={};ui.subscribe(s=>uiState=s);
  const soundCamera=createSoundCamera({camera,controls,getRoot:()=>world.record.root,reduced});window.__sound=sound;window.__soundCamera=soundCamera;
  const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
  const mountOptions={camera,controls,renderer,ui,sound,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
  await world.mount(mountOptions);scene.add(world.root);
- function applyEnvironment(){const c=world.config;scene.background=new T.Color(c.background);scene.fog=new T.FogExp2(c.background,world.id==='fuji'?.003:innerWidth<700?.003:.0065);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.material.color.setHex(world.id==='fuji'?c.background:0x263f33);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',world.id==='fuji'?'可拖动旋转、滚轮缩放的富士樱町与蒸汽列车':'可拖动旋转、滚轮缩放的三维森林溪谷');}
+ function applyEnvironment(){const c=world.config;scene.background=world.background||new T.Color(c.background);renderer.toneMappingExposure=c.exposure??1.42;hemi.intensity=c.hemiIntensity??2.2;rim.color.setHex(c.rim??0x9acbc5);rim.intensity=c.rimIntensity??1.2;fill.color.setHex(c.fill??0x9bb6ad);fill.intensity=c.fillIntensity??.8;scene.fog=new T.FogExp2(c.background,world.id==='fuji'?.003:innerWidth<700?.003:.0065);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.visible=world.id!=='fuji';ground.material.color.setHex(world.id==='fuji'?c.background:0x263f33);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',world.id==='fuji'?'可拖动旋转、滚轮缩放的富士樱町与蒸汽列车':'可拖动旋转、滚轮缩放的三维森林溪谷');}
  const resetCamera=()=>{const c=world.config.camera,mobile=innerWidth<700;camera.position.fromArray(mobile?c.mobile:c.position);controls.target.fromArray(mobile?c.mobileTarget:c.target);controls.enabled=true;controls.update();};
  applyEnvironment();resetCamera();window.__cameraPanBounds=constrainCameraPan(controls,camera,{getBounds:()=>world.terrain.bounds});
  characters=await createCharacters({scene,camera,controls,renderer,terrain:world.terrain,generated:world.generated,obstacleCache:world.obstacleCache,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
@@ -68,15 +72,20 @@ async function boot(){
  const snapshotPose=()=>({position:camera.position.clone(),target:controls.target.clone()});
  async function switchScene(id){
   if(switching)return false;if(id===world.id)return true;if(!SCENE_REGISTRY[id])throw Error('未知场景');if(uiState.modal)throw Error('请先完成当前窗口操作。');
-  switching=true;let candidate=null,cover=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
+  switching=true;document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name||({forest:'林间来信',fuji:'富士樱町'}[id]),{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
+  async function fadeCanvas(from,to){
+   canvasMotion?.cancel();canvasMotion=renderer.domElement.animate([{opacity:from},{opacity:to}],{duration:reduced.matches?50:110,easing:'ease-in-out',fill:'forwards'});
+   await canvasMotion.finished;renderer.domElement.style.opacity=String(to);canvasMotion.cancel();canvasMotion=null;
+  }
   try{
    candidate=await prepareSceneWorld(id,{reduced});if(uiState.modal)throw Error('请先完成当前窗口操作。');if(!characters.cancelPlacement())throw Error('请等待人物安放完成。');
    if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();
    socialUI.setSceneTransition(true);await socialUI.saveSessionDraft();
-   cover=curtain(candidate.config.name);if(!reduced.matches)await cover.animate([{opacity:0},{opacity:1}],{duration:200,fill:'both'}).finished;
+   await candidate.mount(mountOptions);scene.add(candidate.root);candidate.root.visible=false;
+   if(uiState.modal)throw Error('请先完成当前窗口操作。');
+   await fadeCanvas(1,0);
    if(boards?.kind){contentUI.detachScene();boards.dismiss();old.discovery.update(performance.now()+10);}
    committing=true;characters.suspend(true);groupBuildings.suspend(true);controls.enabled=false;
-   await candidate.mount(mountOptions);scene.add(candidate.root);candidate.root.visible=false;
    cameraPoses.set(old.id,snapshotPose());const nextPose=cameraPoses.get(id);
    if(nextPose){camera.position.copy(nextPose.position);controls.target.copy(nextPose.target);}else{const c=candidate.config.camera;camera.position.fromArray(innerWidth<700?c.mobile:c.position);controls.target.fromArray(innerWidth<700?c.mobileTarget:c.target);}camera.lookAt(controls.target);camera.updateMatrixWorld(true);
    characters.setScene({scene,terrain:candidate.terrain,generated:candidate.generated,obstacleCache:candidate.obstacleCache});rebound=true;
@@ -88,7 +97,7 @@ async function boot(){
    try{localStorage.setItem(SCENE_STORAGE_KEY,id);}catch{}const url=new URL(location.href);url.searchParams.set('scene',id);history.replaceState(null,'',url.href);
    old.dispose();oldReleased=true;renderer.renderLists.dispose();switchCount++;
    committing=false;socialUI.setSceneTransition(false);
-   if(!reduced.matches)await cover.animate([{opacity:1},{opacity:0}],{duration:250,fill:'both'}).finished;cover.remove();cover=null;return true;
+   sceneSwitcher?.setCurrent(id);await fadeCanvas(0,1);return true;
   }catch(error){
    if(!oldReleased){
     if(world!==old){boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();}
@@ -96,10 +105,10 @@ async function boot(){
     candidate?.dispose();world=old;if(controllersReleased)connectSceneControllers();applyEnvironment();
     const pose=cameraPoses.get(old.id);if(pose){camera.position.copy(pose.position);controls.target.copy(pose.target);}old.activate();
    }throw error;
-  }finally{cover?.remove();committing=false;switching=false;characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
+  }finally{loading.remove();delete document.documentElement.dataset.sceneTransition;canvasMotion?.cancel();renderer.domElement.style.removeProperty('opacity');committing=false;switching=false;sceneSwitcher?.setCurrent(world.id);sceneSwitcher?.setBusy(false);characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
  }
- if(store)createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});
- window.__sceneTheme={get id(){return world.id;},ready:true,get switching(){return switching;},get audit(){return{river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
+ if(store)sceneSwitcher=createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});
+ window.__sceneTheme={get id(){return world.id;},ready:true,get switching(){return switching;},get audit(){return{environment:{exposure:renderer.toneMappingExposure,hemi:hemi.intensity,sun:sun.intensity,rim:rim.intensity,fill:fill.intensity},river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures,assetFallbacks:world.assets.fallbacks||[]};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  try{localStorage.setItem(SCENE_STORAGE_KEY,world.id);}catch{}
  window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
  let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
@@ -120,4 +129,4 @@ async function boot(){
   window.__capture={ready:true,audit:world.discovery.audit,async record(index=captureIndex,duration=12000){view(index);await new Promise(r=>setTimeout(r,1000));const poster=renderer.domElement.toDataURL('image/jpeg',.88).split(',')[1],stream=renderer.domElement.captureStream(24),mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(t=>MediaRecorder.isTypeSupported(t)),recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2200000}),chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const done=new Promise(resolve=>recorder.onstop=resolve);recorder.start(1000);await new Promise(r=>setTimeout(r,duration));recorder.stop();await done;stream.getTracks().forEach(t=>t.stop());return{video:await base64(new Blob(chunks,{type:mime})),poster,mime,duration};}};$('viewport').dataset.captureReady='true';
  }
 }
-boot().catch(error=>{console.error(error);const notice=curtain('这处风景暂时没能加载');notice.querySelector('span:last-of-type').textContent='请重试，或先返回林间来信。';for(const[label,action]of[['重新加载',()=>location.reload()],['返回林间来信',()=>{try{localStorage.setItem(SCENE_STORAGE_KEY,'forest');}catch{}const url=new URL(location.href);url.searchParams.set('scene','forest');location.assign(url.href);}]]){const b=document.createElement('button');b.textContent=label;b.onclick=action;notice.append(b);}});
+boot().catch(error=>{console.error(error);const notice=curtain('这处风景暂时没能加载');notice.dataset.failed='true';notice.querySelector('span:last-of-type').textContent='请重试，或先返回林间来信。';for(const[label,action]of[['重新加载',()=>location.reload()],['返回林间来信',()=>{try{localStorage.setItem(SCENE_STORAGE_KEY,'forest');}catch{}const url=new URL(location.href);url.searchParams.set('scene','forest');location.assign(url.href);}]]){const b=document.createElement('button');b.textContent=label;b.onclick=action;notice.append(b);}});

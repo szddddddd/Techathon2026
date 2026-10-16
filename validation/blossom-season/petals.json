@@ -1,0 +1,20 @@
+{
+  "counts": {
+    "north": 4,
+    "south": 3,
+    "backstreet": 2
+  },
+  "trees": 24,
+  "zones": {
+    "rail": 7,
+    "station": 6,
+    "lane": 5,
+    "shrine": 6
+  },
+  "stableGatheringTree": "gathering-sakura",
+  "roofEnvelopeStops": true,
+  "reducedFreeze": true,
+  "suspendFreeze": true,
+  "disabledFreeze": true,
+  "disposed": true
+}

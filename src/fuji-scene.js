@@ -1,17 +1,18 @@
+import {FUJI_VISUALS as V} from './fuji-visuals.js';
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {FUJI_OUTLINE,FUJI_BOUNDS,FUJI_AREA,inFujiWorld,FUJI_MOUNTAIN,fujiHeight,queryFujiSurface} from './fuji-profile.js';
-import {RAIL_START,RAIL_END,railOffset,railLength} from './fuji-railway.js';
+import {RAIL_START,RAIL_END,railOffset,railLength,PLATFORM_BOARDING} from './fuji-railway.js';
 import {createJapaneseBuilding} from './japanese-buildings.js';
-import {FUJI_LAYOUT as L,townPavingAt,facilitySpaceClear} from './fuji-layout.js';
+import {FUJI_LAYOUT as L,townPavingAt,townRoadField,facilitySpaceClear} from './fuji-layout.js';
 import {createSakuraPetals} from './sakura-petals.js';
 import {createFujiTrain} from './fuji-train.js';
+import {createFujiFerrisWheel} from './fuji-ferris-wheel.js';
+import {createBlossomMaterial} from './sakura-appearance.js';
 
 const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.92,flatShading:true,...extra});
-const M={grass:mat(0xa6b878),rock:mat(0x809087),darkRock:mat(0x687b79),stone:mat(0xc1baa0),path:mat(0xd1c7a9),wood:mat(0x86654d),bark:mat(0x725546),rail:mat(0x727b79,{metalness:.5}),gravel:mat(0xa1a598),red:mat(0xc35d4c),dark:mat(0x394d4c),cream:mat(0xe7d6a7),brass:mat(0xc5aa65,{metalness:.3}),window:mat(0xadc5b6),pink:[0xefbbca,0xf5ced8,0xe4a2ba,0xf7d8df].map(c=>mat(c)),leaf:[0x7a9860,0x91a66c,0x648b64].map(c=>mat(c)),light:mat(0xffe4aa,{emissive:0xffce83,emissiveIntensity:.25})};
+function createMaterials(){return{grass:mat(0xa6b878),rock:mat(V.rock),darkRock:mat(V.darkRock),stone:mat(V.stone),path:mat(V.paving),wood:mat(0x86654d),bark:mat(0x725546),rail:mat(0x727b79,{metalness:.5}),gravel:mat(0xa1a598),red:mat(0xc35d4c),dark:mat(0x394d4c),cream:mat(0xe7d6a7),brass:mat(0xc5aa65,{metalness:.3}),window:mat(0xadc5b6),pink:[0xefbbca,0xf5ced8,0xe4a2ba,0xf7d8df].map(c=>mat(c)),leaf:[0x7a9860,0x91a66c,0x648b64].map(c=>mat(c)),light:mat(0xffe4aa,{emissive:0xffce83,emissiveIntensity:.65})};}
 const mesh=(p,n,g,m,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.name=n;o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;o.userData.generatedProp=true;p.add(o);return o;};
-const box=(p,n,x,y,z,w,h,d,m=M.wood)=>mesh(p,n,new T.BoxGeometry(w,h,d),m,x,y,z);
-function branch(p,a,b,r,m=M.bark){const start=new T.Vector3(...a),end=new T.Vector3(...b),o=mesh(p,'Sculpted branch',new T.CylinderGeometry(r*.65,r,start.distanceTo(end),7),m);o.position.copy(start).add(end).multiplyScalar(.5);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),end.sub(start).normalize());return o;}
 function assetInstance(asset){if(!asset)return null;const g=asset.clone(true);g.traverse(o=>{o.userData.generatedProp=true;if(o.isMesh){o.castShadow=o.receiveShadow=true;o.userData.sharedAssetGeometry=true;o.userData.sharedAssetMaterial=true;}});return g;}
 function batchGroup(group){
   group.updateMatrixWorld(true);const inverse=new T.Matrix4().copy(group.matrixWorld).invert(),buckets=new Map();
@@ -22,8 +23,20 @@ function batchGroup(group){
   }
 }
 
+function mineralMaterial(cliff=false){
+ const material=mat(0xffffff,{vertexColors:true,...(cliff?{side:T.DoubleSide}:{})});
+ material.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vMineralPosition;').replace('#include <begin_vertex>','#include <begin_vertex>\nvMineralPosition=position;');shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vMineralPosition;').replace('#include <color_fragment>',`#include <color_fragment>
+float grain=fract(sin(dot(floor(vMineralPosition*14.0),vec3(127.1,311.7,74.7)))*43758.5453);
+float band=sin(vMineralPosition.y*4.2+sin(vMineralPosition.x*.52)+sin(vMineralPosition.z*.41));
+diffuseColor.rgb*=.975+.05*grain${cliff?'-.035*smoothstep(.86,.98,band)':''};`);};material.customProgramCacheKey=()=>cliff?'rose-rock-strata-v3':'rose-sand-v3';return material;
+}
+
 /** One authored seasonal island; all animation is driven by the application's existing frame loop. */
 export function buildFujiScene(scene,{reduced=false,assets={}}={}){
+  const M=createMaterials();
+  const box=(p,n,x,y,z,w,h,d,m=M.wood)=>mesh(p,n,new T.BoxGeometry(w,h,d),m,x,y,z);
+function branch(p,a,b,r,m=M.bark){const start=new T.Vector3(...a),end=new T.Vector3(...b),o=mesh(p,'Sculpted branch',new T.CylinderGeometry(r*.65,r,start.distanceTo(end),7),m);o.position.copy(start).add(end).multiplyScalar(.5);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),end.sub(start).normalize());return o;}
+
   const root=new T.Group();root.name='Fuji sakura railway island';scene.add(root);
   const scenery=new T.Group();scenery.name='Japanese paths and gardens';root.add(scenery);
   const obstacles=[],pickables=[],leaves=[],mountains=[],Y=2.22;
@@ -34,51 +47,57 @@ export function buildFujiScene(scene,{reduced=false,assets={}}={}){
   // One continuous top and a faceted basalt underside. The shared height function
   // supplies both rendered slopes and character placement, so no hidden river remains.
   const shape=new T.Shape(FUJI_OUTLINE.map(([x,z])=>new T.Vector2(x,-z))),source=new T.ShapeGeometry(shape),positions=[],colors=[];
-  const topColor=new T.Color(),grassColor=new T.Color(0xb3ba92),volcanicColor=new T.Color(0x8a9ca3),snowColor=new T.Color(0xf5f0e6);
+  const topColor=new T.Color(),grassColor=new T.Color(V.ground),volcanicColor=new T.Color(V.volcanic),snowColor=new T.Color(V.snow);
   function triangle(a,b,c){
     const edges=[[a,b,c],[b,c,a],[c,a,b]].sort((u,v)=>v[0].distanceToSquared(v[1])-u[0].distanceToSquared(u[1]));const[u,v,w]=edges[0];
     if(u.distanceToSquared(v)>1.3*1.3){const mid=u.clone().lerp(v,.5);triangle(u,mid,w);triangle(mid,v,w);return;}
     const center=a.clone().add(b).add(c).multiplyScalar(1/3),cx=center.x,cz=-center.y,h=assets.fuji?Y:fujiHeight(cx,cz),angle=Math.atan2(cz+24,cx-2);
     const snowLine=12.1+.7*Math.sin(angle*7)+.4*Math.sin(angle*13),variation=.94+.08*Math.sin(cx*.73+cz*.92);
-    topColor.copy(h>snowLine?snowColor:h>4.3?volcanicColor:grassColor);if(h>5&&h<snowLine)topColor.multiplyScalar(.87+.12*Math.sin(angle*15+.3));topColor.multiplyScalar(variation);
+    topColor.copy(h>snowLine?snowColor:h>4.3?volcanicColor:grassColor);if(h>5&&h<snowLine)topColor.multiplyScalar(.87+.12*Math.sin(angle*15+.3));topColor.multiplyScalar(variation);if(h<2.3)topColor.lerp(new T.Color(V.groundShade),.13+.10*Math.sin(cx*.38+cz*.22));
     for(const p of[a,b,c]){positions.push(p.x,assets.fuji?Y:fujiHeight(p.x,-p.y),-p.y);colors.push(topColor.r,topColor.g,topColor.b);}
   }
   for(let i=0;i<source.index.count;i+=3)triangle(...[0,1,2].map(k=>new T.Vector2().fromBufferAttribute(source.attributes.position,source.index.getX(i+k))));source.dispose();
-  const surface=new T.BufferGeometry();surface.setAttribute('position',new T.Float32BufferAttribute(positions,3));surface.setAttribute('color',new T.Float32BufferAttribute(colors,3));surface.computeVertexNormals();const meadow=mesh(root,'Fuji continuous meadow',surface,mat(0xffffff,{vertexColors:true}));meadow.userData.terrainSurface=true;
+  const surface=new T.BufferGeometry();surface.setAttribute('position',new T.Float32BufferAttribute(positions,3));surface.setAttribute('color',new T.Float32BufferAttribute(colors,3));surface.computeVertexNormals();const meadow=mesh(root,'Fuji continuous meadow',surface,mineralMaterial());meadow.userData.terrainSurface=true;
   // Cache every fractured ring once: adjacent strips cannot disagree at a seam.
   const coast=[];for(let i=0;i<FUJI_OUTLINE.length;i++){const a=FUJI_OUTLINE[i],b=FUJI_OUTLINE[(i+1)%FUJI_OUTLINE.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3.8);for(let j=0;j<steps;j++)coast.push([a[0]+(b[0]-a[0])*j/steps,a[1]+(b[1]-a[1])*j/steps]);}
   const rows=[{scale:1,y:Y},{scale:1,y:-.30},{scale:.92,y:-3.65},{scale:.67,y:-7.74},{scale:.18,y:-11.47}].map((row,k)=>coast.map(([x,z],i)=>{const scale=row.scale+(k===0?0:Math.sin(i*1.91+k)*.023),height=k===0?(assets.fuji?Y:fujiHeight(x,z)):row.y+Math.sin(i*1.31+k)*([0,.45,1,1.3,.7][k]);return[x*scale,height,(z+9)*scale-9];}));
-  const sidePositions=[],sideColors=[],rockColor=new T.Color();function cliffFace(a,b,c,shade){rockColor.setHex([0x8d9c8e,0x7e9188,0x718980,0x9daa92][shade%4]);for(const p of[a,b,c]){sidePositions.push(...p);sideColors.push(rockColor.r,rockColor.g,rockColor.b);}}
+  const sidePositions=[],sideColors=[],rockColor=new T.Color();function cliffFace(a,b,c,shade){rockColor.setHex(V.cliffs[shade%4]);const depth=Math.max(0,Math.min(1,-(a[1]+b[1]+c[1])/30));rockColor.lerp(new T.Color(V.cliffDepth),depth*.48);for(const p of[a,b,c]){sidePositions.push(...p);sideColors.push(rockColor.r,rockColor.g,rockColor.b);}}
   for(let k=0;k<rows.length-1;k++)for(let i=0;i<coast.length;i++){const j=(i+1)%coast.length;cliffFace(rows[k][i],rows[k+1][i],rows[k][j],i+k);cliffFace(rows[k][j],rows[k+1][i],rows[k+1][j],i+k+1);}for(let i=0;i<coast.length;i++)cliffFace(rows.at(-1)[i],[0,-12.84,-9],rows.at(-1)[(i+1)%coast.length],i);
-  const sides=new T.BufferGeometry();sides.setAttribute('position',new T.Float32BufferAttribute(sidePositions,3));sides.setAttribute('color',new T.Float32BufferAttribute(sideColors,3));sides.computeVertexNormals();const underside=mesh(root,'Sealed fractured basalt island',sides,mat(0xffffff,{vertexColors:true,side:T.DoubleSide}));underside.castShadow=false;underside.receiveShadow=false;
-  const mountain=new T.Group();mountain.name='Mount Fuji volcanic slopes';mountain.userData.kind='mountain';root.add(mountain);mountains.push(mountain);if(assets.fuji){mountain.position.set(FUJI_MOUNTAIN.x,Y,FUJI_MOUNTAIN.z);const model=assetInstance(assets.fuji);model.scale.z*=22/24.6;mountain.add(model);obstacles.push(mountain);}
+  const sides=new T.BufferGeometry();sides.setAttribute('position',new T.Float32BufferAttribute(sidePositions,3));sides.setAttribute('color',new T.Float32BufferAttribute(sideColors,3));sides.computeVertexNormals();const underside=mesh(root,'Sealed fractured basalt island',sides,mineralMaterial(true));underside.castShadow=false;underside.receiveShadow=false;
+  const mountain=new T.Group();mountain.name='Mount Fuji volcanic slopes';mountain.userData.kind='mountain';root.add(mountain);mountains.push(mountain);if(assets.fuji){mountain.position.set(FUJI_MOUNTAIN.x,Y,FUJI_MOUNTAIN.z);const model=assetInstance(assets.fuji);model.scale.z*=22/24.6;
+    // Remap the source's green foothills into cool volcanic mauve, leaving the
+    // original map and shared cached material untouched for scene re-entry.
+    const mountainMaterials=new Map();model.traverse(o=>{if(!o.isMesh)return;const adapt=source=>{if(mountainMaterials.has(source))return mountainMaterials.get(source);const m=source.clone();m.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+float lum=dot(diffuseColor.rgb,vec3(.2126,.7152,.0722));
+float snow=smoothstep(.52,.84,max(diffuseColor.r,max(diffuseColor.g,diffuseColor.b)));
+float green=clamp((diffuseColor.g-diffuseColor.b)*6.0,0.0,1.0);
+vec3 volcanic=lum*vec3(1.04,.90,1.18);
+diffuseColor.rgb=mix(diffuseColor.rgb,volcanic,(.25+.5*green)*(1.0-snow));`);};m.customProgramCacheKey=()=> 'fuji-dusk-volcanic-v3';mountainMaterials.set(source,m);return m;};o.material=Array.isArray(o.material)?o.material.map(adapt):adapt(o.material);o.userData.sharedAssetMaterial=false;});mountain.add(model);obstacles.push(mountain);}
   // Snow lip makes the short crater rim legible without turning the broad cone into a spike.
   const summit=fujiHeight(FUJI_MOUNTAIN.x,FUJI_MOUNTAIN.z);const rim=mesh(scenery,'Fuji snow crater lip',new T.TorusGeometry(.76,.14,5,18),mat(0xf4efe7),FUJI_MOUNTAIN.x,summit+.04,FUJI_MOUNTAIN.z);rim.rotation.x=Math.PI/2;rim.scale.z=.48;rim.visible=!assets.fuji;
 
   // A single clipped union makes crossings and forecourts seamless.
-  const townPaths=[...L.paths,...L.slots.map(p=>({kind:'gravel',width:1.6,points:[[p.x+1.7*Math.sin(p.rotation),p.z+1.7*Math.cos(p.rotation)],[p.entry.x,p.entry.z]]}))];
-  function pathDistance(x,z,path){let best=Infinity;for(let i=1;i<path.points.length;i++){const a=path.points[i-1],b=path.points[i],dx=b[0]-a[0],dz=b[1]-a[1],d=dx*dx+dz*dz,t=d?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/d)):0;best=Math.min(best,Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz));}return best-path.width/2;}
-  function roadField(x,z){let d=Math.min(...townPaths.map(p=>pathDistance(x,z,p)));for(const p of L.parking){const c=Math.cos(p.rotation),s=Math.sin(p.rotation),dx=x-p.x,dz=z-p.z;d=Math.min(d,Math.max(Math.abs(dx*c-dz*s)-p.width/2,Math.abs(dx*s+dz*c)-p.depth/2));}for(const p of L.plazas)if(p.id!=='sakura-plaza')d=Math.min(d,(Math.hypot((x-p.x)/p.rx,(z-p.z)/p.rz)-1)*Math.min(p.rx,p.rz));return d;}
+  const roadField=townRoadField;
   const pavingMat=mat(0xffffff,{vertexColors:true});pavingMat.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vFujiPaving;').replace('#include <project_vertex>','#include <project_vertex>\nvFujiPaving=(modelMatrix*vec4(transformed,1.0)).xz;');shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vFujiPaving;').replace('#include <color_fragment>','#include <color_fragment>\nvec2 tile=vec2(vFujiPaving.x*.95+mod(floor(vFujiPaving.y*1.8),2.0)*.5,vFujiPaving.y*1.8);vec2 edge=min(fract(tile),1.0-fract(tile));float seam=1.0-smoothstep(.012,.042,min(edge.x,edge.y));diffuseColor.rgb*=1.0-seam*.10*step(.50,vColor.r);');};pavingMat.customProgramCacheKey=()=> 'fuji-stone-streets';
-  function pave(extra,height,material){const vertices=[],tints=[],color=new T.Color(),step=.36;for(let x=-26;x<28;x+=step)for(let z=-17;z<10;z+=step)for(const corners of[[[x,z],[x+step,z],[x,z+step]],[[x+step,z],[x+step,z+step],[x,z+step]]]){const polygon=corners.map(([x,z])=>({x,z,d:roadField(x,z)-extra})),clipped=[];for(let i=0;i<3;i++){const a=polygon[i],b=polygon[(i+1)%3],ain=a.d<=0,bin=b.d<=0;if(ain)clipped.push(a);if(ain!==bin){const t=a.d/(a.d-b.d);clipped.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t});}}for(let i=1;i+1<clipped.length;i++){const tri=[clipped[0],clipped[i+1],clipped[i]],cx=tri.reduce((v,p)=>v+p.x,0)/3,cz=tri.reduce((v,p)=>v+p.z,0)/3,stone=townPaths.some(p=>p.kind!=='asphalt'&&pathDistance(cx,cz,p)<0);color.setHex(stone?0xcac4b6:0x94978f).multiplyScalar(.98+.03*Math.sin(cx*7+cz*5));for(const p of tri){vertices.push(p.x,height,p.z);tints.push(color.r,color.g,color.b);}}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));if(material===pavingMat)g.setAttribute('color',new T.Float32BufferAttribute(tints,3));g.computeVertexNormals();mesh(root,extra?'Fuji road edging':'Fuji continuous stone streets',g,material).castShadow=false;}
+  function pave(extra,height,material){const vertices=[],tints=[],color=new T.Color(),step=.36;for(let x=-26;x<28;x+=step)for(let z=-17;z<10;z+=step)for(const corners of[[[x,z],[x+step,z],[x,z+step]],[[x+step,z],[x+step,z+step],[x,z+step]]]){const polygon=corners.map(([x,z])=>({x,z,d:roadField(x,z)-extra})),clipped=[];for(let i=0;i<3;i++){const a=polygon[i],b=polygon[(i+1)%3],ain=a.d<=0,bin=b.d<=0;if(ain)clipped.push(a);if(ain!==bin){const t=a.d/(a.d-b.d);clipped.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t});}}for(let i=1;i+1<clipped.length;i++){const tri=[clipped[0],clipped[i+1],clipped[i]],cx=tri.reduce((v,p)=>v+p.x,0)/3,cz=tri.reduce((v,p)=>v+p.z,0)/3;color.setHex(V.asphalt).multiplyScalar(.98+.03*Math.sin(cx*7+cz*5));for(const p of tri){vertices.push(p.x,height,p.z);tints.push(color.r,color.g,color.b);}}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));if(material===pavingMat)g.setAttribute('color',new T.Float32BufferAttribute(tints,3));g.computeVertexNormals();mesh(root,extra?'Fuji road edging':'Fuji continuous stone streets',g,material).castShadow=false;}
   pave(.25,Y+.012,M.stone);pave(0,Y+.034,pavingMat);
   const gardenPlaza=L.plazas.find(p=>p.id==='sakura-plaza'),plaza=mesh(scenery,'Sakura gathering plaza',new T.CylinderGeometry(gardenPlaza.rx,gardenPlaza.rx,.07,48),M.path,gardenPlaza.x,Y+.025,gardenPlaza.z);plaza.castShadow=false;
   for(let j=0;j<48;j++){const a=j/48*Math.PI*2;box(scenery,'Plaza stone edging',gardenPlaza.x+Math.cos(a)*gardenPlaza.rx,Y+.08,gardenPlaza.z+Math.sin(a)*gardenPlaza.rz,.42,.12,.25,M.stone).rotation.y=-a;}
 
   const treeMaterials=new Map();
-  function sakura(x,z,height=4.8,variant=0,{interactive=false,id=String(variant)}={}){
-    const g=new T.Group();g.name=interactive?'Letter tree lamp':'Sakura blossom tree '+variant;g.position.set(x,fujiHeight(x,z),z);root.add(g);const scale=height/4.7,asset=assets[variant%2?'sakura_b':'sakura_a'];
-    if(asset){const model=assetInstance(asset);model.scale.multiplyScalar(scale);const tone=[...id].reduce((n,c)=>n+c.charCodeAt(0),0)%3;model.traverse(o=>{if(!o.isMesh)return;const tinted=m=>{const key=m.uuid+':'+tone;if(!treeMaterials.has(key)){const copy=m.clone();copy.color.multiply(new T.Color([0xffcfe3,0xffbfd8,0xffdbe9][tone]));treeMaterials.set(key,copy);}return treeMaterials.get(key);};o.material=Array.isArray(o.material)?o.material.map(tinted):tinted(o.material);o.userData.sharedAssetMaterial=false;});g.add(model);}else{
+  function sakura(x,z,height=4.8,variant=0,{interactive=false,id=String(variant),crownClearance=Infinity,tone=0,sizeScale=1}={}){
+    const g=new T.Group();g.name=interactive?'Letter tree lamp':'Sakura blossom tree '+variant;g.position.set(x,fujiHeight(x,z),z);g.scale.setScalar(sizeScale);g.userData.blossomTone=tone;g.userData.sizeScale=sizeScale;root.add(g);const scale=height/4.7,asset=assets[Object.keys(V.treeAssets)[variant%Object.keys(V.treeAssets).length]];
+    if(asset){const model=assetInstance(asset);const radius=asset.userData.treeRadius||2.1,fit=Math.min(scale,crownClearance/radius),vertical=asset.userData.treeAsset?.startsWith('sakura-reference-')?Math.min(scale,fit*1.3):scale;model.scale.x*=fit;model.scale.z*=fit;model.scale.y*=vertical;g.userData.treeAsset=asset.userData.treeAsset;g.userData.crownRadius=radius*fit*sizeScale;g.userData.treeHeight=4.7*vertical*sizeScale;const bounds=new T.Box3().setFromObject(asset);g.userData.localCrownFootprint=[[bounds.min.x,bounds.min.z],[bounds.max.x,bounds.min.z],[bounds.max.x,bounds.max.z],[bounds.min.x,bounds.max.z]].map(([x,z])=>({x:x*fit,z:z*fit}));model.traverse(o=>{if(!o.isMesh)return;const tinted=m=>{const key=m.uuid+':'+tone;if(!treeMaterials.has(key)){const copy=createBlossomMaterial(m,o.geometry,tone,V.trees);treeMaterials.set(key,copy);}return treeMaterials.get(key);};o.material=Array.isArray(o.material)?o.material.map(tinted):tinted(o.material);o.userData.sharedAssetMaterial=false;});g.add(model);}else{
       branch(g,[0,0,0],[-.12,2.7*scale,0],.21*scale);branch(g,[-.1,1.5*scale,0],[-1.05*scale,3.3*scale,.1*scale],.14*scale);branch(g,[-.08,2.1*scale,0],[1.05*scale,3.45*scale,.28*scale],.12*scale);branch(g,[-.1,2.4*scale,0],[0,3.8*scale,-.75*scale],.13*scale);
       [[-1.12,3.3,.16,1.15],[.93,3.48,.35,1.13],[-.15,3.95,-.62,1.2],[.14,3.6,.9,1.12],[-.65,4,.15,1.04],[.92,4,-.4,.88],[-1.05,3.75,-.7,.84]].forEach(([xx,yy,zz,r],i)=>{const o=mesh(g,'Sakura blossom cloud',new T.IcosahedronGeometry(r*scale,1),M.pink[(i+variant)%4],xx*scale,yy*scale,zz*scale);o.scale.set(1,.72,1);o.rotation.y=i*.8;});batchGroup(g);
     }
     // Lightweight trunk collider avoids copying high-poly blossom triangles 24 times.
-    const trunk=obstacle('Sakura trunk '+id,'tree');trunk.position.copy(g.position);const collider=mesh(trunk,'Cherry trunk placement',new T.CylinderGeometry(.22,.26,2.6,7),M.bark,0,1.3,0);collider.visible=false;collider.userData.collisionProxy=true;
+    const trunk=obstacle('Sakura trunk '+id,'tree');trunk.position.copy(g.position);trunk.scale.setScalar(sizeScale);const collider=mesh(trunk,'Cherry trunk placement',new T.CylinderGeometry(.22,.26,2.6,7),M.bark,0,1.3,0);collider.visible=false;collider.userData.collisionProxy=true;
     if(interactive){g.userData.landmark='plaza';pickables.push(g);for(let i=0;i<4;i++){const light=M.light.clone(),o=mesh(g,'Letter blossom light',new T.SphereGeometry(.095,7,5),light,Math.cos(i*1.6)*.75,2.9+i*.15,Math.sin(i*1.6)*.75);leaves.push(o);}}
     return g;
   }
   for(const path of L.paths.filter(p=>p.kind==='asphalt'))for(let i=1;i<path.points.length;i++){const a=path.points[i-1],b=path.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),nx=-(b[1]-a[1])/length,nz=(b[0]-a[0])/length;for(let t=1;t<length;t+=3){const x=a[0]+(b[0]-a[0])*t/length+nx*(path.width/2+.1),z=a[1]+(b[1]-a[1])*t/length+nz*(path.width/2+.1),grate=box(scenery,'Inset street drain',x,Y+.04,z,.55,.025,.16,M.dark);grate.rotation.y=-Math.atan2(b[1]-a[1],b[0]-a[0]);}}
-  const trees=L.trees,treeInstances=trees.map((p,i)=>{const g=sakura(p.x,p.z,p.height,p.variant??i,{interactive:p.id===L.gatheringTreeId,id:p.id});g.rotation.y=p.rotation||0;g.scale.x=g.scale.z=p.crownScale??1;g.userData.treeId=p.id;return g;}),lamp=treeInstances.find(g=>g.userData.treeId===L.gatheringTreeId);
+  const trees=L.trees,treeInstances=trees.map((p,i)=>{const g=sakura(p.x,p.z,p.height,p.variant??i,{interactive:p.id===L.gatheringTreeId,id:p.id,crownClearance:p.crownClearance,tone:p.blossomTone,sizeScale:p.sizeScale??1});g.rotation.y=p.rotation||0;if(!assets[Object.keys(V.treeAssets)[p.variant%Object.keys(V.treeAssets).length]])g.scale.x=g.scale.z=p.crownScale??1;g.userData.treeId=p.id;g.updateWorldMatrix(true,true);g.userData.crownFootprint=g.userData.localCrownFootprint?.map(p=>{const v=g.localToWorld(new T.Vector3(p.x,0,p.z));return{x:v.x,z:v.z};});return g;}),lamp=treeInstances.find(g=>g.userData.treeId===L.gatheringTreeId);
   for(const p of L.gardens){box(scenery,'Garden stone edge',p.x,Y+.07,p.z,p.width,.14,p.depth,M.stone);box(scenery,'Soft moss flower bed',p.x,Y+.14,p.z,p.width-.14,.12,p.depth-.14,M.leaf[1]);for(let i=0;i<Math.max(8,Math.ceil(p.width*p.depth*5));i++){const x=p.x+(rnd()-.5)*(p.width-.25),z=p.z+(rnd()-.5)*(p.depth-.19),h=.14+rnd()*.14;branch(scenery,[x,Y+.2,z],[x,Y+.2+h,z],.012,M.leaf[0]);mesh(scenery,'Street garden flower',new T.IcosahedronGeometry(.07+rnd()*.04,0),i%3?M.cream:M.pink[1],x,Y+.23+h,z).scale.y=.6;}}
   for(const p of L.planters){box(scenery,'Street flower box',p.x,Y+.22,p.z,p.width,.44,p.depth,M.wood);for(let i=0;i<4;i++)mesh(scenery,'Flower box shrub',new T.IcosahedronGeometry(.2,0),M.leaf[i%3],p.x+(i%2-.5)*.25,Y+.51,p.z+(Math.floor(i/2)-.5)*.25);}
 
@@ -113,6 +132,55 @@ export function buildFujiScene(scene,{reduced=false,assets={}}={}){
   const platform=new T.Group();platform.name='Long north-side station platform';platform.position.set(L.platform.x,Y,L.platform.z);platform.rotation.y=L.platform.rotation;scenery.add(platform);
   box(platform,'Twelve unit platform',0,.18,0,12,.36,1.5,M.stone);box(platform,'Platform tactile edge',0,.37,.61,11.8,.025,.17,M.cream);
   for(let i=0;i<24;i++)box(platform,'Platform paving joint',-5.75+i*.5,.366,0,.018,.012,1.1,M.path);
+  // Keep furniture on the back edge so the length of the platform stays clear.
+  for(const x of[-4.9,4.9]){
+    box(platform,'Waiting bench seat',x,.83,-.45,1.25,.10,.35,M.wood);
+    box(platform,'Waiting bench back',x,1.12,-.61,1.25,.43,.07,M.wood);
+    for(const dx of[-.45,.45])box(platform,'Bench iron foot',x+dx,.59,-.45,.07,.46,.30,M.dark);
+    box(platform,'Platform lamp mast',x,1.65,-.69,.065,2.58,.065,M.dark);
+    box(platform,'Warm platform lamp',x,2.93,-.43,.48,.09,.46,M.light);
+    box(platform,'Platform lamp shade',x,3.00,-.43,.55,.065,.51,M.dark);
+  }
+  // Actual curve coordinates match the fence gaps even where the track bends.
+  for(const entry of PLATFORM_BOARDING){
+    const p=railOffset(entry.d,-1.65),g=new T.Group();g.name='Coach '+entry.coach+' boarding zone';g.position.set(p.x,Y,p.z);g.rotation.y=p.rotation;scenery.add(g);
+    for(const side of[-1,1]){
+      box(g,'Boarding queue side line',side*.48,.382,-.02,.035,.018,.86,M.cream);
+      box(g,'Boarding threshold end',side*.62,.39,.62,.10,.035,.2,M.brass);
+    }
+    box(g,'Boarding waiting line',0,.382,-.43,.98,.018,.045,M.cream);
+    for(let i=0;i<entry.coach;i++)box(g,'Coach number pavement mark',(i-(entry.coach-1)/2)*.14,.384,-.15,.06,.018,.22,M.cream);
+  }
+  function platformSign(text,subtitle,x,y,z,width,height){
+    box(platform,'Station sign frame',x,y,z,width+.10,height+.10,.09,M.dark);
+    box(platform,'Station sign backing',x,y,z+.051,width,height,.025,M.cream);
+    if(typeof document==='undefined')return;
+    const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#eee4cc';ctx.fillRect(0,0,768,256);
+    ctx.fillStyle='#415c51';ctx.fillRect(0,194,768,13);ctx.textAlign='center';
+    ctx.font='600 74px "Microsoft YaHei", sans-serif';ctx.fillText(text,384,105);
+    ctx.font='32px "Microsoft YaHei", sans-serif';ctx.fillText(subtitle,384,165);
+    const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;
+    const panel=mesh(platform,'Readable station information',new T.PlaneGeometry(width,height),new T.MeshStandardMaterial({map:texture,roughness:1}),x,y,z+.07);
+    panel.userData.keepDynamic=true;panel.castShadow=false;
+  }
+  for(const x of[-.72,.72])box(platform,'Nameboard post',x,1.12,-.67,.055,1.52,.055,M.dark);
+  platformSign('富士樱町','FUJI SAKURAMACHI',0,1.72,-.67,2.0,.66);
+  box(platform,'Timetable stand',3.7,1.0,-.65,.07,1.3,.07,M.dark);
+  platformSign('1 站台','蒸汽列车 · 候车',3.7,1.62,-.65,1.0,.52);
+  // A small station clock and flowers add detail without covering the exits.
+  const clock=mesh(platform,'Station clock',new T.CylinderGeometry(.24,.24,.07,24),M.cream,-3.7,2.2,-.62);clock.rotation.x=Math.PI/2;
+  box(platform,'Clock post',-3.7,1.28,-.69,.06,1.85,.06,M.dark);
+  box(platform,'Clock hour hand',-3.66,2.23,-.575,.12,.025,.014,M.dark).rotation.z=.55;
+  box(platform,'Clock minute hand',-3.7,2.28,-.57,.022,.17,.014,M.dark);
+  for(const x of[-5.78,5.78]){
+    box(platform,'Platform flower box',x,.55,-.42,.35,.36,.4,M.wood);
+    for(let i=0;i<5;i++){
+      const dx=Math.sin(i*2.4)*.12,dz=Math.cos(i*2.4)*.12;
+      box(platform,'Flower stem',x+dx,.80,-.42+dz,.022,.23,.022,M.leaf[0]);
+      mesh(platform,'Platform small blossoms',new T.IcosahedronGeometry(.075,0),M.pink[i%4],x+dx,.93,-.42+dz);
+    }
+  }
   if(assets.station)station.add(assetInstance(assets.station));else{
     box(station,'Station stone platform',0,.16,0,7.8,.32,2.2,M.stone);box(station,'Station ticket booth',-2.25,1.1,-.2,1.75,1.85,1.25,M.cream);box(station,'Station ticket window',-2.25,1.24,.45,1.1,.7,.05,M.window);for(const x of[-3.4,-.4,3.4])box(station,'Station timber post',x,1.4,-.55,.13,2.6,.13,M.wood);box(station,'Station canopy',0,2.7,-.1,7.8,.17,2.2,M.dark).rotation.x=.1;box(station,'Station cream nameboard',.7,2.12,.7,2,.4,.08,M.cream);for(let i=0;i<5;i++)box(station,'Station lettering',.13+i*.28,2.12,.75,.12,.16,.015,M.red);batchGroup(station);
   }
@@ -122,8 +190,9 @@ export function buildFujiScene(scene,{reduced=false,assets={}}={}){
   for(const p of L.cars){const g=new T.Group();g.position.set(p.x,Y,p.z);g.rotation.y=p.rotation;scenery.add(g);const paint=mat(p.color);box(g,'Tiny Japanese car',0,.48,0,.9,.48,1.64,paint);box(g,'Car cabin',0,.85,-.12,.78,.42,.88,paint);box(g,'Car windshield',0,.86,.335,.66,.27,.025,M.window);box(g,'Car rear glass',0,.86,-.57,.65,.25,.025,M.window);for(const x of[-.46,.46]){box(g,'Car side glass',x,.86,-.12,.025,.25,.66,M.window);for(const z of[-.58,.58])mesh(g,'Small rubber wheel',new T.CylinderGeometry(.2,.2,.11,10),M.dark,x,.23,z).rotation.z=Math.PI/2;}for(const x of[-.28,.28])box(g,'Car headlight',x,.5,.83,.2,.12,.035,M.light);}
   box(scenery,'More groups sign post',L.queue.x,Y+.65,L.queue.z,.13,1.3,.13,M.wood);box(scenery,'More groups sign',L.queue.x,Y+1.3,L.queue.z,1.15,.53,.14,M.cream);for(let i=0;i<3;i++)mesh(scenery,'More groups dot',new T.SphereGeometry(.045,6,4),M.wood,L.queue.x+(i-1)*.19,Y+1.3,L.queue.z+.09);
   batchGroup(scenery);const petals=createSakuraPetals(root,{trees:treeInstances,layout:L,reduced,assets,groundHeight:fujiHeight,paving:townPavingAt,isInside:inFujiWorld});const train=createFujiTrain(root,{reduced,assets});root.userData.landArea={total:FUJI_AREA,west:FUJI_AREA/2,east:FUJI_AREA/2,ratio:1};
+  const ferrisWheel=createFujiFerrisWheel(root,L.ferrisWheel,{reduced});
   const landmarks={root,lamp,pickables,leaves,obstacles,updateUnread(ids){leaves.forEach((leaf,i)=>{leaf.material.emissiveIntensity=ids.size&&i%2===0?.18:.03;});}};
-  const audit={theme:'fuji',islandArea:FUJI_AREA,river:false,terrace:false,independentLayout:true,sakuraTrees:trees.length,gardens:L.gardens.length,staticJapaneseBuildings:L.shops.length+1,railLength,trainCarriages:2,obstacleGroups:obstacles.length,adoptedAssets:Object.keys(assets).filter(k=>assets[k])};
+  const audit={visualTheme:V.id,theme:'fuji',islandArea:FUJI_AREA,river:false,terrace:false,independentLayout:true,sakuraTrees:trees.length,trees:treeInstances.map(t=>({id:t.userData.treeId,asset:t.userData.treeAsset,height:t.userData.treeHeight,radius:t.userData.crownRadius,footprint:t.userData.crownFootprint,sizeScale:t.userData.sizeScale,tone:t.userData.blossomTone,x:t.position.x,z:t.position.z})),gardens:L.gardens.length,staticJapaneseBuildings:L.shops.length+1,railLength,trainCarriages:2,obstacleGroups:obstacles.length,adoptedAssets:Object.keys(assets).filter(k=>assets[k])};
   let disposed=false;
-  return{theme:'fuji',root,layout:L,train,petals,facilitySpaceClear,river:{update(){}},sample:queryFujiSurface,canWalkStep:(from,to,radius)=>train.crossing.canStep(from,to,radius),setResidents:people=>train.crossing.setResidents(people),walkways:[],bounds:FUJI_BOUNDS,mountains,landmarkObstacles:obstacles,landmarks,update:(time,dt)=>{train.update(time,dt);petals.update(dt);},suspend:()=>petals.suspend(),activate:()=>petals.activate(),audit,snapshot:()=>({...audit,...train.snapshot(),petals:petals.snapshot()}),dispose(){if(disposed)return;disposed=true;petals.dispose();train.dispose();root.removeFromParent();}};
+  return{theme:'fuji',root,layout:L,train,petals,ferrisWheel,facilitySpaceClear,river:{update(){}},sample:queryFujiSurface,canWalkStep:(from,to,radius)=>train.crossing.canStep(from,to,radius),setResidents:people=>train.crossing.setResidents(people),walkways:[],bounds:FUJI_BOUNDS,mountains,landmarkObstacles:obstacles,landmarks,update:(time,dt)=>{train.update(time,dt);petals.update(dt);ferrisWheel.update(dt);},suspend:()=>{petals.suspend();ferrisWheel.suspend();},activate:()=>{petals.activate();ferrisWheel.activate();},audit,snapshot:()=>({...audit,...train.snapshot(),petals:petals.snapshot(),ferrisWheel:ferrisWheel.snapshot()}),dispose(){if(disposed)return;disposed=true;petals.dispose();train.dispose();ferrisWheel.dispose();root.removeFromParent();}};
 }

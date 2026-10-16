@@ -1,3 +1,4 @@
+import {FUJI_VISUALS} from './fuji-visuals.js';
 import {freezeStaticTransforms} from './static-transforms.js';
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
@@ -16,7 +17,7 @@ import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-a
 
 export const SCENE_REGISTRY={
  forest:{id:'forest',name:'林间来信',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[40,36,66],target:[0,0,-5],mobile:[60,106,152],mobileTarget:[0,0,-7]}},
- fuji:{id:'fuji',name:'富士樱町',background:0xe6d0dd,hemi:0xffe4f0,ground:0x8b8777,sun:0xffeee9,sunIntensity:3,layout:FUJI_LAYOUT,camera:{position:[33,33,64],target:[0,2,-5],mobile:[24,100,172],mobileTarget:[0,4,-7]}},
+ fuji:{id:'fuji',name:'富士樱町',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[33,33,64],target:[0,2,-5],mobile:[24,100,172],mobileTarget:[0,4,-7]}},
 };
 function batchForest(root,architecture,nature){
  const animated=new Set(architecture.flames||[]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));
@@ -35,7 +36,9 @@ function gatedUI(ui){let enabled=false,last={},callbacks=new Set();const off=ui.
 export async function prepareSceneWorld(id,{reduced}={}){
  const config=SCENE_REGISTRY[id];if(!config)throw Error('未知场景');
  const assets=await prepareSceneAssets(id),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
- const obstacleCache=new WeakMap();let frozenTransforms=0;
+ const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
+ if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
+
  let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies;
  try{
   if(id==='fuji'){terrain=buildFujiScene(root,{reduced,assets:assets.models});landmarks=terrain.landmarks;}
@@ -46,9 +49,9 @@ export async function prepareSceneWorld(id,{reduced}={}){
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(42*3),3));flies=new T.Points(g,new T.PointsMaterial({color:0xe6f5a3,size:.075,transparent:true,opacity:.75,depthWrite:false}));flies.name='Floating firefly lights';flies.frustumCulled=false;root.add(flies);
   }
   terrain.theme=id;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
- }catch(error){disposeSceneResources(sceneResources(root));throw error;}
+ }catch(error){background?.dispose();disposeSceneResources(sceneResources(root));throw error;}
  return{
-  id,config,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
+  id,config,background,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
   get discovery(){return discovery;},get record(){return record;},
   async mount({camera,controls,renderer,ui,sound,onDiscovery,onRecord}){
    gate=gatedUI(ui);
@@ -62,7 +65,7 @@ export async function prepareSceneWorld(id,{reduced}={}){
   },
   activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
   suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(id==='forest')batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[terrain.river?.root,terrain.train?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
+  finishBatch(){if(id==='forest')batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[terrain.river?.root,terrain.train?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
   update(now,dt,time){
    if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}
@@ -70,6 +73,6 @@ export async function prepareSceneWorld(id,{reduced}={}){
    for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(time*1.3+b.phase)*.25;b.group.position.x+=Math.sin(time*.5+b.phase)*.35;b.wings.forEach((w,i)=>w.rotation.y=(i?1:-1)*Math.sin(time*9+b.phase)*.85);}
    if(flies){const p=flies.geometry.attributes.position;for(let i=0;i<42;i++){const a=i*2.399,r=3+i%9*.8;p.setXYZ(i,Math.cos(a)*r+Math.sin(time*.4+i)*.3,2.6+i%5*.45+Math.sin(time*.6+i)*.25,Math.sin(a)*r+Math.cos(time*.3+i)*.2);}p.needsUpdate=true;}
   },
-  dispose(){if(disposed)return;disposed=true;active=false;const resources=new Set([...unbatched||[],...sceneResources(root)]);discovery?.dispose();record?.dispose();gate?.dispose();terrain.dispose?.();root.removeFromParent();disposeSceneResources(resources);},
+  dispose(){if(disposed)return;disposed=true;active=false;background?.dispose();const resources=new Set([...unbatched||[],...sceneResources(root)]);discovery?.dispose();record?.dispose();gate?.dispose();terrain.dispose?.();root.removeFromParent();disposeSceneResources(resources);},
  };
 }

@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {FUJI_CARRIAGE,FUJI_RAIL,railCurve,railLength,sampleRail,railTangent,RAIL_START,RAIL_END,STATION,CROSSING,railOffset} from './fuji-railway.js';
+import {FUJI_CARRIAGE,FUJI_RAIL,railCurve,railLength,sampleRail,railTangent,RAIL_START,RAIL_END,STATION,CROSSING,railOffset,RAIL_FENCE,railwayFenceSections} from './fuji-railway.js';
 import {createCrossingController} from './fuji-crossing.js';
 import {FUJI_LAYOUT} from './fuji-layout.js';
 
@@ -23,6 +23,16 @@ export function createFujiTrain(parent,{reduced=false,assets={}}={}){
   for(let d=start;d<=end;d+=.58){const p=sample(d),t=tangent(d),s=box(track,'Railway oak sleeper',p.x,2.35,p.z,.16,.12,1.48,M.wood);s.rotation.y=-Math.atan2(t.z,t.x);}
   if(assets.track){
     for(let d=start+1.74;d<end-1.74;d+=3.48){if(Math.abs(d-CROSSING.d)<3.5)continue;const g=cloneAsset(assets.track),p=railOffset(d,0);g.position.set(p.x,2.23,p.z);g.rotation.y=p.rotation;track.add(g);}
+  }
+  const fenceSections=railwayFenceSections(),fencePanel=material(0x9a8395),fenceFrame=material(0x695967);
+  const fences=new T.Group();fences.name='Continuous track-side safety partitions';track.add(fences);
+  for(const section of fenceSections){
+    for(const p of section.points){const post=box(fences,'Railway partition post',p.x,p.base+p.height/2,p.z,.14,p.height,.14,fenceFrame);post.rotation.y=p.rotation;}
+    for(let i=1;i<section.points.length;i++){
+      const a=section.points[i-1],b=section.points[i],length=Math.hypot(b.x-a.x,b.z-a.z),base=(a.base+b.base)/2,height=Math.min(a.height,b.height),x=(a.x+b.x)/2,z=(a.z+b.z)/2,rotation=-Math.atan2(b.z-a.z,b.x-a.x);
+      const panel=box(fences,'Solid railway partition',x,base+height*.38,z,length,.54*height,.09,fencePanel);panel.rotation.y=rotation;
+      for(const h of[.70,.96]){const rail=box(fences,'Partition timber rail',x,base+height*h,z,length+.03,.065,.11,fenceFrame);rail.rotation.y=rotation;}
+    }
   }
   batch(track);
   const gateRoot=new T.Group();gateRoot.name='Automatic street level crossing';root.add(gateRoot);const cp=railOffset(CROSSING.d,0);gateRoot.position.set(cp.x,2.22,cp.z);gateRoot.rotation.y=cp.rotation;
@@ -108,7 +118,7 @@ export function createFujiTrain(parent,{reduced=false,assets={}}={}){
   update(0,0);
   const target=()=>vehicles[0].position.clone().add(new T.Vector3(0,1.05,0));
   return{root,pickables,containsVisiblePoint:p=>p.clone().sub(portalA).dot(ta)>=0&&p.clone().sub(portalB).dot(tb)<=0,followTarget:target,getTarget:target,stationTarget:new T.Vector3(FUJI_LAYOUT.station.x,3.7,FUJI_LAYOUT.station.z),update,curve,crossing,
-    snapshot:()=>({trainX:vehicles[0].position.x,trainZ:vehicles[0].position.z,animationTime:elapsed,distance,stopped,holding,crossing:crossing.snapshot(),steamVisible:steam.visible,cycleSeconds:duration,stationSeconds:stopSeconds,easingSeconds:ramp,arrivalSeconds:arrival,carriageDimensions:{...FUJI_CARRIAGE},carriagePositions:vehicles.map(g=>g.position.toArray()),reduced:isReduced(),assets:{locomotive:!!assets.locomotive,carriage:!!assets.carriage,track:!!assets.track,gate:!!assets.gate}}),
+    snapshot:()=>({fences:{sections:fenceSections.length,panels:fenceSections.reduce((n,s)=>n+s.points.length-1,0),openingWidth:RAIL_FENCE.opening*2,height:RAIL_FENCE.height},trainX:vehicles[0].position.x,trainZ:vehicles[0].position.z,animationTime:elapsed,distance,stopped,holding,crossing:crossing.snapshot(),steamVisible:steam.visible,cycleSeconds:duration,stationSeconds:stopSeconds,easingSeconds:ramp,arrivalSeconds:arrival,carriageDimensions:{...FUJI_CARRIAGE},carriagePositions:vehicles.map(g=>g.position.toArray()),reduced:isReduced(),assets:{locomotive:!!assets.locomotive,carriage:!!assets.carriage,track:!!assets.track,gate:!!assets.gate}}),
     dispose(){if(disposed)return;disposed=true;root.removeFromParent();},
   };
 }

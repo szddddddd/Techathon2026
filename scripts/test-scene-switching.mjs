@@ -16,8 +16,8 @@ const chatOpen=()=>page.waitForFunction(()=>__uiInteractions.state('meeting')===
 const closeChat=async()=>{await page.evaluate(()=>__socialUI.closeMeeting());await page.waitForFunction(()=>__uiInteractions.state('meeting')==='closed');await page.waitForFunction(()=>__freeRoam.snapshot().orbitEnabled);};
 const fingerprint=()=>page.evaluate(()=>({friends:[...__socialStore.state.friends],groups:__socialStore.state.groups.map(g=>({id:g.id,name:g.name,type:g.type})),friendMessages:__socialStore.state.messages.map(m=>({id:m.id,friendId:m.friendId,text:m.text})),groupMessages:Object.fromEntries(Object.entries(__socialStore.state.messagesByGroup).map(([id,messages])=>[id,messages.map(m=>({id:m.id,text:m.text}))]))}));
 async function switchTo(id){
- await page.locator('#scene-switcher .scene-switcher-toggle').click();
- await page.locator(`#scene-switcher [data-scene="${id}"]`).click();
+
+ await page.locator('#scene-switcher .scene-switcher-option').press(id==='fuji'?'End':'Home');
  await ready(id);await populated();
  await page.waitForFunction(()=>!document.querySelector('.scene-travel'));
  assert.equal(new URL(page.url()).searchParams.get('scene'),id);
@@ -43,8 +43,8 @@ async function contentTravel(){
  await page.locator('.d-content-card[data-id="hyper3d-rodin-workflow"]').click();await page.waitForTimeout(350);
  await page.locator('.discovery-body').evaluate(el=>el.scrollTop=700);await page.waitForTimeout(350);
  const before=await page.evaluate(()=>{window.__contentTravelIdentity=__discoveryUI;return{route:__discoveryUI.route,scroll:document.querySelector('.discovery-body').scrollTop};});
- await page.locator('.scene-switcher-toggle').click();await page.locator('#scene-switcher [data-scene="fuji"]').click();await ready('fuji');
- await page.waitForFunction(()=>!__sceneTheme.switching&&!document.querySelector('.scene-travel')&&__uiInteractions.state('scene-switcher')==='closed');
+ await page.locator('#scene-switcher .scene-switcher-option').press('End');await ready('fuji');
+ await page.waitForFunction(()=>!__sceneTheme.switching&&!document.querySelector('.scene-travel')&&!document.querySelector('#scene-switcher-panel'));
  const after=await page.evaluate(()=>({sameUI:__contentTravelIdentity===__discoveryUI,route:__discoveryUI.route,scroll:document.querySelector('.discovery-body').scrollTop,controls:__sceneTheme.resourceSnapshot().controls}));
  assert.equal(after.sameUI,true);assert.equal(after.route.type,'article');assert.equal(after.route.id,before.route.id);assert.ok(Math.abs(after.scroll-before.scroll)<3);
  await page.screenshot({path:out+'/article-scene-travel.jpg',quality:92});await page.keyboard.press('Escape');await page.waitForFunction(()=>__uiInteractions.state('discovery')==='closed');
@@ -189,9 +189,9 @@ try{
  await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:391,height:844});await page.waitForTimeout(800);await clearToolbar();
  await page.screenshot({path:out+'/fuji-mobile.jpg',quality:92});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- const toggleBox=await page.locator('.scene-switcher-toggle').boundingBox();assert.ok(toggleBox.height>=44&&toggleBox.x>=0&&toggleBox.x+toggleBox.width<=391);
- await page.locator('.scene-switcher-toggle').click();
- const cards=await page.locator('.scene-switcher-card').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};}));
+ const toggleBox=await page.locator('.scene-switcher-track').boundingBox();assert.ok(toggleBox.height>=44&&toggleBox.x>=0&&toggleBox.x+toggleBox.width<=391);
+
+ const cards=await page.locator('.scene-switcher-option').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};}));
  assert.ok(cards.every(r=>r.height>=44&&r.x>=0&&r.x+r.width<=391));
  await page.screenshot({path:out+'/mobile-scene-picker.jpg',quality:92});await clearToolbar();
  await page.locator('.group-building-anchor:visible').first().click();await chatOpen();await closeChat();

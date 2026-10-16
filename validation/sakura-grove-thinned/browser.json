@@ -1,0 +1,9 @@
+{
+  "trees": 22,
+  "removed": [
+    "sakura-8",
+    "sakura-9"
+  ],
+  "stableGatheringTree": true,
+  "errors": []
+}

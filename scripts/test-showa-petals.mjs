@@ -7,7 +7,7 @@ import {FUJI_LAYOUT as L} from '../src/fuji-layout.js';
 import {boxContains,streetDistance} from '../src/fuji-streets.js';
 import {projectRail} from '../src/fuji-railway.js';
 import {fujiHeight} from '../src/fuji-profile.js';
-const counts=Object.fromEntries(['north','south','backstreet'].map(k=>[k,L.slots.filter(p=>p.neighbourhood===k).length]));assert.deepEqual(counts,{north:4,south:3,backstreet:2});assert.equal(L.trees.length,24);assert.equal(new Set(L.trees.map(p=>p.id)).size,24);assert.ok(L.trees.some(p=>p.id===L.gatheringTreeId));
+const counts=Object.fromEntries(['north','south','backstreet'].map(k=>[k,L.slots.filter(p=>p.neighbourhood===k).length]));assert.deepEqual(counts,{north:4,south:3,backstreet:2});assert.equal(L.trees.length,22);assert.equal(new Set(L.trees.map(p=>p.id)).size,22);assert.ok(L.trees.some(p=>p.id===L.gatheringTreeId));
 for(const tree of L.trees){assert.ok(projectRail(tree.x,tree.z).distance>1.5+tree.height*.4*tree.crownScale);assert.ok(L.paths.every(p=>streetDistance(tree.x,tree.z,p)>.49));}
 for(const p of L.slots)for(const x of[-1,1])for(const z of[-1,1])assert.ok(fujiHeight(p.x+x*2.2*Math.cos(p.rotation)+z*1.9*Math.sin(p.rotation),p.z-x*2.2*Math.sin(p.rotation)+z*1.9*Math.cos(p.rotation))<=2.27,'Parcel is on level ground');
 // Adversarial overhang: a canopy above a roof exercises the stop-height path,
@@ -20,4 +20,4 @@ for(const p of petals.particles)if(p.valid)for(const roof of petals.roofs)if(box
 petals.update(.05);const moving=petals.snapshot();assert.ok(moving.clock>0);reduced.matches=true;petals.update(.05);assert.equal(petals.snapshot().clock,moving.clock);assert.equal(petals.snapshot().airVisible,false);
 reduced.matches=false;petals.suspend();petals.update(1);assert.equal(petals.snapshot().clock,moving.clock);petals.activate();petals.update(.05);assert.ok(petals.snapshot().clock>moving.clock);
 petals.setEnabled(false);const off=petals.snapshot();petals.update(1);assert.equal(petals.snapshot().clock,off.clock);petals.dispose();assert.equal(petals.root.parent,null);
-await fs.mkdir(out,{recursive:true});await fs.writeFile(`${out}/petals.json`,JSON.stringify({counts,trees:24,zones:Object.fromEntries(['rail','station','lane','shrine'].map(k=>[k,L.trees.filter(p=>p.zone===k).length])),stableGatheringTree:L.gatheringTreeId,roofEnvelopeStops:true,reducedFreeze:true,suspendFreeze:true,disabledFreeze:true,disposed:true},null,2));console.log('PASS: compact parcels, tree clearances, roof stops, reduced motion and lifecycle.');
+await fs.mkdir(out,{recursive:true});await fs.writeFile(`${out}/petals.json`,JSON.stringify({counts,trees:22,zones:Object.fromEntries(['rail','station','lane','shrine'].map(k=>[k,L.trees.filter(p=>p.zone===k).length])),stableGatheringTree:L.gatheringTreeId,roofEnvelopeStops:true,reducedFreeze:true,suspendFreeze:true,disabledFreeze:true,disposed:true},null,2));console.log('PASS: compact parcels, tree clearances, roof stops, reduced motion and lifecycle.');

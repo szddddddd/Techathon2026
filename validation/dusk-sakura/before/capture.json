@@ -1,0 +1,286 @@
+{
+  "snapshot": {
+    "theme": "fuji",
+    "islandArea": 2282.053452,
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "carriage",
+      "station",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 0,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriageDimensions": {
+      "length": 3,
+      "height": 1.28,
+      "width": 1.18,
+      "spacing": 3.55,
+      "wheelRadius": 0.3,
+      "wheelOffset": 0.51
+    },
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.185962418953967,
+        2.5,
+        3.691485671381194
+      ],
+      [
+        10.029889928051333,
+        2.5,
+        2.0663480716587497
+      ]
+    ],
+    "reduced": true,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 0,
+      "updates": 0,
+      "active": true,
+      "enabled": true,
+      "reduced": true,
+      "airVisible": false,
+      "airCapacity": 360,
+      "validParticles": 360,
+      "groundCount": 3000,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  "reducedPerf": {
+    "meanMs": 16.68,
+    "p95Ms": 16.799999999999272,
+    "resources": {
+      "switches": 1,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 451,
+      "textures": 148,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "forest",
+          "fuji"
+        ],
+        "sharedResources": 524
+      },
+      "characters": {
+        "theme": "fuji",
+        "suspended": false,
+        "positions": {
+          "ali": {
+            "x": -2.6499999999999946,
+            "z": -11.7
+          },
+          "scene-guest-0": {
+            "x": 27.249999999999986,
+            "z": -13
+          },
+          "scene-guest-1": {
+            "x": 5.150000000000006,
+            "z": -3.8999999999999955
+          },
+          "scene-guest-2": {
+            "x": 8.400000000000007,
+            "z": 5.200000000000005
+          },
+          "scene-guest-3": {
+            "x": -13.7,
+            "z": 3.900000000000004
+          },
+          "scene-guest-4": {
+            "x": 20.1,
+            "z": 9.750000000000007
+          },
+          "shanshan": {
+            "x": 11.65000000000001,
+            "z": 6.500000000000005
+          },
+          "xiaomian": {
+            "x": 0.6000000000000053,
+            "z": 1.3000000000000043
+          },
+          "tuantuan": {
+            "x": -6.549999999999995,
+            "z": -2.5999999999999956
+          }
+        },
+        "cachedThemes": [
+          "forest"
+        ],
+        "cachedCharacters": 9,
+        "contextObstacles": 56
+      },
+      "calls": 319,
+      "triangles": 1937772
+    }
+  },
+  "movingPerf": {
+    "meanMs": 16.680555555555557,
+    "p95Ms": 16.799999999999272,
+    "resources": {
+      "switches": 1,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 452,
+      "textures": 148,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "forest",
+          "fuji"
+        ],
+        "sharedResources": 524
+      },
+      "characters": {
+        "theme": "fuji",
+        "suspended": false,
+        "positions": {
+          "ali": {
+            "x": -2.6499999999999946,
+            "z": -11.695825
+          },
+          "scene-guest-0": {
+            "x": 27.249999999999986,
+            "z": -12.995825
+          },
+          "scene-guest-1": {
+            "x": 5.154175000000005,
+            "z": -3.8999999999999955
+          },
+          "scene-guest-2": {
+            "x": 8.404175000000008,
+            "z": 5.200000000000005
+          },
+          "scene-guest-3": {
+            "x": -13.695825,
+            "z": 3.900000000000004
+          },
+          "scene-guest-4": {
+            "x": 20.1,
+            "z": 9.754175000000007
+          },
+          "shanshan": {
+            "x": 11.64582500000001,
+            "z": 6.500000000000005
+          },
+          "xiaomian": {
+            "x": 0.6041750000000046,
+            "z": 1.3000000000000043
+          },
+          "tuantuan": {
+            "x": -6.549999999999995,
+            "z": -2.5999999999999956
+          }
+        },
+        "cachedThemes": [
+          "forest"
+        ],
+        "cachedCharacters": 9,
+        "contextObstacles": 56
+      },
+      "calls": 321,
+      "triangles": 1945692
+    }
+  },
+  "labels": [
+    {
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 76.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 94.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 76.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 67.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    }
+  ],
+  "errors": []
+}

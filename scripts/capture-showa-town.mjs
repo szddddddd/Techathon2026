@@ -14,7 +14,7 @@ const ready=(page,id)=>page.waitForFunction(id=>window.__sceneTheme?.ready&&__sc
 const populated=page=>page.waitForFunction(()=>__groupBuildings.snapshot().entries.length===9&&__characterPlacement.snapshot().characters.length===9,null,{timeout:180000});
 async function settle(page){await page.mouse.move(1400,940);await page.keyboard.press('Escape');await page.waitForTimeout(350);}
 async function view(page,position,target){await page.evaluate(({position,target})=>__valley.view(position,target),{position,target});await page.waitForFunction(()=>!__valley.snapshot().transitioning);await page.waitForTimeout(350);}
-async function switchTo(page,id){await page.locator('.scene-switcher-toggle').click();await page.locator(`#scene-switcher [data-scene="${id}"]`).click();await ready(page,id);await populated(page);await page.waitForFunction(()=>!document.querySelector('.scene-travel')&&!__sceneTheme.switching);}
+async function switchTo(page,id){await page.locator('#scene-switcher .scene-switcher-option').press(id==='fuji'?'End':'Home');await ready(page,id);await populated(page);await page.waitForFunction(()=>!document.querySelector('.scene-travel')&&!__sceneTheme.switching);}
 async function closeTemporary(page){const video=page.video();await page.close();if(video)temporaryVideos.push(await video.path());}
 
 try{
@@ -33,7 +33,7 @@ try{
   await page.setViewportSize({width:391,height:844});await page.waitForTimeout(500);await view(page,[24,100,172],[0,4,-7]);await page.mouse.move(380,780);await page.screenshot({path:path.join(out,'fuji-mobile.jpg'),quality:94});
   const labels=await page.locator('.group-building-anchor:visible').evaluateAll(nodes=>nodes.map(node=>{const r=node.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return{id:node.dataset.group,x:r.x,y:r.y,width:r.width,height:r.height,hit:hit===node||node.contains(hit)};}));
   assert.equal(labels.length,9);assert.ok(labels.every(r=>r.width>=44&&r.height>=44&&r.hit&&r.x>=0&&r.x+r.width<=391),'All nine mobile group labels remain reachable');
-  await page.locator('.scene-switcher-toggle').click();await page.waitForTimeout(250);await page.screenshot({path:path.join(out,'mobile-scene-picker.jpg'),quality:94});await page.keyboard.press('Escape');
+  await page.waitForTimeout(250);await page.screenshot({path:path.join(out,'mobile-scene-picker.jpg'),quality:94});await page.keyboard.press('Escape');
   const report={generatedAt:new Date().toISOString(),camera:{position:[24,100,172],target:[0,4,-7]},viewport:{width:391,height:844},labels,hitCount:labels.filter(l=>l.hit).length,groups:await page.evaluate(()=>__groupBuildings.snapshot().entries.length),characters:await page.evaluate(()=>__characterPlacement.snapshot().characters.length),errors};
   await fs.writeFile(path.join(out,'capture-mobile.json'),JSON.stringify(report,null,2));assert.deepEqual(errors,[]);await closeTemporary(page);console.log(JSON.stringify(report,null,2));
  }else{
@@ -48,7 +48,7 @@ try{
  // A second page reuses the isolated fixture and warmed HTTP cache. Its video
  // includes the actual top toolbar and live transition, not just WebGL pixels.
  const film=await context.newPage();observe(film);await film.emulateMedia({reducedMotion:'no-preference'});await film.goto(forest.href);await ready(film,'forest');await populated(film);await view(film,[40,36,66],[0,0,-5]);await film.waitForTimeout(1500);
- await film.locator('.scene-switcher-toggle').click();await film.waitForTimeout(1200);await film.locator('#scene-switcher [data-scene="fuji"]').click();await ready(film,'fuji');await populated(film);await film.waitForFunction(()=>!document.querySelector('.scene-travel'));await film.mouse.move(1400,940);await film.waitForTimeout(4500);
+ await film.waitForTimeout(1200);await film.locator('#scene-switcher .scene-switcher-option').press('End');await ready(film,'fuji');await populated(film);await film.waitForFunction(()=>!document.querySelector('.scene-travel'));await film.mouse.move(1400,940);await film.waitForTimeout(4500);
  await view(film,[20,23,35],[0,2,-5]);await film.waitForTimeout(4500);
  const states=[];for(let i=0;i<48;i++){await film.waitForTimeout(1000);states.push(await film.evaluate(()=>__sceneTheme.snapshot()));}await fs.writeFile(path.join(out,'train-timeline.json'),JSON.stringify(states,null,2));
  const video=film.video();await film.close();await video.saveAs(path.join(out,'showa-town-petals.webm'));temporaryVideos.push(await video.path());

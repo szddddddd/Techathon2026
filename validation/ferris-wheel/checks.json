@@ -1,0 +1,16 @@
+{
+  "errors": [],
+  "layout": {
+    "x": -19,
+    "z": -19,
+    "rotation": -0.2,
+    "width": 8.4,
+    "depth": 3.5
+  },
+  "groundAndRailClear": true,
+  "reducedAndSuspend": true,
+  "liveAngles": [
+    0,
+    0.06287183697829604
+  ]
+}

@@ -18,8 +18,8 @@ const chatOpen=()=>page.waitForFunction(()=>__uiInteractions.state('meeting')===
 const closeChat=async()=>{await page.evaluate(()=>__socialUI.closeMeeting());await page.waitForFunction(()=>__uiInteractions.state('meeting')==='closed');await page.waitForFunction(()=>__freeRoam.snapshot().orbitEnabled);};
 const fingerprint=()=>page.evaluate(()=>({friends:[...__socialStore.state.friends],groups:__socialStore.state.groups.map(g=>({id:g.id,name:g.name,type:g.type})),friendMessages:__socialStore.state.messages.map(m=>({id:m.id,friendId:m.friendId,text:m.text})),groupMessages:Object.fromEntries(Object.entries(__socialStore.state.messagesByGroup).map(([id,messages])=>[id,messages.map(m=>({id:m.id,text:m.text}))]))}));
 async function switchTo(id){
- await page.locator('#scene-switcher .scene-switcher-toggle').click();
- await page.locator(`#scene-switcher [data-scene="${id}"]`).click();
+
+ await page.locator('#scene-switcher .scene-switcher-option').press(id==='fuji'?'End':'Home');
  await ready(id);console.log('Switched',id);await populated();
  await page.waitForFunction(()=>!document.querySelector('.scene-travel'));
  assert.equal(new URL(page.url()).searchParams.get('scene'),id);
@@ -45,8 +45,8 @@ async function contentTravel(){
  await page.locator('.d-content-card[data-id="hyper3d-rodin-workflow"]').click();await page.waitForTimeout(350);
  await page.locator('.discovery-body').evaluate(el=>el.scrollTop=700);await page.waitForTimeout(350);
  const before=await page.evaluate(()=>{window.__contentTravelIdentity=__discoveryUI;return{route:__discoveryUI.route,scroll:document.querySelector('.discovery-body').scrollTop};});
- await page.locator('.scene-switcher-toggle').click();await page.locator('#scene-switcher [data-scene="fuji"]').click();await ready('fuji');
- await page.waitForFunction(()=>!__sceneTheme.switching&&!document.querySelector('.scene-travel')&&__uiInteractions.state('scene-switcher')==='closed');
+ await page.locator('#scene-switcher .scene-switcher-option').press('End');await ready('fuji');
+ await page.waitForFunction(()=>!__sceneTheme.switching&&!document.querySelector('.scene-travel')&&!document.querySelector('#scene-switcher-panel'));
  const after=await page.evaluate(()=>({sameUI:__contentTravelIdentity===__discoveryUI,route:__discoveryUI.route,scroll:document.querySelector('.discovery-body').scrollTop,controls:__sceneTheme.resourceSnapshot().controls}));
  assert.equal(after.sameUI,true);assert.equal(after.route.type,'article');assert.equal(after.route.id,before.route.id);assert.ok(Math.abs(after.scroll-before.scroll)<3);
  await page.screenshot({path:out+'/article-scene-travel.jpg',quality:92});await page.keyboard.press('Escape');await page.waitForFunction(()=>__uiInteractions.state('discovery')==='closed');
@@ -122,10 +122,10 @@ try{
  performanceSamples.fuji=await measureFrames();
  await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(()=>__sceneTheme.setPetalsEnabled(false));performanceSamples.petalsOff=await measureFrames();
  await page.evaluate(()=>__sceneTheme.setPetalsEnabled(true));performanceSamples.petalsOn=await measureFrames();
- const petalsRunning=await page.evaluate(()=>__sceneTheme.snapshot().petals);assert.equal(petalsRunning.airCapacity,360);assert.equal(petalsRunning.airVisible,true);assert.equal(petalsRunning.batches,2);assert.ok(petalsRunning.clock>0);
+ const petalsRunning=await page.evaluate(()=>__sceneTheme.snapshot().petals);assert.equal(petalsRunning.airCapacity,1200);assert.equal(petalsRunning.airVisible,true);assert.equal(petalsRunning.batches,2);assert.ok(petalsRunning.clock>0);
  await page.evaluate(()=>Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}));const hiddenBefore=await page.evaluate(()=>__sceneTheme.snapshot().petals);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.clock),hiddenBefore.clock);await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
  await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(80);const frozenPetals=await page.evaluate(()=>__sceneTheme.snapshot().petals);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.clock),frozenPetals.clock);assert.equal(frozenPetals.airVisible,false);
- checks.push('360 instanced falling petals, 3000 settled petals; background and reduced-motion freeze; same-camera off/on frame measurements');
+ checks.push('1200 instanced falling petals, 6500 settled petals; background and reduced-motion freeze; same-camera off/on frame measurements');
 
  await view([-30,23,25],[-11,4,-8]);
  await page.screenshot({path:out+'/fuji-street.jpg',quality:93});
@@ -197,12 +197,12 @@ try{
  checks.push('Nine friends gather and return in Fuji; railway rejects placement; account, video and record-player entrances open and return');
 
  await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:391,height:844});await page.waitForTimeout(800);await clearToolbar();
- assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.airCapacity),180);
+ assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.airCapacity),600);
  await page.screenshot({path:out+'/fuji-mobile.jpg',quality:92});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- const toggleBox=await page.locator('.scene-switcher-toggle').boundingBox();assert.ok(toggleBox.height>=44&&toggleBox.x>=0&&toggleBox.x+toggleBox.width<=391);
- await page.locator('.scene-switcher-toggle').click();
- const cards=await page.locator('.scene-switcher-card').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};}));
+ const toggleBox=await page.locator('.scene-switcher-track').boundingBox();assert.ok(toggleBox.height>=44&&toggleBox.x>=0&&toggleBox.x+toggleBox.width<=391);
+
+ const cards=await page.locator('.scene-switcher-option').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};}));
  assert.ok(cards.every(r=>r.height>=44&&r.x>=0&&r.x+r.width<=391));
  await page.screenshot({path:out+'/mobile-scene-picker.jpg',quality:92});await clearToolbar();
  await page.locator('.group-building-anchor:visible').first().click();await chatOpen();await closeChat();

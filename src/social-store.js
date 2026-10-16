@@ -23,7 +23,7 @@ const clone=value=>structuredClone(value);
 const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const assets=['forest','river','camp','sky'].map(name=>`assets/social/${name}.svg`);
 const discoveryDefaults=()=>({accountFollows:['hyper3d'],accountFeedVersion:1,creatorFollows:[],likes:[],collections:[],comments:{},progress:{},history:[],fontSize:18});
-const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],pinnedGroups:[],residentGroups:[],conversationAttachments:{},messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
+const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],pinnedGroups:[],groupBuildingSlots:{forest:{},fuji:{}},residentGroups:[],conversationAttachments:{},messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
 const requestValue=request=>new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
 function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('本地保存失败'));tx.onabort=()=>reject(tx.error||new Error('本地保存已中断'));});}
 function storageError(error){const wrapped=new Error(error?.name==='QuotaExceededError'?'本地空间不足，请释放浏览器存储空间后重试。':'无法保存到此浏览器，请检查存储权限后重试。');wrapped.cause=error;return wrapped;}
@@ -145,6 +145,12 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
   };
   // One-time switch to the requested Hyper3D subscription; keep saved content and shares.
   if(initial?.discovery?.accountFeedVersion!==1)await mutate('discovery-subscriptions',next=>{next.discovery.accountFollows=['hyper3d'];next.discovery.accountFeedVersion=1;});
+  await mutate('group-building-migration',next=>{
+    const valid=new Set(next.groups.filter(g=>!g.leftAt).map(g=>g.id));
+    next.pinnedGroups=[...new Set(next.pinnedGroups||[])].filter(id=>valid.has(id)).slice(0,9);
+    next.groupBuildingSlots=Object.fromEntries(['forest','fuji'].map(theme=>{const used=new Set();return[theme,Object.fromEntries(next.pinnedGroups.flatMap(id=>{const slot=next.groupBuildingSlots?.[theme]?.[id];if(!Number.isInteger(slot)||slot<0||slot>=9||used.has(slot))return[];used.add(slot);return[[id,slot]];}))];}));
+    if(initial&&JSON.stringify([initial.pinnedGroups,initial.groupBuildingSlots])===JSON.stringify([next.pinnedGroups,next.groupBuildingSlots]))return false;
+  });
   for(const [id,status] of Object.entries(state.statuses))if(status.expiresAt<=Date.now())await store.clearStatus(id);
   return store;
 }

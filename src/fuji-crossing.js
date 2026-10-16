@@ -1,4 +1,4 @@
-import {FUJI_CARRIAGE,CROSSING,projectRail} from './fuji-railway.js';
+import {FUJI_CARRIAGE,CROSSING,projectRail,railwayStepAllowed} from './fuji-railway.js';
 
 /** Fail-safe level crossing. Existing occupants may leave; new entrants wait. */
 export function createCrossingController(){
@@ -15,11 +15,17 @@ export function createCrossingController(){
   if(state==='opening'){closure=Math.max(0,closure-dt/1.5);if(!closure){state='open';timer=0;}}
  }
  function canStep(from,to,radius=.65){
+  if(!railwayStepAllowed(from,to,radius))return false;
   if(state==='open')return true;
   const a=projectRail(from.x,from.z),b=projectRail(to.x,to.z);
-  if(Math.abs(b.d-CROSSING.d)>CROSSING.width/2+radius||b.distance>CROSSING.clearance+radius)return true;
-  // Do not trap a character that entered before the signal changed.
-  return (Math.abs(a.d-CROSSING.d)<CROSSING.width/2+radius&&a.distance<1.5+radius+.05)||b.distance>=a.distance;
+  // People already inside may clear the tracks; never admit a new pedestrian,
+  // including a long step whose endpoints both lie outside the waiting area.
+  const inside=Math.abs(a.d-CROSSING.d)<CROSSING.width/2+radius&&a.distance<1.5+radius+.05;
+  if(inside)return b.distance>=a.distance-.005;
+  const steps=Math.max(1,Math.ceil(Math.hypot(to.x-from.x,to.z-from.z)/.18));
+  for(let i=1;i<=steps;i++){const t=i/steps,p=projectRail(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t);if(Math.abs(p.d-CROSSING.d)<CROSSING.width/2+radius&&p.distance<CROSSING.clearance+radius)return false;}
+  return true;
  }
+
  return{setResidents,update,canStep,shouldHold:distance=>distance>=CROSSING.d-5&&distance<CROSSING.d&&(state!=='closed'||occupants>0),snapshot:()=>({state,closure,occupants,entryAllowed:state==='open'})};
 }

@@ -23,5 +23,35 @@ export function projectRail(x,z){
 export const RAIL_START=projectRail(...first).d,RAIL_END=projectRail(...last).d;
 export const CROSSING={d:projectRail(-6,-6).d,width:3.8,clearance:2.6};
 export const STATION={center:projectRail(13,3.5).d,stop:projectRail(16.4,5.2).d,length:12};
+// Two platform openings line up with the forward vestibule of each stopped coach.
+// These are boarding apertures, not additional pedestrian crossings of the track.
+export const PLATFORM_BOARDING=[1,2].map(coach=>({coach,d:STATION.stop-coach*FUJI_CARRIAGE.spacing+1,width:1.35}));
 export function railOffset(d,offset){const p=sampleRail(d),t=railTangent(d);return{x:p.x-t.z*offset,z:p.z+t.x*offset,rotation:-Math.atan2(t.z,t.x)};}
 export function inCrossing(x,z,padding=0){const p=projectRail(x,z);return Math.abs(p.d-CROSSING.d)<CROSSING.width/2+padding&&p.distance<CROSSING.clearance+padding;}
+
+/** Shared barrier footprint and the sole pedestrian opening. */
+export const RAIL_FENCE={offset:1.5,thickness:.14,height:.98,opening:CROSSING.width/2+.24};
+export function railwayStepAllowed(from,to,radius=0){
+ const length=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(length/.18));
+ for(let i=0;i<=steps;i++){const t=i/steps,p=projectRail(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t);
+  if(p.distance<FUJI_RAIL.halfWidth+RAIL_FENCE.thickness/2+radius&&Math.abs(p.d-CROSSING.d)>CROSSING.width/2-radius)return false;
+ }return true;
+}
+export function railwayFencePoint(d,side){
+ // The platform already occupies the northern shoulder; keep the barrier on
+ // its track-facing edge instead of placing it through the platform centre.
+ const edge=Math.abs(d-STATION.center),blend=side<0?Math.max(0,Math.min(1,(7.6-edge)/1.8)):0;
+ return {...railOffset(d,side*(RAIL_FENCE.offset-.52*blend)),base:2.22+.36*blend,height:RAIL_FENCE.height-.22*blend};
+}
+export function railwayFenceSections(){
+ const sections=[];
+ for(const side of[-1,1]){
+  const gaps=[{d:CROSSING.d,width:RAIL_FENCE.opening*2},...(side<0?PLATFORM_BOARDING:[])].sort((a,b)=>a.d-b.d);
+  let cursor=RAIL_START+2.4;const spans=[];
+  for(const gap of gaps){spans.push([cursor,gap.d-gap.width/2]);cursor=gap.d+gap.width/2;}
+  spans.push([cursor,RAIL_END-2.4]);
+  for(const [start,end]of spans){
+  const count=Math.ceil((end-start)/1.35),points=Array.from({length:count+1},(_,i)=>railwayFencePoint(start+(end-start)*i/count,side));sections.push({side,start,end,points});
+  }
+ }return sections;
+}

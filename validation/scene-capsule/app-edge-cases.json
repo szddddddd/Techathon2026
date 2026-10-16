@@ -1,0 +1,25 @@
+{
+  "checks": [
+    "hover/focus never opens a window; cancelled drag does not rotate or pan the camera",
+    "modal disables both scene options",
+    "loading keeps old canvas visible; asset failure keeps original world, data, radio and canvas opacity",
+    "retry succeeds in the same capsule",
+    "rapid clicks commit one switch",
+    "external switch synchronizes capsule; real drag switches scene; canvas fades finish cleanly"
+  ],
+  "errors": [],
+  "mobile": {
+    "bar": {
+      "x": 12,
+      "y": 12,
+      "width": 220,
+      "height": 48
+    },
+    "roam": {
+      "x": 287,
+      "y": 14,
+      "width": 90,
+      "height": 38
+    }
+  }
+}

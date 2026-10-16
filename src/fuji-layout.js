@@ -14,6 +14,7 @@ const trees=[
  ...[[43,-13.5,3.7],[45,-16,3.4],[55,-18,4],[58,-19,4.4],[63,-18.5,4.7],[66,-16,3.9]].map(p=>[...p,'shrine'])
 ].map(([d,n,height,zone],index)=>at(d,n,{height,zone,id:index===22?'gathering-sakura':'sakura-'+index,variant:index%2,rotation:index*2.399}));
 export const FUJI_LAYOUT={height:2.22,slots,trees,gatheringTreeId:'gathering-sakura',gatheringCenter:{x:24,z:-12.8},
+ ferrisWheel:{x:-19,z:-19,rotation:-.2,width:8.4,depth:3.5},
  paths:[line('north-main',2.4,[[25,-3],[32,-3],[37,-3.8],[43,-3.8],[49,-4],[52,-4],[54,-7],[58,-7],[65,-7]]),line('south-main',2.4,[[23,3.8],[30,3.8],[37,3.8],[43,3.8],[49,4],[55,4.2]]),line('level-crossing',3.8,[[CROSSING.d,-3.8],[CROSSING.d,3.8]],'stone')],
  queue:at(38.4,6.7),facilities:{cinema:at(35,7.2),kiosk:at(64,-4.3)},recordPlayer:at(65,-11.6),
  station:{...railOffset(STATION.center,-3.5),width:7.8,depth:2.2},platform:{...railOffset(STATION.center,-1.65),width:12,depth:1.5},
@@ -31,18 +32,51 @@ export const FUJI_LAYOUT={height:2.22,slots,trees,gatheringTreeId:'gathering-sak
 FUJI_LAYOUT.parking=FUJI_LAYOUT.cars.map(p=>({...p,width:1.5,depth:2.3}));
 connectTownStreets(FUJI_LAYOUT);
 arrangeStreetFurniture(FUJI_LAYOUT);
+FUJI_LAYOUT.paths.push({id:'ferris-wheel-lane',width:1.6,kind:'stone',points:[[-19.56,-16.26],FUJI_LAYOUT.paths[0].points[0]]});
+// Make room beside the wheel without removing the foothill cherry tree.
+Object.assign(FUJI_LAYOUT.trees.find(t=>t.id==='sakura-1'),{x:-13.8,z:-16});
 // Enlarge crowns in place; clamp horizontal growth beside roofs and the railway.
-for(const tree of FUJI_LAYOUT.trees){tree.height*=1.3;let clearance=projectRail(tree.x,tree.z).distance-1.6;for(const p of [...slots,...FUJI_LAYOUT.shops,FUJI_LAYOUT.shrine,FUJI_LAYOUT.station]){const c=Math.cos(p.rotation||0),s=Math.sin(p.rotation||0),dx=tree.x-p.x,dz=tree.z-p.z;clearance=Math.min(clearance,Math.hypot(Math.max(0,Math.abs(dx*c-dz*s)-(p.width??4)/2),Math.max(0,Math.abs(dx*s+dz*c)-(p.depth??3.5)/2))-.12);}tree.crownScale=Math.max(.77,Math.min(1,clearance/(tree.height*.4)));}
+for(const tree of FUJI_LAYOUT.trees){tree.height*=1.6;let clearance=projectRail(tree.x,tree.z).distance-1.6;for(const p of [...slots,...FUJI_LAYOUT.shops,FUJI_LAYOUT.shrine,FUJI_LAYOUT.station]){const c=Math.cos(p.rotation||0),s=Math.sin(p.rotation||0),dx=tree.x-p.x,dz=tree.z-p.z;clearance=Math.min(clearance,Math.hypot(Math.max(0,Math.abs(dx*c-dz*s)-(p.width??4)/2),Math.max(0,Math.abs(dx*s+dz*c)-(p.depth??3.5)/2))-.12);}tree.crownClearance=clearance;tree.variant=tree.zone==='rail'||tree.zone==='lane'||clearance<1.65?1:0;tree.crownScale=Math.max(.45,Math.min(1,clearance/(tree.height*.4)));}
+
+// Replace only the former weeping silhouettes with curated reference trees.
+// Existing spreading Yoshino trees and every root/ID remain in place.
+FUJI_LAYOUT.trees.filter(tree=>tree.variant===1).forEach((tree,index)=>{tree.variant=1+index%2;});
+
+// The three short, airy reference-05 trees grow uniformly, not into thin columns.
+// Their asymmetric crowns face away from the houses and railway.
+for(const tree of FUJI_LAYOUT.trees){
+ tree.blossomTone=FUJI_LAYOUT.trees.indexOf(tree)%3;
+ if(['sakura-3','sakura-7','sakura-16'].includes(tree.id)){
+  tree.sizeScale=2;
+  if(tree.id==='sakura-3'){tree.z+=.3;tree.rotation-=Math.PI/2;}
+  if(tree.id==='sakura-7')tree.rotation+=Math.PI;
+  if(tree.id==='sakura-16')tree.rotation-=5*Math.PI/12;
+ }
+}
+
+// Open a gap in the crowded foreground station grove without renumbering trees.
+FUJI_LAYOUT.trees=FUJI_LAYOUT.trees.filter(tree=>!['sakura-8','sakura-9'].includes(tree.id));
 
 {const [a,b]=FUJI_LAYOUT.paths.find(p=>p.id==='shrine-lane').points;FUJI_LAYOUT.torii={x:(a[0]+b[0])/2,z:(a[1]+b[1])/2,rotation:Math.atan2(b[0]-a[0],b[1]-a[1])};}
 export const townStreetDistance=(x,z)=>Math.min(...FUJI_LAYOUT.paths.map(p=>streetDistance(x,z,p)));
-export function townPavingAt(x,z){let kind=null;for(const p of FUJI_LAYOUT.paths)if(streetDistance(x,z,p)<=0&&(kind!=='stone'||p.kind==='stone'))kind=p.kind;return kind;}
+// Full-width frontages replace the separate narrow, differently coloured door pads.
+export const TOWN_FRONTAGES=[...slots,...FUJI_LAYOUT.shops,FUJI_LAYOUT.shrine].map(p=>({...p,width:p.width??4,front:2.3,depth:1.7}));
+export function townRoadField(x,z){
+ let distance=townStreetDistance(x,z);
+ for(const p of TOWN_FRONTAGES){const c=Math.cos(p.rotation),s=Math.sin(p.rotation),dx=x-p.x,dz=z-p.z;distance=Math.min(distance,Math.max(Math.abs(dx*c-dz*s)-p.width/2,Math.abs(dx*s+dz*c-p.front)-p.depth/2));}
+ for(const p of FUJI_LAYOUT.parking){const c=Math.cos(p.rotation),s=Math.sin(p.rotation),dx=x-p.x,dz=z-p.z;distance=Math.min(distance,Math.max(Math.abs(dx*c-dz*s)-p.width/2,Math.abs(dx*s+dz*c)-p.depth/2));}
+ for(const p of FUJI_LAYOUT.plazas)if(p.id!=='sakura-plaza')distance=Math.min(distance,(Math.hypot((x-p.x)/p.rx,(z-p.z)/p.rz)-1)*Math.min(p.rx,p.rz));
+ return distance;
+}
+export function townPavingAt(x,z){return townRoadField(x,z)<=0?'asphalt':null;}
+
 export function facilitySpaceClear(x,z){return townStreetDistance(x,z)>.15&&!(Math.abs(projectRail(x,z).d-CROSSING.d)<3&&projectRail(x,z).distance<5);}
 export function inFujiBox(p,x,z,width=p.width,depth=p.depth,radius=0){const c=Math.cos(p.rotation||0),s=Math.sin(p.rotation||0),dx=x-p.x,dz=z-p.z;return Math.abs(dx*c-dz*s)<width/2+radius&&Math.abs(dx*s+dz*c)<depth/2+radius;}
 export const fujiPlotAt=(x,z,radius=0)=>slots.findIndex(p=>inFujiBox(p,x,z,p.width,p.depth,radius));
 export function fujiObstacleAt(x,z,radius=0){
+ if(inFujiBox(FUJI_LAYOUT.ferrisWheel,x,z,8.4,3.5,radius))return'ferris-wheel';
  for(const [key,kind] of [['cars','car'],['gardens','garden'],['planters','planter']])if(FUJI_LAYOUT[key].some(p=>inFujiBox(p,x,z,p.width,p.depth,radius)))return kind;
- if(FUJI_LAYOUT.trees.some(p=>Math.hypot(p.x-x,p.z-z)<.25+radius))return'tree';
+ if(FUJI_LAYOUT.trees.some(p=>Math.hypot(p.x-x,p.z-z)<.26*(p.sizeScale??1)+radius))return'tree';
  if(FUJI_LAYOUT.benches.some(p=>inFujiBox(p,x,z,1.6,.55,radius)))return'bench';
  if(FUJI_LAYOUT.lamps.some(p=>Math.hypot(p.x-x,p.z-z)<.3+radius))return'lamp';
  if(FUJI_LAYOUT.shops.some(p=>inFujiBox(p,x,z,4,3.5,radius)))return'shop';

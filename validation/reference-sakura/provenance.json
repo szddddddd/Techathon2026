@@ -1,0 +1,85 @@
+{
+  "reference": "assets/rodin-fuji/sakura-reference-six/crops.json",
+  "parameters": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "items": [
+    {
+      "order": 1,
+      "id": "sakura-reference-01",
+      "generationId": "bf4159e4-629b-4c8d-a17d-18f9e99e1090",
+      "referenceSha256": "0c42a745443a0a386cbbff85fe77104747b4b3a036783c0481d95c12801505f2",
+      "sourceSha256": "780d91c4a5aa9a19e7d222273348fd0cb8ca99947bd788a17b3504f5acd02b30",
+      "sceneSha256": "930b1c03b0beb1f65ca95c668c69dab4a546652f0b6bde7d601e7b2b6419226e",
+      "sourceBytes": 15481776,
+      "sceneBytes": 5081776,
+      "cropRow": 1,
+      "cropColumn": 1
+    },
+    {
+      "order": 2,
+      "id": "sakura-reference-02",
+      "generationId": "e1ffd988-8120-41ad-8346-4f1c9345aa06",
+      "referenceSha256": "366c0e5475f45b965b7353c6c4047ff8d6533aa2a36ae6a14944f5eedf837552",
+      "sourceSha256": "4cb49129266431cb565db8d281ab6f5f997540faae9e884dad276ad5384baef8",
+      "sceneSha256": "7a87970a8d9be61772ace348496450363cf8b32c4feb4b42c8af06d3ef00b40b",
+      "sourceBytes": 16500728,
+      "sceneBytes": 5106152,
+      "cropRow": 1,
+      "cropColumn": 2
+    },
+    {
+      "order": 3,
+      "id": "sakura-reference-03",
+      "generationId": "a0779654-2056-4a7d-8f9b-92da22b3c950",
+      "referenceSha256": "97fda83006724d47ff9f66d4fd63e35482559f68d13c90918af8a993a3d8c85d",
+      "sourceSha256": "a7bcee21267ed5001e60133548dae97856503fb72b219d922e2bab77093e7cc3",
+      "sceneSha256": "1a2e8d6af45044da8ab2d174c9f68228a7864529890477230c6a5fa9a6b40c9d",
+      "sourceBytes": 18485224,
+      "sceneBytes": 5906572,
+      "cropRow": 1,
+      "cropColumn": 3
+    },
+    {
+      "order": 4,
+      "id": "sakura-reference-04",
+      "generationId": "3aabef0a-9978-4ff4-92ec-42f9b5540ada",
+      "referenceSha256": "093d19f0e60a67ae4da7c04ff01f277322e7b5cc3df09e047d5313d2452289b1",
+      "sourceSha256": "46cd4f34c39b976856ebbe0450adae36900bd58a9b8c472146f2871ef12d00fa",
+      "sceneSha256": "f1e36ddccdc5b5447e5298ee379d67a787b06214c06611820da9343b0b779bc2",
+      "sourceBytes": 16495616,
+      "sceneBytes": 5232140,
+      "cropRow": 2,
+      "cropColumn": 1
+    },
+    {
+      "order": 5,
+      "id": "sakura-reference-05",
+      "generationId": "c7f572d4-cb99-49f3-b589-93a5df66c0af",
+      "referenceSha256": "501842d1f2b7144a52d9e9fdac15229bcb022aea5892e1635d5d6bad5df4a89d",
+      "sourceSha256": "fce7f67b0d36368e8654f406410e3f1b33745e24c65a7da4917f77a6f2739f1a",
+      "sceneSha256": "bc8331a4802f55be0a3e59ef14530432341378a412922d776ea9659d7a6ea647",
+      "sourceBytes": 16284772,
+      "sceneBytes": 5493548,
+      "cropRow": 2,
+      "cropColumn": 2
+    },
+    {
+      "order": 6,
+      "id": "sakura-reference-06",
+      "generationId": "0740ec23-eb30-4a15-85c4-8fd17fc19b8d",
+      "referenceSha256": "23b836d1de87420f39b0b683a5b279ff01432523e71c96250bb3c64aeb408f9f",
+      "sourceSha256": "f92738b9fe3dddd2c4aca55c101901c23863f0ea0feabf04b2553e0464804271",
+      "sceneSha256": "311d6237bf08b5c6e42927885d220eb78d0bede6ef2dffdabd200d766eea9a08",
+      "sourceBytes": 16757640,
+      "sceneBytes": 5516356,
+      "cropRow": 2,
+      "cropColumn": 3
+    }
+  ],
+  "sourceBytes": 100005756,
+  "sceneBytes": 32336544
+}

@@ -1,0 +1,1776 @@
+{
+  "checks": [
+    "two curated references replace 13 former weeping trees; 11 spreading trees retain their previous model",
+    "reduced-motion petals frozen",
+    "forest lighting restored exactly",
+    "repeat Fuji entry does not accumulate textures/geometries",
+    "failed curated tree assets fall back to the previous tree styles"
+  ],
+  "initial": {
+    "audit": {
+      "environment": {
+        "exposure": 1.28,
+        "hemi": 2.05,
+        "sun": 2.8,
+        "rim": 0.95,
+        "fill": 0.65
+      },
+      "river": false,
+      "terrace": false,
+      "visualTheme": "dusk-sakura-v3",
+      "theme": "fuji",
+      "islandArea": 2282.053452,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "trees": [
+        {
+          "id": "sakura-0",
+          "asset": "sakura-reference-03",
+          "height": 3.662963703347718,
+          "radius": 2.0432550965313423,
+          "x": -23.19546233724603,
+          "z": -9.060554871722951
+        },
+        {
+          "id": "sakura-1",
+          "asset": "sakura-reference-05",
+          "height": 4.4638220315480694,
+          "radius": 3.2812455442698374,
+          "x": -13.8,
+          "z": -16
+        },
+        {
+          "id": "sakura-2",
+          "asset": "sakura-reference-03",
+          "height": 2.401730100545715,
+          "radius": 1.3397204192735406,
+          "x": -17.66330967451062,
+          "z": -0.5188811328456264
+        },
+        {
+          "id": "sakura-3",
+          "asset": "sakura-reference-05",
+          "height": 1.8243474639139057,
+          "radius": 1.34103285141309,
+          "x": -3.1243991507341926,
+          "z": 6.7981329807574955
+        },
+        {
+          "id": "sakura-4",
+          "asset": "sakura-reference-03",
+          "height": 5.019588302955606,
+          "radius": 2.8000002765873826,
+          "x": 16.73918711264823,
+          "z": 10.041927910984121
+        },
+        {
+          "id": "sakura-5",
+          "asset": "sakura-reference-05",
+          "height": 4.121843220196036,
+          "radius": 3.029865349662392,
+          "x": 24.87630843477643,
+          "z": 3.3485832410058434
+        },
+        {
+          "id": "sakura-6",
+          "asset": "sakura-reference-03",
+          "height": 2.488795186652175,
+          "radius": 1.3882866064717319,
+          "x": 23.427653414387603,
+          "z": 10.906821810706628
+        },
+        {
+          "id": "sakura-7",
+          "asset": "sakura-reference-05",
+          "height": 2.15499260370912,
+          "radius": 1.58408194342881,
+          "x": 10.453038975696423,
+          "z": 10.614927098336015
+        },
+        {
+          "id": "sakura-8",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.28,
+          "radius": 2.365940203991341,
+          "x": 12.410730873869044,
+          "z": 10.80759108891239
+        },
+        {
+          "id": "sakura-9",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.920000000000001,
+          "radius": 2.6527208347781697,
+          "x": 14.30417372255945,
+          "z": 10.879273677267642
+        },
+        {
+          "id": "sakura-10",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.600000000000001,
+          "radius": 2.5093305193847555,
+          "x": 26.92002598412781,
+          "z": -3.042079278572068
+        },
+        {
+          "id": "sakura-11",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.4,
+          "radius": 2.8678063078682916,
+          "x": 26.81689737553019,
+          "z": 1.1781434151363923
+        },
+        {
+          "id": "sakura-12",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.600000000000001,
+          "radius": 2.5093305193847555,
+          "x": 26.63240695776276,
+          "z": 3.9433907319011565
+        },
+        {
+          "id": "sakura-13",
+          "asset": "sakura-reference-03",
+          "height": 4.4298131701480985,
+          "radius": 2.47101502215665,
+          "x": -3.1617821981610805,
+          "z": -14.195983402329635
+        },
+        {
+          "id": "sakura-14",
+          "asset": "sakura-reference-05",
+          "height": 3.133196468325946,
+          "radius": 2.303135492041802,
+          "x": -8.471163564154017,
+          "z": 4.803117318922068
+        },
+        {
+          "id": "sakura-15",
+          "asset": "sakura-reference-03",
+          "height": 2.426096990266453,
+          "radius": 1.3533126291998943,
+          "x": 4.729114279126817,
+          "z": -12.344962354685602
+        },
+        {
+          "id": "sakura-16",
+          "asset": "sakura-reference-05",
+          "height": 2.088847077202523,
+          "radius": 1.5354599973500402,
+          "x": 3.933599501929214,
+          "z": 10.618039814500401
+        },
+        {
+          "id": "sakura-17",
+          "asset": "sakura-reference-03",
+          "height": 5.120000000000001,
+          "radius": 2.9832217931057787,
+          "x": -19.53495059464187,
+          "z": 0.37878143644405293
+        },
+        {
+          "id": "sakura-18",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.920000000000001,
+          "radius": 2.0544893034002247,
+          "x": 3.4794085144761926,
+          "z": -13.753754590885483
+        },
+        {
+          "id": "sakura-19",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.44,
+          "radius": 1.8477398201998056,
+          "x": 13.586297195769617,
+          "z": -16.29539522211351
+        },
+        {
+          "id": "sakura-20",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.4,
+          "radius": 1.7416729393696704,
+          "x": 18.922600816355654,
+          "z": -16.20478835957137
+        },
+        {
+          "id": "sakura-21",
+          "asset": "sakura-yoshino-v3",
+          "height": 7.040000000000001,
+          "radius": 3.1545869386551213,
+          "x": 20.536552860282008,
+          "z": -17.875299722777
+        },
+        {
+          "id": "gathering-sakura",
+          "asset": "sakura-yoshino-v3",
+          "height": 7.5200000000000005,
+          "radius": 2.958300538068499,
+          "x": 24,
+          "z": -12.8
+        },
+        {
+          "id": "sakura-23",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.24,
+          "radius": 2.7961111501715843,
+          "x": 26.754366665339088,
+          "z": -15.651390823723412
+        }
+      ],
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 88.12183715828279,
+      "trainCarriages": 2,
+      "obstacleGroups": 53,
+      "adoptedAssets": [
+        "fuji",
+        "locomotive",
+        "carriage",
+        "station",
+        "sakura_a",
+        "sakura_c",
+        "sakura_b",
+        "track",
+        "gate",
+        "classroom",
+        "sport",
+        "lab",
+        "library",
+        "music",
+        "club",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "assetFailures": [],
+      "assetFallbacks": []
+    },
+    "scene": {
+      "visualTheme": "dusk-sakura-v3",
+      "theme": "fuji",
+      "islandArea": 2282.053452,
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "trees": [
+        {
+          "id": "sakura-0",
+          "asset": "sakura-reference-03",
+          "height": 3.662963703347718,
+          "radius": 2.0432550965313423,
+          "x": -23.19546233724603,
+          "z": -9.060554871722951
+        },
+        {
+          "id": "sakura-1",
+          "asset": "sakura-reference-05",
+          "height": 4.4638220315480694,
+          "radius": 3.2812455442698374,
+          "x": -13.8,
+          "z": -16
+        },
+        {
+          "id": "sakura-2",
+          "asset": "sakura-reference-03",
+          "height": 2.401730100545715,
+          "radius": 1.3397204192735406,
+          "x": -17.66330967451062,
+          "z": -0.5188811328456264
+        },
+        {
+          "id": "sakura-3",
+          "asset": "sakura-reference-05",
+          "height": 1.8243474639139057,
+          "radius": 1.34103285141309,
+          "x": -3.1243991507341926,
+          "z": 6.7981329807574955
+        },
+        {
+          "id": "sakura-4",
+          "asset": "sakura-reference-03",
+          "height": 5.019588302955606,
+          "radius": 2.8000002765873826,
+          "x": 16.73918711264823,
+          "z": 10.041927910984121
+        },
+        {
+          "id": "sakura-5",
+          "asset": "sakura-reference-05",
+          "height": 4.121843220196036,
+          "radius": 3.029865349662392,
+          "x": 24.87630843477643,
+          "z": 3.3485832410058434
+        },
+        {
+          "id": "sakura-6",
+          "asset": "sakura-reference-03",
+          "height": 2.488795186652175,
+          "radius": 1.3882866064717319,
+          "x": 23.427653414387603,
+          "z": 10.906821810706628
+        },
+        {
+          "id": "sakura-7",
+          "asset": "sakura-reference-05",
+          "height": 2.15499260370912,
+          "radius": 1.58408194342881,
+          "x": 10.453038975696423,
+          "z": 10.614927098336015
+        },
+        {
+          "id": "sakura-8",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.28,
+          "radius": 2.365940203991341,
+          "x": 12.410730873869044,
+          "z": 10.80759108891239
+        },
+        {
+          "id": "sakura-9",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.920000000000001,
+          "radius": 2.6527208347781697,
+          "x": 14.30417372255945,
+          "z": 10.879273677267642
+        },
+        {
+          "id": "sakura-10",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.600000000000001,
+          "radius": 2.5093305193847555,
+          "x": 26.92002598412781,
+          "z": -3.042079278572068
+        },
+        {
+          "id": "sakura-11",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.4,
+          "radius": 2.8678063078682916,
+          "x": 26.81689737553019,
+          "z": 1.1781434151363923
+        },
+        {
+          "id": "sakura-12",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.600000000000001,
+          "radius": 2.5093305193847555,
+          "x": 26.63240695776276,
+          "z": 3.9433907319011565
+        },
+        {
+          "id": "sakura-13",
+          "asset": "sakura-reference-03",
+          "height": 4.4298131701480985,
+          "radius": 2.47101502215665,
+          "x": -3.1617821981610805,
+          "z": -14.195983402329635
+        },
+        {
+          "id": "sakura-14",
+          "asset": "sakura-reference-05",
+          "height": 3.133196468325946,
+          "radius": 2.303135492041802,
+          "x": -8.471163564154017,
+          "z": 4.803117318922068
+        },
+        {
+          "id": "sakura-15",
+          "asset": "sakura-reference-03",
+          "height": 2.426096990266453,
+          "radius": 1.3533126291998943,
+          "x": 4.729114279126817,
+          "z": -12.344962354685602
+        },
+        {
+          "id": "sakura-16",
+          "asset": "sakura-reference-05",
+          "height": 2.088847077202523,
+          "radius": 1.5354599973500402,
+          "x": 3.933599501929214,
+          "z": 10.618039814500401
+        },
+        {
+          "id": "sakura-17",
+          "asset": "sakura-reference-03",
+          "height": 5.120000000000001,
+          "radius": 2.9832217931057787,
+          "x": -19.53495059464187,
+          "z": 0.37878143644405293
+        },
+        {
+          "id": "sakura-18",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.920000000000001,
+          "radius": 2.0544893034002247,
+          "x": 3.4794085144761926,
+          "z": -13.753754590885483
+        },
+        {
+          "id": "sakura-19",
+          "asset": "sakura-yoshino-v3",
+          "height": 5.44,
+          "radius": 1.8477398201998056,
+          "x": 13.586297195769617,
+          "z": -16.29539522211351
+        },
+        {
+          "id": "sakura-20",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.4,
+          "radius": 1.7416729393696704,
+          "x": 18.922600816355654,
+          "z": -16.20478835957137
+        },
+        {
+          "id": "sakura-21",
+          "asset": "sakura-yoshino-v3",
+          "height": 7.040000000000001,
+          "radius": 3.1545869386551213,
+          "x": 20.536552860282008,
+          "z": -17.875299722777
+        },
+        {
+          "id": "gathering-sakura",
+          "asset": "sakura-yoshino-v3",
+          "height": 7.5200000000000005,
+          "radius": 2.958300538068499,
+          "x": 24,
+          "z": -12.8
+        },
+        {
+          "id": "sakura-23",
+          "asset": "sakura-yoshino-v3",
+          "height": 6.24,
+          "radius": 2.7961111501715843,
+          "x": 26.754366665339088,
+          "z": -15.651390823723412
+        }
+      ],
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 88.12183715828279,
+      "trainCarriages": 2,
+      "obstacleGroups": 53,
+      "adoptedAssets": [
+        "fuji",
+        "locomotive",
+        "carriage",
+        "station",
+        "sakura_a",
+        "sakura_c",
+        "sakura_b",
+        "track",
+        "gate",
+        "classroom",
+        "sport",
+        "lab",
+        "library",
+        "music",
+        "club",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "fences": {
+        "sections": 6,
+        "panels": 72,
+        "openingWidth": 4.279999999999999,
+        "height": 0.98
+      },
+      "trainX": 16.410713882212484,
+      "trainZ": 5.174466489432236,
+      "animationTime": 0,
+      "distance": 61.960952223072134,
+      "stopped": true,
+      "holding": false,
+      "crossing": {
+        "state": "open",
+        "closure": 0,
+        "occupants": 0,
+        "entryAllowed": true
+      },
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 43.08613025056267,
+      "carriageDimensions": {
+        "length": 3,
+        "height": 1.28,
+        "width": 1.18,
+        "spacing": 3.55,
+        "wheelRadius": 0.3,
+        "wheelOffset": 0.51
+      },
+      "carriagePositions": [
+        [
+          16.410713882212484,
+          2.5,
+          5.174466489432236
+        ],
+        [
+          13.185962418953967,
+          2.5,
+          3.691485671381194
+        ],
+        [
+          10.029889928051333,
+          2.5,
+          2.0663480716587497
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true,
+        "track": true,
+        "gate": true
+      },
+      "petals": {
+        "clock": 0,
+        "updates": 0,
+        "active": true,
+        "enabled": true,
+        "reduced": true,
+        "airVisible": false,
+        "airCapacity": 1200,
+        "validParticles": 1200,
+        "groundCount": 6500,
+        "roofStops": 21,
+        "batches": 2
+      },
+      "ferrisWheel": {
+        "x": -19,
+        "z": -19,
+        "radius": 3.65,
+        "cabins": 12,
+        "angle": 0,
+        "cycleSeconds": 110
+      }
+    },
+    "resources": {
+      "switches": 0,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 259,
+      "textures": 66,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "fuji"
+        ],
+        "sharedResources": 95
+      },
+      "characters": {
+        "theme": "fuji",
+        "suspended": false,
+        "positions": {},
+        "cachedThemes": [],
+        "cachedCharacters": 0,
+        "contextObstacles": 56
+      },
+      "calls": 299,
+      "triangles": 1927571
+    }
+  },
+  "visits": [
+    {
+      "id": "forest",
+      "audit": {
+        "environment": {
+          "exposure": 1.42,
+          "hemi": 2.2,
+          "sun": 3.7,
+          "rim": 1.2,
+          "fill": 0.8
+        },
+        "river": true,
+        "terrace": true,
+        "assetFailures": [],
+        "assetFallbacks": []
+      },
+      "resources": {
+        "switches": 1,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 378,
+        "textures": 136,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "fuji",
+            "forest"
+          ],
+          "sharedResources": 529
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {},
+          "cachedThemes": [
+            "fuji"
+          ],
+          "cachedCharacters": 0,
+          "contextObstacles": 65
+        },
+        "calls": 331,
+        "triangles": 966929
+      }
+    },
+    {
+      "id": "fuji",
+      "audit": {
+        "environment": {
+          "exposure": 1.28,
+          "hemi": 2.05,
+          "sun": 2.8,
+          "rim": 0.95,
+          "fill": 0.65
+        },
+        "river": false,
+        "terrace": false,
+        "visualTheme": "dusk-sakura-v3",
+        "theme": "fuji",
+        "islandArea": 2282.053452,
+        "independentLayout": true,
+        "sakuraTrees": 24,
+        "trees": [
+          {
+            "id": "sakura-0",
+            "asset": "sakura-reference-03",
+            "height": 3.662963703347718,
+            "radius": 2.0432550965313423,
+            "x": -23.19546233724603,
+            "z": -9.060554871722951
+          },
+          {
+            "id": "sakura-1",
+            "asset": "sakura-reference-05",
+            "height": 4.4638220315480694,
+            "radius": 3.2812455442698374,
+            "x": -13.8,
+            "z": -16
+          },
+          {
+            "id": "sakura-2",
+            "asset": "sakura-reference-03",
+            "height": 2.401730100545715,
+            "radius": 1.3397204192735406,
+            "x": -17.66330967451062,
+            "z": -0.5188811328456264
+          },
+          {
+            "id": "sakura-3",
+            "asset": "sakura-reference-05",
+            "height": 1.8243474639139057,
+            "radius": 1.34103285141309,
+            "x": -3.1243991507341926,
+            "z": 6.7981329807574955
+          },
+          {
+            "id": "sakura-4",
+            "asset": "sakura-reference-03",
+            "height": 5.019588302955606,
+            "radius": 2.8000002765873826,
+            "x": 16.73918711264823,
+            "z": 10.041927910984121
+          },
+          {
+            "id": "sakura-5",
+            "asset": "sakura-reference-05",
+            "height": 4.121843220196036,
+            "radius": 3.029865349662392,
+            "x": 24.87630843477643,
+            "z": 3.3485832410058434
+          },
+          {
+            "id": "sakura-6",
+            "asset": "sakura-reference-03",
+            "height": 2.488795186652175,
+            "radius": 1.3882866064717319,
+            "x": 23.427653414387603,
+            "z": 10.906821810706628
+          },
+          {
+            "id": "sakura-7",
+            "asset": "sakura-reference-05",
+            "height": 2.15499260370912,
+            "radius": 1.58408194342881,
+            "x": 10.453038975696423,
+            "z": 10.614927098336015
+          },
+          {
+            "id": "sakura-8",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.28,
+            "radius": 2.365940203991341,
+            "x": 12.410730873869044,
+            "z": 10.80759108891239
+          },
+          {
+            "id": "sakura-9",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.920000000000001,
+            "radius": 2.6527208347781697,
+            "x": 14.30417372255945,
+            "z": 10.879273677267642
+          },
+          {
+            "id": "sakura-10",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.600000000000001,
+            "radius": 2.5093305193847555,
+            "x": 26.92002598412781,
+            "z": -3.042079278572068
+          },
+          {
+            "id": "sakura-11",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.4,
+            "radius": 2.8678063078682916,
+            "x": 26.81689737553019,
+            "z": 1.1781434151363923
+          },
+          {
+            "id": "sakura-12",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.600000000000001,
+            "radius": 2.5093305193847555,
+            "x": 26.63240695776276,
+            "z": 3.9433907319011565
+          },
+          {
+            "id": "sakura-13",
+            "asset": "sakura-reference-03",
+            "height": 4.4298131701480985,
+            "radius": 2.47101502215665,
+            "x": -3.1617821981610805,
+            "z": -14.195983402329635
+          },
+          {
+            "id": "sakura-14",
+            "asset": "sakura-reference-05",
+            "height": 3.133196468325946,
+            "radius": 2.303135492041802,
+            "x": -8.471163564154017,
+            "z": 4.803117318922068
+          },
+          {
+            "id": "sakura-15",
+            "asset": "sakura-reference-03",
+            "height": 2.426096990266453,
+            "radius": 1.3533126291998943,
+            "x": 4.729114279126817,
+            "z": -12.344962354685602
+          },
+          {
+            "id": "sakura-16",
+            "asset": "sakura-reference-05",
+            "height": 2.088847077202523,
+            "radius": 1.5354599973500402,
+            "x": 3.933599501929214,
+            "z": 10.618039814500401
+          },
+          {
+            "id": "sakura-17",
+            "asset": "sakura-reference-03",
+            "height": 5.120000000000001,
+            "radius": 2.9832217931057787,
+            "x": -19.53495059464187,
+            "z": 0.37878143644405293
+          },
+          {
+            "id": "sakura-18",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.920000000000001,
+            "radius": 2.0544893034002247,
+            "x": 3.4794085144761926,
+            "z": -13.753754590885483
+          },
+          {
+            "id": "sakura-19",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.44,
+            "radius": 1.8477398201998056,
+            "x": 13.586297195769617,
+            "z": -16.29539522211351
+          },
+          {
+            "id": "sakura-20",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.4,
+            "radius": 1.7416729393696704,
+            "x": 18.922600816355654,
+            "z": -16.20478835957137
+          },
+          {
+            "id": "sakura-21",
+            "asset": "sakura-yoshino-v3",
+            "height": 7.040000000000001,
+            "radius": 3.1545869386551213,
+            "x": 20.536552860282008,
+            "z": -17.875299722777
+          },
+          {
+            "id": "gathering-sakura",
+            "asset": "sakura-yoshino-v3",
+            "height": 7.5200000000000005,
+            "radius": 2.958300538068499,
+            "x": 24,
+            "z": -12.8
+          },
+          {
+            "id": "sakura-23",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.24,
+            "radius": 2.7961111501715843,
+            "x": 26.754366665339088,
+            "z": -15.651390823723412
+          }
+        ],
+        "gardens": 4,
+        "staticJapaneseBuildings": 4,
+        "railLength": 88.12183715828279,
+        "trainCarriages": 2,
+        "obstacleGroups": 53,
+        "adoptedAssets": [
+          "fuji",
+          "locomotive",
+          "carriage",
+          "station",
+          "sakura_a",
+          "sakura_c",
+          "sakura_b",
+          "track",
+          "gate",
+          "classroom",
+          "sport",
+          "lab",
+          "library",
+          "music",
+          "club",
+          "art",
+          "cafe",
+          "observatory"
+        ],
+        "assetFailures": [],
+        "assetFallbacks": []
+      },
+      "resources": {
+        "switches": 2,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 437,
+        "textures": 138,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "fuji",
+            "forest"
+          ],
+          "sharedResources": 529
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {},
+          "cachedThemes": [
+            "fuji",
+            "forest"
+          ],
+          "cachedCharacters": 0,
+          "contextObstacles": 56
+        },
+        "calls": 298,
+        "triangles": 1926732
+      }
+    },
+    {
+      "id": "forest",
+      "audit": {
+        "environment": {
+          "exposure": 1.42,
+          "hemi": 2.2,
+          "sun": 3.7,
+          "rim": 1.2,
+          "fill": 0.8
+        },
+        "river": true,
+        "terrace": true,
+        "assetFailures": [],
+        "assetFallbacks": []
+      },
+      "resources": {
+        "switches": 3,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 378,
+        "textures": 136,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "fuji",
+            "forest"
+          ],
+          "sharedResources": 529
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {},
+          "cachedThemes": [
+            "fuji",
+            "forest"
+          ],
+          "cachedCharacters": 0,
+          "contextObstacles": 65
+        },
+        "calls": 331,
+        "triangles": 966929
+      }
+    },
+    {
+      "id": "fuji",
+      "audit": {
+        "environment": {
+          "exposure": 1.28,
+          "hemi": 2.05,
+          "sun": 2.8,
+          "rim": 0.95,
+          "fill": 0.65
+        },
+        "river": false,
+        "terrace": false,
+        "visualTheme": "dusk-sakura-v3",
+        "theme": "fuji",
+        "islandArea": 2282.053452,
+        "independentLayout": true,
+        "sakuraTrees": 24,
+        "trees": [
+          {
+            "id": "sakura-0",
+            "asset": "sakura-reference-03",
+            "height": 3.662963703347718,
+            "radius": 2.0432550965313423,
+            "x": -23.19546233724603,
+            "z": -9.060554871722951
+          },
+          {
+            "id": "sakura-1",
+            "asset": "sakura-reference-05",
+            "height": 4.4638220315480694,
+            "radius": 3.2812455442698374,
+            "x": -13.8,
+            "z": -16
+          },
+          {
+            "id": "sakura-2",
+            "asset": "sakura-reference-03",
+            "height": 2.401730100545715,
+            "radius": 1.3397204192735406,
+            "x": -17.66330967451062,
+            "z": -0.5188811328456264
+          },
+          {
+            "id": "sakura-3",
+            "asset": "sakura-reference-05",
+            "height": 1.8243474639139057,
+            "radius": 1.34103285141309,
+            "x": -3.1243991507341926,
+            "z": 6.7981329807574955
+          },
+          {
+            "id": "sakura-4",
+            "asset": "sakura-reference-03",
+            "height": 5.019588302955606,
+            "radius": 2.8000002765873826,
+            "x": 16.73918711264823,
+            "z": 10.041927910984121
+          },
+          {
+            "id": "sakura-5",
+            "asset": "sakura-reference-05",
+            "height": 4.121843220196036,
+            "radius": 3.029865349662392,
+            "x": 24.87630843477643,
+            "z": 3.3485832410058434
+          },
+          {
+            "id": "sakura-6",
+            "asset": "sakura-reference-03",
+            "height": 2.488795186652175,
+            "radius": 1.3882866064717319,
+            "x": 23.427653414387603,
+            "z": 10.906821810706628
+          },
+          {
+            "id": "sakura-7",
+            "asset": "sakura-reference-05",
+            "height": 2.15499260370912,
+            "radius": 1.58408194342881,
+            "x": 10.453038975696423,
+            "z": 10.614927098336015
+          },
+          {
+            "id": "sakura-8",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.28,
+            "radius": 2.365940203991341,
+            "x": 12.410730873869044,
+            "z": 10.80759108891239
+          },
+          {
+            "id": "sakura-9",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.920000000000001,
+            "radius": 2.6527208347781697,
+            "x": 14.30417372255945,
+            "z": 10.879273677267642
+          },
+          {
+            "id": "sakura-10",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.600000000000001,
+            "radius": 2.5093305193847555,
+            "x": 26.92002598412781,
+            "z": -3.042079278572068
+          },
+          {
+            "id": "sakura-11",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.4,
+            "radius": 2.8678063078682916,
+            "x": 26.81689737553019,
+            "z": 1.1781434151363923
+          },
+          {
+            "id": "sakura-12",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.600000000000001,
+            "radius": 2.5093305193847555,
+            "x": 26.63240695776276,
+            "z": 3.9433907319011565
+          },
+          {
+            "id": "sakura-13",
+            "asset": "sakura-reference-03",
+            "height": 4.4298131701480985,
+            "radius": 2.47101502215665,
+            "x": -3.1617821981610805,
+            "z": -14.195983402329635
+          },
+          {
+            "id": "sakura-14",
+            "asset": "sakura-reference-05",
+            "height": 3.133196468325946,
+            "radius": 2.303135492041802,
+            "x": -8.471163564154017,
+            "z": 4.803117318922068
+          },
+          {
+            "id": "sakura-15",
+            "asset": "sakura-reference-03",
+            "height": 2.426096990266453,
+            "radius": 1.3533126291998943,
+            "x": 4.729114279126817,
+            "z": -12.344962354685602
+          },
+          {
+            "id": "sakura-16",
+            "asset": "sakura-reference-05",
+            "height": 2.088847077202523,
+            "radius": 1.5354599973500402,
+            "x": 3.933599501929214,
+            "z": 10.618039814500401
+          },
+          {
+            "id": "sakura-17",
+            "asset": "sakura-reference-03",
+            "height": 5.120000000000001,
+            "radius": 2.9832217931057787,
+            "x": -19.53495059464187,
+            "z": 0.37878143644405293
+          },
+          {
+            "id": "sakura-18",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.920000000000001,
+            "radius": 2.0544893034002247,
+            "x": 3.4794085144761926,
+            "z": -13.753754590885483
+          },
+          {
+            "id": "sakura-19",
+            "asset": "sakura-yoshino-v3",
+            "height": 5.44,
+            "radius": 1.8477398201998056,
+            "x": 13.586297195769617,
+            "z": -16.29539522211351
+          },
+          {
+            "id": "sakura-20",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.4,
+            "radius": 1.7416729393696704,
+            "x": 18.922600816355654,
+            "z": -16.20478835957137
+          },
+          {
+            "id": "sakura-21",
+            "asset": "sakura-yoshino-v3",
+            "height": 7.040000000000001,
+            "radius": 3.1545869386551213,
+            "x": 20.536552860282008,
+            "z": -17.875299722777
+          },
+          {
+            "id": "gathering-sakura",
+            "asset": "sakura-yoshino-v3",
+            "height": 7.5200000000000005,
+            "radius": 2.958300538068499,
+            "x": 24,
+            "z": -12.8
+          },
+          {
+            "id": "sakura-23",
+            "asset": "sakura-yoshino-v3",
+            "height": 6.24,
+            "radius": 2.7961111501715843,
+            "x": 26.754366665339088,
+            "z": -15.651390823723412
+          }
+        ],
+        "gardens": 4,
+        "staticJapaneseBuildings": 4,
+        "railLength": 88.12183715828279,
+        "trainCarriages": 2,
+        "obstacleGroups": 53,
+        "adoptedAssets": [
+          "fuji",
+          "locomotive",
+          "carriage",
+          "station",
+          "sakura_a",
+          "sakura_c",
+          "sakura_b",
+          "track",
+          "gate",
+          "classroom",
+          "sport",
+          "lab",
+          "library",
+          "music",
+          "club",
+          "art",
+          "cafe",
+          "observatory"
+        ],
+        "assetFailures": [],
+        "assetFallbacks": []
+      },
+      "resources": {
+        "switches": 4,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 437,
+        "textures": 138,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "fuji",
+            "forest"
+          ],
+          "sharedResources": 529
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {},
+          "cachedThemes": [
+            "fuji",
+            "forest"
+          ],
+          "cachedCharacters": 0,
+          "contextObstacles": 56
+        },
+        "calls": 298,
+        "triangles": 1926732
+      }
+    }
+  ],
+  "fallback": {
+    "audit": {
+      "environment": {
+        "exposure": 1.28,
+        "hemi": 2.05,
+        "sun": 2.8,
+        "rim": 0.95,
+        "fill": 0.65
+      },
+      "river": false,
+      "terrace": false,
+      "visualTheme": "dusk-sakura-v3",
+      "theme": "fuji",
+      "islandArea": 2282.053452,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "trees": [
+        {
+          "id": "sakura-0",
+          "asset": "sakura-weeping-v3r1",
+          "height": 6.4,
+          "radius": 2.0432550965313423,
+          "x": -23.19546233724603,
+          "z": -9.060554871722951
+        },
+        {
+          "id": "sakura-1",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.920000000000001,
+          "radius": 2.0752047694964038,
+          "x": -13.8,
+          "z": -16
+        },
+        {
+          "id": "sakura-2",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.3397204192735406,
+          "x": -17.66330967451062,
+          "z": -0.5188811328456264
+        },
+        {
+          "id": "sakura-3",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.34103285141309,
+          "x": -3.1243991507341926,
+          "z": 6.7981329807574955
+        },
+        {
+          "id": "sakura-4",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.9630315387128145,
+          "x": 16.73918711264823,
+          "z": 10.041927910984121
+        },
+        {
+          "id": "sakura-5",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.9630315387128145,
+          "x": 24.87630843477643,
+          "z": 3.3485832410058434
+        },
+        {
+          "id": "sakura-6",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.920000000000001,
+          "radius": 1.3882866064717319,
+          "x": 23.427653414387603,
+          "z": 10.906821810706628
+        },
+        {
+          "id": "sakura-7",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.76,
+          "radius": 1.58408194342881,
+          "x": 10.453038975696423,
+          "z": 10.614927098336015
+        },
+        {
+          "id": "sakura-8",
+          "asset": "sakura_a",
+          "height": 5.28,
+          "radius": 2.3558281511448365,
+          "x": 12.410730873869044,
+          "z": 10.80759108891239
+        },
+        {
+          "id": "sakura-9",
+          "asset": "sakura_a",
+          "height": 5.920000000000001,
+          "radius": 2.641383078556332,
+          "x": 14.30417372255945,
+          "z": 10.879273677267642
+        },
+        {
+          "id": "sakura-10",
+          "asset": "sakura_a",
+          "height": 5.600000000000001,
+          "radius": 2.4986056148505846,
+          "x": 26.92002598412781,
+          "z": -3.042079278572068
+        },
+        {
+          "id": "sakura-11",
+          "asset": "sakura_a",
+          "height": 6.4,
+          "radius": 2.8555492741149533,
+          "x": 26.81689737553019,
+          "z": 1.1781434151363923
+        },
+        {
+          "id": "sakura-12",
+          "asset": "sakura_a",
+          "height": 5.600000000000001,
+          "radius": 2.4986056148505846,
+          "x": 26.63240695776276,
+          "z": 3.9433907319011565
+        },
+        {
+          "id": "sakura-13",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.960000000000001,
+          "radius": 1.738685077145636,
+          "x": -3.1617821981610805,
+          "z": -14.195983402329635
+        },
+        {
+          "id": "sakura-14",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.682598461753841,
+          "x": -8.471163564154017,
+          "z": 4.803117318922068
+        },
+        {
+          "id": "sakura-15",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.3533126291998943,
+          "x": 4.729114279126817,
+          "z": -12.344962354685602
+        },
+        {
+          "id": "sakura-16",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.5354599973500402,
+          "x": 3.933599501929214,
+          "z": 10.618039814500401
+        },
+        {
+          "id": "sakura-17",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.120000000000001,
+          "radius": 1.7947716925374306,
+          "x": -19.53495059464187,
+          "z": 0.37878143644405293
+        },
+        {
+          "id": "sakura-18",
+          "asset": "sakura_a",
+          "height": 5.920000000000001,
+          "radius": 2.0544893034002247,
+          "x": 3.4794085144761926,
+          "z": -13.753754590885483
+        },
+        {
+          "id": "sakura-19",
+          "asset": "sakura_a",
+          "height": 5.44,
+          "radius": 1.8477398201998056,
+          "x": 13.586297195769617,
+          "z": -16.29539522211351
+        },
+        {
+          "id": "sakura-20",
+          "asset": "sakura_a",
+          "height": 6.4,
+          "radius": 1.7416729393696704,
+          "x": 18.922600816355654,
+          "z": -16.20478835957137
+        },
+        {
+          "id": "sakura-21",
+          "asset": "sakura_a",
+          "height": 7.040000000000001,
+          "radius": 3.1411042015264488,
+          "x": 20.536552860282008,
+          "z": -17.875299722777
+        },
+        {
+          "id": "gathering-sakura",
+          "asset": "sakura_a",
+          "height": 7.5200000000000005,
+          "radius": 2.958300538068499,
+          "x": 24,
+          "z": -12.8
+        },
+        {
+          "id": "sakura-23",
+          "asset": "sakura_a",
+          "height": 6.24,
+          "radius": 2.784160542262079,
+          "x": 26.754366665339088,
+          "z": -15.651390823723412
+        }
+      ],
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 88.12183715828279,
+      "trainCarriages": 2,
+      "obstacleGroups": 53,
+      "adoptedAssets": [
+        "fuji",
+        "locomotive",
+        "carriage",
+        "station",
+        "track",
+        "gate",
+        "club",
+        "classroom",
+        "sport",
+        "lab",
+        "library",
+        "music",
+        "art",
+        "cafe",
+        "observatory",
+        "sakura_a",
+        "sakura_b",
+        "sakura_c"
+      ],
+      "assetFailures": [],
+      "assetFallbacks": [
+        {
+          "key": "sakura_a",
+          "requested": "sakura-yoshino-v3",
+          "used": "sakura_a"
+        },
+        {
+          "key": "sakura_b",
+          "requested": "sakura-reference-03",
+          "used": "sakura-weeping-v3r1"
+        },
+        {
+          "key": "sakura_c",
+          "requested": "sakura-reference-05",
+          "used": "sakura-weeping-v3r1"
+        }
+      ]
+    },
+    "scene": {
+      "visualTheme": "dusk-sakura-v3",
+      "theme": "fuji",
+      "islandArea": 2282.053452,
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "trees": [
+        {
+          "id": "sakura-0",
+          "asset": "sakura-weeping-v3r1",
+          "height": 6.4,
+          "radius": 2.0432550965313423,
+          "x": -23.19546233724603,
+          "z": -9.060554871722951
+        },
+        {
+          "id": "sakura-1",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.920000000000001,
+          "radius": 2.0752047694964038,
+          "x": -13.8,
+          "z": -16
+        },
+        {
+          "id": "sakura-2",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.3397204192735406,
+          "x": -17.66330967451062,
+          "z": -0.5188811328456264
+        },
+        {
+          "id": "sakura-3",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.34103285141309,
+          "x": -3.1243991507341926,
+          "z": 6.7981329807574955
+        },
+        {
+          "id": "sakura-4",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.9630315387128145,
+          "x": 16.73918711264823,
+          "z": 10.041927910984121
+        },
+        {
+          "id": "sakura-5",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.9630315387128145,
+          "x": 24.87630843477643,
+          "z": 3.3485832410058434
+        },
+        {
+          "id": "sakura-6",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.920000000000001,
+          "radius": 1.3882866064717319,
+          "x": 23.427653414387603,
+          "z": 10.906821810706628
+        },
+        {
+          "id": "sakura-7",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.76,
+          "radius": 1.58408194342881,
+          "x": 10.453038975696423,
+          "z": 10.614927098336015
+        },
+        {
+          "id": "sakura-8",
+          "asset": "sakura_a",
+          "height": 5.28,
+          "radius": 2.3558281511448365,
+          "x": 12.410730873869044,
+          "z": 10.80759108891239
+        },
+        {
+          "id": "sakura-9",
+          "asset": "sakura_a",
+          "height": 5.920000000000001,
+          "radius": 2.641383078556332,
+          "x": 14.30417372255945,
+          "z": 10.879273677267642
+        },
+        {
+          "id": "sakura-10",
+          "asset": "sakura_a",
+          "height": 5.600000000000001,
+          "radius": 2.4986056148505846,
+          "x": 26.92002598412781,
+          "z": -3.042079278572068
+        },
+        {
+          "id": "sakura-11",
+          "asset": "sakura_a",
+          "height": 6.4,
+          "radius": 2.8555492741149533,
+          "x": 26.81689737553019,
+          "z": 1.1781434151363923
+        },
+        {
+          "id": "sakura-12",
+          "asset": "sakura_a",
+          "height": 5.600000000000001,
+          "radius": 2.4986056148505846,
+          "x": 26.63240695776276,
+          "z": 3.9433907319011565
+        },
+        {
+          "id": "sakura-13",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.960000000000001,
+          "radius": 1.738685077145636,
+          "x": -3.1617821981610805,
+          "z": -14.195983402329635
+        },
+        {
+          "id": "sakura-14",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.682598461753841,
+          "x": -8.471163564154017,
+          "z": 4.803117318922068
+        },
+        {
+          "id": "sakura-15",
+          "asset": "sakura-weeping-v3r1",
+          "height": 4.800000000000001,
+          "radius": 1.3533126291998943,
+          "x": 4.729114279126817,
+          "z": -12.344962354685602
+        },
+        {
+          "id": "sakura-16",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.600000000000001,
+          "radius": 1.5354599973500402,
+          "x": 3.933599501929214,
+          "z": 10.618039814500401
+        },
+        {
+          "id": "sakura-17",
+          "asset": "sakura-weeping-v3r1",
+          "height": 5.120000000000001,
+          "radius": 1.7947716925374306,
+          "x": -19.53495059464187,
+          "z": 0.37878143644405293
+        },
+        {
+          "id": "sakura-18",
+          "asset": "sakura_a",
+          "height": 5.920000000000001,
+          "radius": 2.0544893034002247,
+          "x": 3.4794085144761926,
+          "z": -13.753754590885483
+        },
+        {
+          "id": "sakura-19",
+          "asset": "sakura_a",
+          "height": 5.44,
+          "radius": 1.8477398201998056,
+          "x": 13.586297195769617,
+          "z": -16.29539522211351
+        },
+        {
+          "id": "sakura-20",
+          "asset": "sakura_a",
+          "height": 6.4,
+          "radius": 1.7416729393696704,
+          "x": 18.922600816355654,
+          "z": -16.20478835957137
+        },
+        {
+          "id": "sakura-21",
+          "asset": "sakura_a",
+          "height": 7.040000000000001,
+          "radius": 3.1411042015264488,
+          "x": 20.536552860282008,
+          "z": -17.875299722777
+        },
+        {
+          "id": "gathering-sakura",
+          "asset": "sakura_a",
+          "height": 7.5200000000000005,
+          "radius": 2.958300538068499,
+          "x": 24,
+          "z": -12.8
+        },
+        {
+          "id": "sakura-23",
+          "asset": "sakura_a",
+          "height": 6.24,
+          "radius": 2.784160542262079,
+          "x": 26.754366665339088,
+          "z": -15.651390823723412
+        }
+      ],
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 88.12183715828279,
+      "trainCarriages": 2,
+      "obstacleGroups": 53,
+      "adoptedAssets": [
+        "fuji",
+        "locomotive",
+        "carriage",
+        "station",
+        "track",
+        "gate",
+        "club",
+        "classroom",
+        "sport",
+        "lab",
+        "library",
+        "music",
+        "art",
+        "cafe",
+        "observatory",
+        "sakura_a",
+        "sakura_b",
+        "sakura_c"
+      ],
+      "fences": {
+        "sections": 6,
+        "panels": 72,
+        "openingWidth": 4.279999999999999,
+        "height": 0.98
+      },
+      "trainX": 16.410713882212484,
+      "trainZ": 5.174466489432236,
+      "animationTime": 0,
+      "distance": 61.960952223072134,
+      "stopped": true,
+      "holding": false,
+      "crossing": {
+        "state": "open",
+        "closure": 0,
+        "occupants": 0,
+        "entryAllowed": true
+      },
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 43.08613025056267,
+      "carriageDimensions": {
+        "length": 3,
+        "height": 1.28,
+        "width": 1.18,
+        "spacing": 3.55,
+        "wheelRadius": 0.3,
+        "wheelOffset": 0.51
+      },
+      "carriagePositions": [
+        [
+          16.410713882212484,
+          2.5,
+          5.174466489432236
+        ],
+        [
+          13.185962418953967,
+          2.5,
+          3.691485671381194
+        ],
+        [
+          10.029889928051333,
+          2.5,
+          2.0663480716587497
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true,
+        "track": true,
+        "gate": true
+      },
+      "petals": {
+        "clock": 0,
+        "updates": 0,
+        "active": true,
+        "enabled": true,
+        "reduced": true,
+        "airVisible": false,
+        "airCapacity": 1200,
+        "validParticles": 1200,
+        "groundCount": 6500,
+        "roofStops": 55,
+        "batches": 2
+      },
+      "ferrisWheel": {
+        "x": -19,
+        "z": -19,
+        "radius": 3.65,
+        "cabins": 12,
+        "angle": 0,
+        "cycleSeconds": 110
+      }
+    }
+  },
+  "errors": []
+}
