@@ -6,6 +6,7 @@ import {buildTerrain} from './terrain.js';
 import {buildArchitecture} from './architecture.js';
 import {buildNature} from './nature.js';
 import {placeRodinProps} from './rodin-props.js';
+import {setReservedFootprints} from './layout.js';
 import {buildValleyLandmarks} from './valley-landmarks.js';
 import {createCommunityGround} from './town-landscape.js';
 import {GROUP_SLOTS,GROUP_QUEUE,COMMUNITY_FACILITIES} from './community-layout.js';
@@ -44,7 +45,12 @@ export async function prepareSceneWorld(id,{reduced}={}){
   if(id==='fuji'){terrain=buildFujiScene(root,{reduced,assets:assets.models});landmarks=terrain.landmarks;}
   else{
    terrain=buildTerrain(root,{rodinBridge:!!assets.props?.bridge,riverAssets:assets.props,valleyAssets:assets.valley,reduced});
-   generated=placeRodinProps(root,assets.props,terrain);architecture=buildArchitecture(root,{rodin:true,expanded:true});nature=buildNature(root,{rodin:true,expanded:true});
+   generated=placeRodinProps(root,assets.props,terrain);architecture=buildArchitecture(root,{rodin:true,expanded:true});
+   nature=buildNature(root,{rodin:true,expanded:true,terrain,fallbackTrees:!assets.props.tree});
+   if(nature.props.children.length){
+    generated.add(...nature.props.children);generated.userData.inventory.push(...nature.props.userData.inventory);
+    setReservedFootprints(generated.userData.inventory.map(({bounds:b})=>({minX:b.min[0],maxX:b.max[0],minZ:b.min[2],maxZ:b.max[2]})));
+   }
    createCommunityGround(root);landmarks=buildValleyLandmarks({scene:root,terrain,generated,assets:assets.props,valleyAssets:assets.valley});
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(42*3),3));flies=new T.Points(g,new T.PointsMaterial({color:0xe6f5a3,size:.075,transparent:true,opacity:.75,depthWrite:false}));flies.name='Floating firefly lights';flies.frustumCulled=false;root.add(flies);
   }

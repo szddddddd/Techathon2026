@@ -3,13 +3,6 @@ html[data-scene="fuji"],html[data-scene="fuji"] body{background:#b797ac}
    allowing projected public controls to reserve real clickable space. */
 html[data-scene="fuji"] #social .friend-anchor{height:auto}
 html[data-scene="fuji"] #social .friend-anchor .head-message{position:static;bottom:auto;order:-1;width:auto;max-width:170px}
-
-/* Keep Fuji's compact spatial labels while retaining the forest message cards. */
-html[data-scene="fuji"] #group-building-labels .group-building-anchor{width:auto;max-width:170px;min-height:44px;padding:6px 12px;gap:7px}
-html[data-scene="fuji"] #group-building-labels .group-building-anchor .scene-content-glyph,html[data-scene="fuji"] .group-sign-copy small{display:none}
-html[data-scene="fuji"] .group-sign-copy strong{font-size:11px;font-weight:500}
-@media(max-width:760px){html[data-scene="fuji"] #group-building-labels .group-building-anchor{max-width:calc(100vw / 3 - 12px);padding:5px 6px;gap:4px}html[data-scene="fuji"] .group-sign-copy strong{font-size:9px}}
-
 /* Hide both outgoing anchors and newly mounted incoming anchors until handoff ends. */
 html[data-scene-transition=true] :is(#friend-anchors,#group-building-labels,#discovery-scene-icons,#record-player-control,#train-station-control,#train-follow-exit,.valley-popover,#character-drag-hint){visibility:hidden!important;pointer-events:none!important}
 .scene-travel{position:fixed;inset:0;z-index:44;display:grid;place-items:center;background:linear-gradient(145deg,#e6eee7ed,#f8f5edee);backdrop-filter:blur(20px);color:#3b5547;font-family:var(--ui-font,-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif)}

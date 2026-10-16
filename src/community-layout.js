@@ -36,7 +36,14 @@ export const COMMUNITY_GARDENS=[
  {id:'riverside-garden',x:-3.7,z:-6.1,width:.6,depth:5.2},
  {id:'west-garden',x:-24.5,z:3.65,width:1.5,depth:2.2},
 ];
-export const COMMUNITY_TREES=[{x:-12,z:-7.6,height:2.5},{x:-3.7,z:-7.5,height:2.25},{x:-24.5,z:3.5,height:2.6},{x:-25,z:-12.1,height:2.3}];
+export const COMMUNITY_TREES=[
+ {x:-12.35,z:-7.9,height:2.8},
+ {x:-3.75,z:-6.7,height:2.4},
+ {x:-24.5,z:3.1,height:2.7},
+ {x:-24.8,z:-11,height:3},
+ {x:-13.3,z:-11.8,height:2.6},
+ {x:-5.9,z:-11.9,height:2.5},
+];
 export const COMMUNITY_BENCHES=[{x:-13.6,z:-4.5,rotation:0},{x:-23.4,z:4.7,rotation:Math.PI/2},{x:-17.5,z:6.2,rotation:Math.PI}];
 export const COMMUNITY_LAMPS=[{x:-13.6,z:2.2},{x:-20.6,z:-2.5},{x:-18.3,z:-10.2},{x:-6.5,z:-8.2}];
 export const COMMUNITY_PLANTERS=[{x:-23.6,z:-2.4,width:.75,depth:.65},{x:-14.5,z:-1.4,width:.65,depth:.65},{x:-5.8,z:3.5,width:.65,depth:.65}];

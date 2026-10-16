@@ -1,7 +1,5 @@
-import {inCommunity} from './community-layout.js';
 import {valleyInstance} from './valley-assets.js';
 import * as THREE from 'three';
-import {isTree,groundTree} from './tree-assets.js';
 import {TERRACE_EXTENSION,terraceHeight} from './terrace-profile.js';
 import {surfaceHeight} from './world-surface.js';
 
@@ -71,9 +69,9 @@ export function buildValleyLandmarks({scene,terrain,generated,assets,valleyAsset
     const notice=obstacle('Forest plaza notice board');notice.add(valleyInstance(valleyAssets,'notice_board',{width:1.3,height:2,depth:.42}));notice.position.set(25.7,2.22,3);notice.rotation.y=-.3;notice.userData.landmark='plaza';pickables.push(notice);
     if(typeof document!=='undefined'){const c=document.createElement('canvas');c.width=512;c.height=320;const ctx=c.getContext('2d');ctx.fillStyle='#f1e8cb';ctx.fillRect(0,0,512,320);ctx.strokeStyle='#b0b68b';ctx.lineWidth=4;ctx.strokeRect(18,18,476,284);ctx.fillStyle='#4c674b';ctx.textAlign='center';ctx.font='bold 56px sans-serif';ctx.fillText('年轮广场',256,107);ctx.font='29px sans-serif';ctx.fillText('在树荫下，见一面',256,182);ctx.font='24px sans-serif';ctx.fillText('来广场坐坐',256,253);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;make(notice,'Readable plaza invitation',new THREE.PlaneGeometry(.91,.65),new THREE.MeshStandardMaterial({map:tex,roughness:1}),0,1.14,.228);}
   }
-  // Sparse silhouettes keep the river pass and original cottage unobstructed.
-  const plants=[['tree',26.5,-1.8,4],['tree_maple',26.8,7,3.7],['tree_maple',18,9.3,3.2],['tree',-17,-12.5,3.8],['tree_birch',7.2,-11.2,3.3],['tree',22,-23,2.8],['tree_maple',25.1,-9.5,3.1],['rock',-11,-11.9,1.8],['rock',13,-13,1.6],['rock',25.5,-6,1],['fern_large',25.8,-2,1],['fern_large',17.4,7.5,.9],['grass',25,8,1.1],['grass',19,8.9,.9]];
-  for(const [kind,x,z,height] of plants.filter(([,x,z])=>!inCommunity(x,z))){if(!assets?.[kind])continue;const g=obstacle('Valley '+kind+' '+x+' '+z),source=assets[kind],model=source.model.clone(true),box3=new THREE.Box3().setFromObject(model),size=box3.getSize(new THREE.Vector3()),c=box3.getCenter(new THREE.Vector3());model.position.sub(new THREE.Vector3(c.x,box3.min.y,c.z));g.add(model);g.scale.setScalar(height/size.y);g.position.set(x,terrain.sample(x,z).height-(kind==='rock'?height*.4:0),z);g.rotation.y=x*.7;g.userData.kind=isTree(kind)?'tree':kind;g.userData.treeVariant=isTree(kind)?kind:undefined;if(isTree(kind))groundTree(g,terrain.sample);}
+  // Trees and the two remaining rocks live in the shared world-coordinate layout.
+  const plants=[['fern_large',25.8,-2,1],['fern_large',17.4,7.5,.9],['grass',25,8,1.1],['grass',19,8.9,.9]];
+  for(const [kind,x,z,height] of plants){if(!assets?.[kind])continue;const g=obstacle('Valley '+kind+' '+x+' '+z),source=assets[kind],model=source.model.clone(true),box3=new THREE.Box3().setFromObject(model),size=box3.getSize(new THREE.Vector3()),c=box3.getCenter(new THREE.Vector3());model.position.sub(new THREE.Vector3(c.x,box3.min.y,c.z));g.add(model);g.scale.setScalar(height/size.y);g.position.set(x,terrain.sample(x,z).height,z);g.rotation.y=x*.7;g.userData.kind=kind;}
   // These remain identifiable for picking and shared collision, rather than merged away.
   for(const g of obstacles)if(pickables.includes(g)||['tree','rock','fern_large','grass'].includes(g.userData.kind)||g.children.some(c=>c.userData.rodinValley))g.traverse(o=>{o.userData.generatedProp=true;});
   const flowerGeo=new THREE.IcosahedronGeometry(.065,0),flowers=new THREE.InstancedMesh(flowerGeo,material(0xe8d7a5),90),dummy=new THREE.Object3D();for(let i=0;i<90;i++){const a=i*2.399,r=5.9+(i%4)*.16,x=21+Math.cos(a)*r,z=2+Math.sin(a)*r;dummy.position.set(x,terrain.sample(x,z).height+.12+(i%3)*.045,z);dummy.scale.set(1.4,1,1.4);dummy.updateMatrix();flowers.setMatrixAt(i,dummy.matrix);}flowers.userData.generatedProp=true;flowers.name='Small plaza wildflowers';root.add(flowers);
