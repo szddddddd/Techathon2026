@@ -5,7 +5,9 @@ export function createFriendModels({store,fetcher=fetch,interval=5000,document:d
   let timer,disposed=false;const inFlight=new Map();
   const pending=()=>Object.values(store.state.customFriends||{}).filter(f=>!f.modelUrl&&f.jobId&&!terminal.has(f.modelPhase));
   async function api(route,body){
-    const response=await fetcher('/api/avatar/'+route,body?{method:'POST',headers:{'Content-Type':'application/json','X-Forest-Avatar':'1'},body:JSON.stringify(body)}:{});
+    const native=globalThis.location?.protocol==='file:'&&globalThis.desktopMain?.avatarRequest;
+    const result=native?await globalThis.desktopMain.avatarRequest(route,body):null;
+    const response=result?{status:result.status,ok:result.status>=200&&result.status<300,json:async()=>result.data}:await fetcher('/api/avatar/'+route,body?{method:'POST',headers:{'Content-Type':'application/json','X-Forest-Avatar':'1'},body:JSON.stringify(body)}:{});
     if(response.status===404)return null;
     if(!response.ok)throw new Error('形象暂时无法准备，稍后会继续。');
     return response.json();

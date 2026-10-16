@@ -4,9 +4,9 @@ import { ASSET_NAMES, PLACEMENTS, setReservedFootprints } from './layout.js';
 import {TREE_VARIANTS,isTree,treeAssetPath,groundTree,lightTreeFoliage} from './tree-assets.js';
 
 /** Local, generated assets. API access is exclusively in the offline Python script. */
-export async function loadRodinProps(){
+export async function loadRodinProps({kinds=Object.keys(ASSET_NAMES)}={}){
   const loader=new GLTFLoader();
-  const entries=await Promise.all(Object.keys(ASSET_NAMES).filter(name=>name!=='cottage').map(async name=>{
+  const entries=await Promise.all([...new Set(kinds)].filter(name=>name!=='cottage').map(async name=>{
     const gltf=await loader.loadAsync(treeAssetPath(name));
     const model=gltf.scene;
     model.name=`Rodin ${name} source`;

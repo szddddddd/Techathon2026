@@ -123,7 +123,7 @@ try{
  await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(()=>__sceneTheme.setPetalsEnabled(false));performanceSamples.petalsOff=await measureFrames();
  await page.evaluate(()=>__sceneTheme.setPetalsEnabled(true));performanceSamples.petalsOn=await measureFrames();
  const petalsRunning=await page.evaluate(()=>__sceneTheme.snapshot().petals);assert.equal(petalsRunning.airCapacity,360);assert.equal(petalsRunning.airVisible,true);assert.equal(petalsRunning.batches,2);assert.ok(petalsRunning.clock>0);
- await page.evaluate(()=>Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}));const hiddenBefore=await page.evaluate(()=>__sceneTheme.snapshot().petals);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.clock),hiddenBefore.clock);await page.evaluate(()=>delete document.hidden);
+ await page.evaluate(()=>Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}));const hiddenBefore=await page.evaluate(()=>__sceneTheme.snapshot().petals);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.clock),hiddenBefore.clock);await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
  await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(80);const frozenPetals=await page.evaluate(()=>__sceneTheme.snapshot().petals);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>__sceneTheme.snapshot().petals.clock),frozenPetals.clock);assert.equal(frozenPetals.airVisible,false);
  checks.push('360 instanced falling petals, 3000 settled petals; background and reduced-motion freeze; same-camera off/on frame measurements');
 

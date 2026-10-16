@@ -1,3 +1,4 @@
+import {createGroupCamera} from './group-camera.js';
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {createUIInteractions} from './ui-interactions.js';
@@ -27,7 +28,7 @@ async function boot(){
  const reduced=matchMedia('(prefers-reduced-motion: reduce)'),captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0,stress=new URLSearchParams(location.search).has('stress');
  const ui=createUIInteractions();window.__uiInteractions=ui;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(37,innerWidth/innerHeight,.1,500);
- const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});
+ const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!captureIndex});
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;$('viewport').append(renderer.domElement);
  const controls=new OrbitControls(camera,renderer.domElement);Object.assign(controls,{enableDamping:true,dampingFactor:.065,minDistance:6,maxDistance:240,maxPolarAngle:Math.PI*.485,minPolarAngle:.15,autoRotateSpeed:.35,enablePan:true});
  const hemi=new T.HemisphereLight(0xc7e3d2,0x3e5233,2.2),sun=new T.DirectionalLight(0xffe3a1,3.7),rim=new T.DirectionalLight(0x9acbc5,1.2),fill=new T.DirectionalLight(0x9bb6ad,.8);
@@ -35,33 +36,34 @@ async function boot(){
  const ground=new T.Mesh(new T.PlaneGeometry(1000,1000),new T.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-25;ground.name='Distant ground beneath floating island';scene.add(ground);
  const store=captureIndex?null:await createSocialStore(),sound=store?createSound({store}):null;
  let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,switching=false,committing=false,switchCount=0,clockTime=0;
+ const groupCamera=createGroupCamera({camera,controls,reduced});window.__groupCamera=groupCamera;
  const cameraPoses=new Map();let uiState={};ui.subscribe(s=>uiState=s);
  const soundCamera=createSoundCamera({camera,controls,getRoot:()=>world.record.root,reduced});window.__sound=sound;window.__soundCamera=soundCamera;
- const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
+ const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
  const mountOptions={camera,controls,renderer,ui,sound,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
  await world.mount(mountOptions);scene.add(world.root);
  function applyEnvironment(){const c=world.config;scene.background=new T.Color(c.background);scene.fog=new T.FogExp2(c.background,world.id==='fuji'?.003:innerWidth<700?.003:.0065);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.material.color.setHex(world.id==='fuji'?c.background:0x263f33);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',world.id==='fuji'?'可拖动旋转、滚轮缩放的富士樱町与蒸汽列车':'可拖动旋转、滚轮缩放的三维森林溪谷');}
  const resetCamera=()=>{const c=world.config.camera,mobile=innerWidth<700;camera.position.fromArray(mobile?c.mobile:c.position);controls.target.fromArray(mobile?c.mobileTarget:c.target);controls.enabled=true;controls.update();};
  applyEnvironment();resetCamera();window.__cameraPanBounds=constrainCameraPan(controls,camera,{getBounds:()=>world.terrain.bounds});
- characters=await createCharacters({scene,camera,controls,renderer,terrain:world.terrain,generated:world.generated,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
- socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,getAnchorObstacles:()=>world.id==='fuji'?[...world.discovery.labelAnchors,world.record.labelAnchor,trainFollow?.labelAnchor,...(innerWidth<=760&&groupBuildings?.snapshot().entries.length>4?[{id:'reserved-mobile-groups',x:innerWidth/2,y:142,width:innerWidth,height:148,visible:true,fixed:true}]:[])].filter(Boolean):[],onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
- if(store)groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,theme:world.id,templates:world.assets.groups,slots:world.layout.slots,queue:world.layout.queue,obstacles:()=>world.discovery.labelAnchors});
+ characters=await createCharacters({scene,camera,controls,renderer,terrain:world.terrain,generated:world.generated,obstacleCache:world.obstacleCache,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
+ socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onGroupSceneClose:immediate=>groupCamera.close(immediate),getAnchorObstacles:()=>world.id==='fuji'?[...world.discovery.labelAnchors,world.record.labelAnchor,trainFollow?.labelAnchor,...(innerWidth<=760&&groupBuildings?.snapshot().entries.length>4?[{id:'reserved-mobile-groups',x:innerWidth/2,y:142,width:innerWidth,height:148,visible:true,fixed:true}]:[])].filter(Boolean):[],onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
+ if(store)groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,theme:world.id,templates:world.assets.groups,slots:world.layout.slots,queue:world.layout.queue,onFocus:async point=>{if(world.id!=='forest')return;if(roam?.busy)await roam.exit();boards?.dismiss();valley.finishCamera();characters.restore({preserveCamera:true});characters.finishCamera();groupCamera.open(point);},obstacles:()=>world.discovery.labelAnchors});
  const player=store?createContentPlayer({store}):null;
  const contentUI=store?createDiscoveryUI({store,player,ui,onShare:ref=>socialUI.shareContent(ref),onClose:()=>{},onRequestClose:()=>boards?.exit(),onNavigate:route=>{if(route.type==='article')world.discovery.updatePreview('accounts',route.id);if(route.type==='video')world.discovery.updatePreview('scene-video',route.id);},onScenePlay:id=>boards.open('scene-video',{type:'video',id})}):null;
  function connectSceneControllers(){
   valley=createValleySocial({landmarks:world.landmarks,terrain:world.terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});
   trainFollow=world.terrain.train?createTrainFollow({train:world.terrain.train,camera,controls,canvas:renderer.domElement,ui,reduced,beforeOpen:async()=>{if(roam?.busy)await roam.exit();valley.finishCamera();characters.finishCamera();}}):null;
-  if(store)boards=createDiscoveryBoards({camera,facilities:world.discovery,contentUI,player,beforeFocus:async()=>{if(roam?.busy)await roam.exit();trainFollow?.exit({immediate:true});valley.finishCamera();if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}});
+  if(store)boards=createDiscoveryBoards({camera,facilities:world.discovery,contentUI,player,beforeFocus:async()=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}});
   window.__valley=valley;window.__discoveryBoards=boards;window.__discoveryScene=world.discovery;window.__recordPlayer=world.record;window.__trainFollow=trainFollow;
   window.__river={...world.terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  }
  connectSceneControllers();world.finishBatch();world.activate();
- const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
+ const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
  window.__socialStore=store;window.__socialUI=socialUI;window.__groupBuildings=groupBuildings;window.__characterPlacement=characters.placement;window.__discoveryUI=contentUI;window.__contentPlayer=player;
  window.__openSceneDiscovery=async kind=>{if(roam?.busy)await roam.exit();return boards.open(kind);};window.__openDiscovery=(route,options)=>contentUI?.open(route,options);
  if(store){window.__webPet=createWebPet({store,ui,onOpenFriend:id=>socialUI.openFriend(id)});const publish=()=>window.desktopMain?.publishState(petPayload(store.state));store.subscribe(publish);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publish();}
  if(captureIndex)characters.sync(FRIENDS);if(stress)characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);
- const demo=stress||!store?null:startDemo(store);
+ const demo=stress||!store?null:startDemo(store,{getSceneParticipants:()=>({friends:characters.placement.snapshot().characters.filter(c=>!['leaving','waiting'].includes(c.presentation?.phase)).map(c=>c.id),groups:(groupBuildings?.snapshot().entries||[]).filter(g=>!['leaving','waiting'].includes(g.phase)).map(g=>g.id)})});
  roam=store?createFreeRoam({camera,controls,canvas:renderer.domElement,ui}):null;window.__freeRoam=roam;
  const snapshotPose=()=>({position:camera.position.clone(),target:controls.target.clone()});
  async function switchScene(id){
@@ -69,7 +71,7 @@ async function boot(){
   switching=true;let candidate=null,cover=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
   try{
    candidate=await prepareSceneWorld(id,{reduced});if(uiState.modal)throw Error('请先完成当前窗口操作。');if(!characters.cancelPlacement())throw Error('请等待人物安放完成。');
-   if(roam?.busy)await roam.exit();trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();
+   if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();
    socialUI.setSceneTransition(true);await socialUI.saveSessionDraft();
    cover=curtain(candidate.config.name);if(!reduced.matches)await cover.animate([{opacity:0},{opacity:1}],{duration:200,fill:'both'}).finished;
    if(boards?.kind){contentUI.detachScene();boards.dismiss();old.discovery.update(performance.now()+10);}
@@ -77,7 +79,7 @@ async function boot(){
    await candidate.mount(mountOptions);scene.add(candidate.root);candidate.root.visible=false;
    cameraPoses.set(old.id,snapshotPose());const nextPose=cameraPoses.get(id);
    if(nextPose){camera.position.copy(nextPose.position);controls.target.copy(nextPose.target);}else{const c=candidate.config.camera;camera.position.fromArray(innerWidth<700?c.mobile:c.position);controls.target.fromArray(innerWidth<700?c.mobileTarget:c.target);}camera.lookAt(controls.target);camera.updateMatrixWorld(true);
-   characters.setScene({scene,terrain:candidate.terrain,generated:candidate.generated});rebound=true;
+   characters.setScene({scene,terrain:candidate.terrain,generated:candidate.generated,obstacleCache:candidate.obstacleCache});rebound=true;
    groupBuildings.setScene({scene,slots:candidate.layout.slots,queue:candidate.layout.queue,templates:candidate.assets.groups,theme:id});
    boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();soundCamera.close(true);controllersReleased=true;
    old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();
@@ -90,7 +92,7 @@ async function boot(){
   }catch(error){
    if(!oldReleased){
     if(world!==old){boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();}
-    if(rebound){characters.setScene({scene,terrain:old.terrain,generated:old.generated});groupBuildings.setScene({scene,slots:old.layout.slots,queue:old.layout.queue,templates:old.assets.groups,theme:old.id});}
+    if(rebound){characters.setScene({scene,terrain:old.terrain,generated:old.generated,obstacleCache:old.obstacleCache});groupBuildings.setScene({scene,slots:old.layout.slots,queue:old.layout.queue,templates:old.assets.groups,theme:old.id});}
     candidate?.dispose();world=old;if(controllersReleased)connectSceneControllers();applyEnvironment();
     const pose=cameraPoses.get(old.id);if(pose){camera.position.copy(pose.position);controls.target.copy(pose.target);}old.activate();
    }throw error;
@@ -99,15 +101,17 @@ async function boot(){
  if(store)createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});
  window.__sceneTheme={get id(){return world.id;},ready:true,get switching(){return switching;},get audit(){return{river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  try{localStorage.setItem(SCENE_STORAGE_KEY,world.id);}catch{}
- let last=performance.now(),fpsFrames=0,fpsStart=last;
- function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
-  if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy)controls.update(dt);if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);}
-  renderer.render(scene,camera);fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}requestAnimationFrame(frame);
+ window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
+ let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
+ function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
+  if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy)controls.update(dt);if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
+  renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
  }
  let wasMobile=innerWidth<700;
- window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
+ window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
  window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){const s=new T.Spherical().setFromVector3(camera.position.clone().sub(controls.target));if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(['+','='].includes(e.key))s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=T.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=T.MathUtils.clamp(s.radius,6,240);camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
- $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);requestAnimationFrame(frame);
+ $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);frameId=requestAnimationFrame(frame);
  window.addEventListener('webglcontextlost',e=>{e.preventDefault();console.warn('WebGL context lost; reload to restore the scene.');});
  if(captureIndex){
   renderer.setPixelRatio(1);renderer.setSize(540,960,false);camera.aspect=540/960;camera.updateProjectionMatrix();controls.enabled=false;

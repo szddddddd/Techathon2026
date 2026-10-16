@@ -1,3 +1,4 @@
+import {freezeStaticTransforms} from './static-transforms.js';
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {buildTerrain} from './terrain.js';
@@ -34,6 +35,7 @@ function gatedUI(ui){let enabled=false,last={},callbacks=new Set();const off=ui.
 export async function prepareSceneWorld(id,{reduced}={}){
  const config=SCENE_REGISTRY[id];if(!config)throw Error('未知场景');
  const assets=await prepareSceneAssets(id),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
+ const obstacleCache=new WeakMap();let frozenTransforms=0;
  let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies;
  try{
   if(id==='fuji'){terrain=buildFujiScene(root,{reduced,assets:assets.models});landmarks=terrain.landmarks;}
@@ -46,12 +48,12 @@ export async function prepareSceneWorld(id,{reduced}={}){
   terrain.theme=id;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
  }catch(error){disposeSceneResources(sceneResources(root));throw error;}
  return{
-  id,config,root,terrain,generated,architecture,nature,landmarks,assets,layout:config.layout,
+  id,config,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
   get discovery(){return discovery;},get record(){return record;},
   async mount({camera,controls,renderer,ui,sound,onDiscovery,onRecord}){
    gate=gatedUI(ui);
    try{
-    discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities});
+    discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,obstacleCache});
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
     record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,externalDisposal:true});
     terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);
@@ -60,7 +62,7 @@ export async function prepareSceneWorld(id,{reduced}={}){
   },
   activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
   suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(id==='forest')batchForest(root,architecture,nature);},
+  finishBatch(){if(id==='forest')batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[terrain.river?.root,terrain.train?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
   update(now,dt,time){
    if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}

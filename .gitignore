@@ -37,3 +37,6 @@ Desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# Temporary capture fragments (keep named final recordings)
+validation/**/.capture-recordings/

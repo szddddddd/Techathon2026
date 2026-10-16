@@ -76,7 +76,7 @@ export function createCommunityGround(scene){
   box(g,'Lamp base',0,.045,0,.23,.09,.23,stone);mesh(g,'Lamp stem',new T.CylinderGeometry(.035,.055,1.0,6),metal,0,.55,0);
   box(g,'Warm lantern',0,1.08,0,.19,.24,.19,glow);const cap=mesh(g,'Lantern roof',new T.ConeGeometry(.2,.15,4),metal,0,1.26,0);cap.rotation.y=Math.PI/4;
  });
- const sign=box(root,'More groups sign',GROUP_QUEUE.x,Y+.8,GROUP_QUEUE.z,.9,.5,.12,wood);box(root,'More groups sign post',GROUP_QUEUE.x,Y+.4,GROUP_QUEUE.z,.1,.8,.1,wood);
+ // The live timber message board is owned by group-scene.
  addTownCars(root);
  // Batch only town scenery; live group buildings remain independently selectable.
  root.updateMatrixWorld(true);const buckets=new Map();root.traverse(m=>{if(!m.isMesh||m.material.vertexColors)return;const key=m.material.uuid;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(m);});

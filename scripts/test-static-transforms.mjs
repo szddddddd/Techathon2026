@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import * as T from 'three';
+import {freezeStaticTransforms} from '../src/static-transforms.js';
+const scene=new T.Scene(),fixed=new T.Group(),animated=new T.Group();scene.add(fixed);fixed.add(animated);fixed.position.set(3,2,1);
+const rock=new T.Mesh(new T.BoxGeometry(),new T.MeshBasicMaterial());rock.position.x=4;fixed.add(rock);
+const actor=new T.Mesh(new T.BoxGeometry(),new T.MeshBasicMaterial());animated.add(actor);
+freezeStaticTransforms(scene,[animated]);assert.equal(scene.matrixAutoUpdate,false);assert.equal(rock.matrixAutoUpdate,false);assert.equal(animated.matrixAutoUpdate,true);
+const before=new T.Vector3();rock.getWorldPosition(before);assert.deepEqual(before.toArray(),[7,2,1]);
+animated.position.x=6;actor.position.y=5;scene.updateMatrixWorld();assert.deepEqual(actor.getWorldPosition(new T.Vector3()).toArray(),[9,7,1]);assert.deepEqual(rock.getWorldPosition(new T.Vector3()).toArray(),before.toArray());
+const late=new T.Object3D();late.position.z=8;animated.add(late);scene.updateMatrixWorld();assert.deepEqual(late.getWorldPosition(new T.Vector3()).toArray(),[9,2,9]);
+console.log('PASS: immutable world transforms remain exact; animated descendants and later actors still update.');

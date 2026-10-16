@@ -206,6 +206,12 @@ if(singleInstance)app.whenReady().then(async () => {
   tray.setContextMenu(buildMenu());
   tray.on('click', () => focusMain());
   if(!petOnly)createMainWindow();createPetWindow();
+  ipcMain.on('avatar-origin',event=>{if(event.sender===mainWindow?.webContents)event.returnValue=webBridge.origin;else event.returnValue='';});
+  ipcMain.handle('avatar-request',async(event,{route,body}={})=>{
+    if(event.sender!==mainWindow?.webContents||!/^jobs(?:\/[a-f0-9-]{36}(?:\/(?:retry|continue|cancel))?)?$/.test(route||''))throw new Error('不支持的形象请求。');
+    const response=await fetch(webBridge.origin+'/api/avatar/'+route,body?{method:'POST',headers:{'Content-Type':'application/json','X-Forest-Avatar':'1'},body:JSON.stringify(body)}:{});
+    return{status:response.status,data:await response.json()};
+  });
   ipcMain.on('main-ready', event => {
     if (event.sender !== mainWindow?.webContents) return;
     mainReady = true;

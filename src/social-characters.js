@@ -1,4 +1,5 @@
 import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
+import {avatarURL} from './avatar-url.js';
 import {createCharacterActions} from './character-actions.js';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -21,16 +22,22 @@ function triangleDistance(x,z,t){
 }
 
 /** Capture support and obstacle geometry before static scene batching detaches meshes. */
-export function createPlacementContext({scene,terrain,generated}){
+export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   scene.updateMatrixWorld(true);
   const meadows=[],occluders=[],obstacles=[];
   terrain.root.traverse(o=>{if(o.isMesh&&o.name.endsWith(' meadow'))meadows.push(o);});
   const owners=[...(generated?.children||[]),...(terrain.landmarkObstacles||[])];
   (terrain.placementRoot||scene).traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
   for(const owner of owners){
+    const meshes=[];owner.traverse(mesh=>{if(mesh.isMesh&&mesh.geometry?.attributes.position&&!mesh.userData.interactionOnly)meshes.push(mesh);});
+    // Discovery placement and companion placement inspect the same static props.
+    // Reuse their exact triangle snapshots only while all geometry and world
+    // transforms match; the cache is local to this scene's boot, never global.
+    const signature=obstacleCache&&[owner.userData.layoutId||owner.name,owner.userData.kind,...meshes.map(m=>[m.id,m.geometry.id,m.geometry.attributes.position.id,m.geometry.attributes.position.version,m.geometry.index?.id,m.geometry.index?.version,...m.matrixWorld.elements].join(','))].join('|');
+    const cached=obstacleCache?.get(owner);
+    if(cached&&cached.signature===signature){occluders.push(...meshes);obstacles.push(cached.obstacle);continue;}
     const triangles=[],bounds=new THREE.Box2(),solidMeshes=[];
-    owner.traverse(mesh=>{
-      if(!mesh.isMesh||!mesh.geometry?.attributes.position||mesh.userData.interactionOnly)return;
+    for(const mesh of meshes){
       occluders.push(mesh);
       // Double-sided geometry views support parity rays without changing the
       // visible material. They remain valid after render batching.
@@ -45,8 +52,9 @@ export function createPlacementContext({scene,terrain,generated}){
         const t=points.map(p=>[p.x,p.z]),box=new THREE.Box2().setFromPoints(t.map(p=>new THREE.Vector2(...p)));
         bounds.union(box);triangles.push({points:t,world:points,minY,maxY,box});
       }
-    });
-    obstacles.push({id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes});
+    }
+    const obstacle={id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes};
+    obstacles.push(obstacle);obstacleCache?.set(owner,{signature,obstacle});
   }
   const ray=new THREE.Raycaster();
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
@@ -130,8 +138,8 @@ export function createCharacterPlaceholder(friend){
   root.userData.placeholder=true;return root;
 }
 
-export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder}){
-  let context=createPlacementContext({scene,terrain,generated});
+export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder,obstacleCache}){
+  let context=createPlacementContext({scene,terrain,generated,obstacleCache});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
   const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
   await Promise.all(ANIMALS.map(async animal=>{
@@ -183,7 +191,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       if(friend.animal==='custom'&&!models.has(friend.id)){
         if(!friend.modelUrl)continue;
         if(!loadingCustom.has(friend.id)){
-          const load=loader.loadAsync(friend.modelUrl).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
+          const load=loader.loadAsync(avatarURL(friend.modelUrl)).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
           loadingCustom.set(friend.id,load);
         }
         continue;
@@ -325,7 +333,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   function setScene(next,{positions,theme=next.terrain?.theme||'forest'}={}){
     if(drag.snapshot().pending)throw new Error('请等待人物安放完成后再切换场景。');
     // Build before modifying the active context so a bad surface cannot strand residents.
-    const nextContext=createPlacementContext({scene:next.scene,terrain:next.terrain,generated:next.generated});
+    const nextContext=createPlacementContext({scene:next.scene,terrain:next.terrain,generated:next.generated,obstacleCache:next.obstacleCache});
     drag.cancel();
     const previous=new Map();for(const r of residents()){
       const home=gathering?.get(r.friend.id)?.position||r.group.position;
@@ -348,5 +356,5 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   function cancelPlacement(){if(drag.snapshot().pending)return false;drag.cancel();return true;}
   function getSceneState(){return{theme:terrain.theme||'forest',suspended,positions:Object.fromEntries(residents().map(r=>[r.friend.id,{x:r.group.position.x,z:r.group.position.z}])),cachedThemes:[...scenePositions.keys()],cachedCharacters:records.size,contextObstacles:context.obstacles.length};}
   function dispose(){drag.dispose();context.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
-  return {sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  return {root,sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

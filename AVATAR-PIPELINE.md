@@ -21,16 +21,16 @@ flowchart LR
 
 此前误改的 Codex 全局配置和认证文件已从修改前备份恢复，原 provider `deemos` 和模型 `gpt-6-astra` 已恢复，认证文件与备份逐字节一致。复核时保留了其他会话随后新增的项目记录；全局模型、provider 和其他设置与修改前一致。用户先前授权配置的 Hyper3D MCP 与 OAuth 保留。范围复核见 `validation/avatar-pipeline/config-scope.json`。
 
-Hyper3D 调用通过本机 Codex 的 app-server 工具接口复用 OAuth，不运行模型对话，不提取或复制 OAuth token。已验证的工具：`rodin_create_uploads`、`rodin_import_images`、`rodin_generate`、`rodin_get_status`、`rodin_wait`、`rodin_get_result`、`rodin_generate_bang`。这些工具没有图片生成能力，全身图由项目图片接口生成。
+Hyper3D 优先使用项目私有 `.forest-avatar-data/hyper3d-config.json` 的 REST 配置（`baseURL` 固定为 `https://api.hyper3d.com/api/v2`，`apiKey` 仅服务端读取）；不存在该配置时，通过本机 Codex 的 app-server 工具接口复用 OAuth，不运行模型对话，不提取或复制 OAuth token。REST 模式无需安装 Codex，订阅查询密钥也仅保存在该私有目录，不返回浏览器。修改配置后须重启 Node 服务。已验证的工具：`rodin_create_uploads`、`rodin_import_images`、`rodin_generate`、`rodin_get_status`、`rodin_wait`、`rodin_get_result`、`rodin_generate_bang`。这些工具没有图片生成能力，全身图由项目图片接口生成。
 
 ## 任务与运行
 
 - 好友关系先保存在 IndexedDB，然后使用持久化的好友任务 ID 启动形象制作。默认不置顶新朋友，正常聊天、收取来信、草稿和置顶操作均可在准备期间使用。
 - `src/friend-models.js` 在页面载入和添加好友后自动恢复任务，先查询原编号，只有不存在时才提交。后台生成完成后直接更新同一个好友，不创建第二个好友、不覆盖账号、头像、消息、草稿或置顶。
 - 进度显示在好友资料中；聊天头像和好友列表更多菜单均可打开资料。已完成后可选查看 3D 形象，没有额外入场确认。没有形象或形象失败时仍保留正常好友，场景不使用伪装成生成结果的占位人物。
-- `npm start` 启动本地 Node 服务。已经提交的任务在收起资料或关闭浏览器后仍由服务继续；Node 服务须保持运行。刷新后继续查询原任务。没有待处理任务时停止轮询，页面隐藏时暂停浏览器轮询。
+- `npm start` 启动本地 Node 服务。Electron 主窗口保留 `file://` 和原有 IndexedDB，通过限定路由的主进程 IPC 接入桌宠本机服务的头像 API；生成模型与预览走同一 loopback 服务，不要求另开 npm start。新增主进程/preload 接线后必须从托盘完全退出再启动，单独关闭或刷新窗口不足以更新。已经提交的任务在收起资料或关闭浏览器后仍由服务继续；Node 服务须保持运行。刷新后继续查询原任务。没有待处理任务时停止轮询，页面隐藏时暂停浏览器轮询。
 - 相同任务 ID 的并发请求只提交一次。提交超时、5xx 或结果不明时暂停，不自动重交付费步骤。已确认失败可从资料页重试；结果不明仍保持暂停，聊天不受影响。已知 Rodin 编号可通过开发接口恢复查询。
-- 沿用最多 8 位场景人物、置顶与未读在场规则、随机安全选位和通用程序姿态；没有新增骨骼绑定，独立桌宠窗口不加载自定义模型。
+- 场景按最近消息保留前九位形象就绪的好友，沿用随机安全选位和通用程序姿态，没有新增骨骼绑定。独立桌宠支持加载当前自定义好友任务对应的本地 GLB，并同步昵称；昵称超过五个 Unicode 字符时显示前五字加 `...`，极简模式仍不显示姓名或消息提示。
 
 ## 实现与验证
 

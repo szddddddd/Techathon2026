@@ -1,0 +1,2485 @@
+{
+  "label": "before-current",
+  "createdAt": "2026-10-16T09:22:17.666Z",
+  "conditions": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "deviceScaleFactor": 1,
+    "browser": "Edge headless D3D11",
+    "friends": 0,
+    "groups": 0,
+    "frames": 120,
+    "coldContexts": 3
+  },
+  "buildMs": [
+    276.8521,
+    210.14509999999996,
+    247.25290000000007
+  ],
+  "loads": [
+    {
+      "run": 0,
+      "mode": "cold",
+      "readyMs": 6698.9478,
+      "frames": {
+        "count": 120,
+        "median": 16.69999999999891,
+        "p95": 16.799999999999272
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 3.6999998092651367,
+        "p95": 4.199999809265137
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 56,
+      "transferBytes": 115835516,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 4
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 5
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 4.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 5.299999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 5.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 6.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 7.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 9.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 9.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 9.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 10
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 10.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 10.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 11.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 13.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 25.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 25.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 20.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 17.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 11
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 13.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 29.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 36
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 35.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 46.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 139.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 50.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 44.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 54.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/favicon.ico",
+          "transferBytes": 300,
+          "decodedBytes": 0,
+          "duration": 51.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 119.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 33.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 29.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 29.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 12.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 17.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 17.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 4.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 16.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 5.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 10.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 11.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 133.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 135.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 157.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 152.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 124.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 154.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 385.79999923706055
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 390.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 392.8999996185303
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.5
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1999998092651367
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.8000001907348633
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 74.09999942779541,
+          "duration": 62
+        },
+        {
+          "start": 562.5,
+          "duration": 51
+        },
+        {
+          "start": 704.2999992370605,
+          "duration": 69
+        },
+        {
+          "start": 1193.5999994277954,
+          "duration": 1489
+        },
+        {
+          "start": 2721.0999994277954,
+          "duration": 102
+        },
+        {
+          "start": 2824.199999809265,
+          "duration": 54
+        },
+        {
+          "start": 3985.199999809265,
+          "duration": 2702
+        }
+      ],
+      "errors": []
+    },
+    {
+      "run": 0,
+      "mode": "warm",
+      "readyMs": 4247.293300000001,
+      "frames": {
+        "count": 120,
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 3,
+        "p95": 4
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 54,
+      "transferBytes": 115835216,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 2.8000001907348633
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 4.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 4.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 5.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 5.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 5.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 5.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 6.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 6.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 6.799999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 7.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 7.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 7.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 7.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 10
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 26.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 26.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 21.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 18.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 11.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 14.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 30.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 34.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 35.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 44.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 122.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 49
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 44.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 50.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 63.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 13.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 12
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 11.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 3.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 2.6000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 2.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 7.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 8
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 7.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 7.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 7.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 163.10000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 180.29999923706055
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 174.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 170.4000005722046
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 183.10000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 186.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 398
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 421.1000003814697
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 423.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=8be36ad2-5511-45a1-8a87-1dff35b0494f",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.6999998092651367
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 407.30000019073486,
+          "duration": 50
+        },
+        {
+          "start": 514,
+          "duration": 50
+        },
+        {
+          "start": 993.3000001907349,
+          "duration": 1085
+        },
+        {
+          "start": 3127.4000005722046,
+          "duration": 1112
+        }
+      ],
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mode": "cold",
+      "readyMs": 4638.589100000001,
+      "frames": {
+        "count": 120,
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 3.5,
+        "p95": 3.90000057220459
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 54,
+      "transferBytes": 115835216,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 2.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 4
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 4.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 4.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 4.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 4.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 4.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 5.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 5.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 6.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 6.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 6.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 7
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 7.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 9.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 29.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 29.299999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 24.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 20.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 13.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 15.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 33.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 36.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 36.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 47.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 137.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 51
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 46.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 52.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 82.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 18.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 16.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 16.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 12.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 15.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 14.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 14.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 3.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 10.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 7.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 101
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 99.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 91.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 107.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 103.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 88.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 321.0999994277954
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 325.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 329
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.5
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.5
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.2000007629394531
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 37.60000038146973,
+          "duration": 57
+        },
+        {
+          "start": 411.6000003814697,
+          "duration": 54
+        },
+        {
+          "start": 553.1000003814697,
+          "duration": 50
+        },
+        {
+          "start": 1044.6999998092651,
+          "duration": 1354
+        },
+        {
+          "start": 3434.800000190735,
+          "duration": 1189
+        }
+      ],
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mode": "warm",
+      "readyMs": 4327.6204,
+      "frames": {
+        "count": 120,
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 2.8999996185302734,
+        "p95": 6.199999809265137
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 54,
+      "transferBytes": 115835216,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 2.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 2.6999998092651367
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 3
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 3.1999998092651367
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 3.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 3.799999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 4.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 4.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 4.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 5
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 5.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 5.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 5.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 6.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 8.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 26.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 26.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 22
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 19.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 11.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 12.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 29.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 34.79999923706055
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 35.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 44.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 121.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 47.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 42.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 50.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 62.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 15.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 13.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 13.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 2.6000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 2.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 2.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 8.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 9.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 8.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 8.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 7.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 148.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 114.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 154.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 174.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 181
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 177.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 371
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 373.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 393.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.0999994277954102
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.3999996185302734
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=cb456633-fd48-47aa-9a71-6c7eeae0c2ac",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 555,
+          "duration": 51
+        },
+        {
+          "start": 934.6000003814697,
+          "duration": 1061
+        },
+        {
+          "start": 3183.4000005722046,
+          "duration": 1135
+        }
+      ],
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mode": "cold",
+      "readyMs": 4536.870299999995,
+      "frames": {
+        "count": 120,
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 3.5,
+        "p95": 3.8000001907348633
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 54,
+      "transferBytes": 115835216,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 3.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 4.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 4.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 4.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 5.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 4.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 5.600000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 5.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 5.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 6.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 6.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 7
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 7.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 7.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 9.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 29
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 24.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 28.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 21
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 13.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 15.399999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 33.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 35.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 36.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 46.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 122.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 49.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 45.39999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 50.69999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 67.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 18.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 15.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 14.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 12.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 15.700000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 15.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 5.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 3.6999998092651367
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 14.59999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 9.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 7.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 78.10000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 81.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 91.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 89.20000076293945
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 93.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 98.80000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 291.0999994277954
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 310.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 313.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.4000005722045898
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 42.20000076293945,
+          "duration": 58
+        },
+        {
+          "start": 476.20000076293945,
+          "duration": 55
+        },
+        {
+          "start": 639.3000001907349,
+          "duration": 52
+        },
+        {
+          "start": 1054.6000003814697,
+          "duration": 1335
+        },
+        {
+          "start": 3344.300000190735,
+          "duration": 1177
+        }
+      ],
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mode": "warm",
+      "readyMs": 4217.478800000004,
+      "frames": {
+        "count": 120,
+        "median": 16.699999999999818,
+        "p95": 16.800000000000182
+      },
+      "frameCPU": {
+        "count": 121,
+        "median": 3.8999996185302734,
+        "p95": 4.199999809265137
+      },
+      "render": {
+        "calls": 314,
+        "triangles": 697694
+      },
+      "requests": 54,
+      "transferBytes": 115835216,
+      "decodedBytes": 115820216,
+      "groupRequests": [
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "bytes": 7479356
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "bytes": 6741156
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "bytes": 7774644
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "bytes": 7828680
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "bytes": 7629836
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "bytes": 7862648
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "bytes": 7908528
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "bytes": 7821288
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "bytes": 8038568
+        }
+      ],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:48921/world3d.css?v=1.3.1",
+          "transferBytes": 486,
+          "decodedBytes": 186,
+          "duration": 3.299999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/social.css?v=1.3.1",
+          "transferBytes": 21513,
+          "decodedBytes": 21213,
+          "duration": 3.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-layout.css?v=1.3.1",
+          "transferBytes": 17534,
+          "decodedBytes": 17234,
+          "duration": 3.90000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-public-feed.css?v=1.3.1",
+          "transferBytes": 8444,
+          "decodedBytes": 8144,
+          "duration": 3.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery.css?v=1.3.1",
+          "transferBytes": 25110,
+          "decodedBytes": 24810,
+          "duration": 4.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-social.css?v=1.3.1",
+          "transferBytes": 5586,
+          "decodedBytes": 5286,
+          "duration": 4.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/discovery-frames.css?v=1.3.1",
+          "transferBytes": 4568,
+          "decodedBytes": 4268,
+          "duration": 4.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/web-pet.css?v=1.3.1",
+          "transferBytes": 3689,
+          "decodedBytes": 3389,
+          "duration": 5.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/character-drag.css?v=1.3.1",
+          "transferBytes": 1054,
+          "decodedBytes": 754,
+          "duration": 5.300000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/valley.css?v=1.3.1",
+          "transferBytes": 1661,
+          "decodedBytes": 1361,
+          "duration": 5.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/ui-theme.css?v=1.3.1",
+          "transferBytes": 18596,
+          "decodedBytes": 18296,
+          "duration": 5.699999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/social-presence.css?v=1.3.1",
+          "transferBytes": 8078,
+          "decodedBytes": 7778,
+          "duration": 5.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/avatar-friends.css?v=1.3.1",
+          "transferBytes": 6731,
+          "decodedBytes": 6431,
+          "duration": 5.899999618530273
+        },
+        {
+          "url": "http://127.0.0.1:48921/group-chat.css?v=1.3.1",
+          "transferBytes": 8278,
+          "decodedBytes": 7978,
+          "duration": 6
+        },
+        {
+          "url": "http://127.0.0.1:48921/dist/world.js?v=1.3.1",
+          "transferBytes": 1017651,
+          "decodedBytes": 1017351,
+          "duration": 8.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/cart/scene.glb",
+          "transferBytes": 2065240,
+          "decodedBytes": 2064940,
+          "duration": 26
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tree/scene.glb",
+          "transferBytes": 2039916,
+          "decodedBytes": 2039616,
+          "duration": 26.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/silver_birch/scene.glb",
+          "transferBytes": 1593540,
+          "decodedBytes": 1593240,
+          "duration": 21.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-trees/field_maple/scene.glb",
+          "transferBytes": 1155236,
+          "decodedBytes": 1154936,
+          "duration": 18.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/rock/scene.glb",
+          "transferBytes": 713488,
+          "decodedBytes": 713188,
+          "duration": 11.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/grass/scene.glb",
+          "transferBytes": 844332,
+          "decodedBytes": 844032,
+          "duration": 12.799999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/tent/scene.glb",
+          "transferBytes": 1125884,
+          "decodedBytes": 1125584,
+          "duration": 30.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/barrel/scene.glb",
+          "transferBytes": 1275004,
+          "decodedBytes": 1274704,
+          "duration": 35.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crate/scene.glb",
+          "transferBytes": 986372,
+          "decodedBytes": 986072,
+          "duration": 33.60000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/chest/scene.glb",
+          "transferBytes": 1762552,
+          "decodedBytes": 1762252,
+          "duration": 44.89999961853027
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/bridge/scene.glb",
+          "transferBytes": 2151556,
+          "decodedBytes": 2151256,
+          "duration": 128.4000005722046
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/outcrop/scene.glb",
+          "transferBytes": 1983996,
+          "decodedBytes": 1983696,
+          "duration": 48.10000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/crystal/scene.glb",
+          "transferBytes": 958608,
+          "decodedBytes": 958308,
+          "duration": 43.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/fern_large/scene.glb",
+          "transferBytes": 1959644,
+          "decodedBytes": 1959344,
+          "duration": 49.29999923706055
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/letter_tree/scene.glb",
+          "transferBytes": 1957404,
+          "decodedBytes": 1957104,
+          "duration": 14.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-mountain/scene.glb",
+          "transferBytes": 12318664,
+          "decodedBytes": 12318364,
+          "duration": 66.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/wood_bench/scene.glb",
+          "transferBytes": 1751120,
+          "decodedBytes": 1750820,
+          "duration": 12
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-valley/notice_board/scene.glb",
+          "transferBytes": 1732160,
+          "decodedBytes": 1731860,
+          "duration": 12.200000762939453
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/hyper3d-rodin.svg",
+          "transferBytes": 1873,
+          "decodedBytes": 1573,
+          "duration": 2.3999996185302734
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/discovery/video-1.jpg",
+          "transferBytes": 41454,
+          "decodedBytes": 41154,
+          "duration": 2.1999998092651367
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/portrait.webp",
+          "transferBytes": 4738,
+          "decodedBytes": 4438,
+          "duration": 2.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/kangaroo/scene.glb",
+          "transferBytes": 1045824,
+          "decodedBytes": 1045524,
+          "duration": 6.800000190734863
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/fox/scene.glb",
+          "transferBytes": 1311664,
+          "decodedBytes": 1311364,
+          "duration": 7.799999237060547
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/rabbit/scene.glb",
+          "transferBytes": 1219848,
+          "decodedBytes": 1219548,
+          "duration": 7.40000057220459
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-friends/bear/scene.glb",
+          "transferBytes": 1142132,
+          "decodedBytes": 1141832,
+          "duration": 7.199999809265137
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin/record-player/scene.glb",
+          "transferBytes": 2459284,
+          "decodedBytes": 2458984,
+          "duration": 7.100000381469727
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/club/scene.glb",
+          "transferBytes": 7479356,
+          "decodedBytes": 7479056,
+          "duration": 91.19999980926514
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/classroom/scene.glb",
+          "transferBytes": 6741156,
+          "decodedBytes": 6740856,
+          "duration": 112.10000038146973
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/sport/scene.glb",
+          "transferBytes": 7774644,
+          "decodedBytes": 7774344,
+          "duration": 104.30000019073486
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/lab/scene.glb",
+          "transferBytes": 7828680,
+          "decodedBytes": 7828380,
+          "duration": 93.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/library/scene.glb",
+          "transferBytes": 7629836,
+          "decodedBytes": 7629536,
+          "duration": 116
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/music/scene.glb",
+          "transferBytes": 7862648,
+          "decodedBytes": 7862348,
+          "duration": 113.09999942779541
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/art/scene.glb",
+          "transferBytes": 7908528,
+          "decodedBytes": 7908228,
+          "duration": 317.1000003814697
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/cafe/scene.glb",
+          "transferBytes": 7821288,
+          "decodedBytes": 7820988,
+          "duration": 322.5
+        },
+        {
+          "url": "http://127.0.0.1:48921/assets/rodin-groups/observatory/scene.glb",
+          "transferBytes": 8038568,
+          "decodedBytes": 8038268,
+          "duration": 325.79999923706055
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1000003814697266
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.0999994277954102
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.0999994277954102
+        },
+        {
+          "url": "http://127.0.0.1:47831/api/status?client=7fd6d6e1-86ed-49c5-a655-1902ba984bf1",
+          "transferBytes": 0,
+          "decodedBytes": 0,
+          "duration": 1.1999998092651367
+        }
+      ],
+      "longTasks": [
+        {
+          "start": 293.5,
+          "duration": 50
+        },
+        {
+          "start": 411.0999994277954,
+          "duration": 50
+        },
+        {
+          "start": 475.5999994277954,
+          "duration": 50
+        },
+        {
+          "start": 963.5999994277954,
+          "duration": 1067
+        },
+        {
+          "start": 3113.0999994277954,
+          "duration": 1096
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

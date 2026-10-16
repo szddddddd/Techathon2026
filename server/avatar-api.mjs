@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {AvatarPipeline,imageMime} from './avatar-pipeline.mjs';
 
-export function createAvatarApi({root,port,pipeline=new AvatarPipeline({root})}){
+export function createAvatarApi({root,port,pipeline=new AvatarPipeline({root}),allowFileAssets=false}){
   let ready;const initialize=()=>ready??=pipeline.init();
   const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   async function body(req){let n=0;const chunks=[];for await(const b of req){n+=b.length;if(n>9*1024*1024)throw new Error('上传内容过大。');chunks.push(b);}return JSON.parse(Buffer.concat(chunks).toString());}
@@ -10,7 +10,8 @@ export function createAvatarApi({root,port,pipeline=new AvatarPipeline({root})})
     const url=new URL(req.url,'http://localhost');if(!url.pathname.startsWith('/api/avatar/'))return false;
     try{
       const allowed=new Set([`localhost:${port}`,`127.0.0.1:${port}`]);if(!allowed.has(req.headers.host))return json(res,403,{error:'不支持的本地访问地址。'}),true;
-      if(req.headers.origin&&!allowed.has(new URL(req.headers.origin).host))return json(res,403,{error:'不支持的请求来源。'}),true;
+      const fileAsset=allowFileAssets&&req.headers.origin==='null'&&req.method==='GET'&&/^\/api\/avatar\/assets\/[a-f0-9-]{36}\/(avatar\.img|reference\.img|scene\.glb)$/.test(url.pathname);
+       if(req.headers.origin&&!fileAsset&&(req.headers.origin==='null'||!allowed.has(new URL(req.headers.origin).host)))return json(res,403,{error:'不支持的请求来源。'}),true;
       if(req.method==='POST'&&(req.headers['x-forest-avatar']!=='1'||!req.headers['content-type']?.startsWith('application/json')))return json(res,403,{error:'请从添加好友页面操作。'}),true;
       await initialize();
       const route=url.pathname.slice('/api/avatar/'.length);

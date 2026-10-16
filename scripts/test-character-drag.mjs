@@ -23,7 +23,7 @@ async function safeDestination(id){return page.evaluate(id=>{
 },id);}
 try{
  await page.goto(baseURL+'/');await page.waitForFunction(()=>window.__characterPlacement&&window.__socialUI,null,{timeout:180000});
- await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian']){await __socialStore.addFriend(id);await __socialStore.setFriendPinned(id,true);}});await page.waitForTimeout(300);
+ await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian']){await __socialStore.addFriend(id);await __socialStore.receiveMessage(id,{text:'拖放检查来信'},'drag-seed-'+id);await __socialStore.markRead(id);}});await page.waitForFunction(()=>__characterPlacement.snapshot().characters.length>=3);await page.waitForTimeout(300);
 
  const available=[];for(const id of ['tuantuan','ali','xiaomian','shanshan'])if(await pickPoint(id))available.push(id);assert.ok(available.length>=2);
  const id=available[0],original=(await snapshot()).characters.find(r=>r.id===id).position;
