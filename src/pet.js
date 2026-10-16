@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { notificationItems, petNickname } from './pet-state.js';
+import { createFujiPet } from './pet-fuji.js';
 
 const FRIEND_META = {
   tuantuan: { name: '团团', emoji: '🦘', color: 0xeaba43, position: [-.55, 0] },
@@ -89,7 +90,7 @@ function localWind(object, radius, dt, reduced) {
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const smooth = value => value * value * (3 - 2 * value);
-const slots = minimalMode ? [{x:.85,y:.12,z:.75,scale:.75}] : [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
+const slots = minimalMode ? [{x:.85,y:.12,z:.75,scale:1.125}] : [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
 function setPhase(record, phase) {
   record.phase = phase; record.phaseStart = performance.now(); record.node.dataset.phase = phase;
 }
@@ -201,6 +202,15 @@ function buildWoods() {
   for(const x of [-.19,.19])add(new THREE.CylinderGeometry(.025,.025,.43,5),frameMaterial,[x,-.49,.15],lanternGroup);
   lanternLight = new THREE.PointLight(0xffcf68,1.2,4.5); lanternLight.position.set(1.57,1.69,.15); root.add(lanternLight);
 }
+let currentTheme=null,fujiPet=null;
+function setTheme(id){
+  const next=id==='fuji'?'fuji':'forest';if(next===currentTheme)return;
+  const geometries=new Set(),materials=new Set();root.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of [].concat(o.material))materials.add(m);});
+  root.clear();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
+  animated.length=0;lantern=lanternLight=lanternGroup=null;fujiPet?.dispose?.();fujiPet=null;currentTheme=next;
+  if(next==='fuji')fujiPet=createFujiPet({root,minimal:minimalMode});else buildWoods();
+  document.documentElement.dataset.petScene=next;document.documentElement.dataset.petFujiAssets=next==='fuji'?'loading':'ready';viewport.setAttribute('aria-label',`${next==='fuji'?'富士樱町':'林间来信'}${minimalMode?'极简':''}桌宠`);
+}
 function resize() { renderer.setSize(innerWidth, innerHeight, false); const aspect=innerWidth/innerHeight; camera.left = -4*aspect; camera.right = 4*aspect; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
 function disposeRole(model) {
   model?.removeFromParent();
@@ -273,7 +283,7 @@ function renderNotifications(items) {
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
-if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; renderNotifications(messageItems(payload)); });
+if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; setTheme(payload.state?.sceneId); renderNotifications(messageItems(payload)); });
 viewport.addEventListener('click', event => {
   if (!dragged) {
     const id = event.target.closest('[data-friend]')?.dataset.friend || clickedFriend;
@@ -311,7 +321,7 @@ viewport.addEventListener('pointerup', endDrag);
 viewport.addEventListener('pointercancel', endDrag);
 viewport.addEventListener('lostpointercapture', () => { if (dragStart) endDrag(); });
 window.addEventListener('blur', endDrag);
-buildWoods(); resize(); window.addEventListener('resize', resize);
+setTheme(query.get('scene')); resize(); window.addEventListener('resize', resize);
 let start = performance.now(), frameId=0;
 function requestFrame(){if(!frameId&&!document.hidden&&active)frameId=requestAnimationFrame(frame);}
 document.addEventListener('visibilitychange',requestFrame);
@@ -321,6 +331,7 @@ function frame(now) {
   if (document.hidden || !active) return;
   const reduced = reducedMotion.matches, t = reduced ? 0 : (now - start) / 1000;
   const dt = Math.min((now - lastFrame) / 1000, .05); lastFrame = now;
+  fujiPet?.update(t,reduced);
   const blend = reduced ? 1 : 1 - Math.exp(-dt * 9);
   presence += ((nearby || hoveredFriend ? 1 : 0) - presence) * blend;
   const signal = !reduced && now < signalUntil ? Math.sin((1 - (signalUntil - now) / 1000) * Math.PI) : 0;

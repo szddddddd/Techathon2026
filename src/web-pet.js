@@ -1,5 +1,5 @@
 import {petPayload} from './pet-state.js';
-export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
+export function createWebPet({store,ui,onOpenFriend,getSceneId=()=> 'forest',bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
 
   const root=document.createElement('aside');root.id='web-pet';root.setAttribute('aria-label','Windows 桌宠');
   root.innerHTML=`<button id="pet-toggle" type="button" role="switch" aria-checked="false" title="打开桌宠"><span>♧ 桌宠</span><i class="pet-switch" aria-hidden="true"></i></button><p id="pet-launch-status" role="status" hidden></p>`;
@@ -13,7 +13,7 @@ export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0
     if(!response.ok)throw new Error('桌宠连接暂不可用');return response.json();
   }
   function say(text){notice.textContent=text;notice.hidden=false;ui?.transition(notice);clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{notice.hidden=true;},6500);}
-  function payload(){return {client,...petPayload(store.state)};}
+  function payload(){return {client,...petPayload(store.state,getSceneId())};}
   function badge(){toggle.setAttribute('aria-checked',String(visible));toggle.title=visible?'关闭桌宠':'打开桌宠';toggle.setAttribute('aria-label',`桌宠${visible?'已打开':'已关闭'}`);}
   let visibilityRevision=0,visibilityStream=null;
   function receiveVisibility(value){
@@ -75,5 +75,5 @@ export function createWebPet({store,ui,onOpenFriend,bridgeOrigin='http://127.0.0
   toggle.addEventListener('click',change);
   const unsubscribe=store.subscribe(()=>{badge();clearTimeout(syncTimer);syncTimer=setTimeout(sync,100);});
   badge();poll();const interval=setInterval(poll,1500);
-  return{launch,mount(container){container.append(root);root.hidden=false;},get connected(){return online;},dispose(){disposed=true;offVisibility?.();visibilityStream?.close();unsubscribe();clearInterval(interval);clearTimeout(noticeTimer);clearTimeout(syncTimer);root.remove();}};
+  return{launch,sync,mount(container){container.append(root);root.hidden=false;},get connected(){return online;},dispose(){disposed=true;offVisibility?.();visibilityStream?.close();unsubscribe();clearInterval(interval);clearTimeout(noticeTimer);clearTimeout(syncTimer);root.remove();}};
 }
