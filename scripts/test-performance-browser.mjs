@@ -16,8 +16,8 @@ try{
  await page.route('**/rodin-groups/lab/scene.glb',async route=>{await blocked;await route.continue();});
  const ids=await page.evaluate(async()=>{
   for(const id of ['tuantuan','ali'])await __socialStore.addFriend(id);
-  await __socialStore.setFriendPinned('tuantuan',true);
-  const ids=[];for(let i=0;i<2;i++){const g=await __socialStore.createGroup({name:'性能检查 '+i,type:'lab',memberIds:['tuantuan','ali']});ids.push(g.id);await __socialStore.setGroupResident(g.id,true);}return ids;
+  await __socialStore.receiveMessage('tuantuan',{type:'text',text:'性能检查来信'});
+  const ids=[];for(let i=0;i<2;i++){const g=await __socialStore.createGroup({name:'性能检查 '+i,type:'lab',memberIds:['tuantuan','ali']});ids.push(g.id);await __socialStore.receiveGroupMessage(g.id,'ali',{text:'性能检查群消息'});}return ids;
  });
  await page.waitForFunction(()=>__groupBuildings.snapshot().entries.length===2);
  await page.waitForFunction(()=>__groupBuildings.assets.loading.includes('lab'));
@@ -46,7 +46,14 @@ try{
  // Canvas export/MediaRecorder are exclusive to capture mode and retain its buffer.
  await page.goto(baseURL+'/?capture=1');await ready();await page.waitForFunction(()=>window.__capture?.ready);
  assert.equal(await page.evaluate(()=>__renderPerformance.preserveDrawingBuffer),true);
- const recording=await page.evaluate(()=>__capture.record(1,1500));await fs.writeFile(outputPath('performance-capture.json'),JSON.stringify({posterBytes:recording.poster.length,videoBytes:recording.video.length,mime:recording.mime}));assert.ok(recording.poster.length>1000);assert.ok(recording.video.length>1000);
+ const recording=await page.evaluate(()=>__capture.record(1,1500));assert.ok(recording.poster.length>1000);assert.ok(recording.video.length>1000);
+ const decoded=await page.evaluate(async data=>{
+  const bytes=Uint8Array.from(atob(data.video),c=>c.charCodeAt(0)),url=URL.createObjectURL(new Blob([bytes],{type:data.mime})),video=document.createElement('video');video.muted=true;
+  try{await new Promise((resolve,reject)=>{video.onloadeddata=resolve;video.onerror=()=>reject(new Error('Recorded clip cannot decode'));video.src=url;});await video.play();await new Promise(resolve=>video.requestVideoFrameCallback(resolve));return{width:video.videoWidth,height:video.videoHeight,readyState:video.readyState};}finally{video.pause();video.removeAttribute('src');video.load();URL.revokeObjectURL(url);}
+ },recording);
+ assert.equal(decoded.width,540);assert.equal(decoded.height,960);
+ await fs.writeFile(outputPath('performance-capture.json'),JSON.stringify({posterBytes:recording.poster.length,videoBytes:recording.video.length,mime:recording.mime,decoded}));
+ await fs.writeFile(outputPath('performance-capture.webm'),Buffer.from(recording.video,'base64'));
  checks.push('Capture mode retains a real JPEG poster and playable MediaRecorder output');
  assert.deepEqual(errors,[]);const report={checks,errors,buildingRequests:requests};await fs.writeFile(outputPath('performance-browser.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{await context.close();await browser.close();}

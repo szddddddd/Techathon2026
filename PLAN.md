@@ -1,6 +1,6 @@
 # 构建、加载与渲染性能优化
 
-基线：origin/main `bc8f259`。开发分支 `agent/forest-performance`；不得读取 `C:\Users\user\Desktop\world`。原开发目录及 Techathon2026 归档仓库不改动。
+基线：origin/main `814ed55`（已接入协作期间新增的滨河小镇、近期会话和瀑布改动）。开发分支 `agent/forest-performance`；不得读取 `C:\Users\user\Desktop\world` 或 `C:\Users\user\Desktop\world2` 的源码。原开发目录及 Techathon2026 归档仓库不改动。
 
 ## 必须完成
 
@@ -17,3 +17,7 @@
 - 两个 agent 的工作使用独立 worktree；不直接编辑或合并原项目 main。
 - 原有功能测试和新的缓存失效、HTTP 语义、按需加载检查通过；性能结果报告具体实验条件和原始数据。
 - 完成后提交此分支的可审查改动；仅在用户明确要求时部署或合并。
+
+## 完成记录
+
+以上六项已实现并验证，包含接入最新远程提交后的重新测量和回归。方案条目、实现位置、测试证据与未验证范围见 `PERFORMANCE-REVIEW.md`；原始数据在 `validation/performance-20261016/`。

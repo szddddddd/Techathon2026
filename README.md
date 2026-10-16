@@ -149,6 +149,8 @@ node scripts/compare-presence-performance.mjs
 
 ## 开发与协作
 
+构建支持内容缓存：`npm run build` 在源码、依赖和输出均未变化时直接复用，`npm run build -- --force` 强制重建。静态服务支持文本压缩与缓存校验，主场景按需加载在场群建筑；隐藏页面暂停渲染。性能对比、受影响功能回归及复现命令见 [性能验证报告](./PERFORMANCE-REVIEW.md)。
+
 始终在 **main** 开发：修改前检查并合并远程更新，提交前再次检查，正常 push，不覆盖协作者提交。
 
 ```powershell
