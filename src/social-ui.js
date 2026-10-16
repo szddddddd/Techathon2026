@@ -16,7 +16,7 @@ const date = value => new Date(value).toLocaleDateString('zh-CN',{month:'long',d
 const STICKERS = [ ['🌼','送你一朵小花'], ['🐾','我来啦！'], ['☕','歇一会儿'], ['🌙','晚安好梦'], ['🫶','接住温柔'], ['🍀','好运发生'] ];
 const EMOJI = ['😊','🥰','😂','🥹','🤔','😴','😭','✨','💛','🌿','🌈','👍'];
 
-export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onMountPet=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
+export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onMountPet=()=>{},onGroupSceneClose=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
   const root=document.createElement('div');root.id='social';document.body.append(root);
   root.innerHTML=`
     <div id="friend-anchors"></div>
@@ -57,7 +57,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   }
   function restoreFormDrafts(d,key){const values=formDrafts.get(key);if(!values)return;for(const field of d.querySelectorAll('input,textarea'))if(field.name in values){if(field.type==='radio')field.checked=field.value===values[field.name];else if(field.type!=='file')field.value=values[field.name];}}
   ui.register('directory',{el:$('directory'),kind:'main',nav:'directory'});
-  ui.register('meeting',{el:$('meeting'),surface:root.querySelector('.meeting-workspace'),kind:'main',nav:'directory',onClose(){captureDraft();closingFriend=active;active=null;attachment=null;groups.closeInfo();root.classList.remove('in-meeting');characters.restore();},onClosed(){closingFriend=null;}});
+  ui.register('meeting',{el:$('meeting'),surface:root.querySelector('.meeting-workspace'),kind:'main',nav:'directory',onClose(){captureDraft();closingFriend=active;active=null;attachment=null;groups.closeInfo();root.classList.remove('in-meeting');characters.restore();onGroupSceneClose();},onClosed(){closingFriend=null;}});
   ui.register('social',{el:$('social-dialog'),kind:'main',nav:'me',onClose:saveFormDrafts,onClosed(){dialogKind=null;dialogOwner=null;syncVisibleRead();}});
   ui.register('settings',{el:$('settings-dialog'),kind:'child',modal:true});
   ui.register('compose',{el:$('compose-dialog'),kind:'child',modal:true,onClose:saveFormDrafts});
@@ -154,7 +154,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     ui.open('meeting',{origin});active=id;picker=null;ui.close('picker',{immediate:true,restoreFocus:false});root.classList.add('in-meeting');renderChatTitle();
     if(isNew)$('chat-input').value=draftValues.get(id)??store.state.drafts[id]??'';
     if(isNew||!wasOpen)setMoments(false);
-    if(group){characters.restore({preserveCamera:true});}else characters.focus(id);
+    if(group){characters.restore({preserveCamera:true});}else {onGroupSceneClose(true);characters.focus(id);}
     renderMeetingFriends();lastMessageSignature='';lastPostSignature='';renderMessages(true);
   }
   let marking=false;

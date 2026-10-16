@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { petPayload, notificationItems } from '../src/pet-state.js';
+import { petPayload, notificationItems, petNickname } from '../src/pet-state.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { startPetBridge } = require('../desktop/pet-bridge.cjs');
@@ -14,6 +14,11 @@ assert.deepEqual(notificationItems({...state,friends:[]}),[]);
 assert.equal(notificationItems({...state,messages:[message(2,{read:false}),message(1,{read:false})]})[0].id,'2');
 for(const type of ['image','content','moment'])assert.ok(petPayload({...state,messages:[message(1,{type,text:'',read:false})]}).state.messages[0].text);
 assert.equal(validState({...payload,unreadCount:-1}),false);
+const jobId='11111111-1111-4111-a111-111111111111',customId='avatar-'+jobId;
+const custom=petPayload({friends:[customId],messages:[],customFriends:{[customId]:{jobId,name:'一二三四五六七',modelUrl:`/api/avatar/assets/${jobId}/scene.glb`,avatarUrl:'private-avatar-data'}}});
+assert.equal(custom.state.friendDetails[customId].name,'一二三四五六七');assert.ok(validState(custom));assert.ok(!JSON.stringify(custom).includes('private-avatar-data'));
+assert.equal(petNickname('一二三四五六'),'一二三四五...');assert.equal(petNickname('一二三四五'),'一二三四五');assert.equal(petNickname('😀😀😀😀😀😀'),'😀😀😀😀😀...');
+for(const url of ['https://example.com/scene.glb','/api/avatar/assets/22222222-2222-4222-a222-222222222222/scene.glb']){const bad=structuredClone(custom);bad.state.friendDetails[customId].modelUrl=url;assert.equal(validState(bad),false);}
 let accepted=0;
 const bridge=await startPetBridge({root:process.cwd(),port:0,onState:()=>accepted++,onShow(){}});
 const origin=`http://localhost:${webPort(process.cwd())}`;

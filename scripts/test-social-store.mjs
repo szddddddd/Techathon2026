@@ -106,7 +106,7 @@ let clock=0,tick;
 Object.defineProperty(globalThis,'performance',{configurable:true,value:{now:()=>clock}});
 globalThis.setInterval=fn=>{tick=fn;return 1;};globalThis.clearInterval=()=>{};
 globalThis.document={hidden:false};
-const demo=startDemo(store);
+const demo=startDemo(store,{getSceneParticipants:()=>({friends:['tuantuan'],groups:[]})});
 await store.setDemoPaused(true);const messagesBeforePause=store.state.messages.length;
 for(let i=0;i<16;i++){clock+=250;await tick();}
 assert.equal(store.state.messages.length,messagesBeforePause,'paused demo cannot send messages');
@@ -116,27 +116,60 @@ assert.equal(store.state.messages.length,messagesBeforePause,'background demo ca
 globalThis.document.hidden=false;
 for(let i=0;i<4;i++){clock+=250;await tick();}
 assert.equal(store.state.events.includes('greeting-tuantuan'),false,'resume must not immediately flush elapsed background time');
-for(let i=0;i<8;i++){clock+=250;await tick();}
-assert.equal(store.state.events.includes('greeting-tuantuan'),true);
+for(let i=0;i<35;i++){clock+=250;await tick();}
+assert.equal(store.state.messages.length,messagesBeforePause,'global slot waits ten active seconds');
+clock+=250;await tick();assert.equal(store.state.messages.length,messagesBeforePause+1);
+assert.equal(store.state.events.includes('greeting-tuantuan'),false,'no independent greeting timer');
 demo.dispose();
 // All added friends initiate conversation repeatedly, without a user message.
 await store.addFriend('xiaomian');await store.addFriend('shanshan');
-const regularGroups=[await store.createGroup({name:'自己创建的实验室',type:'lab',memberIds:['tuantuan','ali']}),await store.createGroup({name:'自己创建的音乐群',type:'music',memberIds:['xiaomian','shanshan']})];
-assert.ok(regularGroups.every(g=>!g.demo));
-const proactive=startDemo(store,{random:()=>.5}),arrivals=[];
+let choice=0;const proactive=startDemo(store,{random:()=>((choice++%4)+.5)/4,getSceneParticipants:()=>({friends:store.state.friends,groups:[]})}),arrivals=[];
 const observe=store.subscribe((state,event)=>{if(event.type==='message-received'&&event.eventId?.startsWith('proactive-'))arrivals.push({friendId:event.friendId,at:clock,text:state.messages.at(-1).text});});
 for(let i=0;i<1200;i++){clock+=250;await tick();}
 for(const friendId of store.state.friends){const messages=arrivals.filter(m=>m.friendId===friendId);assert.ok(messages.length>=4,`${friendId} keeps initiating messages`);assert.ok(new Set(messages.map(m=>m.text)).size>=4,'messages have varied personal content');}
-for(const g of regularGroups){const messages=store.state.messagesByGroup[g.id];assert.ok(messages.length>=5,'ordinary groups initiate repeatedly without an outgoing message');assert.ok(new Set(messages.map(m=>m.senderId)).size>=2,'group members take turns speaking');assert.ok(messages.every(m=>!m.read),'proactive group arrivals retain unread semantics');}
-const groupMessageCount=()=>regularGroups.reduce((n,g)=>n+store.state.messagesByGroup[g.id].length,0);const groupCountBeforePause=groupMessageCount();
-for(let i=1;i<arrivals.length;i++)assert.ok(arrivals[i].at-arrivals[i-1].at>=3000,'proactive messages do not arrive in a simultaneous burst');
+for(let i=1;i<arrivals.length;i++)assert.ok(arrivals[i].at-arrivals[i-1].at===10000,'one global arrival per ten active seconds');
 await store.setDemoPaused(true);const pausedCount=arrivals.length;
-for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);assert.equal(groupMessageCount(),groupCountBeforePause,'group timers also stop while paused or in the background');
+for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);
 await store.setDemoPaused(false);globalThis.document.hidden=true;
-for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);assert.equal(groupMessageCount(),groupCountBeforePause,'group timers also stop while paused or in the background');
+for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,pausedCount);
 globalThis.document.hidden=false;clock+=3600000;await tick();assert.ok(arrivals.length<=pausedCount+1,'returning to the tab does not backfill an hour of messages');
 proactive.dispose();observe();const disposedCount=arrivals.length;
 for(let i=0;i<320;i++){clock+=250;await tick();}assert.equal(arrivals.length,disposedCount,'disposed scheduler stops sending');
+// Friends remain eligible even when only group buildings are on stage; one proactive message per slot.
+const groupId=await store.createGroup({name:'节奏测试群',type:'club',memberIds:['tuantuan','ali']});
+const resolvedGroup=typeof groupId==='string'?groupId:groupId.id;
+let scene={friends:[],groups:[resolvedGroup]},pick=0,mixedCount=0;
+const mixedWatch=store.subscribe((state,event)=>{if(['message-received','group-message-received'].includes(event.type))mixedCount++;});
+const mixed=startDemo(store,{getSceneParticipants:()=>scene,random:()=>pick});
+const friendBefore=store.state.messages.length;
+for(let i=0;i<40;i++){clock+=250;await tick();}assert.equal(mixedCount,1);
+assert.equal(store.state.messages.length,friendBefore+1,'offstage friend participates alongside an onstage group');
+assert.equal(store.state.messages.at(-1).friendId,'tuantuan');
+pick=.99;const groupBefore=store.state.messagesByGroup[resolvedGroup].length;
+for(let i=0;i<40;i++){clock+=250;await tick();}assert.equal(mixedCount,2);assert.equal(store.state.messagesByGroup[resolvedGroup].length,groupBefore+1);
+scene={friends:[],groups:[]};const offstageGroupBefore=store.state.messagesByGroup[resolvedGroup].length;
+for(let i=0;i<80;i++){clock+=250;await tick();}assert.equal(mixedCount,4,'offstage contacts remain eligible each ten seconds');
+assert.equal(store.state.messagesByGroup[resolvedGroup].length,offstageGroupBefore+2,'offstage groups remain eligible even when friends exist');
+mixed.dispose();mixedWatch();
+// A committed outgoing message receives one random reply, including model-pending friends.
+const replyDemo=startDemo(store,{random:()=>0,getSceneParticipants:()=>({friends:[],groups:[]})});
+const beforeReply=store.state.messages.length;
+await store.sendMessage('ali',{type:'text',text:'你好呀'});
+for(let i=0;i<3;i++){clock+=250;await tick();}
+assert.equal(store.state.messages.length,beforeReply+1,'reply waits at least one second');
+clock+=250;await tick();
+assert.equal(store.state.messages.length,beforeReply+2);
+assert.equal(store.state.messages.at(-1).friendId,'ali');assert.equal(store.state.messages.at(-1).senderId,'ali');
+await store.sendMessage('tuantuan',{type:'text',text:'稍后聊'});await store.setDemoPaused(true);
+const beforeReplyPause=store.state.messages.length;
+for(let i=0;i<20;i++){clock+=250;await tick();}assert.equal(store.state.messages.length,beforeReplyPause);
+await store.setDemoPaused(false);globalThis.document.hidden=true;
+for(let i=0;i<20;i++){clock+=250;await tick();}assert.equal(store.state.messages.length,beforeReplyPause);
+globalThis.document.hidden=false;
+for(let i=0;i<4;i++){clock+=250;await tick();}assert.equal(store.state.messages.length,beforeReplyPause+1);
+for(let i=0;i<4;i++){clock+=250;await tick();}assert.equal(store.state.messages.length,beforeReplyPause+1,'received messages never trigger reply loops');
+await store.sendMessage('ali',{type:'text',text:'退出前消息'});replyDemo.dispose();
+for(let i=0;i<8;i++){clock+=250;await tick();}assert.equal(store.state.messages.length,beforeReplyPause+2,'dispose cancels queued replies');
 globalThis.setInterval=realSetInterval;globalThis.clearInterval=realClearInterval;
 Object.defineProperty(globalThis,'performance',{configurable:true,value:realPerformance});delete globalThis.document;
 await store.publishStatus({kind:'tired',text:'will expire'});

@@ -1,4 +1,5 @@
 import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
+import {avatarURL} from './avatar-url.js';
 import {createCharacterActions} from './character-actions.js';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -189,7 +190,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       if(friend.animal==='custom'&&!models.has(friend.id)){
         if(!friend.modelUrl)continue;
         if(!loadingCustom.has(friend.id)){
-          const load=loader.loadAsync(friend.modelUrl).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
+          const load=loader.loadAsync(avatarURL(friend.modelUrl)).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
           loadingCustom.set(friend.id,load);
         }
         continue;

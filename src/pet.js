@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { notificationItems } from './pet-state.js';
+import { notificationItems, petNickname } from './pet-state.js';
 
 const FRIEND_META = {
   tuantuan: { name: '团团', emoji: '🦘', color: 0xeaba43, position: [-.55, 0] },
@@ -49,6 +49,13 @@ const animated = [];
 const notificationRecords = new Map();
 const loader = new GLTFLoader();
 const modelCache = new Map();
+let friendDetails = {};
+function friendMeta(id){
+  const detail=friendDetails[id];
+  if(FRIEND_META[id])return FRIEND_META[id];
+  const modelUrl=id.startsWith('avatar-')&&/^[a-f0-9-]{36}$/.test(id.slice(7))&&detail?.modelUrl===`/api/avatar/assets/${id.slice(7)}/scene.glb`?detail.modelUrl:null;
+  return {name:petNickname(detail?.name),emoji:modelUrl?'':'🌿',modelUrl};
+}
 let settings = { reminders: true };
 let dragStart = null;
 let dragged = false;
@@ -203,12 +210,14 @@ function disposeRole(model) {
 }
 function clearNotice(id) { const record = notificationRecords.get(id); if (!record) return; disposeRole(record.model); record.node.remove(); notificationRecords.delete(id); }
 async function loadRole(friendId, record, index) {
-  const meta = FRIEND_META[friendId];
-  if (!meta) return;
+  const meta = friendMeta(friendId);
+  if (!FRIEND_META[friendId]&&!meta.modelUrl)return;
+  const animal = friendId === 'tuantuan' ? 'kangaroo' : friendId === 'ali' ? 'fox' : friendId === 'xiaomian' ? 'rabbit' : 'bear';
+  const url=meta.modelUrl||`assets/rodin-friends/${animal}/scene.glb`;
+  record.loadingUrl=url;
   try {
-    let source = modelCache.get(friendId);
-    const animal = friendId === 'tuantuan' ? 'kangaroo' : friendId === 'ali' ? 'fox' : friendId === 'xiaomian' ? 'rabbit' : 'bear';
-    if (!source) { source = (await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`)).scene; modelCache.set(friendId, source); }
+    let source = modelCache.get(url);
+    if (!source) { source = (await loader.loadAsync(url)).scene; modelCache.set(url, source); }
     let model = source.clone(true); const box = new THREE.Box3().setFromObject(model); const size = box.getSize(new THREE.Vector3());
     const scale = 1.45 / Math.max(size.y, .01);
     model.scale.setScalar(scale);
@@ -216,15 +225,15 @@ async function loadRole(friendId, record, index) {
     const holder = new THREE.Group(); holder.add(model); model = holder;
     model.position.set((index - 1) * 1.55, .25, 1.1);
     model.traverse(object => { if (object.isMesh) { object.castShadow = true; object.material = Array.isArray(object.material) ? object.material.map(value => value.clone()) : object.material.clone(); } });
-    if (notificationRecords.get(friendId) !== record) { disposeRole(model); return; }
+    if (notificationRecords.get(friendId) !== record || record.loadingUrl!==url) { disposeRole(model); return; }
     model.position.copy(record.position);
-    foreground.add(model); record.model = model;
+    disposeRole(record.model);foreground.add(model); record.model = model;record.loadedUrl=url;
     record.materials = new Map();
     model.traverse(object => { if (object.isMesh) for (const value of [].concat(object.material)) record.materials.set(value, {opacity:value.opacity,transparent:value.transparent}); });
     record.opacity = -1;
     if (record.phase === 'entering') setPhase(record, 'entering');
     const role = record.node.querySelector('.role'); role.textContent = ''; role.dataset.model = friendId; role.style.background = 'transparent';
-  } catch (_) {}
+  } catch (_) {if(record.loadingUrl===url){record.loadingUrl=null;record.node.dataset.modelError='true';}}
 }
 function renderNotifications(items) {
   const visible = settings.reminders ? items.slice(0, minimalMode ? 1 : 3) : [];
@@ -234,7 +243,7 @@ function renderNotifications(items) {
     else if (record.phase !== 'leaving') setPhase(record, 'leaving');
   }
   visible.forEach((item, index) => {
-    const meta = FRIEND_META[item.friendId] || { name: '朋友', emoji: '🌿' };
+    const meta = friendMeta(item.friendId);
     let record = notificationRecords.get(item.friendId);
     if (!record) {
       const node = document.createElement('button'); node.type = 'button'; node.className = 'notice-role';
@@ -254,6 +263,8 @@ function renderNotifications(items) {
     record.messageId = item.id; record.text = item.text; record.index = index;
     record.node.dataset.slot = String(index);
     record.node.querySelector('.notice').textContent = meta.name;
+    if(meta.modelUrl&&record.loadingUrl!==meta.modelUrl)loadRole(item.friendId,record,index);
+    if(!minimalMode){record.node.querySelector('.friend-tag').textContent=meta.name;record.node.querySelector('.letter strong').textContent=meta.name;}
     if(!minimalMode){
       record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
       record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
@@ -262,7 +273,7 @@ function renderNotifications(items) {
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
-if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });
+if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; renderNotifications(messageItems(payload)); });
 viewport.addEventListener('click', event => {
   if (!dragged) {
     const id = event.target.closest('[data-friend]')?.dataset.friend || clickedFriend;

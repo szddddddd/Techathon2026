@@ -26,6 +26,7 @@ import {createSoundCamera} from './sound-camera.js';
 import {createFreeRoam} from './free-roam.js';
 import {freezeStaticTransforms} from './static-transforms.js';
 import {PLACEMENTS} from './layout.js';
+import {createGroupCamera} from './group-camera.js';
 
 async function boot(){
 
@@ -70,8 +71,9 @@ const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if
 window.__sound=sound;window.__soundCamera=soundCamera;
 const recordPlayer=await createRecordPlayer({scene,camera,canvas:renderer.domElement,terrain,generated,ui,sound,reduced,onOpen:origin=>soundSettings?.open(origin,{scene:true})});
 window.__recordPlayer=recordPlayer;
-socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
-if(!captureIndex){groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,obstacles:()=>discoveryScene.labelAnchors});window.__groupBuildings=groupBuildings;}
+const groupCamera=createGroupCamera({camera,controls,reduced});window.__groupCamera=groupCamera;
+socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onGroupSceneClose:immediate=>groupCamera.close(immediate),onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
+if(!captureIndex){groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,onFocus:async point=>{if(window.__freeRoam?.busy)await window.__freeRoam.exit();window.__discoveryBoards?.dismiss();valley.finishCamera();characters.restore({preserveCamera:true});characters.finishCamera();groupCamera.open(point);},obstacles:()=>discoveryScene.labelAnchors});window.__groupBuildings=groupBuildings;}
 const valley=createValleySocial({landmarks,terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});window.__valley=valley;
 const focusFriend=characters.focus;characters.focus=async id=>{if(window.__freeRoam?.busy)await window.__freeRoam.exit();valley.finishCamera();return focusFriend(id);};
 if(!captureIndex){
@@ -95,7 +97,10 @@ if(!captureIndex){
 if(captureIndex)characters.sync(FRIENDS);
 window.__socialStore=store;window.__socialUI=socialUI;
 const stressMode=new URLSearchParams(location.search).has('stress');
-const demo=stressMode||captureIndex?null:startDemo(store);
+const demo=stressMode||captureIndex?null:startDemo(store,{getSceneParticipants:()=>({
+  friends:characters.placement.snapshot().characters.filter(c=>!['leaving','waiting'].includes(c.presentation?.phase)).map(c=>c.id),
+  groups:(groupBuildings?.snapshot().entries||[]).filter(g=>!['leaving','waiting'].includes(g.phase)).map(g=>g.id)
+})});
 if(stressMode){characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);$('viewport').dataset.stressCharacters=String(characters.audit.slots.length);}
 // Batch immutable meshes by material. Source still names and constructs every component.
 const animated=new Set([...(architecture.flames||[])]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));
@@ -110,7 +115,7 @@ const flyGeo=new THREE.BufferGeometry();flyGeo.setAttribute('position',new THREE
 let clockTime=0,last=performance.now();
 function resetCamera(){controls.target.set(0,0,-5);camera.position.set(40,36,66);if(innerWidth<700){camera.position.set(60,106,152);controls.target.set(0,0,-7);}controls.update();}
 window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){const offset=camera.position.clone().sub(controls.target),s=new THREE.Spherical().setFromVector3(offset);if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(e.key==='+'||e.key==='=')s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=THREE.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=THREE.MathUtils.clamp(s.radius,6,240);camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
-let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();scene.fog.density=innerWidth<700?.003:.0065;renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!window.__discoveryBoards?.kind&&!window.__freeRoam?.busy){wasMobile=innerWidth<700;resetCamera();if(socialUI.activeFriend)characters.focus(socialUI.activeFriend);}});
+let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();scene.fog.density=innerWidth<700?.003:.0065;renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!window.__discoveryBoards?.kind&&!window.__freeRoam?.busy&&!window.__groupCamera?.busy){wasMobile=innerWidth<700;resetCamera();if(socialUI.activeFriend)characters.focus(socialUI.activeFriend);}});
 resetCamera();
 const roam=captureIndex?null:createFreeRoam({camera,controls,canvas:renderer.domElement,ui});window.__freeRoam=roam;
 const frozenTransforms=freezeStaticTransforms(scene,[characters.root,groupBuildings?.root,terrain.river.root,recordPlayer.root,...scene.children.filter(o=>o.userData.socialCharacter),...architecture.flames,...(nature.butterflies||[]).map(b=>b.group)]);
@@ -125,7 +130,7 @@ function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const 
   if(architecture.lights?.[0])architecture.lights[0].intensity=2.5+Math.sin(clockTime*9)*.5;
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}
   for(let i=0;i<flyCount;i++){flyPositions[i*3]=flySeed[i][0]+Math.sin(clockTime*.4+i)*.3;flyPositions[i*3+1]=flySeed[i][1]+Math.sin(clockTime*.6+i)*.25;flyPositions[i*3+2]=flySeed[i][2]+Math.cos(clockTime*.3+i)*.2;}flyGeo.attributes.position.needsUpdate=true;
-  soundCamera.update(now);
+  soundCamera.update(now);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);
   renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsStart=now;fpsFrames=0;}frameId=requestAnimationFrame(frame);
 }
 renderer.render(scene,camera);$('viewport').dataset.loaded='true';frameId=requestAnimationFrame(frame);

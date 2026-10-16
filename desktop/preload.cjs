@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('desktopPet', {
   dragEnd() { ipcRenderer.send('pet-drag-end'); }
 });
 contextBridge.exposeInMainWorld('desktopMain', {
+  avatarOrigin: ipcRenderer.sendSync('avatar-origin'),
+  avatarRequest(route,body) { return ipcRenderer.invoke('avatar-request',{route,body}); },
   showPet() { ipcRenderer.send('show-desktop-pet'); },
   setPetVisible(visible) { return ipcRenderer.invoke('set-desktop-pet-visible', visible); },
   getPetVisible() { return ipcRenderer.invoke('get-desktop-pet-visible'); },
