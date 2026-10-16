@@ -24,6 +24,8 @@ import {createSound,createSoundSettings} from './sound.js';
 import {createRecordPlayer} from './record-player.js';
 import {createSoundCamera} from './sound-camera.js';
 import {createFreeRoam} from './free-roam.js';
+import {freezeStaticTransforms} from './static-transforms.js';
+import {PLACEMENTS} from './layout.js';
 
 async function boot(){
 
@@ -31,7 +33,8 @@ const $=id=>document.getElementById(id);
 const ui=createUIInteractions();window.__uiInteractions=ui;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x203a32);scene.fog=new THREE.FogExp2(0x203a32,innerWidth<700?.003:.0065);
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});
+const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!captureIndex});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;
 $('viewport').append(renderer.domElement);
 const camera=new THREE.PerspectiveCamera(37,innerWidth/innerHeight,.1,500);
@@ -41,18 +44,22 @@ const hemi=new THREE.HemisphereLight(0xc7e3d2,0x3e5233,2.2);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffe3a1,3.7);sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;scene.add(sun);
 const rim=new THREE.DirectionalLight(0x9acbc5,1.2);rim.position.set(12,8,-15);scene.add(rim);
 const undersideFill=new THREE.DirectionalLight(0x9bb6ad,.8);undersideFill.position.set(-12,-10,22);scene.add(undersideFill);
-let rodinAssets=null;try{rodinAssets=await loadRodinProps();}catch(error){console.warn('Local Rodin assets unavailable; retaining procedural props.',error);}
-const valleyAssets=new URLSearchParams(location.search).has('native-valley')?{}:await loadValleyAssets();
+const [rodinAssets,valleyAssets]=await Promise.all([
+ // Valley planting and river stones also use these shared sources. Keep review
+ // tools' default full catalog, but avoid unused cart/barrel/outcrop downloads.
+ loadRodinProps({kinds:[...PLACEMENTS.filter(p=>p.enabled!==false).map(p=>p.kind),'tree','tree_birch','tree_maple','rock','grass','fern_large']}).catch(error=>{console.warn('Local Rodin assets unavailable; retaining procedural props.',error);return null;}),
+ new URLSearchParams(location.search).has('native-valley')?{}:loadValleyAssets()
+]);
 $('viewport').dataset.valleyAssets=Object.keys(valleyAssets).join(',');
 const terrain=buildTerrain(scene,{rodinBridge:!!rodinAssets?.bridge,riverAssets:rodinAssets,valleyAssets,reduced});
 const generated=rodinAssets?placeRodinProps(scene,rodinAssets,terrain):null;
 const architecture=buildArchitecture(scene,{rodin:!!rodinAssets,expanded:true});const nature=buildNature(scene,{rodin:!!rodinAssets,expanded:true});
 createCommunityGround(scene);
-const captureIndex=Number(new URLSearchParams(location.search).get('capture'))||0;
-const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,ui,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
+const obstacleCache=new WeakMap();
+const discoveryScene=createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,ui,obstacleCache,onOpen:kind=>window.__openSceneDiscovery?.(kind)});window.__discoveryScene=discoveryScene;
 const landmarks=buildValleyLandmarks({scene,terrain,generated,assets:rodinAssets,valleyAssets});
 let socialUI,store,groupBuildings;
-const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
+const characters=await createCharacters({scene,camera,controls,renderer,terrain,generated,reduced,obstacleCache,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
 store=captureIndex?null:await createSocialStore();
 // Main-app placements are session-only; historical coordinates remain in storage.
 window.__characterPlacement=characters.placement;
@@ -106,8 +113,12 @@ window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[conte
 let wasMobile=innerWidth<700;window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();scene.fog.density=innerWidth<700?.003:.0065;renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!window.__discoveryBoards?.kind&&!window.__freeRoam?.busy){wasMobile=innerWidth<700;resetCamera();if(socialUI.activeFriend)characters.focus(socialUI.activeFriend);}});
 resetCamera();
 const roam=captureIndex?null:createFreeRoam({camera,controls,canvas:renderer.domElement,ui});window.__freeRoam=roam;
+const frozenTransforms=freezeStaticTransforms(scene,[characters.root,groupBuildings?.root,terrain.river.root,recordPlayer.root,...scene.children.filter(o=>o.userData.socialCharacter),...architecture.flames,...(nature.butterflies||[]).map(b=>b.group)]);
+window.__renderPerformance={frozenTransforms,frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
 let fpsFrames=0,fpsStart=performance.now();
-function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
+let frameId=null;
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
+function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches)clockTime+=dt;
   recordPlayer.update(now,dt);
   if(roam?.busy)roam.update(dt);else controls.update(dt);if(!stressMode)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);discoveryScene.update(now);window.__discoveryBoards?.update();terrain.river.update(clockTime,dt);
   for(let i=0;i<architecture.flames.length;i++){const flame=architecture.flames[i];flame.scale.y=.85+Math.sin(clockTime*7+i*1.6)*.16;flame.rotation.y=clockTime*.3+i;}
@@ -115,9 +126,9 @@ function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.
   for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(clockTime*1.3+b.phase)*.25;b.group.position.x+=Math.sin(clockTime*.5+b.phase)*.35;for(let i=0;i<b.wings.length;i++)b.wings[i].rotation.y=(i?1:-1)*Math.sin(clockTime*9+b.phase)*.85;}
   for(let i=0;i<flyCount;i++){flyPositions[i*3]=flySeed[i][0]+Math.sin(clockTime*.4+i)*.3;flyPositions[i*3+1]=flySeed[i][1]+Math.sin(clockTime*.6+i)*.25;flyPositions[i*3+2]=flySeed[i][2]+Math.cos(clockTime*.3+i)*.2;}flyGeo.attributes.position.needsUpdate=true;
   soundCamera.update(now);
-  renderer.render(scene,camera);fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsStart=now;fpsFrames=0;}requestAnimationFrame(frame);
+  renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsStart=now;fpsFrames=0;}frameId=requestAnimationFrame(frame);
 }
-renderer.render(scene,camera);$('viewport').dataset.loaded='true';requestAnimationFrame(frame);
+renderer.render(scene,camera);$('viewport').dataset.loaded='true';frameId=requestAnimationFrame(frame);
 if(captureIndex){
   renderer.setPixelRatio(1);renderer.setSize(540,960,false);renderer.shadowMap.type=THREE.PCFShadowMap;camera.aspect=540/960;camera.updateProjectionMatrix();controls.enabled=false;
   const views=[[-1.2,4.8,-2,-4.6,3.3,-6.9],[-4.6,4.6,11,-7.85,3.25,8.05],[-5,4.6,9,-8.5,3.2,5.45],[11,4.8,8,7.1,3.3,3.5],[-5,5.2,7,-8.5,3,1.5],[16,15,23,0,2.5,0]];

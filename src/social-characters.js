@@ -21,16 +21,22 @@ function triangleDistance(x,z,t){
 }
 
 /** Capture support and obstacle geometry before static scene batching detaches meshes. */
-export function createPlacementContext({scene,terrain,generated}){
+export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   scene.updateMatrixWorld(true);
   const meadows=[],occluders=[],obstacles=[];
   terrain.root.traverse(o=>{if(o.isMesh&&o.name.endsWith(' meadow'))meadows.push(o);});
   const owners=[...(generated?.children||[]),...(terrain.landmarkObstacles||[])];
   scene.traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
   for(const owner of owners){
+    const meshes=[];owner.traverse(mesh=>{if(mesh.isMesh&&mesh.geometry?.attributes.position&&!mesh.userData.interactionOnly)meshes.push(mesh);});
+    // Discovery placement and companion placement inspect the same static props.
+    // Reuse their exact triangle snapshots only while all geometry and world
+    // transforms match; the cache is local to this scene's boot, never global.
+    const signature=obstacleCache&&[owner.userData.layoutId||owner.name,owner.userData.kind,...meshes.map(m=>[m.id,m.geometry.id,m.geometry.attributes.position.id,m.geometry.attributes.position.version,m.geometry.index?.id,m.geometry.index?.version,...m.matrixWorld.elements].join(','))].join('|');
+    const cached=obstacleCache?.get(owner);
+    if(cached&&cached.signature===signature){occluders.push(...meshes);obstacles.push(cached.obstacle);continue;}
     const triangles=[],bounds=new THREE.Box2(),solidMeshes=[];
-    owner.traverse(mesh=>{
-      if(!mesh.isMesh||!mesh.geometry?.attributes.position||mesh.userData.interactionOnly)return;
+    for(const mesh of meshes){
       occluders.push(mesh);
       // Double-sided geometry views support parity rays without changing the
       // visible material. They remain valid after render batching.
@@ -45,8 +51,9 @@ export function createPlacementContext({scene,terrain,generated}){
         const t=points.map(p=>[p.x,p.z]),box=new THREE.Box2().setFromPoints(t.map(p=>new THREE.Vector2(...p)));
         bounds.union(box);triangles.push({points:t,world:points,minY,maxY,box});
       }
-    });
-    obstacles.push({id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes});
+    }
+    const obstacle={id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes};
+    obstacles.push(obstacle);obstacleCache?.set(owner,{signature,obstacle});
   }
   const ray=new THREE.Raycaster();
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
@@ -130,8 +137,8 @@ export function createCharacterPlaceholder(friend){
   root.userData.placeholder=true;return root;
 }
 
-export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder}){
-  const context=createPlacementContext({scene,terrain,generated});
+export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder,obstacleCache}){
+  const context=createPlacementContext({scene,terrain,generated,obstacleCache});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
   const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
   await Promise.all(ANIMALS.map(async animal=>{
@@ -319,5 +326,5 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   }
   function finishCamera(){if(transition){const t=transition;transition=null;camera.position.copy(t.position);controls.target.copy(t.target);camera.lookAt(controls.target);t.done?.();}}
   function dispose(){drag.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
-  return {sync,setPresence,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  return {root,sync,setPresence,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

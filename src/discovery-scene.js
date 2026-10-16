@@ -5,8 +5,8 @@ import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
 import {COMMUNITY_FACILITIES} from './community-layout.js';
 
 /** Authored timber props: every board remains individually editable. */
-export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui}){
-  const placement=createPlacementContext({scene,terrain,generated});
+export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,obstacleCache}){
+  const placement=createPlacementContext({scene,terrain,generated,obstacleCache});
   const holder=generated||new THREE.Group();if(!generated){holder.name='Interactive woodland facilities';scene.add(holder);}
   const mats={wood:new THREE.MeshStandardMaterial({color:0x806044,roughness:1}),edge:new THREE.MeshStandardMaterial({color:0xb99b6f,roughness:1}),cream:new THREE.MeshStandardMaterial({color:0xf0e8ca,roughness:1}),green:new THREE.MeshStandardMaterial({color:0x6a8668,roughness:1}),orange:new THREE.MeshStandardMaterial({color:0xc58f54,roughness:1}),dark:new THREE.MeshStandardMaterial({color:0x37473e,roughness:1})};
   const ray=new THREE.Raycaster(),pickables=[],audit={method:'13 support rays and projected body-band obstacle triangles, invariant WALKWAYS; facilities become companion obstacles before graph construction.',facilities:[]};

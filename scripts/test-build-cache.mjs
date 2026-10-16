@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+
+await fs.mkdir('.test-results',{recursive:true});const root=await fs.mkdtemp(path.resolve('.test-results/build-cache-'));
+await fs.mkdir(path.join(root,'scripts'));await fs.mkdir(path.join(root,'src'));
+await fs.copyFile('scripts/build.mjs',path.join(root,'scripts/build.mjs'));
+await fs.writeFile(path.join(root,'package.json'),JSON.stringify({version:'1.0.0'}));
+await fs.writeFile(path.join(root,'package-lock.json'),'{}');
+for(const name of ['index','pet'])await fs.writeFile(path.join(root,name+'.html'),'<head><title>Fixture</title></head>');
+await fs.writeFile(path.join(root,'src/value.js'),'export const value=1;');
+for(const name of ['main','asset-review','pet'])await fs.writeFile(path.join(root,'src',name+'.js'),"import {value} from './value.js';globalThis.fixture=value;");
+async function build(...args){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[path.join(root,'scripts/build.mjs'),...args],{windowsHide:true});let log='';child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);child.once('error',reject);child.once('exit',code=>code?reject(new Error(log)):resolve(log));});}
+assert.match(await build(),/Built Forest/);assert.match(await build(),/Reused unchanged/);
+const source=path.join(root,'src/value.js'),old=await fs.stat(source);
+await fs.writeFile(source,'export const value=2;');await fs.utimes(source,old.atime,old.mtime);
+assert.match(await build(),/Built Forest/);assert.match(await fs.readFile(path.join(root,'dist/world.js'),'utf8'),/=2/);
+await fs.writeFile(path.join(root,'dist/world.js'),'tampered');assert.match(await build(),/Built Forest/);
+await fs.unlink(path.join(root,'dist/pet.js'));assert.match(await build(),/Built Forest/);
+await fs.writeFile(path.join(root,'package-lock.json'),'{"fixture":true}');assert.match(await build(),/Built Forest/);
+await fs.writeFile(path.join(root,'src/extra.js'),'export const extra=3;');
+await fs.writeFile(source,"import {extra} from './extra.js';export const value=extra;");assert.match(await build(),/Built Forest/);
+await fs.writeFile(path.join(root,'src/extra.js'),'export const extra=4;');assert.match(await build(),/Built Forest/);
+await fs.writeFile(path.join(root,'.cache/build-state.json'),'broken');assert.match(await build(),/Built Forest/);
+const state=JSON.parse(await fs.readFile(path.join(root,'.cache/build-state.json'),'utf8'));state.files={};await fs.writeFile(path.join(root,'.cache/build-state.json'),JSON.stringify(state));assert.match(await build(),/Built Forest/);
+assert.match(await build('--force'),/Built Forest/);assert.match(await build(),/Reused unchanged/);
+await fs.writeFile(path.join(root,'package.json'),JSON.stringify({version:'1.0.1'}));assert.match(await build(),/Built Forest/);
+assert.match(await fs.readFile(path.join(root,'index.html'),'utf8'),/content="1.0.1"/);
+console.log('PASS: cache hits; source content, new imports, dependencies, outputs, corrupt state, forced builds and HTML versions invalidate correctly.');
