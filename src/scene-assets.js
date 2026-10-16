@@ -5,6 +5,7 @@ import {loadValleyAssets} from './valley-assets.js';
 import {loadGroupTemplates} from './group-scene.js';
 import {createJapaneseBuilding} from './japanese-buildings.js';
 import {PLACEMENTS} from './layout.js';
+import {isTree} from './tree-assets.js';
 import {FUJI_CARRIAGE} from './fuji-railway.js';
 
 const cache=new Map(),shared=new Set();let recordCache;
@@ -24,7 +25,13 @@ export async function prepareSceneAssets(id){
   recordCache||=new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb').then(g=>retain(g.scene)).catch(error=>{recordCache=null;throw error;});
   const recordModel=await recordCache;
   if(id==='forest'){
-   const [props,valley,groups]=await Promise.all([loadRodinProps({kinds:[...PLACEMENTS.filter(p=>p.enabled!==false).map(p=>p.kind),'tree','tree_birch','tree_maple','rock','grass','fern_large']}),new URLSearchParams(location.search).has('native-valley')?{}:loadValleyAssets(),loadGroupTemplates({onLoad:retain})]);
+   const kinds=[...new Set([...PLACEMENTS.filter(p=>p.enabled!==false).map(p=>p.kind),'tree','tree_birch','tree_maple','rock','grass','fern_large'])];
+   const [props,trees,valley,groups]=await Promise.all([
+    loadRodinProps({kinds:kinds.filter(kind=>!isTree(kind))}),
+    loadRodinProps({kinds:kinds.filter(isTree)}).catch(error=>{console.warn('Forest tree assets unavailable; using grounded procedural trees.',error);return{};}),
+    new URLSearchParams(location.search).has('native-valley')?{}:loadValleyAssets(),loadGroupTemplates({onLoad:retain}),
+   ]);
+   Object.assign(props,trees);
    for(const p of [...Object.values(props),...Object.values(valley)])retain(p.model);
    Object.values(groups.templates).forEach(retain);return{props,valley,groups,recordModel,failures:groups.failures};
   }

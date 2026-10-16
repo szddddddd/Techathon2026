@@ -1,8 +1,9 @@
 // Shared spatial plan. Coordinates and clearance zones drive both rendering and audits.
 import {inCommunity,groupPlotAt} from './community-layout.js';
+import {FOREST_TREES,FOREST_ROCKS} from './forest-layout.js';
 export const ASSET_NAMES={cart:'推车',tree:'古树',tree_birch:'轻冠桦树',tree_maple:'阔冠枫树',rock:'苔石',grass:'草丛',cottage:'森林木屋',tent:'帆布帐篷',barrel:'橡木桶',crate:'补给木箱',chest:'宝箱',bridge:'石拱桥',outcrop:'苔藓假山',crystal:'蓝色晶簇',fern_large:'大蕨草'};
 const item=(id,kind,x,z,size,rotation=0,axis='max',extra={})=>({id,kind,x,z,size,rotation,axis,...extra});
-export const PLACEMENTS=[
+const legacyPlacements=[
   item('cottage','cottage',-6.5,-4.5,5.4),
   item('tent','tent',-10,4.6,3.35),
   item('cart','cart',-11.4,.5,3.8),
@@ -13,20 +14,10 @@ export const PLACEMENTS=[
   item('crate-c','crate',-8.4,6.95,.85,-.1),
   item('chest','chest',9.3,-11.6,1.95,.15),
   item('bridge','bridge',1.25,1.5,9.24,0,'x',{y:.5,height:3.8,depth:3.92,alignLongAxis:true}),
-  item('crystal-a','crystal',7.4,-13.1,2.25,.3),
-  item('crystal-b','crystal',9.4,5.4,2.05,1.6),
-  item('crystal-c','crystal',-12,9,1.45,.6),
-  item('tree-a','tree',-13.1,-7.8,7,1.5,'y'),
-  item('tree-c','tree_birch',4.8,-9.5,6.3,0,'y'),
-  item('tree-d','tree',13.1,-6.8,6,Math.PI/2,'y'),
-  item('tree-e','tree_birch',-13.1,-3.6,7.3,1.5,'y'),
-  item('tree-f','tree_birch',24.4,-5.2,4.5,1.5,'y'),
-  item('tree-g','tree',-13.2,10.2,5,Math.PI/2,'y'),
-  item('tree-h','tree_maple',12.1,7.8,5.6,0,'y'),
-  ...[[-3.8,8.7,2.5,2.1],[5.5,8.8,2.6,3.3],[11.6,3.2,2.2,4.4],[-13.2,3,1.45,5.2],[-4,4.8,1.5,.3],[4.5,-5.6,1.5,2.2]].map((p,i)=>item(`rock-${i}`,'rock',...p)),
   ...[[-9.1,8.7,1.5,.2],[-3.4,6.8,2.1,1.1],[5.1,6.7,2.1,2.3],[10.8,.1,2.0,3.4],[5.3,-7.15,1.65,4],[-10.3,-8.9,1.3,.7],[-4.6,3.9,1.3,1.7],[7.6,4.3,1.6,2.7],[9.5,8,1.65,1.5]].map((p,i)=>item(`fern-${i}`,'fern_large',...p)),
   ...[[-12,2.6,.9],[-9.8,-9.3,.8],[-2.7,9.5,.8],[-2.4,7.4,.85],[7.1,9,.85],[10.7,6.3,.85],[13.8,3.7,.9],[12.2,-3.3,.9],[7.2,-8.6,.9],[-6.3,10,.7],[4.1,4.7,.95],[6.7,5.8,.9],[-5.1,5.5,.75],[-7.5,-8.9,.65],[5.5,-1.3,.75],[7.7,7.4,.8]].map((p,i)=>item(`grass-${i}`,'grass',...p,i*2.399,'y'))
 ].map(p=>p.kind==='bridge'?p:{...p,x:p.x+(p.x<1.25?-1.5:1.5)}).filter(p=>!['cottage','cart'].includes(p.kind)&&!inCommunity(p.x,p.z));
+export const PLACEMENTS=[...legacyPlacements,...FOREST_TREES,...FOREST_ROCKS];
 // Props reserve their actual measured footprints once loaded; these corridors are invariant.
 export const WALKWAYS=[
   {id:'bridge approach',x0:-3.8,z0:1.5,x1:6,z1:1.5,width:1.8},

@@ -5,6 +5,7 @@ import {bankOutlines,landAreaAudit,querySurface,surfaceHeight,WORLD_BOUNDS} from
 import {createRiver} from './river.js';
 import {riverCenter,riverHalfWidth} from './river-profile.js';
 import {createFloatingIsland} from './floating-island.js';
+import {createVerticalSurfaceSampler} from './vertical-surface.js';
 export {riverCenter,riverHalfWidth} from './river-profile.js';
 
 const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.92,flatShading:true,...extra});
@@ -79,8 +80,20 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
   flatDeck.dispose();const deckGeometry=new THREE.BufferGeometry();deckGeometry.setAttribute('position',new THREE.Float32BufferAttribute(deckVertices,3));deckGeometry.computeVertexNormals();
   const deck=mesh(root,'Mountain terrace meadow',deckGeometry,mat(0xbba27c,{side:THREE.DoubleSide}));deck.userData.terraceExtension=true;
   root.updateMatrixWorld(true);
-  const mountainRay=new THREE.Raycaster(),heightCache=new Map();
-  function sample(x,z){const value=querySurface(x,z);if(!mountains.length||value.region==='terrace-extension')return value;if(value.region!=='mountain'){const height=visualHeight(x,z),e=.025,dx=(visualHeight(x+e,z)-visualHeight(x-e,z))/(2*e),dz=(visualHeight(x,z+e)-visualHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);return{...value,height,normal:{x:-dx/n,y:1/n,z:-dz/n},walkable:value.walkable&&Math.hypot(dx,dz)<=Math.tan(22*Math.PI/180)};}const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);if(height===undefined){mountainRay.set(new THREE.Vector3(x,30,z),new THREE.Vector3(0,-1,0));height=Math.max(visualHeight(x,z),mountainRay.intersectObjects(mountains,true)[0]?.point.y??-Infinity);if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);}return{...value,height};}
+  const mountainHeightAt=createVerticalSurfaceSampler(mountains),heightCache=new Map();
+  function sample(x,z){
+    const value=querySurface(x,z);if(!mountains.length||value.region==='terrace-extension')return value;
+    if(value.region!=='mountain'){
+      const height=visualHeight(x,z),e=.025,dx=(visualHeight(x+e,z)-visualHeight(x-e,z))/(2*e),dz=(visualHeight(x,z+e)-visualHeight(x,z-e))/(2*e),n=Math.hypot(dx,1,dz);
+      return{...value,height,normal:{x:-dx/n,y:1/n,z:-dz/n},walkable:value.walkable&&Math.hypot(dx,dz)<=Math.tan(22*Math.PI/180)};
+    }
+    const key=x.toFixed(2)+','+z.toFixed(2);let height=heightCache.get(key);
+    if(height===undefined){
+      height=Math.max(visualHeight(x,z),mountainHeightAt(x,z));
+      if(heightCache.size>5000)heightCache.clear();heightCache.set(key,height);
+    }
+    return{...value,height};
+  }
 
   // A continuous ochre track winds from the foreground to the cottage and bridge.
   const pathMat=mat(0xc6b47e),pebble=mat(0xb3b18c);

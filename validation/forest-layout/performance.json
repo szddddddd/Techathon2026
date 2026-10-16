@@ -1,0 +1,35 @@
+{
+  "conditions": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "deviceScaleFactor": 1,
+    "browser": "Edge headless D3D11",
+    "friends": 0,
+    "groups": 0,
+    "frames": 120,
+    "coldContexts": 3
+  },
+  "before": {
+    "lastCachedBuildMs": 79.5204,
+    "coldReadyMs": 3386.773399999998,
+    "warmReadyMs": 3189.3067999999985,
+    "frameP95Ms": 16.800000000000182,
+    "frameCPUP95Ms": 4.199999809265137,
+    "calls": 314,
+    "triangles": 697694,
+    "coldTransferMiB": 38.73229122161865
+  },
+  "after": {
+    "lastCachedBuildMs": 75.99710000000005,
+    "coldReadyMs": 3692.3966,
+    "warmReadyMs": 3340.134000000002,
+    "frameP95Ms": 16.800000000000182,
+    "frameCPUP95Ms": 3.6000003814697266,
+    "calls": 318,
+    "triangles": 831224,
+    "coldTransferMiB": 37.81860542297363
+  },
+  "note": "Same local machine and Edge headless D3D11. Three fresh contexts, each cold and warm navigation; empty courtyard. Build figure is the final cached sample, not an average."
+}

@@ -9,6 +9,8 @@
     "desktop": "electron .",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
     "test:performance": "node scripts/test-build-cache.mjs && node scripts/test-static-files.mjs && node scripts/test-static-transforms.mjs && node scripts/test-placement-cache.mjs",
+    "test:forest": "node scripts/test-vertical-surface.mjs && node scripts/test-forest-layout.mjs",
+    "test:forest:browser": "node scripts/test-forest-browser.mjs",
     "test:performance:browser": "node scripts/test-performance-browser.mjs",
     "benchmark:performance": "node scripts/benchmark-performance.mjs",
     "test:avatar": "node scripts/test-avatar-pipeline.mjs && node scripts/test-friend-models.mjs && node scripts/test-avatar-browser.mjs",
