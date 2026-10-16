@@ -1,0 +1,172 @@
+{
+  "generatedAt": "2026-10-16T12:17:00.419Z",
+  "files": [
+    "fuji-plan.jpg",
+    "fuji-overview.jpg",
+    "fuji-street.jpg",
+    "fuji-mobile.jpg",
+    "showa-town-petals.webm"
+  ],
+  "fixture": "isolated IndexedDB: nine group types and nine friends",
+  "loadedScene": {
+    "snapshot": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 88.12183715828279,
+      "trainCarriages": 2,
+      "obstacleGroups": 53,
+      "adoptedAssets": [
+        "sakura_b",
+        "fuji",
+        "sakura_a",
+        "locomotive",
+        "carriage",
+        "station",
+        "track",
+        "gate",
+        "classroom",
+        "sport",
+        "lab",
+        "club",
+        "library",
+        "music",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "trainX": 16.410713882212484,
+      "trainZ": 5.174466489432236,
+      "animationTime": 0,
+      "distance": 61.960952223072134,
+      "stopped": true,
+      "holding": false,
+      "crossing": {
+        "state": "open",
+        "closure": 0,
+        "occupants": 0,
+        "entryAllowed": true
+      },
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 43.08613025056267,
+      "carriagePositions": [
+        [
+          16.410713882212484,
+          2.5,
+          5.174466489432236
+        ],
+        [
+          13.365295967635804,
+          2.5,
+          3.7800264043343983
+        ],
+        [
+          10.384033705634884,
+          2.5,
+          2.2523106852810417
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true,
+        "track": true,
+        "gate": true
+      },
+      "petals": {
+        "clock": 0,
+        "updates": 0,
+        "active": true,
+        "enabled": true,
+        "reduced": true,
+        "airVisible": false,
+        "airCapacity": 80,
+        "validParticles": 160,
+        "groundCount": 1200,
+        "roofStops": 0,
+        "batches": 2
+      }
+    },
+    "groups": 9,
+    "characters": 9,
+    "resources": {
+      "switches": 1,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 285,
+      "textures": 147,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "forest",
+          "fuji"
+        ],
+        "sharedResources": 225
+      },
+      "characters": {
+        "theme": "fuji",
+        "suspended": false,
+        "positions": {
+          "ali": {
+            "x": 9.700000000000008,
+            "z": 5.850000000000005
+          },
+          "scene-guest-0": {
+            "x": 5.150000000000006,
+            "z": -5.199999999999996
+          },
+          "scene-guest-1": {
+            "x": -3.2999999999999945,
+            "z": -9.749999999999998
+          },
+          "scene-guest-2": {
+            "x": -11.749999999999998,
+            "z": 7.800000000000006
+          },
+          "scene-guest-3": {
+            "x": -3.9499999999999944,
+            "z": 9.100000000000007
+          },
+          "scene-guest-4": {
+            "x": -11.099999999999998,
+            "z": -3.2499999999999956
+          },
+          "shanshan": {
+            "x": 12.95000000000001,
+            "z": -3.8999999999999955
+          },
+          "xiaomian": {
+            "x": 14.25000000000001,
+            "z": 8.450000000000006
+          },
+          "tuantuan": {
+            "x": 18.800000000000004,
+            "z": 10.400000000000007
+          }
+        },
+        "cachedThemes": [
+          "forest"
+        ],
+        "cachedCharacters": 9,
+        "contextObstacles": 56
+      },
+      "calls": 310,
+      "triangles": 1905954
+    },
+    "viewport": {
+      "width": 391,
+      "height": 844
+    }
+  },
+  "errors": []
+}

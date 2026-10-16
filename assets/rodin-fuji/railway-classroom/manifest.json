@@ -1,0 +1,86 @@
+{
+  "id": "railway-classroom",
+  "name": "木造学舍",
+  "kind": "building",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "f4a7c48e-6ff0-477b-8d70-a14ffa0ebe4a",
+  "phase": "downloaded",
+  "parameters": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "prompt": "A small historic wooden school classroom, orderly generous windows, broad tiled gable, offset entrance and a small round clock under the front gable. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2."
+  },
+  "targetSize": {
+    "width": 4,
+    "depth": 3.5,
+    "height": 3.6
+  },
+  "front": "+Z",
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "60d0fc4b676918c422024d31e8500a03a9bc3fb5e1aaa720c26487d9d4bb44e2",
+  "bytes": 11690248,
+  "references": [
+    "reference.png"
+  ],
+  "rotationY": 0,
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2",
+  "imagePrompt": "../../../output/imagegen/railway-town/classroom-prompt.txt",
+  "referenceHashes": [
+    "da25239c3b43f7dc25d01e3dac61b30524143668482cee61636b55805a230bdf"
+  ],
+  "adoption": "adopted after generated-reference and front/rear/side inspection; normalized scene layout checked",
+  "downloadedAt": "2026-10-16T10:50:18.771Z",
+  "sourceSha256": "60d0fc4b676918c422024d31e8500a03a9bc3fb5e1aaa720c26487d9d4bb44e2",
+  "sceneSha256": "5057295bab8c32f1ad37be129b39f6104dfcf09951ede345cc6af6969901f1ff",
+  "sourceBytes": 11690248,
+  "sceneBytes": 3840776,
+  "optimization": {
+    "geometry": "unchanged 30000 triangle source mesh",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "inspectionViews": [
+    "preview-front.png",
+    "preview-rear.png",
+    "preview-side.png"
+  ],
+  "runtimeRole": "reusable independent asset; animations and group identity authored in runtime"
+}

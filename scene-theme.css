@@ -1,0 +1,12 @@
+html[data-scene="fuji"],html[data-scene="fuji"] body{background:#e6d0dd}
+.scene-travel{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#edf0e9;color:#4b6057;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;pointer-events:auto}
+.scene-travel strong{font-size:24px;font-weight:600;letter-spacing:.08em}
+.scene-travel>span:last-of-type{font-size:13px;color:#78867f}
+.scene-travel-mark{font-size:46px;color:#c58ba5;animation:scene-arriving 2s ease-in-out infinite}
+.scene-travel button{font:inherit;color:#405b4d;background:#fffaf0;border:1px solid #c8d1c6;border-radius:14px;min-height:44px;padding:10px 22px;cursor:pointer}
+@keyframes scene-arriving{50%{transform:rotate(16deg) scale(1.08);opacity:.6}}
+@media(prefers-reduced-motion:reduce){.scene-travel-mark{animation:none}}
+/* Compact town labels include their message and envelope in the measured box,
+   allowing projected public controls to reserve real clickable space. */
+html[data-scene="fuji"] #social .friend-anchor{height:auto}
+html[data-scene="fuji"] #social .friend-anchor .head-message{position:static;bottom:auto;order:-1;width:auto;max-width:170px}

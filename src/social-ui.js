@@ -16,7 +16,7 @@ const date = value => new Date(value).toLocaleDateString('zh-CN',{month:'long',d
 const STICKERS = [ ['🌼','送你一朵小花'], ['🐾','我来啦！'], ['☕','歇一会儿'], ['🌙','晚安好梦'], ['🫶','接住温柔'], ['🍀','好运发生'] ];
 const EMOJI = ['😊','🥰','😂','🥹','🤔','😴','😭','✨','💛','🌿','🌈','👍'];
 
-export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onMountPet=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
+export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onMountPet=()=>{},getAnchorObstacles=()=>[],onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
   const root=document.createElement('div');root.id='social';document.body.append(root);
   root.innerHTML=`
     <div id="friend-anchors"></div>
@@ -33,7 +33,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     <dialog id="settings-dialog" class="paper" aria-label="设置"><header class="ui-titlebar"><button class="ui-back" data-ui-close="settings" aria-label="返回我">←</button><span>设置</span><button class="ui-close" data-ui-close="settings" aria-label="关闭设置">×</button></header><small class="eyebrow">MAKE YOURSELF AT HOME</small><h2>设置</h2><div class="settings-list"><button class="settings-sound" data-action="sound-settings"><span>♫ 声音设置</span><span aria-hidden="true">›</span></button><div id="settings-pet-slot"></div></div></dialog><dialog id="social-dialog" class="paper"></dialog><dialog id="compose-dialog" class="paper" aria-label="发布内容"></dialog><section id="status-popover" class="paper" hidden role="dialog" aria-label="好友状态"></section><dialog id="photo-dialog" aria-label="图片预览"><button class="ui-close" data-ui-close="photo" aria-label="关闭图片">×</button><img alt="完整照片"></dialog><dialog id="content-share-dialog" class="paper" aria-label="分享文章或视频"></dialog>
     <input id="chat-file" type="file" accept="image/*" hidden><div id="social-toast" role="status" popover="manual"></div>`;
   const $=id=>root.querySelector('#'+id);
-  let active=null,closingFriend=null,directoryTab='all',picker=null,attachment=null,dialogKind=null,dialogOwner=null;
+  let active=null,closingFriend=null,directoryTab='all',picker=null,attachment=null,dialogKind=null,dialogOwner=null,sceneTransition=false;
   let publishingFiles=[],publishKind=null,renderVersion=0,lastFriendSignature='',lastMessageSignature='',lastPostSignature='',scrollTimer,draftTimer,toastTimer,chatFileVersion=0,publishFileVersion=0,momentsOpen=false,lastMeetingList='',publishReturn=null,lastPublicSignature='';
   const dock=createDock({root,ui});
   const presence=createPresenceController();
@@ -85,7 +85,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   const anchorSizes=new ResizeObserver(entries=>{for(const entry of entries){entry.target._anchorWidth=entry.contentRect.width;entry.target._anchorHeight=entry.contentRect.height;}});
   const person=id=>id?.startsWith('group:')?({...groupOf(store.state,id.slice(6)),emoji:'▦',signature:'群聊'}):id==='me'?store.state.profile:friendOf(store.state,id)||{id,name:'林间朋友',emoji:'🌿',signature:''};
   const stateInfo=kind=>STATES.find(s=>s.id===kind)||{icon:'✨',label:kind||'此刻'};
-  const chatVisible=()=>!!active&&!document.hidden&&$('directory').hidden&&!document.querySelector('dialog[open]')&&(innerWidth>760||!momentsOpen)&&(innerWidth>=1100||ui.state('group-info')==='closed');
+  const chatVisible=()=>!sceneTransition&&!!active&&!document.hidden&&$('directory').hidden&&!document.querySelector('dialog[open]')&&(innerWidth>760||!momentsOpen)&&(innerWidth>=1100||ui.state('group-info')==='closed');
   const memoriesVisible=()=>!!active&&!active.startsWith('group:')&&momentsOpen&&!document.hidden&&$('directory').hidden&&!document.querySelector('dialog[open]');
   const statusOf=id=>{const s=store.state.statuses[id];return s&&s.expiresAt>Date.now()?s:null;};
   const postsOf=id=>store.state.posts.filter(p=>p.authorId===id).sort((a,b)=>b.createdAt-a.createdAt);
@@ -137,6 +137,17 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     else markVisibleRead();
   }
   function captureDraft(){if(!active||(active.startsWith('group:')&&!groupOf(store.state,active.slice(6))))return;draftValues.set(active,$('chat-input').value);const id=active,value=$('chat-input').value;attempt(()=>store.setConversationDraft(conversationRef(id),value));attempt(()=>store.setScroll(id,$('chat-messages').scrollTop));attempt(()=>store.setConversationAttachment(conversationRef(id),attachment));}
+  async function saveSessionDraft(){
+    clearTimeout(draftTimer);
+    if(active&&(!active.startsWith('group:')||groupOf(store.state,active.slice(6)))){
+      const id=active,ref=conversationRef(id),value=$('chat-input').value;
+      draftValues.set(id,value);
+      await store.setConversationDraft(ref,value);
+      await store.setScroll(id,$('chat-messages').scrollTop);
+      await store.setConversationAttachment(ref,attachment);
+    }
+    await store.flush();
+  }
   async function openFriend(id,options={}){return openConversation(conversationRef(id),options);}
   function renderChatTitle(){if(!active)return;const group=active.startsWith('group:')?groupOf(store.state,active.slice(6)):null;
     $('meeting-avatar').innerHTML=group?groupAvatar(store.state,group):person(active).avatarUrl?`<img src="${esc(friendAvatar(person(active)))}" alt="">`:esc(person(active).emoji);
@@ -353,9 +364,9 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
       if(!moving||node._showMessage===undefined)node._showMessage=show;
       node.classList.toggle('show-message',node._showMessage);
     }
-    const positions=anchorLayout.update(anchors.map(a=>({...a,width:anchorNodes.get(a.id)?._anchorWidth||150,height:anchorNodes.get(a.id)?._anchorHeight||36})),{now,moving,width:innerWidth,height:innerHeight,dt});
-    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;}
+    const obstacles=getAnchorObstacles().filter(a=>a.visible),centered=obstacles.length>0;const measured=anchors.map(a=>{const node=anchorNodes.get(a.id),height=node?._anchorHeight||36;return{...a,y:a.y-(centered?height/2:0),width:node?._anchorWidth||150,height};});const positions=anchorLayout.update([...measured,...obstacles.map(a=>({...a,fixed:true}))],{now,moving,width:innerWidth,height:innerHeight,dt});
+    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${(p.y+(centered?(node._anchorHeight||36)/2:0)).toFixed(2)}px,0) translate(-50%,-100%)`;}
   }
 
-  return {openFriend,update,prepareFrame,get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
+  return {openFriend,update,prepareFrame,saveSessionDraft,setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
 }

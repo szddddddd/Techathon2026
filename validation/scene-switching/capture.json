@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-10-16T10:12:47.063Z",
+  "files": [
+    "fuji-plan.jpg",
+    "fuji-overview.jpg",
+    "fuji-street.jpg",
+    "fuji-mobile.jpg",
+    "scene-transition.webm"
+  ],
+  "fixture": "isolated IndexedDB: nine group types and nine friends",
+  "loadedScene": {
+    "snapshot": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 52,
+      "trainCarriages": 2,
+      "obstacleGroups": 55,
+      "adoptedAssets": [
+        "fuji",
+        "locomotive",
+        "carriage",
+        "sakura_a",
+        "sakura_b",
+        "station",
+        "club",
+        "classroom",
+        "sport",
+        "lab",
+        "library",
+        "music",
+        "cafe",
+        "art",
+        "observatory"
+      ],
+      "trainX": 14.257576812433898,
+      "trainZ": 8.294677501806715,
+      "animationTime": 0,
+      "distance": 51.44180070876795,
+      "stopped": true,
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 41.948,
+      "carriagePositions": [
+        [
+          14.257576812433898,
+          2.5,
+          8.294677501806715
+        ],
+        [
+          10.909009203461908,
+          2.5,
+          8.198193631005706
+        ],
+        [
+          7.559371695544712,
+          2.5,
+          8.150076494181047
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true
+      }
+    },
+    "groups": 9,
+    "characters": 9,
+    "resources": {
+      "switches": 1,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 253,
+      "textures": 141,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "forest",
+          "fuji"
+        ],
+        "sharedResources": 215
+      },
+      "characters": {
+        "theme": "fuji",
+        "suspended": false,
+        "positions": {
+          "ali": {
+            "x": -1.9999999999999947,
+            "z": -1.9499999999999957
+          },
+          "scene-guest-0": {
+            "x": 3.200000000000005,
+            "z": 0.6500000000000042
+          },
+          "scene-guest-1": {
+            "x": 16.85000000000001,
+            "z": 0.6500000000000042
+          },
+          "scene-guest-2": {
+            "x": 7.750000000000007,
+            "z": -10.399999999999999
+          },
+          "scene-guest-3": {
+            "x": 24.64999999999999,
+            "z": -2.5999999999999956
+          },
+          "scene-guest-4": {
+            "x": 11.000000000000009,
+            "z": 4.218847493575595e-15
+          },
+          "shanshan": {
+            "x": -1.9999999999999947,
+            "z": -10.399999999999999
+          },
+          "xiaomian": {
+            "x": -15,
+            "z": 0.6500000000000042
+          },
+          "tuantuan": {
+            "x": 14.900000000000011,
+            "z": -3.8999999999999955
+          }
+        },
+        "cachedThemes": [
+          "forest"
+        ],
+        "cachedCharacters": 9,
+        "contextObstacles": 58
+      },
+      "calls": 224,
+      "triangles": 1305473
+    },
+    "viewport": {
+      "width": 391,
+      "height": 844
+    }
+  },
+  "errors": [],
+  "video": {
+    "durationSeconds": 25.32,
+    "format": "Full-page Playwright WebM, including scene-switch toolbar",
+    "reviewFrame": "transition-review.jpg"
+  }
+}

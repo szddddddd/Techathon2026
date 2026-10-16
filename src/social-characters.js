@@ -26,7 +26,7 @@ export function createPlacementContext({scene,terrain,generated}){
   const meadows=[],occluders=[],obstacles=[];
   terrain.root.traverse(o=>{if(o.isMesh&&o.name.endsWith(' meadow'))meadows.push(o);});
   const owners=[...(generated?.children||[]),...(terrain.landmarkObstacles||[])];
-  scene.traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
+  (terrain.placementRoot||scene).traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
   for(const owner of owners){
     const triangles=[],bounds=new THREE.Box2(),solidMeshes=[];
     owner.traverse(mesh=>{
@@ -50,14 +50,14 @@ export function createPlacementContext({scene,terrain,generated}){
   }
   const ray=new THREE.Raycaster();
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
-    const walkway=WALKWAYS.find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
+    const walkway=(terrain.walkways??WALKWAYS).find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
     if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
-    if(Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
+    if(terrain.theme!=='fuji'&&Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
     if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+(manual?.15:.6)))return {ok:false,reason:'friend clearance'};
     const center=terrain.sample?.(x,z);let groundY=center?.height??2.22;
     for(let i=0;i<13;i++){
       const r=i?radius+(manual?.02:.12):0,a=(i-1)/12*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
-      if(terrain.sample){const sample=terrain.sample(px,pz);if(!sample.walkable)return {ok:false,reason:'no meadow support',region:sample.region};if(Math.abs(sample.height-groundY)>r*Math.tan(22*Math.PI/180)+.04)return {ok:false,reason:'steep slope'};}
+      if(terrain.sample){const sample=terrain.sample(px,pz,{walking:walking&&!manual});if(!sample.walkable)return {ok:false,reason:'no meadow support',region:sample.region};if(Math.abs(sample.height-groundY)>r*Math.tan(22*Math.PI/180)+.04)return {ok:false,reason:'steep slope'};}
       else{ray.set(new THREE.Vector3(px,20,pz),down);ray.far=25;const hit=ray.intersectObjects(meadows,false)[0];if(!hit)return {ok:false,reason:'no meadow support'};groundY=Math.max(groundY,hit.point.y);}
     }
     const point=new THREE.Vector2(x,z),clearance=radius+(manual?.06:.35);
@@ -81,7 +81,7 @@ export function createPlacementContext({scene,terrain,generated}){
     }
     return {ok:true,y:groundY,region:center?.region,normal:center?.normal};
   }
-  return {meadows,occluders:[...occluders,...meadows],obstacles,inspect};
+  return {meadows,occluders:[...occluders,...meadows],obstacles,inspect,dispose(){for(const obstacle of obstacles)for(const mesh of obstacle.solidMeshes)mesh.material.dispose();}};
 }
 
 export function pickCharacterSlots(context,friends,{random=false}={}){
@@ -95,7 +95,7 @@ export function pickCharacterSlots(context,friends,{random=false}={}){
     }
     candidates.sort((a,b)=>a.score-b.score||a.z-b.z||a.x-b.x);
     let placed=null;
-    for(const c of candidates){const check=context.inspect(c.x,c.z,radius+.12,result,{walking:true});if(!check.ok)continue;
+    for(const c of candidates){const check=context.inspect(c.x,c.z,radius+.12,result,{walking:true});if(!check.ok||check.region==='railway')continue;
       const room=[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dz])=>[.25,.5,.75,1].every(t=>context.inspect(c.x+dx*t,c.z+dz*t,radius+.12,result,{walking:true}).ok));
       if(room){placed={id:friend.id,animal:friend.animal,x:c.x,y:check.y,z:c.z,radius,height:friend.height||1.9};break;}
     }
@@ -131,14 +131,15 @@ export function createCharacterPlaceholder(friend){
 }
 
 export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder}){
-  const context=createPlacementContext({scene,terrain,generated});
+  let context=createPlacementContext({scene,terrain,generated});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
   const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
   await Promise.all(ANIMALS.map(async animal=>{
     try{const gltf=await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`);models.set(animal,gltf.scene);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
   }));
   const leafCanvas=document.createElement('canvas');leafCanvas.width=leafCanvas.height=48;const lc=leafCanvas.getContext('2d');lc.fillStyle='#eff5bd';lc.beginPath();lc.moveTo(7,41);lc.bezierCurveTo(0,10,25,0,42,6);lc.bezierCurveTo(43,25,28,42,7,41);lc.fill();const leafTexture=new THREE.CanvasTexture(leafCanvas);
-  let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={},gathering=null,gatherTransition=null;
+  let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={},gathering=null,gatherTransition=null,suspended=false,sceneRestoring=null;
+  const scenePositions=new Map(),dragSurfaces=[...context.meadows];
   const isReduced=()=>typeof reduced==='boolean'?reduced:!!reduced?.matches;
   const audit={method:'Unified surface and 13-point support disks; slope <=22 degrees; triangles clipped to current foot/head heights; manual body clearance; transient gathering slots.',slots:[],missingModels:ANIMALS.filter(a=>!models.has(a)),unplaced:[]};
   const residents=()=>[...records.values()].filter(r=>r.group.visible&&!r.slot?.unplaced);
@@ -189,8 +190,8 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       }
       let r=records.get(friend.id);if(r?.group.visible&&r.slot&&!r.slot.unplaced)continue;
       if(!r){r=create(friend);records.set(friend.id,r);}
-      let slot;const custom=!transient&&savedPlacements[friend.id];
-      if(custom){const check=inspectPlacement(r,custom.x,custom.z);if(check.ok)slot={id:friend.id,animal:friend.animal,...custom,y:check.y,radius:r.radius,height:r.height,manualPlacement:true,placementRadius:r.bodyRadius};}
+      let slot;const custom=sceneRestoring?.get(friend.id)||(!transient&&savedPlacements[friend.id]);
+      if(custom){const candidates=[custom];if(terrain.theme==='fuji')for(let distance=.4;distance<=4.4;distance+=.4)for(let i=0;i<16;i++)candidates.push({x:custom.x+Math.cos(i*Math.PI/8)*distance,z:custom.z+Math.sin(i*Math.PI/8)*distance});for(const p of candidates){const check=inspectPlacement(r,p.x,p.z);if(check.ok){slot={id:friend.id,animal:friend.animal,...p,y:check.y,radius:r.radius,height:r.height,manualPlacement:true,placementRadius:r.bodyRadius};break;}}}
       if(!slot){
         const reserved={inspect:(x,z,radius,others,options)=>{
           const result=context.inspect(x,z,radius,[...used,...others],options);if(!result.ok)return result;
@@ -228,6 +229,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     if(saved){const original=saved;animateCamera(original.position,original.target,()=>{controls.enabled=original.enabled;saved=null;});}
   }
   function pick(x,y){
+    if(suspended)return null;
     const rect=renderer.domElement.getBoundingClientRect();camera.updateMatrixWorld(true);
     ray.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,1-(y-rect.top)/rect.height*2),camera);ray.far=Infinity;
     const hit=ray.intersectObjects([...records.values()].filter(r=>r.group.visible).map(r=>r.bodyHolder),true).find(h=>h.object.isMesh);
@@ -235,7 +237,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     return records.get(hit.object.userData.friendId)||null;
   }
   function inspectPlacement(record,x,z){return context.inspect(x,z,characterBodyRadius(record.radius),[...records.values()].filter(r=>r!==record&&r.group.visible&&!r.slot?.unplaced&&r.slot).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:Math.max(characterBodyRadius(r.radius),(r.pose?.lie||0)>.05?r.height*.65:0)})),{manual:true});}
-  const drag=createCharacterDrag({scene,camera,controls,canvas:renderer.domElement,surfaces:context.meadows,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:(id,p)=>gathering||records.get(id)?.transient?Promise.resolve():onPlace?.(id,p),onError:onPlacementError,onPlaced(record,point){
+  const drag=createCharacterDrag({scene:root,camera,controls,canvas:renderer.domElement,surfaces:dragSurfaces,pick,inspect:inspectPlacement,onClick:onSelect,onCommit:(id,p)=>gathering||records.get(id)?.transient?Promise.resolve():onPlace?.(id,p),onError:onPlacementError,onPlaced(record,point){
     const slot={...record.slot,...point,manualPlacement:true,placementRadius:characterBodyRadius(record.radius)};if(!gathering&&!record.transient)savedPlacements[record.friend.id]={x:point.x,z:point.z};resetWalk(record,slot);refreshAudit();
   }});
   const placement={
@@ -247,7 +249,9 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     pick(x,y){return pick(x,y)?.friend.id||null;},
   };
   function update(now,dt){
+    if(suspended)return;
     drag.update();
+    terrain.setResidents?.(residents().map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.bodyRadius})));
     if(gatherTransition){const t=isReduced()?1:Math.min(1,(now-gatherTransition.start)/600);for(const r of residents().filter(r=>gatherTransition.targets.has(r.friend.id))){r.group.scale.setScalar(Math.max(.015,Math.abs(t*2-1)));if(t>=.5&&!gatherTransition.moved){const p=gatherTransition.targets.get(r.friend.id);if(p)r.group.position.copy(p);r.spawn=now;}}if(t>=.5)gatherTransition.moved=true;if(t===1){for(const r of residents().filter(r=>gatherTransition.targets.has(r.friend.id)))r.group.scale.setScalar(1);gatherTransition=null;}}
     const mobileFocus=selected&&renderer.domElement.clientWidth<=850;
     if(mobileFocus){const w=renderer.domElement.clientWidth,h=renderer.domElement.clientHeight;if(!camera.view?.enabled||camera.view.offsetY!==h*.26)camera.setViewOffset(w,h,0,h*.26,w,h);}
@@ -278,7 +282,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
           const dest=walk.graph.nodes[walk.route[0]],dx=dest.x-r.group.position.x,dz=dest.z-r.group.position.z,distance=Math.hypot(dx,dz),amount=Math.min(distance,delta*(policy.speed||.20));
           const next={x:r.group.position.x+dx/Math.max(distance,1e-6)*amount,z:r.group.position.z+dz/Math.max(distance,1e-6)*amount};
           const others=[...records.values()].filter(other=>other!==r&&other.group.visible).map(other=>({x:other.group.position.x,z:other.group.position.z,radius:Math.max(r.slot.manualPlacement?characterBodyRadius(other.radius):other.radius+.08,(other.pose?.lie||0)>.05?other.height*.65:0)}));
-          if(canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
+          if((terrain.canWalkStep?.(r.group.position,next,r.bodyRadius)??true)&&canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
             r.group.position.set(next.x,terrain.sample?.(next.x,next.z).height??THREE.MathUtils.lerp(r.group.position.y,dest.y,amount/Math.max(distance,1e-6)),next.z);walk.heading=Math.atan2(dx,dz);moving=amount>0;walk.phase+=amount*17;
             if(distance<.015||amount>=distance){walk.node=walk.route.shift();if(!walk.route.length)walk.wait=policy.wait+(walk.sequence%2);}
           }else walk.wait=.7;
@@ -300,7 +304,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     }
   }
   function findGatherSlot(r,used){
-    for(let i=0;i<128;i++){const a=i*2.399,radius=3.5+Math.floor(i/32)*.6,x=21+Math.cos(a)*radius,z=2+Math.sin(a)*radius;const check=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(check.ok)return {...r.slot,x,y:check.y,z,gathering:true,manualPlacement:true,placementRadius:r.bodyRadius};}
+    const center=terrain.layout?.gatheringCenter||{x:21,z:2};for(let i=0;i<(terrain.theme==='fuji'?192:128);i++){const a=i*2.399,radius=(terrain.theme==='fuji'?2.4:3.5)+Math.floor(i/32)*.6,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;const check=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(check.ok)return {...r.slot,x,y:check.y,z,gathering:true,manualPlacement:true,placementRadius:r.bodyRadius};}
     return null;
   }
   function beginGather(){
@@ -318,6 +322,31 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     gatherTransition={start:performance.now(),targets,moved:false};refreshAudit();return true;
   }
   function finishCamera(){if(transition){const t=transition;transition=null;camera.position.copy(t.position);controls.target.copy(t.target);camera.lookAt(controls.target);t.done?.();}}
-  function dispose(){drag.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
-  return {sync,setPresence,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  function setScene(next,{positions,theme=next.terrain?.theme||'forest'}={}){
+    if(drag.snapshot().pending)throw new Error('请等待人物安放完成后再切换场景。');
+    // Build before modifying the active context so a bad surface cannot strand residents.
+    const nextContext=createPlacementContext({scene:next.scene,terrain:next.terrain,generated:next.generated});
+    drag.cancel();
+    const previous=new Map();for(const r of residents()){
+      const home=gathering?.get(r.friend.id)?.position||r.group.position;
+      previous.set(r.friend.id,{x:home.x,z:home.z});
+    }
+    scenePositions.set(terrain.theme||'forest',previous);
+    const friends=residents().map(r=>r.friend),oldContext=context;
+    scene=next.scene;terrain=next.terrain;generated=next.generated;
+    if('pickOccluder' in next)pickOccluder=next.pickOccluder;
+    context=nextContext;dragSurfaces.splice(0,dragSurfaces.length,...context.meadows);
+    scene.add(root);gathering=null;gatherTransition=null;transition=null;controls.enabled=saved?.enabled??controls.enabled;saved=null;anchors=[];lastOcclusion=0;
+    sceneRestoring=positions?new Map(Object.entries(positions)):scenePositions.get(theme)||null;
+    for(const r of records.values()){r.group.visible=false;r.slot=null;r.walk=null;r.restInfo=null;r.pose=null;r.placing=false;r.group.scale.setScalar(1);}
+    sync(friends,{transient:true});sceneRestoring=null;
+    for(const [id,r] of records){r.ring.visible=id===selected;r.outline.visible=id===selected;}
+    audit.rosterKey='';audit.theme=theme;audit.sceneChanges=(audit.sceneChanges||0)+1;
+    oldContext.dispose();return audit.slots;
+  }
+  function suspend(value){suspended=!!value;if(suspended){drag.cancel();anchors=[];}root.visible=!suspended;}
+  function cancelPlacement(){if(drag.snapshot().pending)return false;drag.cancel();return true;}
+  function getSceneState(){return{theme:terrain.theme||'forest',suspended,positions:Object.fromEntries(residents().map(r=>[r.friend.id,{x:r.group.position.x,z:r.group.position.z}])),cachedThemes:[...scenePositions.keys()],cachedCharacters:records.size,contextObstacles:context.obstacles.length};}
+  function dispose(){drag.dispose();context.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
+  return {sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

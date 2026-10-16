@@ -2,6 +2,8 @@
 
 三维森林社交网页，包含动物好友、聊天、朋友圈、公众号、视频号与 Windows 独立桌宠。
 
+顶部场景悬浮条可在 **林间来信 / 富士樱町** 之间切换。富士樱町采用 15 项 Rodin 资产，包含雪顶富士山、樱花日式街区、曲线铁路与停站蒸汽列车；点击列车或站牌可近景跟随。切换保留当前聊天、草稿、附件和阅读位置。见 [实现与验收](./FUJI-SCENE-REVIEW.md)、[桌面画面](./validation/scene-switching/fuji-overview.jpg)、[资产来源](./assets/rodin-fuji/ASSET-SOURCES.md)。
+
 好友 → ＋ → 搜索昵称或账号 → 查看资料 → 添加到通讯录。添加后可以立即聊天，森林形象按头像自动在后台准备，完成后直接更新好友，按最近消息的前九位好友规则进入场景。当前使用本机联系人资料；自定义联系人可录入昵称、账号和头像。生图配置仅在项目本地，界面不显示服务配置。见 [流水线实现与验证](./AVATAR-PIPELINE.md)；上次真实生图验证返回 502，完整新资产生成质量尚未验证。
 
 ## ▶ 一键启动最新版
@@ -172,3 +174,5 @@ npm run test:browser    # 阅读、视频、分享和手机布局
 ```
 
 浏览器测试依赖已声明的 Playwright 和本机 Edge，无需开发机绝对路径。先启动网页服务，再执行 `npm run test:regression`；默认依次验证数据、通知摘要、网页桥接、原生桌宠及冷启动。使用 `FOREST_TEST_URL` 指定服务地址，`FOREST_TEST_OUTPUT` 指定证据目录（默认 `.test-results/`，不覆盖正式验证记录）。原生测试使用隔离 profile，不安装系统协议。`npm run test:launch` 需已有测试服务；`node scripts/test-port-fallback.mjs` 可独立验证端口占用回退。`assets/` 保存现用模型、素材及来源，`src/` 是可编辑源码，`validation/` 保存验证记录。Git 提交历史用于回看修改，不作为旧版启动入口。历史文件清理状态与完整列表见 [CLEANUP.md](./CLEANUP.md)。
+
+富士樱町现已采用紧凑昭和街区、沥青生活街巷与轻风落樱；实现与验收见 [SHOWA-TOWN-REVIEW.md](SHOWA-TOWN-REVIEW.md)。

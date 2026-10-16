@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-10-16T14:03:43.073Z",
+  "camera": {
+    "position": [
+      24,
+      100,
+      172
+    ],
+    "target": [
+      0,
+      4,
+      -7
+    ]
+  },
+  "viewport": {
+    "width": 391,
+    "height": 844
+  },
+  "labels": [
+    {
+      "id": "078b7180-d3e2-4491-90e2-eac57833fe3e",
+      "x": 23.40625,
+      "y": 70,
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "676707aa-bdfa-4eb9-b687-a8e1ba95aa2e",
+      "x": 152.90625,
+      "y": 70,
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "a1dfed3c-1229-4ed1-86ac-727e23d890aa",
+      "x": 282.40625,
+      "y": 70,
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "b55fdd4e-0175-4b39-9375-383970d34313",
+      "x": 23.40625,
+      "y": 120,
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "0c3b6ef7-a457-4f98-82c7-78f268f2a821",
+      "x": 157.40625,
+      "y": 120,
+      "width": 76.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "0cb859da-9b52-4e5d-b3d8-05b171380219",
+      "x": 277.90625,
+      "y": 120,
+      "width": 94.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "e313ad5f-7146-4584-8747-981d5a0ba31f",
+      "x": 27.90625,
+      "y": 170,
+      "width": 76.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "d063c133-8622-49f9-a5aa-af2369af6558",
+      "x": 161.90625,
+      "y": 170,
+      "width": 67.1875,
+      "height": 44,
+      "hit": true
+    },
+    {
+      "id": "13be37d3-29fd-402e-b374-7ad4904cbd89",
+      "x": 282.40625,
+      "y": 170,
+      "width": 85.1875,
+      "height": 44,
+      "hit": true
+    }
+  ],
+  "hitCount": 9,
+  "groups": 9,
+  "characters": 9,
+  "errors": []
+}

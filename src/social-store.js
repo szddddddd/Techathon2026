@@ -68,6 +68,7 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
   const store={
     ...groupStoreMethods({mutate,person:friendOf,payload:messagePayload}),
     get state(){return state;},
+    flush(){return queue;},
     getFriend(id){return friendOf(state,id);},
     addAvatarContact(profile){return mutate('friend-added',next=>{
       const account=String(profile.account||'').trim(),name=String(profile.name||'').trim();

@@ -1,0 +1,21 @@
+{
+  "assets": [
+    {
+      "id": "railway-art",
+      "sourceBytes": 12761928,
+      "sceneBytes": 4093960
+    },
+    {
+      "id": "railway-cafe",
+      "sourceBytes": 13028388,
+      "sceneBytes": 4084012
+    },
+    {
+      "id": "railway-observatory",
+      "sourceBytes": 12474548,
+      "sceneBytes": 3729480
+    }
+  ],
+  "sourceBytes": 38264864,
+  "sceneBytes": 11907452
+}

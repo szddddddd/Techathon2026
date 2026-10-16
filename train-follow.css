@@ -1,0 +1,15 @@
+.train-station-control,.train-follow-exit{position:fixed;z-index:24;display:flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:10px 14px;border:1px solid rgba(255,255,246,.74);border-radius:24px;background:rgba(251,249,237,.88);color:#405b4d;box-shadow:0 4px 18px #344c3820;font:500 13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:background 140ms,box-shadow 140ms,scale 140ms;}
+.train-station-control{left:0;top:0;padding:10px;min-width:44px;white-space:nowrap;}
+.train-station-control svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+.train-station-control span{max-width:0;opacity:0;overflow:hidden;transition:max-width 180ms,opacity 120ms;}
+.train-station-control:not(:hover):not(:focus-visible){gap:0;}
+.train-station-control:hover span,.train-station-control:focus-visible span{max-width:100px;opacity:1;}
+.train-follow-exit{right:max(22px,env(safe-area-inset-right));bottom:calc(106px + env(safe-area-inset-bottom));}
+.train-follow-exit span{font-size:19px;}
+.train-station-control:focus-visible,.train-follow-exit:focus-visible{outline:3px solid #9fb79a;outline-offset:3px;}
+.train-station-control:hover,.train-follow-exit:hover{background:#fffdf2;box-shadow:0 6px 24px #344c3830;}
+.train-station-control:active,.train-follow-exit:active{scale:.96;}
+.train-station-control[hidden],.train-follow-exit[hidden]{display:none;}
+@media(max-width:600px){.train-follow-exit{right:max(14px,env(safe-area-inset-right));bottom:calc(96px + env(safe-area-inset-bottom));}.train-station-control{padding:10px;}}
+@media(prefers-reduced-motion:reduce){.train-station-control,.train-follow-exit,.train-station-control span{transition:none;}.train-station-control:active,.train-follow-exit:active{scale:1;}}
+@supports not(backdrop-filter:blur(1px)){.train-station-control,.train-follow-exit{background:#faf9ee;}}
