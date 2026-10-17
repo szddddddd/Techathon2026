@@ -1,0 +1,21 @@
+/* Quiet handles stay available; their controls appear only on approach. */
+.scene-controls-reveal{display:grid;place-items:center;width:100px;height:44px;padding:0;border:0;border-radius:22px;background:transparent;cursor:pointer;color:var(--ui-ink,#304b61)}
+#scene-controls-reveal{position:fixed;left:50%;top:max(8px,env(safe-area-inset-top));translate:-50% 0;z-index:61}
+#scene-controls-reveal>span{width:48px;height:7px;border:1px solid #fff8;border-radius:8px;background:var(--ui-paper,#f1f4dece);box-shadow:0 3px 16px #182e3440;backdrop-filter:blur(12px)}
+.scene-controls-reveal:focus-visible{outline:2px solid var(--ui-accent,#65816c);outline-offset:2px}
+#environment-controls{position:fixed;right:max(16px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));z-index:61}
+#environment-controls-reveal{width:48px;height:48px;margin-left:auto;border:1px solid #fff9;border-radius:50%;background:var(--ui-glass,#f1f7f3dd);box-shadow:0 5px 22px #182e3430;backdrop-filter:blur(16px)}
+#environment-controls-reveal svg{width:24px;height:24px}
+#environment-controls-content{position:absolute;right:0;top:100%;display:flex;align-items:flex-start;gap:8px;padding-top:10px;transform-origin:top right}
+#environment-controls #day-night-control,#environment-controls #free-roam{position:relative;inset:auto;z-index:auto;flex:none}
+#environment-controls #day-night-toggle{min-width:86px;height:48px}
+#environment-controls #roam-toggle{height:48px;box-sizing:border-box;white-space:nowrap}
+#environment-controls #day-night-menu{right:0;left:auto}
+#environment-controls #roam-help{position:absolute;right:0;top:54px;width:250px;box-sizing:border-box;margin:0}
+.scene-controls-item{transition:opacity 120ms,transform 150ms var(--ui-ease,ease),visibility 0s}
+html[data-scene-controls=collapsed] #scene-switcher,#environment-controls[data-controls=collapsed] #environment-controls-content{opacity:0;transform:translateY(-6px) scale(.96);visibility:hidden;pointer-events:none}
+html[data-scene-controls=expanded] #scene-controls-reveal{opacity:0;pointer-events:none}
+html[data-scene-transition=true] .scene-controls-reveal{visibility:hidden;pointer-events:none}
+.scene-controls-reveal:disabled{opacity:.35;cursor:default}
+@media(max-width:600px){#scene-controls-reveal{left:40px;translate:none}#environment-controls{right:max(14px,env(safe-area-inset-right))}}
+@media(prefers-reduced-motion:reduce){.scene-controls-item{transition:none;transform:none}}

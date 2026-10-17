@@ -52,7 +52,9 @@ export function createNightEffects(root,theme,{flies}={}){
  const stars=new T.Points(geometry,new T.PointsMaterial({color:0xd8eaff,size:1.5,sizeAttenuation:false,transparent:true,opacity:0,depthWrite:false,fog:false,toneMapped:false}));stars.name='Quiet night stars';stars.raycast=()=>{};decorations.add(stars);
  let factor=0;
  return{root:decorations,
-  setNightFactor(value,camera){factor=T.MathUtils.clamp(value,0,1);uniforms[theme].value=factor;decorations.visible=factor>.001;stars.material.opacity=factor*(theme==='ideal'?.7:.45);if(camera){decorations.position.copy(camera.position);decorations.quaternion.copy(camera.quaternion);stars.scale.x=camera.aspect;decorations.updateMatrixWorld(true);}if(flies){flies.visible=factor>.05;flies.material.opacity=factor*.9;}},
+  // This subtree stays dynamic when scenery freezes. The renderer updates its
+  // world matrices after camera-relative transforms, together with other actors.
+  setNightFactor(value,camera){factor=T.MathUtils.clamp(value,0,1);uniforms[theme].value=factor;decorations.visible=factor>.001;stars.material.opacity=factor*(theme==='ideal'?.7:.45);if(camera){decorations.position.copy(camera.position);decorations.quaternion.copy(camera.quaternion);stars.scale.x=camera.aspect;}if(flies){flies.visible=factor>.05;flies.material.opacity=factor*.9;}},
   snapshot:()=>({factor,emissiveMaterials,windowMaterials,stars:points.length/3,roadMaterials}),
   // Geometry and materials are released with the owning world resource set.
  };

@@ -10,6 +10,9 @@ const text=/\.(?:html|js|css|json|svg)$/i;
 // Bound retained compressed data. Concurrent requests share a compression job.
 const compressed=new Map();let cacheBytes=0;
 const maxBytes=24*1024*1024;
+// Model/audio transfers otherwise issue one filesystem read per 64 KiB. A
+// bounded 256 KiB buffer reduces IO callbacks without retaining whole assets.
+const transferChunkBytes=256*1024;
 async function bodyFor(file,stamp,encoding){
  const key=file+'|'+encoding;
  const cached=compressed.get(key);
@@ -57,11 +60,11 @@ export async function serveStatic(req,res,root){
    const end=match[1]?(match[2]?Math.min(Number(match[2]),stat.size-1):stat.size-1):stat.size-1;
    if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start>end||start>=stat.size){res.writeHead(416,{...headers,'Content-Range':`bytes */${stat.size}`});res.end();return;}
    res.writeHead(206,{...headers,'Content-Range':`bytes ${start}-${end}/${stat.size}`,'Content-Length':end-start+1});
-   if(req.method==='HEAD')res.end();else await pipeline(fs.createReadStream(file,{start,end}),res);
+   if(req.method==='HEAD')res.end();else await pipeline(fs.createReadStream(file,{start,end,highWaterMark:Math.min(transferChunkBytes,end-start+1)}),res);
   }else if(encoding){
    const body=await bodyFor(file,stamp,encoding);res.writeHead(200,{...headers,'Content-Length':body.length});res.end(req.method==='HEAD'?undefined:body);
   }else{
-   res.writeHead(200,{...headers,'Content-Length':stat.size});if(req.method==='HEAD')res.end();else await pipeline(fs.createReadStream(file),res);
+   res.writeHead(200,{...headers,'Content-Length':stat.size});if(req.method==='HEAD')res.end();else await pipeline(fs.createReadStream(file,{highWaterMark:Math.min(transferChunkBytes,Math.max(1,stat.size))}),res);
   }
  }catch{if(res.headersSent)res.destroy();else{res.writeHead(404);res.end();}}
 }

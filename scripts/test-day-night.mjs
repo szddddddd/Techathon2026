@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import {createDayNightClock,DAY_NIGHT_KEY,timePhase} from '../src/day-night-clock.js';
-import {createEnvironmentSampler} from '../src/day-night-environment.js';
+import * as T from 'three';
+import {createEnvironmentSampler,createDayNightEnvironment} from '../src/day-night-environment.js';
+import {createNightEffects} from '../src/day-night-effects.js';
+import {freezeStaticTransforms} from '../src/static-transforms.js';
 let memory=null,reduced=false,hidden=false;
 const storage={getItem:()=>memory,setItem:(key,value)=>{assert.equal(key,DAY_NIGHT_KEY);memory=value;}};
 const clock=createDayNightClock({storage,reduced:()=>reduced,hidden:()=>hidden});
@@ -17,4 +20,18 @@ const sampler=createEnvironmentSampler();
 for(const theme of ['forest','fuji','ideal'])for(const t of [0,300,360,420,660,690,720]){
  const a=sampler(theme,t-.0001),night=a.night,color=a.background.clone(),b=sampler(theme,t+.0001);assert.ok(Math.abs(b.night-night)<.0001);assert.ok(color.distanceTo?color.distanceTo(b.background)<.001:Math.abs(color.r-b.background.r)<.001);
 }
+sampler('forest',10);const dayRevision=sampler.revision;sampler('forest',299);assert.equal(sampler.revision,dayRevision);
+sampler('forest',330);assert.ok(sampler.revision>dayRevision);const transitionRevision=sampler.revision;sampler('forest',331);assert.ok(sampler.revision>transitionRevision);
+sampler('forest',450);const nightRevision=sampler.revision;sampler('forest',659);assert.equal(sampler.revision,nightRevision);
+sampler('fuji',659);assert.ok(sampler.revision>nightRevision);assert.equal(sampler('forest',450).night,1);
+const scene=new T.Scene(),camera=new T.PerspectiveCamera(37,1.44,.1,500),renderer={},hemi=new T.HemisphereLight(),sun=new T.DirectionalLight(),rim=new T.DirectionalLight(),fill=new T.DirectionalLight(),ground=new T.Mesh(new T.PlaneGeometry(),new T.MeshStandardMaterial());
+scene.fog=new T.FogExp2();const root=new T.Group();scene.add(root);const effects=createNightEffects(root,'forest');freezeStaticTransforms(root,[effects.root]);
+const world={id:'forest',setNightFactor:effects.setNightFactor},environment=createDayNightEnvironment({scene,camera,renderer,hemi,sun,rim,fill,ground});
+environment.apply(world,150);const sky=scene.background,skyVersion=sky.version,pixels=sky.image.data.slice();environment.apply(world,299);assert.equal(sky.version,skyVersion);assert.deepEqual(sky.image.data,pixels);
+environment.apply(world,540);assert.equal(effects.snapshot().factor,1);assert.ok(sky.version>skyVersion);
+camera.position.set(9,8,7);camera.rotation.set(.1,.2,.3);camera.aspect=.5;environment.apply(world,541);scene.updateMatrixWorld();
+assert.deepEqual(effects.root.getWorldPosition(new T.Vector3()).toArray(),camera.position.toArray());assert.ok(effects.root.getWorldQuaternion(new T.Quaternion()).angleTo(camera.quaternion)<1e-7);assert.equal(effects.root.children[0].scale.x,.5);
+const stableVersion=sky.version;camera.position.x=13;environment.apply(world,542);scene.updateMatrixWorld();assert.equal(effects.root.matrixWorld.elements[12],13);assert.equal(sky.version,stableVersion);
+environment.apply({...world,id:'fuji'},542);assert.ok(sky.version>stableVersion);environment.dispose();
 console.log('PASS: full cycle, midnight continuity, interrupted transitions, persistence, hidden/reduced pause and all palettes.');
+console.log('PASS: constant palettes reuse exact pixels; scene changes invalidate the cache; dynamic stars track camera motion and resize with frozen scenery.');

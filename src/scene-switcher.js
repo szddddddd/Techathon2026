@@ -28,5 +28,5 @@ export function createSceneSwitcher({current='forest',onSwitch,ui,reduced=false}
  listen(document,'pointerdown',e=>{if(!root.contains(e.target))open(false);});listen(root,'focusout',e=>{if(!root.contains(e.relatedTarget))open(false);});
  listen(root,'keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();open(false);button.focus();return;}if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key)||busy||blocked)return;e.preventDefault();e.stopPropagation();open(true);const i=items.indexOf(document.activeElement),n=e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowUp'?-1:1)+items.length)%items.length;items[n].focus();});
  const unsubscribe=ui?.subscribe(state=>{blocked=!!state.modal;render();});render();
- return{setCurrent,setBusy,dispose(){disposed=true;clearTimeout(timer);unsubscribe?.();events.abort();root.remove();}};
+ return{setCurrent,setBusy,closeMenu(){open(false);},dispose(){disposed=true;clearTimeout(timer);unsubscribe?.();events.abort();root.remove();}};
 }

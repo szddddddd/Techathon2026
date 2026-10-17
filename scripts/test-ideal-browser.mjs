@@ -18,7 +18,7 @@ try{
  await page.reload();await ready('ideal');await page.waitForFunction(()=>__characterPlacement.snapshot().characters.length===9&&__groupBuildings.snapshot().entries.length===9);
  assert.equal(await page.locator('#scene-theme-menu [role=menuitemradio]').count(),3);
  const original=await page.evaluate(()=>({friends:[...__socialStore.state.friends],groups:__socialStore.state.groups.map(g=>g.id)}));
- await page.mouse.move(1400,950);await page.waitForTimeout(500);await page.screenshot({path:'docs/images/ideal.jpg',type:'jpeg',quality:90});
+ await page.mouse.move(1400,950);await page.waitForTimeout(500);await page.screenshot({path:'.test-results/ideal/overview.jpg',type:'jpeg',quality:90});
  const label=page.locator('.group-building-anchor:visible').first(),id=await label.getAttribute('data-group');await label.click();await page.waitForFunction(()=>__uiInteractions.state('meeting')==='open');
  assert.equal(await page.evaluate(()=>__socialUI.activeConversation.id),id);await page.locator('#chat-input').fill('理想城中保留的群聊草稿');await page.waitForTimeout(200);await closeChat();
  await page.evaluate(async id=>{await __socialStore.setGroupPinned(id,true);},id);await page.waitForTimeout(200);
@@ -33,10 +33,10 @@ try{
  assert.equal(await page.evaluate(id=>__groupBuildings.snapshot().entries.find(e=>e.id===id).slot,id),idealSlot);
  checks.push('Three real scene-menu choices retain conversations, group draft and ideal building position');
  await page.locator('#train-station-control').click();await page.waitForFunction(()=>__vehicleFollow.snapshot().active);await page.keyboard.press('Escape');await page.waitForFunction(()=>!__vehicleFollow.busy);
- const gathering=await page.evaluate(()=>__valley.gather());assert.equal(gathering.ok,true);assert.equal(gathering.count,9);await page.evaluate(()=>__valley.end());await page.waitForFunction(()=>!__valley.snapshot().transitioning);
+ assert.equal(await page.locator('.valley-popover').count(),0);await page.evaluate(()=>__valley.open('plaza'));assert.equal(await page.locator('.valley-popover').count(),0);assert.equal(await page.evaluate(()=>__valley.gather().ok),false);assert.equal(await page.evaluate(()=>__valley.screenPoint('plaza')),null);
  for(const kind of ['accounts','scene-video']){await page.evaluate(kind=>__openSceneDiscovery(kind),kind);await page.waitForFunction(()=>__discoveryBoards.stage==='browsing');await page.keyboard.press('Escape');await page.waitForFunction(()=>__discoveryBoards.stage==='closed');}
  await page.locator('#record-player-control').click();await page.waitForFunction(()=>__uiInteractions.state('sound')==='open');await page.keyboard.press('Escape');
- checks.push('Airship follow and Esc, nine-person gathering, newspaper, video and music entrances work');
+ checks.push('Ideal reception removed; airship follow and Esc, newspaper, video and music entrances work');
  await page.emulateMedia({reducedMotion:'no-preference'});const before=await page.evaluate(()=>__sceneTheme.snapshot());await page.waitForTimeout(700);const after=await page.evaluate(()=>__sceneTheme.snapshot());assert.ok(after.animationTime>before.animationTime);assert.ok(after.school.positions.some((p,i)=>p.some((n,k)=>Math.abs(n-before.school.positions[i][k])>.01)));assert.equal(after.vehicles.length,1);assert.equal(after.school.lanes,1);await page.emulateMedia({reducedMotion:'reduce'});
  await page.setViewportSize({width:391,height:844});await page.mouse.move(2,760);await page.waitForTimeout(600);await page.screenshot({path:'.test-results/ideal/mobile.jpg',type:'jpeg',quality:90});assert.equal(await page.locator('.scene-switcher-option').isVisible(),true);assert.ok((await page.locator('.scene-switcher-option').boundingBox()).height>=44);
  await page.locator('.group-building-anchor:not([data-unread-tier="0"]):visible .letter-stack').first().tap();await page.waitForFunction(()=>__uiInteractions.state('meeting')==='open');await closeChat();

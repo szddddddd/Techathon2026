@@ -1,1 +1,4 @@
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#203a32}#viewport{position:fixed;inset:0;outline:none}canvas{display:block;width:100%;height:100%;touch-action:none}
+
+/* Forest color grading is independent of the interface. */
+html[data-scene=forest] #viewport canvas{filter:saturate(1.25)}

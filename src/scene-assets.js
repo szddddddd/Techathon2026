@@ -17,7 +17,7 @@ import {isTree} from './tree-assets.js';
 import {FUJI_CARRIAGE} from './fuji-railway.js';
 import {loadIdealAssets} from './ideal-scene.js';
 
-const cache=new Map(),shared=new Set();let recordCache;
+const cache=new Map(),sceneryCache=new Map(),shared=new Set();let recordCache;
 export function sceneResources(root){const resources=new Set();root?.traverse(o=>{
  if(o.isInstancedMesh)resources.add(o);
  if(o.geometry)resources.add(o.geometry);
@@ -68,7 +68,12 @@ export async function prepareSceneAssets(id){
   if(id==='ideal')return loadIdealAssets(retain);
   if(!['forest','fuji'].includes(id))throw Error('Unknown scene assets: '+id);
   recordCache||=new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb').then(g=>retain(g.scene)).catch(error=>{recordCache=null;throw error;});
-  const recordModel=await recordCache;
+  // Start independent asset work before awaiting the shared record player. Attach
+  // both rejection handlers together so an early failure never goes unhandled.
+  // A record-player failure must not discard successfully prepared scenery or
+  // duplicate its still-running downloads and retained resources on retry.
+  let assetsRequest=sceneryCache.get(id);
+  if(!assetsRequest){assetsRequest=(async()=>{
   if(id==='forest'){
    const kinds=[...new Set([...PLACEMENTS.filter(p=>p.enabled!==false).map(p=>p.kind),'tree','tree_birch','tree_maple','rock','grass','fern_large'])];
    const [props,trees,valley,groups]=await Promise.all([
@@ -78,20 +83,30 @@ export async function prepareSceneAssets(id){
    ]);
    Object.assign(props,trees);
    for(const p of [...Object.values(props),...Object.values(valley)])retain(p.model);
-   for(const [key,model] of Object.entries(groups.templates)){prepareNightWindowMasks(model,key);retain(model);}return{props,valley,groups,recordModel,failures:groups.failures};
+   for(const [key,model] of Object.entries(groups.templates)){prepareNightWindowMasks(model,key);retain(model);}return{props,valley,groups,failures:groups.failures};
   }
   const models={},failures=[],fallbacks=[],loader=new GLTFLoader();
+  const loadFolder=async folder=>{
+   const [gltf,manifest]=await Promise.all([
+    loader.loadAsync(`assets/rodin-fuji/${folder}/scene.glb`),
+    fetch(`assets/rodin-fuji/${folder}/manifest.json`).then(r=>r.ok?r.json():{}).catch(()=>({})),
+   ]);
+   return{model:gltf.scene,manifest};
+  };
   await Promise.all([...Object.keys(dimensions),'club','classroom','sport','lab','library','music','art','cafe','observatory'].map(async key=>{
    try{
-    let folder=FUJI_VISUALS.treeAssets[key]||(['fuji','sakura_a','sakura_b'].includes(key)?key:'railway-'+key),model;
-    try{model=(await loader.loadAsync(`assets/rodin-fuji/${folder}/scene.glb`)).scene;}catch(error){if(!key.startsWith('sakura_'))throw error;const requested=folder,index=Object.keys(FUJI_VISUALS.treeAssets).indexOf(key);folder=FUJI_VISUALS.treeFallbacks[index];try{model=(await loader.loadAsync(`assets/rodin-fuji/${folder}/scene.glb`)).scene;}catch{folder=index===0?'sakura_a':'sakura_b';model=(await loader.loadAsync(`assets/rodin-fuji/${folder}/scene.glb`)).scene;}fallbacks.push({key,requested,used:folder});}
-    const manifest=await fetch(`assets/rodin-fuji/${folder}/manifest.json`).then(r=>r.ok?r.json():{}).catch(()=>({}));
+    let folder=FUJI_VISUALS.treeAssets[key]||(['fuji','sakura_a','sakura_b'].includes(key)?key:'railway-'+key),loaded;
+    try{loaded=await loadFolder(folder);}catch(error){if(!key.startsWith('sakura_'))throw error;const requested=folder,index=Object.keys(FUJI_VISUALS.treeAssets).indexOf(key);folder=FUJI_VISUALS.treeFallbacks[index];try{loaded=await loadFolder(folder);}catch{folder=index===0?'sakura_a':'sakura_b';loaded=await loadFolder(folder);}fallbacks.push({key,requested,used:folder});}
+    const {model,manifest}=loaded;
     const holder=normalizeSceneAsset(model,key,{rotation:manifest.rotationY??manifest.normalization?.rotationY??0,sourceFolder:folder});models[key]=retain(holder);
    }catch{failures.push(key);}
   }));
   const groups=await loadGroupTemplates({theme:'fuji',createTemplate:key=>models[key]||createJapaneseBuilding(key)});
   groups.failures=failures.filter(key=>!dimensions[key]);for(const [key,model] of Object.entries(groups.templates)){prepareNightWindowMasks(model,key);retain(model);}
-  return{models,groups,recordModel,failures,fallbacks};
+  return{models,groups,failures,fallbacks};
+  })().catch(error=>{sceneryCache.delete(id);throw error;});sceneryCache.set(id,assetsRequest);}
+  const [recordModel,assets]=await Promise.all([recordCache,assetsRequest]);
+  return{...assets,recordModel};
  })();cache.set(id,request);
  try{return await request;}catch(error){cache.delete(id);throw error;}
 }

@@ -19,12 +19,14 @@ try{
  }
 }catch{/* A fresh checkout, missing output or invalid cache always builds. */}
 if(!unchanged){
- const results=await Promise.all(Object.entries({world:'main',review:'asset-review',pet:'pet'}).map(([output,entry])=>build({absWorkingDir:root,entryPoints:[`src/${entry}.js`],bundle:true,format:'iife',minify:true,outfile:`dist/${output}.js`,metafile:true,write:false,logLevel:'info'})));
+ // One graph lets esbuild parse shared dependencies (especially Three.js) once.
+ // Keep standalone IIFE bundles, so pages still load exactly the same scripts.
+ const result=await build({absWorkingDir:root,entryPoints:{world:'src/main.js',review:'src/asset-review.js',pet:'src/pet.js'},bundle:true,format:'iife',minify:true,outdir:'dist',metafile:true,write:false,logLevel:'info'});
  // Include imported dependencies and the outputs: deleted or edited bundles cannot
  // produce a false cache hit, even when source file timestamps are preserved.
- const files=await fingerprint([...new Set([...tools,...results.flatMap(result=>Object.keys(result.metafile.inputs))])]);
+ const files=await fingerprint([...new Set([...tools,...Object.keys(result.metafile.inputs)])]);
  await fs.mkdir(path.join(root,'dist'),{recursive:true});
- await Promise.all(results.flatMap(result=>result.outputFiles).map(async output=>{
+ await Promise.all(result.outputFiles.map(async output=>{
   // Hash esbuild's exact bytes in memory: rereading just-written bundles costs
   // extra IO on Windows, especially while antivirus inspects the new files.
   files[path.relative(root,output.path).split(path.sep).join('/')]=digest(output.contents);
@@ -35,11 +37,11 @@ if(!unchanged){
  await fs.writeFile(cacheFile,JSON.stringify({esbuild:esbuildVersion,node:process.versions.node,files}));
 }
 for(const filename of ['index.html','pet.html']){
- const full=path.join(root,filename);let source=await fs.readFile(full,'utf8');
+ const full=path.join(root,filename),original=await fs.readFile(full,'utf8');let source=original;
  source=source.replace(/((?:src|href)="[^"?]+\.(?:js|css))(?:\?[^" ]*)?"/g,`$1?v=${version}"`);
  source=source.replace(/<meta name="forest-version" content="[^"]*">/,'');
  source=source.replace(/<title>[^<]*<\/title>/,`<title>林间来信 v${version}${filename==='pet.html'?' · 桌宠':' · 朋友住在风景里'}</title>`);
  source=source.replace('</head>',`<meta name="forest-version" content="${version}"></head>`);
- if(source!==await fs.readFile(full,'utf8'))await fs.writeFile(full,source);
+ if(source!==original)await fs.writeFile(full,source);
 }
 console.log(`${unchanged?'Reused unchanged build for':'Built'} Forest Letters v${version}`);

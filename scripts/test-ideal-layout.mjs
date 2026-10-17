@@ -21,9 +21,9 @@ terrain.placementRoot=scene;const context=createPlacementContext({scene,terrain}
 const friends=Array.from({length:9},(_,i)=>({id:'ideal-fixture-'+i,animal:'fox',radius:.55}));
 const slots=pickCharacterSlots(context,friends,{spawnAreas:IDEAL_LAYOUT.spawnAreas});assert.equal(slots.length,9);
 for(const p of slots){assert.ok(context.inspect(p.x,p.z,p.radius,[],{manual:true}).ok);assert.equal(p.y,IDEAL_GROUND);}
-const gathered=[];for(let i=0;i<9;i++){let p;for(let j=0;j<192;j++){const a=j*2.399,r=2.6+Math.floor(j/32)*.6,x=Math.cos(a)*r,z=IDEAL_LAYOUT.gatheringCenter.z+Math.sin(a)*r;const v=context.inspect(x,z,.4,gathered,{manual:true});if(v.ok){p={x,z,radius:.4};break;}}assert.ok(p,'Nine friends can gather');gathered.push(p);}
+assert.equal(terrain.gatheringEnabled,false);assert.equal(terrain.landmarks.lamp,null);assert.deepEqual(terrain.landmarks.pickables,[]);assert.equal(terrain.root.getObjectByName('Ideal city gathering beacon'),undefined);assert.ok(!terrain.root.children.some(o=>o.geometry?.type==='CircleGeometry'),'Reception platform is removed');
 terrain.activate();terrain.update(1,.1);assert.equal(terrain.snapshot().animationTime,0);reduced.matches=false;terrain.update(2,.1);assert.ok(terrain.snapshot().animationTime>0);terrain.suspend();const before=terrain.snapshot();terrain.update(3,.1);assert.deepEqual(terrain.snapshot(),before);
 for(const [w,h] of [[1440,1000],[391,844]]){const config=idealCamera(w,h),camera=new T.PerspectiveCamera(37,w/h,.1,500);camera.position.fromArray(config.position);camera.lookAt(...config.target);camera.updateMatrixWorld();for(const p of [[0,39,0],[0,-17,0],[-33,2,0],[43,4,0],[0,2,33]]){const q=new T.Vector3(...p).project(camera);assert.ok(Math.abs(q.x)<.95&&Math.abs(q.y)<.9,'City framing at '+w+' '+p);}}
 context.dispose();terrain.dispose();assert.equal(scene.children.length,0);
-console.log('PASS: adopted geometry, nine original plots, nine friends and gathering slots, island/building exclusion, pause/reduced motion, and desktop/mobile framing.');
+console.log('PASS: adopted geometry, nine original plots, nine friends, removed reception beacon/platform, island/building exclusion, pause/reduced motion, and desktop/mobile framing.');
 

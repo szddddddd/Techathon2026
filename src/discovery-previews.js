@@ -45,7 +45,7 @@ export function createDiscoveryPreview(kind){
       ctx.font='23px sans-serif';ctx.fillStyle='#8a977e';ctx.fillText('♡ 喜欢       ☆ 收藏       ↗ 分享',44,1166);
       ctx.fillStyle='#d9e0cd';ctx.fillRect(44,1207,632,2);ctx.font='19px sans-serif';ctx.fillStyle='#8e9c7f';ctx.fillText('点击，走近这一刻',44,1250);
     }
-    texture.needsUpdate=true;imageURL=canvas.toDataURL('image/png');
+    texture.needsUpdate=true;imageURL='';
   }
   function update(id){
     const next=(journal?ARTICLES:VIDEOS).find(item=>item.id===id)||(journal?JOURNAL_ARTICLES:VIDEOS)[0];
@@ -53,5 +53,5 @@ export function createDiscoveryPreview(kind){
     ready=Promise.all([loadImage(content.cover),journal?Promise.resolve(null):loadImage(getCreator(content.creatorId).avatar)]).then(([photo,avatar])=>{if(token===version)paint(photo,avatar);});return ready;
   }
   update();
-  return {texture,canvas,update,get ready(){return ready;},get data(){return {src:imageURL,contentId:content.id,title:content.title,cover:content.cover,coverRect,width:canvas.width,height:canvas.height};},dispose(){++version;texture.dispose();}};
+  return {texture,canvas,update,get ready(){return ready;},get data(){return {get src(){return imageURL||(imageURL=canvas.toDataURL('image/png'));},contentId:content.id,title:content.title,cover:content.cover,coverRect,width:canvas.width,height:canvas.height};},dispose(){++version;texture.dispose();}};
 }

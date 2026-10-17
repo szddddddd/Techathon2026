@@ -13,5 +13,5 @@ export function createDayNightMenu({clock,ui}){
  on(root,'focusout',e=>{if(!root.contains(e.relatedTarget))open(false);});
  on(root,'keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();open(false);toggle.focus();return;}if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key)||busy||blocked)return;e.preventDefault();e.stopPropagation();open(true);const i=items.indexOf(document.activeElement),n=e.key==='Home'?0:e.key==='End'?items.length-1:i<0?(e.key==='ArrowUp'?items.length-1:0):(i+(e.key==='ArrowUp'?-1:1)+items.length)%items.length;items[n].focus();});
  const unsubscribe=ui.subscribe(s=>{blocked=!!s.modal||!!s.main;render();});render();
- return{update:render,setBusy(value){busy=value;render();},dispose(){events.abort();unsubscribe();root.remove();}};
+ return{update:render,closeMenu(){open(false);},setBusy(value){busy=value;render();},dispose(){events.abort();unsubscribe();root.remove();}};
 }

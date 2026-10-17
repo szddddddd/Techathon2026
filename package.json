@@ -8,11 +8,12 @@
     "start": "node scripts/serve.mjs",
     "desktop": "electron .",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
-    "test:performance": "node scripts/test-build-cache.mjs && node scripts/test-static-files.mjs && node scripts/test-static-transforms.mjs && node scripts/test-placement-cache.mjs",
+    "test:performance": "node scripts/test-build-cache.mjs && node scripts/test-static-files.mjs && node scripts/test-static-transforms.mjs && node scripts/test-placement-cache.mjs && node scripts/test-scene-asset-loading.mjs",
     "test:forest": "node scripts/test-vertical-surface.mjs && node scripts/test-forest-layout.mjs",
     "test:forest:browser": "node scripts/test-forest-browser.mjs",
     "test:performance:browser": "node scripts/test-performance-browser.mjs",
     "benchmark:performance": "node scripts/benchmark-performance.mjs",
+    "benchmark:scenes": "node scripts/benchmark-scenes.mjs",
     "test:avatar": "node scripts/test-avatar-pipeline.mjs && node scripts/test-friend-models.mjs && node scripts/test-avatar-browser.mjs",
     "test:regression": "node scripts/run-regression.mjs",
     "test:presence": "node scripts/test-presence-policy.mjs && node scripts/test-social-presence.mjs",
@@ -38,7 +39,8 @@
     "test:scenes": "node scripts/test-current-scenes.mjs",
     "test:rodin": "node scripts/test-rodin-config.mjs && node scripts/test-avatar-pipeline.mjs",
     "test:day-night": "node scripts/test-day-night.mjs && node scripts/test-day-night-browser.mjs",
-    "test:ideal": "node scripts/test-ideal-layout.mjs && node scripts/test-ideal-browser.mjs"
+    "test:ideal": "node scripts/test-ideal-layout.mjs && node scripts/test-ideal-browser.mjs",
+    "test:scene-controls": "node scripts/test-scene-controls.mjs"
   },
   "keywords": [],
   "author": "",

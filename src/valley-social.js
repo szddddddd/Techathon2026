@@ -4,24 +4,25 @@ import {allFriends} from './social-store.js';
 
 /** Gathering owns temporary placements only; no IDB writes occur here. */
 export function createValleySocial({landmarks,terrain,scene,camera,controls,canvas,characters,store,socialUI,reduced,ui}){
-  const sakura=terrain.theme==='fuji',cyber=terrain.theme==='cyber',ideal=terrain.theme==='ideal';
-  const panel=document.createElement('section');panel.className='valley-popover';panel.hidden=true;panel.setAttribute('aria-label',ideal?'理想城会客广场':cyber?'光树会客广场':sakura?'樱花庭园':'年轮广场');document.body.append(panel);
-  ui.register('valley',{el:panel,kind:'popover',position:positionPanel});
+  const sakura=terrain.theme==='fuji',cyber=terrain.theme==='cyber',gatheringEnabled=terrain.gatheringEnabled!==false;
+  const panel=gatheringEnabled?document.createElement('section'):null;if(panel){panel.className='valley-popover';panel.hidden=true;panel.setAttribute('aria-label',cyber?'光树会客广场':sakura?'樱花庭园':'年轮广场');document.body.append(panel);}
+  if(panel)ui.register('valley',{el:panel,kind:'popover',position:positionPanel});
   function positionPanel(){const p=landmarks.lamp.position.clone().add(new THREE.Vector3(0,4.4,0)).project(camera);panel.style.left=`${Math.max(16,Math.min(innerWidth-panel.offsetWidth-16,(p.x*.5+.5)*innerWidth-144))}px`;panel.style.top=`${Math.max(16,Math.min(innerHeight-panel.offsetHeight-100,(.5-p.y*.5)*innerHeight))}px`;}
   const closePanel=()=>ui.close('valley',{restoreFocus:false});
-  controls.addEventListener('start',closePanel);
+  if(panel)controls.addEventListener('start',closePanel);
   let pose=null,partyPose=null,transition=null,down=null,kind=null;
   const ray=new THREE.Raycaster();
   const reducedMotion=()=>typeof reduced==='boolean'?reduced:reduced?.matches;
   const snapshot=()=>({position:camera.position.clone(),target:controls.target.clone(),enabled:controls.enabled});
   function settleChat(){if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}
   function move(destination){transition={start:performance.now(),from:snapshot(),to:destination};controls.enabled=false;}
-  function render(){const ids=characters.residentIds.filter(id=>recentFriendIds(store.state).slice(0,FRIEND_SCENE_CAPACITY).includes(id));panel.innerHTML=`<button class="ui-close" data-ui-close="valley" aria-label="关闭广场邀请">×</button><span class="valley-eyebrow">${ideal?'在云海之上，坐一会儿':cyber?'在霓虹光树下，坐一会儿':sakura?'在樱花树下，坐一会儿':'在年轮之间，坐一会儿'}</span><h2>${ideal?'理想城会客厅':cyber?'云港会客厅':sakura?'小町会客厅':'山谷会客厅'}</h2><p>${characters.gathering?'朋友正在广场做客。拖动只调整本次聚会的位置。':(cyber?'让远处的朋友，在光树下相聚。':'让远处的朋友，来到同一片树荫下。')}</p><div class="valley-guests">${allFriends(store?.state||{}).filter(f=>ids.includes(f.id)).map(f=>`<span title="${f.name}">${f.emoji}<small>${f.name}</small></span>`).join('')||'<p>和好友聊聊天，最近联系的朋友会来到这里。</p>'}</div><button class="valley-invite">${characters.gathering?'结束聚会':'来广场坐坐'}</button><small class="valley-note">${characters.gathering?'结束后回到原位 · 聚会不保存':(cyber?'光点捎来邀请，朋友随时相聚':'叶片捎来邀请，朋友随时相聚')}</small>`;panel.querySelector('.valley-invite').onclick=()=>characters.gathering?end():gather();}
+  function render(){const ids=characters.residentIds.filter(id=>recentFriendIds(store.state).slice(0,FRIEND_SCENE_CAPACITY).includes(id));panel.innerHTML=`<button class="ui-close" data-ui-close="valley" aria-label="关闭广场邀请">×</button><span class="valley-eyebrow">${cyber?'在霓虹光树下，坐一会儿':sakura?'在樱花树下，坐一会儿':'在年轮之间，坐一会儿'}</span><h2>${cyber?'云港会客厅':sakura?'小町会客厅':'山谷会客厅'}</h2><p>${characters.gathering?'朋友正在广场做客。拖动只调整本次聚会的位置。':(cyber?'让远处的朋友，在光树下相聚。':'让远处的朋友，来到同一片树荫下。')}</p><div class="valley-guests">${allFriends(store?.state||{}).filter(f=>ids.includes(f.id)).map(f=>`<span title="${f.name}">${f.emoji}<small>${f.name}</small></span>`).join('')||'<p>和好友聊聊天，最近联系的朋友会来到这里。</p>'}</div><button class="valley-invite">${characters.gathering?'结束聚会':'来广场坐坐'}</button><small class="valley-note">${characters.gathering?'结束后回到原位 · 聚会不保存':(cyber?'光点捎来邀请，朋友随时相聚':'叶片捎来邀请，朋友随时相聚')}</small>`;panel.querySelector('.valley-invite').onclick=()=>characters.gathering?end():gather();}
   function open(which='plaza'){
-    if(which!=='plaza'||transition||!controls.enabled)return;settleChat();kind=which;if(!pose)pose=snapshot();
+    if(!gatheringEnabled||which!=='plaza'||transition||!controls.enabled)return;settleChat();kind=which;if(!pose)pose=snapshot();
     if(which==='plaza'){render();const p=landmarks.lamp.position.clone().project(camera);ui.open('valley',{origin:{left:(p.x*.5+.5)*innerWidth-12,top:(.5-p.y*.5)*innerHeight-12,width:24,height:24}});}
   }
   function gather(){
+    if(!gatheringEnabled)return{ok:false,reason:'当前场景没有会客厅。'};
     settleChat();const result=characters.beginGather();if(!result.ok){socialUI.toast(result.reason);return result;}
     if(!partyPose)partyPose=pose||snapshot();if(!pose)pose=partyPose;
     const mobile=innerWidth<700,center=terrain.layout?.gatheringCenter||{x:21,z:2};move({position:new THREE.Vector3(center.x+(mobile?8:10),mobile?29:19,center.z+(mobile?29:21)),target:new THREE.Vector3(center.x,3,center.z-.5),enabled:true});render();return result;
@@ -39,7 +40,7 @@ export function createValleySocial({landmarks,terrain,scene,camera,controls,canv
   const outside=e=>{if(!panel.hidden&&!panel.contains(e.target))panel.hidden=true;};
   const escape=e=>{if(e.key!=='Escape'||document.querySelector('dialog[open],#directory:not([hidden])')||socialUI.activeFriend||window.__discoveryBoards?.kind)return;if(!panel.hidden){panel.hidden=true;e.stopImmediatePropagation();}else if(pose){restoreView();e.stopImmediatePropagation();}};
   const unread=()=>{landmarks.updateUnread(new Set((store?.state.messages||[]).filter(m=>m.senderId!=='me'&&!m.read).map(m=>m.senderId)));if(!panel.hidden)render();};
-  const unsubscribe=store?.subscribe(unread);unread();
-  panel.addEventListener('pointerdown',e=>e.stopPropagation());canvas.addEventListener('pointerdown',pointerDown);canvas.addEventListener('pointerup',pointerUp);window.addEventListener('keydown',escape,true);
-  return{open,gather,end,restoreView,finishCamera,update,view(position,target){settleChat();move({position:new THREE.Vector3(...position),target:new THREE.Vector3(...target),enabled:true});},sample:terrain.sample,area:terrain.root.userData.landArea,snapshot:()=>({leafIntensity:landmarks.leaves.map(l=>l.material.emissiveIntensity),gathering:characters.gathering,kind,transitioning:!!transition,pose:pose?{position:pose.position.toArray(),target:pose.target.toArray()}:null}),screenPoint(which='plaza'){if(!['notice','plaza'].includes(which))return null;const p=(which==='notice'?landmarks.obstacles.find(o=>o.name==='Forest plaza notice board'):landmarks.lamp).localToWorld(new THREE.Vector3(0,which==='plaza'?2.5:1,0)).project(camera);return{x:(p.x*.5+.5)*innerWidth,y:(.5-p.y*.5)*innerHeight};},dispose(){controls.removeEventListener('start',closePanel);unsubscribe?.();panel.remove();canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);document.removeEventListener('pointerdown',outside);window.removeEventListener('keydown',escape,true);}};
+  const unsubscribe=panel?store?.subscribe(unread):null;if(panel)unread();
+  if(panel){panel.addEventListener('pointerdown',e=>e.stopPropagation());canvas.addEventListener('pointerdown',pointerDown);canvas.addEventListener('pointerup',pointerUp);window.addEventListener('keydown',escape,true);}
+  return{open,gather,end,restoreView,finishCamera,update,view(position,target){settleChat();move({position:new THREE.Vector3(...position),target:new THREE.Vector3(...target),enabled:true});},sample:terrain.sample,area:terrain.root.userData.landArea,snapshot:()=>({leafIntensity:landmarks.leaves.map(l=>l.material.emissiveIntensity),gathering:characters.gathering,kind,transitioning:!!transition,pose:pose?{position:pose.position.toArray(),target:pose.target.toArray()}:null}),screenPoint(which='plaza'){if(!gatheringEnabled||!['notice','plaza'].includes(which))return null;const p=(which==='notice'?landmarks.obstacles.find(o=>o.name==='Forest plaza notice board'):landmarks.lamp).localToWorld(new THREE.Vector3(0,which==='plaza'?2.5:1,0)).project(camera);return{x:(p.x*.5+.5)*innerWidth,y:(.5-p.y*.5)*innerHeight};},dispose(){controls.removeEventListener('start',closePanel);unsubscribe?.();panel?.remove();canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);document.removeEventListener('pointerdown',outside);window.removeEventListener('keydown',escape,true);}};
 }

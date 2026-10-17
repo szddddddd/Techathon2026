@@ -60,7 +60,13 @@ export function createUIInteractions() {
     let source = typeof layer.origin === 'function' ? layer.origin() : layer.origin;
     if (!(source instanceof HTMLElement) || !source.isConnected || !source.getClientRects().length || source.closest('[hidden],[inert]')) source = layer.focusReturn;
     if (!(source instanceof HTMLElement) || !source.isConnected || !source.getClientRects().length) source = document.getElementById('dock-reveal');
+    // Hover-only scene identities must be visible for the focus operation. Once
+    // focused, :focus-within keeps the existing label expanded without moving it.
+    const identity=source?.closest('.anchor-identity'),visibility=identity?.style.visibility;
+    if(identity)identity.style.visibility='visible';
     source?.focus({preventScroll:true});
+    if(identity)identity.style.visibility=visibility;
+    if(source&&document.activeElement!==source)document.getElementById('dock-reveal')?.focus({preventScroll:true});
   }
   async function open(id, {origin, focus=true, animate=true} = {}) {
     const layer = layers.get(id); if (!layer) return;
@@ -142,17 +148,23 @@ export function createDock({root,ui}) {
   const reveal=document.createElement('button');reveal.id='dock-reveal';reveal.className='dock-reveal';reveal.type='button';
   reveal.setAttribute('aria-label','展开主导航');reveal.setAttribute('aria-controls','social-dock');reveal.innerHTML='<span></span><i hidden></i>';
   root.append(reveal);
-  let timer,hover=false,focused=false,current={};
+  const events=new AbortController(),on=(el,event,fn)=>el.addEventListener(event,fn,{signal:events.signal});
+  let timer,hover=false,keyboard=false,touch=false,current={};
+  const inside=el=>el instanceof Node&&(dock.contains(el)||reveal.contains(el));
+  const focused=()=>keyboard&&inside(document.activeElement);
   function show(){clearTimeout(timer);root.dataset.dock='expanded';dock.inert=false;reveal.setAttribute('aria-expanded','true');schedule();}
-  function hide(){if(current.main||current.modal||hover||focused)return;root.dataset.dock='collapsed';dock.inert=true;reveal.setAttribute('aria-expanded','false');}
-  function schedule(delay=2500){clearTimeout(timer);if(!current.main&&!current.modal&&!hover&&!focused)timer=setTimeout(hide,delay);}
+  function hide(){if(hover||focused()||touch)return;root.dataset.dock='collapsed';dock.inert=true;reveal.setAttribute('aria-expanded','false');}
+  function schedule(){clearTimeout(timer);if(!hover&&!focused()&&!touch)timer=setTimeout(hide,300);}
   const enter=e=>{if(e.pointerType!=='touch'){hover=true;show();}},leave=()=>{hover=false;schedule();};
-  for(const node of [dock,reveal]){node.addEventListener('pointerenter',enter);node.addEventListener('pointerleave',leave);node.addEventListener('focusin',()=>{focused=true;show();});node.addEventListener('focusout',()=>{queueMicrotask(()=>{focused=dock.contains(document.activeElement)||reveal===document.activeElement;schedule();});});}
-  reveal.addEventListener('click',show);
+  for(const node of [dock,reveal]){on(node,'pointerenter',enter);on(node,'pointerleave',leave);on(node,'focusin',()=>{if(keyboard)show();});on(node,'focusout',()=>queueMicrotask(schedule));}
+  on(document,'keydown',e=>{if(['Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))keyboard=true;});
+  on(document,'pointerdown',e=>{keyboard=false;touch=e.pointerType==='touch'&&inside(e.target);if(touch)show();else schedule();});
+  on(document,'pointerleave',leave);
+  on(reveal,'click',show);
   const unsub=ui.subscribe(state=>{current=state;dock.inert=state.modal||root.dataset.dock==='collapsed';reveal.inert=state.modal;
     for(const b of dock.querySelectorAll('[data-action]')){const selected=b.dataset.action===state.main;b.setAttribute('aria-current',selected?'page':'false');}
-    if(state.main&&!state.modal)show();else schedule();
+    schedule();
   });
-  show();schedule(3000);
-  return {show,unread(value){reveal.querySelector('i').hidden=!value;reveal.setAttribute('aria-label',value?'展开主导航，有未读内容':'展开主导航');},dispose(){clearTimeout(timer);unsub();reveal.remove();}};
+  hide();
+  return {show,unread(value){reveal.querySelector('i').hidden=!value;reveal.setAttribute('aria-label',value?'展开主导航，有未读内容':'展开主导航');},dispose(){clearTimeout(timer);events.abort();unsub();reveal.remove();}};
 }
