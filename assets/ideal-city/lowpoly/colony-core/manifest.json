@@ -1,0 +1,24 @@
+{
+  "id": "colony-core",
+  "label": "Central stepped colony spaceship tower",
+  "crop": [
+    5,
+    36,
+    325,
+    385
+  ],
+  "order": 1,
+  "generationId": "f1b59c61-63a2-47af-b391-1e6922cfdb2b",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "8b86cffa772abf6782edfdba692f3b92795bad777ef32880e3b0125244c7f510",
+  "rawSha256": "03f410183c7dfed1bc1a26c53a9ca69030356f17f4c9b73f682f6483fd3bcafc",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "c8d435215ce9ec90e3bfd4bde88ce43ed48f66690c2b8cbc380129d364e848b2"
+}

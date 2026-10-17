@@ -1,3 +1,4 @@
+import {prepareNightWindowMasks} from './night-window-masks.js';
 import {applyCyberFacadePalette} from './cyber-facade-palette.js';
 import {extendCityFloors} from './cyber-city-geometry.js';
 import {CITY_ASSETS} from './cyber-city-layout.js';
@@ -14,6 +15,7 @@ import {createJapaneseBuilding} from './japanese-buildings.js';
 import {PLACEMENTS} from './layout.js';
 import {isTree} from './tree-assets.js';
 import {FUJI_CARRIAGE} from './fuji-railway.js';
+import {loadIdealAssets} from './ideal-scene.js';
 
 const cache=new Map(),shared=new Set();let recordCache;
 export function sceneResources(root){const resources=new Set();root?.traverse(o=>{
@@ -63,7 +65,7 @@ async function loadCyberAssets(){
 export async function prepareSceneAssets(id){
  if(cache.has(id))return cache.get(id);
  const request=(async()=>{
-  if(id==='cyber')return loadCyberAssets();
+  if(id==='ideal')return loadIdealAssets(retain);
   if(!['forest','fuji'].includes(id))throw Error('Unknown scene assets: '+id);
   recordCache||=new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb').then(g=>retain(g.scene)).catch(error=>{recordCache=null;throw error;});
   const recordModel=await recordCache;
@@ -76,7 +78,7 @@ export async function prepareSceneAssets(id){
    ]);
    Object.assign(props,trees);
    for(const p of [...Object.values(props),...Object.values(valley)])retain(p.model);
-   Object.values(groups.templates).forEach(retain);return{props,valley,groups,recordModel,failures:groups.failures};
+   for(const [key,model] of Object.entries(groups.templates)){prepareNightWindowMasks(model,key);retain(model);}return{props,valley,groups,recordModel,failures:groups.failures};
   }
   const models={},failures=[],fallbacks=[],loader=new GLTFLoader();
   await Promise.all([...Object.keys(dimensions),'club','classroom','sport','lab','library','music','art','cafe','observatory'].map(async key=>{
@@ -88,7 +90,7 @@ export async function prepareSceneAssets(id){
    }catch{failures.push(key);}
   }));
   const groups=await loadGroupTemplates({theme:'fuji',createTemplate:key=>models[key]||createJapaneseBuilding(key)});
-  groups.failures=failures.filter(key=>!dimensions[key]);Object.values(groups.templates).forEach(retain);
+  groups.failures=failures.filter(key=>!dimensions[key]);for(const [key,model] of Object.entries(groups.templates)){prepareNightWindowMasks(model,key);retain(model);}
   return{models,groups,recordModel,failures,fallbacks};
  })();cache.set(id,request);
  try{return await request;}catch(error){cache.delete(id);throw error;}

@@ -15,7 +15,7 @@
 }
 ```
 
-Hyper3D 优先读取 `.forest-avatar-data/hyper3d-config.json`：
+本项目所有 Rodin 调用统一读取 `.forest-avatar-data/hyper3d-config.json`，包括场景资产、好友形象、任务状态和结果查询：
 
 ```json
 {
@@ -24,7 +24,7 @@ Hyper3D 优先读取 `.forest-avatar-data/hyper3d-config.json`：
 }
 ```
 
-未配置 REST 时，服务可通过本机 Codex app-server 使用已有 Hyper3D MCP OAuth。配置由服务端读取，网页没有密钥设置界面；不修改客户端全局配置。修改本机配置后重启 Node 服务。
+统一调用入口为 `server/rodin-rest-client.mjs`。配置由服务端在每次请求时读取，密钥更新后下次请求即生效；网页没有密钥设置界面。缺失或无效时停止并报错，不使用 MCP OAuth、客户端全局配置或环境变量中的其他密钥。新场景资产先用 imagegen 生成参考图，再通过同一 REST 客户端调用 Rodin。
 
 ## 任务行为
 

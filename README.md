@@ -1,6 +1,6 @@
 # Techathon2026 · 林间来信
 
-把聊天、好友和群聊放进三维风景中的本地社交软件。当前提供 **林间来信、富士樱町、霓虹云港** 三个可切换场景，共享好友、群聊、消息、草稿与阅读位置。
+把聊天、好友和群聊放进三维风景中的本地社交软件。当前提供 **林间来信、富士樱町、理想城** 三个可切换场景，共享好友、群聊、消息、草稿与阅读位置。
 
 主仓库：[szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)。运行版本：1.3.1。
 
@@ -24,13 +24,15 @@ npm start
 | --- | --- | --- |
 | 林间来信 | 森林、连贯山脉与溪流瀑布、临河街区、山腰观景台 | `/?scene=forest` |
 | 富士樱町 | 粉色浮空岛、富士山、樱花街区、落瓣、铁路道口与停站列车、摩天轮 | `/?scene=fuji` |
-| 霓虹云港 | 机械浮空岛、企业楼群、霓虹街区、飞艇与分层悬浮交通 | `/?scene=cyber` |
+| 理想城 | 原生 Blender 殖民舰巨塔、白色楼群、双层环路、空港与云海浮空岛 | `/?scene=ideal` |
 
 顶部玻璃按钮切换场景，鼠标远离时收为小球。场景中的人物、群聊建筑和公共设施连接同一套社交功能。
 
 ![林间来信](docs/images/forest.jpg)
 ![富士樱町](docs/images/fuji.jpg)
-![霓虹云港](docs/images/cyber.jpg)
+![理想城](docs/images/ideal.jpg)
+
+理想城采用 `assets/ideal-city/source.blend` 中的完整可编辑场景，九栋原有外围建筑接入群聊。建筑外观固定为原场景设计，绑定的群类型和其他社交数据跨场景共享。主岛地面供好友活动，高架环路用于立体交通。
 
 ## 操作与功能
 
@@ -70,6 +72,7 @@ npm run test:assets
 npm run test:forest
 npm run test:groups
 npm run test:scenes
+npm run test:ideal
 ```
 
 浏览器测试需要先启动本地服务，使用独立浏览器数据；`FOREST_TEST_URL` 可指定测试服务地址。浏览器尺寸模拟不等同于真实手机测试。专项检查可从 `package.json` 或 `scripts/test-*.mjs` 运行。

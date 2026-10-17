@@ -1,0 +1,24 @@
+{
+  "id": "ring-road",
+  "label": "Complete open elliptical elevated road ring with support pillars",
+  "crop": [
+    5,
+    424,
+    328,
+    596
+  ],
+  "order": 6,
+  "generationId": "7c168747-2009-4dbb-b05a-e7caa5b2744a",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "36a2a431e5085da4ae3bc659bbe35073d2a65cd950cb275a086354ce8d604b5b",
+  "rawSha256": "cb3edb716e13c9d742dbbcb3e9a7d819bd42527622fd698f61286c8fac47a2ce",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "9ec2aac0bc3c75d14b68cdcb9433789b890eb25e6dac5a2259883951f50525dd"
+}

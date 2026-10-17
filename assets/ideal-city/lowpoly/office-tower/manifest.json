@@ -1,0 +1,24 @@
+{
+  "id": "office-tower",
+  "label": "Ivory and blue glass office skyscraper",
+  "crop": [
+    335,
+    36,
+    600,
+    385
+  ],
+  "order": 2,
+  "generationId": "04407280-0e1d-4eef-bdbb-abf836b88612",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "2a29d54d81702407e4143cf8b37988fad01fb6ac2f253d2287c1ab812e07fddd",
+  "rawSha256": "e2cfb12bcb701c9d7f7c39d07b8100a6c2135b4a5ea941c2497171ed62470144",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "fafe2682c223e7d0ea1d6b15239263a42f42897474e82f4daed3e1ef8af10b06"
+}

@@ -1,0 +1,6 @@
+Use case: style-transfer
+Asset type: isolated game asset reference for image-to-3D reconstruction.
+Input image: cropped supplied design reference for Mechanical structural support column.
+Primary request: reproduce this one complete object as a polished LOW-POLY CARTOON miniature, preserving its silhouette, proportions, essential structural parts and existing ivory / slate blue / cyan palette. Clearly faceted broad planes, simple solid forms, matte materials, restrained cyan accents, readable simplified windows.
+Composition: one complete object in the same three-quarter view, centered with 10 percent margin, pure light neutral background. Preserve openings, road holes and supports; keep the entire base and antenna in frame.
+Constraints: no text, no grid, no labels, no watermark, no ground plinth, no extra objects. No photorealism, no gritty metal, no dense microtexture, no dramatic glossy reflections. No particle plumes; engine exhaust is a short solid cyan cap. Do not transform the design into a different object.

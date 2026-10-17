@@ -25,7 +25,7 @@ export function petPayload(state, sceneId = 'forest') {
   // Keep every unread source even when its latest unread predates bounded history.
   for (const message of notificationItems(state)) selected.set(message.id, message);
   return {
-    state: { sceneId: ['forest','fuji','cyber'].includes(sceneId) ? sceneId : 'forest', friends: state.friends, friendDetails: Object.fromEntries(state.friends.flatMap(id=>{
+    state: { sceneId: ['forest','fuji','ideal'].includes(sceneId) ? sceneId : 'forest', friends: state.friends, friendDetails: Object.fromEntries(state.friends.flatMap(id=>{
       const f=state.customFriends?.[id];if(!f)return [];
       const expected=`/api/avatar/assets/${f.jobId}/scene.glb`;
       return [[id,{name:String(f.name||'朋友').slice(0,80),modelUrl:f.modelUrl===expected&&/^[a-f0-9-]{36}$/.test(f.jobId||'')?expected:null}]];

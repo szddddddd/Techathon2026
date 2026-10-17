@@ -35,7 +35,10 @@
     "test:mountain": "node scripts/test-mountain-range.mjs && node scripts/test-mountain-browser.mjs",
     "test:groups": "node scripts/test-group-chat.mjs && node scripts/test-group-scene.mjs && node scripts/test-group-browser.mjs",
     "test:assets": "node scripts/test-project-assets.mjs",
-    "test:scenes": "node scripts/test-current-scenes.mjs"
+    "test:scenes": "node scripts/test-current-scenes.mjs",
+    "test:rodin": "node scripts/test-rodin-config.mjs && node scripts/test-avatar-pipeline.mjs",
+    "test:day-night": "node scripts/test-day-night.mjs && node scripts/test-day-night-browser.mjs",
+    "test:ideal": "node scripts/test-ideal-layout.mjs && node scripts/test-ideal-browser.mjs"
   },
   "keywords": [],
   "author": "",

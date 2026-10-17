@@ -1,0 +1,24 @@
+{
+  "id": "hover-car",
+  "label": "Compact hovering sports car",
+  "crop": [
+    625,
+    640,
+    916,
+    786
+  ],
+  "order": 13,
+  "generationId": "a58c9601-3f57-47c0-86bc-58570ecf1ed4",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "c212527403a5cd7466d8ea0b7d1819b14026594547bef15de9d8fe1c42054708",
+  "rawSha256": "214a4d29b733d821d8863ae6061fbe8e488cdd43ec1aad8bbc5da6ac11adbfa7",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "d8869672f735742388c7934902d8d9a0843f951e100516e427ff53d4fdf0d650"
+}

@@ -6,7 +6,7 @@ import {createRecordMotion} from './record-motion.js';
 import {createRecordArm} from './record-arm.js';
 
 export async function createRecordPlayer({scene,camera,canvas,terrain,generated,ui,sound,onOpen,reduced,position,modelTemplate,externalDisposal=false,presentation={}}){
-  const neon=terrain.theme==='cyber',title=presentation.title||(neon?'夜航音乐台':'唱片机');
+  const neon=terrain.theme==='ideal',title=presentation.title||(neon?'夜航音乐台':'唱片机');
   const root=new THREE.Group();root.name=neon?'Neon listening console':'Rodin woodland record player';
   const tent=PLACEMENTS.find(p=>p.id==='tent');
   root.position.set(position?.x??(generated?tent.x+2.45:-.7),0,position?.z??(generated?tent.z+1.15:-1.2));

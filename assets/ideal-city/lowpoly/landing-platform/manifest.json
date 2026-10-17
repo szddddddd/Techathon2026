@@ -1,0 +1,24 @@
+{
+  "id": "landing-platform",
+  "label": "Rectangular hovering landing platform with mechanical underside",
+  "crop": [
+    920,
+    424,
+    1218,
+    596
+  ],
+  "order": 9,
+  "generationId": "c597a5e8-37c8-45f3-ba53-74460617c9a4",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "9ca2e433d8ccf5614083f2f7562dfe480947436b0a00052e52ca0a4524405027",
+  "rawSha256": "d8a654ffca7fa132f93954f7eed142892c3410362258c64a7cf357f4973dcc77",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "3280c637f497b1328ee1733825de267d75b80037ee168d45372371662e0ef48a"
+}

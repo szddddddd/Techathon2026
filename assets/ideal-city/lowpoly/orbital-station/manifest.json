@@ -1,0 +1,24 @@
+{
+  "id": "orbital-station",
+  "label": "Circular elevated transportation station with central mechanical pylon",
+  "crop": [
+    1218,
+    36,
+    1531,
+    385
+  ],
+  "order": 5,
+  "generationId": "a3c1ee13-3024-4cbf-8da4-43c4a73dd019",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "495a42aa8fdc6fc58727180f7b25a2bd52b0e5da58fc6f7ec357be79286591fd",
+  "rawSha256": "29c8e5872cce9851a8d9fe66c3b6726817e8e88d72959e3a8d970364075fab4e",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "bebe69e57fc0197ec5464b5d817a60ceeeaf06e7b9d6a3656f0be8dc8a519eae"
+}

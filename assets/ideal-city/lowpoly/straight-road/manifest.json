@@ -1,0 +1,24 @@
+{
+  "id": "straight-road",
+  "label": "Straight elevated road segment on three support pillars",
+  "crop": [
+    338,
+    424,
+    654,
+    596
+  ],
+  "order": 7,
+  "generationId": "8c14cefc-a6c0-4a19-9802-60bf42b196e8",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "f9f51aa37e72b1c3d8df46c8dfeece6b17d287337d34783bb2b87265f8647be0",
+  "rawSha256": "784f91ab959a4d338bed7ebf787850995e24ff05294e14881b78594fc22126e2",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "412a83db9b62d76dc3ed3a33175584c1d6eb2be5f679965bd3448b2e1dbc05c1"
+}

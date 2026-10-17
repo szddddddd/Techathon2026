@@ -1,8 +1,8 @@
+import {createIdealPet} from './pet-ideal.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { notificationItems, petNickname } from './pet-state.js';
 import { createFujiPet } from './pet-fuji.js';
-import { createCyberPet } from './pet-cyber.js';
 
 const FRIEND_META = {
   tuantuan: { name: '团团', emoji: '🦘', color: 0xeaba43, position: [-.55, 0] },
@@ -205,12 +205,12 @@ function buildWoods() {
 }
 let currentTheme=null,fujiPet=null;
 function setTheme(id){
-  const next=['forest','fuji','cyber'].includes(id)?id:'forest';if(next===currentTheme)return;
+  const next=['forest','fuji','ideal'].includes(id)?id:'forest';if(next===currentTheme)return;
   const geometries=new Set(),materials=new Set();root.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of [].concat(o.material))materials.add(m);});
   root.clear();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
   animated.length=0;lantern=lanternLight=lanternGroup=null;fujiPet?.dispose?.();fujiPet=null;currentTheme=next;
-  if(next==='fuji')fujiPet=createFujiPet({root,minimal:minimalMode});else if(next==='cyber')fujiPet=createCyberPet({root,minimal:minimalMode});else buildWoods();
-  document.documentElement.dataset.petScene=next;document.documentElement.dataset.petFujiAssets=next==='fuji'?'loading':'ready';viewport.setAttribute('aria-label',`${next==='cyber'?'霓虹云港':next==='fuji'?'富士樱町':'林间来信'}${minimalMode?'极简':''}桌宠`);
+  if(next==='fuji')fujiPet=createFujiPet({root,minimal:minimalMode});else if(next==='ideal')fujiPet=createIdealPet({root,minimal:minimalMode});else buildWoods();
+  document.documentElement.dataset.petScene=next;document.documentElement.dataset.petFujiAssets=next==='fuji'?'loading':'ready';viewport.setAttribute('aria-label',`${next==='ideal'?'理想城':next==='fuji'?'富士樱町':'林间来信'}${minimalMode?'极简':''}桌宠`);
 }
 function resize() { renderer.setSize(innerWidth, innerHeight, false); const aspect=innerWidth/innerHeight; camera.left = -4*aspect; camera.right = 4*aspect; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
 function disposeRole(model) {

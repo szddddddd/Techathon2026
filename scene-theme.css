@@ -26,6 +26,8 @@ html[data-scene-transition=true] :is(#friend-anchors,#group-building-labels,#dis
 @media(prefers-reduced-motion:reduce){.scene-travel-progress::after{animation:none;width:100%;opacity:.35}}
 @supports not (backdrop-filter:blur(1px)){.scene-travel{background:#edf0e8}.scene-travel[data-destination=fuji]{background:#eee1e9}}
 
-html[data-scene="cyber"],html[data-scene="cyber"] body{background:#343650}
-html[data-scene="cyber"] #scene-switcher .scene-switcher-track{background:linear-gradient(145deg,#f8f5f0cf,#e3e7f0ad)}
-.scene-travel[data-destination=cyber]{background:linear-gradient(145deg,#d5e1edf0,#e5d7e9ef);color:#424d68}
+html[data-scene="ideal"],html[data-scene="ideal"] body{background:#78b7e4}
+html[data-scene="ideal"]{--ui-paper:rgba(246,251,255,.95);--ui-glass:rgba(231,245,255,.85);--ui-ink:#294b65;--ui-muted:#678298;--ui-accent:#4584a2;--ui-soft:#e0f0f5;--scene-color-53725b:#4584a2;--scene-color-31483c:#294b65;--scene-color-52765b:#4584a2;--scene-color-738171:#678298}
+html[data-scene="ideal"] #scene-switcher .scene-switcher-track{background:linear-gradient(145deg,#f7fcfff0,#d4eaf7dd)}
+#scene-switcher[data-shown=ideal] .scene-switcher-icon{color:#4d7899}
+.scene-travel[data-destination=ideal]{background:linear-gradient(145deg,#b8ddf4f5,#edf9fff5);color:#315879}

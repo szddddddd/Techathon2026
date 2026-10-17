@@ -1,0 +1,24 @@
+{
+  "id": "island-medium",
+  "label": "Medium distant floating rocky island with miniature buildings and greenery",
+  "crop": [
+    337,
+    820,
+    615,
+    1021
+  ],
+  "order": 17,
+  "generationId": "42700633-79b7-4964-88f1-28a729bfe396",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "1449dbdae4afffa2715b858360192cc2416a9c24e44cf387d8f2d3957a26ab95",
+  "rawSha256": "e04ecc240ad8496ad1af4312e9aea11caf00632fc8a59ef1cda7caa98f4a9453",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "5a3d93c6961d0ab23e9b2f56a0ecfc0f04003c62bc3bfc6e5579f103668fc1e7"
+}

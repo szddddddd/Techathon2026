@@ -1,3 +1,6 @@
+import {createDayNightClock} from './day-night-clock.js';
+import {createDayNightEnvironment} from './day-night-environment.js';
+import {createDayNightMenu} from './day-night-menu.js';
 import {createGroupCamera} from './group-camera.js';
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -49,7 +52,15 @@ async function boot(){
  const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
  const mountOptions={camera,controls,renderer,ui,sound,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
  await world.mount(mountOptions);scene.add(world.root);
- function applyEnvironment(){const c=world.config;const city=world.id==='cyber';controls.maxDistance=city?420:240;sun.position.set(...(city?[-38,85,30]:[-18,36,18]));Object.assign(sun.shadow.camera,{left:city?-70:-42,right:city?70:42,top:city?70:42,bottom:city?-70:-42,far:city?220:110});sun.shadow.camera.updateProjectionMatrix();sun.target.position.set(0,city?15:0,0);sun.target.updateMatrixWorld();scene.background=world.background||new T.Color(c.background);renderer.toneMappingExposure=c.exposure??1.42;hemi.intensity=c.hemiIntensity??2.2;rim.color.setHex(c.rim??0x9acbc5);rim.intensity=c.rimIntensity??1.2;fill.color.setHex(c.fill??0x9bb6ad);fill.intensity=c.fillIntensity??.8;scene.fog=new T.FogExp2(c.background,innerWidth<700?(c.mobileFogDensity??c.fogDensity):c.fogDensity);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.visible=!!c.backdropGround;ground.material.color.setHex(c.backdropGround?0x263f33:c.background);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',c.ariaLabel);}
+ let timeStorage;try{timeStorage=localStorage;}catch{}
+ const dayNight=createDayNightClock({storage:timeStorage,reduced:()=>reduced.matches,hidden:()=>document.hidden});
+ const timeEnvironment=createDayNightEnvironment({scene,camera,renderer,hemi,sun,rim,fill,ground});
+ const timeMenu=store?createDayNightMenu({clock:dayNight,ui}):null;
+ function applyTime(){const state=dayNight.snapshot();timeEnvironment.apply(world,state.seconds);timeMenu?.update();document.documentElement.dataset.timePhase=state.phase;}
+ window.__dayNight={setMode(mode){const changed=dayNight.setMode(mode);applyTime();return changed;},snapshot:dayNight.snapshot,effects:()=>world.nightSnapshot(),save:dayNight.save};
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)dayNight.save();});
+ window.addEventListener('pagehide',event=>{dayNight.save();if(!event.persisted){dayNight.dispose();timeMenu?.dispose();timeEnvironment.dispose();}});
+ function applyEnvironment(){const c=world.config;const city=world.id==='ideal';controls.maxDistance=city?420:240;sun.position.set(...(city?[-38,85,30]:[-18,36,18]));Object.assign(sun.shadow.camera,{left:city?-70:-42,right:city?70:42,top:city?70:42,bottom:city?-70:-42,far:city?220:110});sun.shadow.camera.updateProjectionMatrix();sun.target.position.set(0,city?15:0,0);sun.target.updateMatrixWorld();scene.background=world.background||new T.Color(c.background);renderer.toneMappingExposure=c.exposure??1.42;hemi.intensity=c.hemiIntensity??2.2;rim.color.setHex(c.rim??0x9acbc5);rim.intensity=c.rimIntensity??1.2;fill.color.setHex(c.fill??0x9bb6ad);fill.intensity=c.fillIntensity??.8;scene.fog=new T.FogExp2(c.background,innerWidth<700?(c.mobileFogDensity??c.fogDensity):c.fogDensity);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.visible=!!c.backdropGround;ground.material.color.setHex(c.backdropGround?0x263f33:c.background);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',c.ariaLabel);applyTime();}
  let resetTween=null;
  const cancelReset=()=>{resetTween=null;};
  controls.addEventListener('start',cancelReset);
@@ -98,7 +109,7 @@ async function boot(){
  const snapshotPose=()=>({position:camera.position.clone(),target:controls.target.clone()});
  async function switchScene(id){
   if(switching)return false;if(id===world.id)return true;if(!SCENE_REGISTRY[id])throw Error('未知场景');if(uiState.modal)throw Error('请先完成当前窗口操作。');
-  cancelReset();switching=true;document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name,{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
+  cancelReset();switching=true;timeMenu?.setBusy(true);document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name,{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
   async function fadeCanvas(from,to){
    canvasMotion?.cancel();canvasMotion=renderer.domElement.animate([{opacity:from},{opacity:to}],{duration:reduced.matches?50:110,easing:'ease-in-out',fill:'forwards'});
    await canvasMotion.finished;renderer.domElement.style.opacity=String(to);canvasMotion.cancel();canvasMotion=null;
@@ -119,7 +130,7 @@ async function boot(){
    boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();soundCamera.close(true);controllersReleased=true;
    old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();resetCamera();
    characters.suspend(false);groupBuildings.suspend(false);controls.enabled=true;
-   socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);renderer.render(scene,camera);
+   socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);applyTime();renderer.render(scene,camera);
    try{localStorage.setItem(SCENE_STORAGE_KEY,id);}catch{}const url=new URL(location.href);url.searchParams.set('scene',id);history.replaceState(null,'',url.href);
    old.dispose();oldReleased=true;renderer.renderLists.dispose();switchCount++;
    committing=false;socialUI.setSceneTransition(false);
@@ -131,16 +142,18 @@ async function boot(){
     candidate?.dispose();world=old;if(controllersReleased)connectSceneControllers();applyEnvironment();
     const pose=cameraPoses.get(old.id);if(pose){camera.position.copy(pose.position);controls.target.copy(pose.target);}old.activate();
    }throw error;
-  }finally{publishPetScene();loading.remove();delete document.documentElement.dataset.sceneTransition;canvasMotion?.cancel();renderer.domElement.style.removeProperty('opacity');committing=false;switching=false;sceneSwitcher?.setCurrent(world.id);sceneSwitcher?.setBusy(false);characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
+  }finally{publishPetScene();loading.remove();delete document.documentElement.dataset.sceneTransition;canvasMotion?.cancel();renderer.domElement.style.removeProperty('opacity');committing=false;switching=false;timeMenu?.setBusy(false);sceneSwitcher?.setCurrent(world.id);sceneSwitcher?.setBusy(false);characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
  }
  if(store)sceneSwitcher=createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});
  window.__sceneTheme={get id(){return world.id;},ready:true,get switching(){return switching;},get audit(){return{environment:{exposure:renderer.toneMappingExposure,hemi:hemi.intensity,sun:sun.intensity,rim:rim.intensity,fill:fill.intensity},river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures,assetFallbacks:world.assets.fallbacks||[]};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  try{localStorage.setItem(SCENE_STORAGE_KEY,world.id);}catch{}
  window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
  let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
+ document.addEventListener('resume',()=>{last=performance.now();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
- function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const dt=Math.min((now-last)/1000,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
+ function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
   if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
+  if(!committing){dayNight.update(timeDelta);applyTime();}
   renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
  }
  // Reconcile the initial pose after the final awaited model loads as well.

@@ -1,0 +1,1815 @@
+{
+  "id": "ideal",
+  "name": "理想城",
+  "provider": "Authored Blender geometry",
+  "scale": 2,
+  "ground": 2.22,
+  "source": "source.blend",
+  "sourceSha256": "d0958ceea393a7dca524dfa56f96da64ae6a5d63098e86a89d68a9b27d13240e",
+  "sceneSha256": "c99105c96860601955a1b9e34da3841787981eeb406c66d4417d3cba983f8b8a",
+  "outline": [
+    [
+      32.232788,
+      -0.0
+    ],
+    [
+      31.170639,
+      -5.319905
+    ],
+    [
+      28.361876,
+      -10.594484
+    ],
+    [
+      19.686905,
+      -13.205941
+    ],
+    [
+      12.227231,
+      -15.56233
+    ],
+    [
+      4.707268,
+      -19.029989
+    ],
+    [
+      -4.37173,
+      -17.673515
+    ],
+    [
+      -12.839397,
+      -16.341471
+    ],
+    [
+      -21.630938,
+      -14.509995
+    ],
+    [
+      -25.237612,
+      -9.427426
+    ],
+    [
+      -32.130035,
+      -5.483645
+    ],
+    [
+      -31.477613,
+      -0.0
+    ],
+    [
+      -28.268984,
+      4.824679
+    ],
+    [
+      -28.203445,
+      10.535303
+    ],
+    [
+      -20.870668,
+      14.000009
+    ],
+    [
+      -12.253877,
+      15.596243
+    ],
+    [
+      -4.717051,
+      19.06954
+    ],
+    [
+      4.673493,
+      18.893448
+    ],
+    [
+      13.572777,
+      17.274887
+    ],
+    [
+      21.136374,
+      14.178243
+    ],
+    [
+      28.505863,
+      10.648271
+    ],
+    [
+      27.99618,
+      4.778119
+    ]
+  ],
+  "groups": [
+    {
+      "id": "building-00",
+      "name": "Building 00 | complete editable module",
+      "min": [
+        -15.65,
+        2.42,
+        -5.5
+      ],
+      "max": [
+        -12.297,
+        21.519999,
+        -1.988
+      ],
+      "collection": "03_City",
+      "slot": 0,
+      "x": -13.9735,
+      "z": -3.744,
+      "width": 3.3529999999999998,
+      "depth": 3.512,
+      "height": 19.299999
+    },
+    {
+      "id": "building-01",
+      "name": "Building 01 | complete editable module",
+      "min": [
+        12.0,
+        2.42,
+        -6.45
+      ],
+      "max": [
+        15.253,
+        18.920001,
+        -3.038
+      ],
+      "collection": "03_City",
+      "slot": 1,
+      "x": 13.6265,
+      "z": -4.744,
+      "width": 3.253,
+      "depth": 3.4120000000000004,
+      "height": 16.700001
+    },
+    {
+      "id": "building-02",
+      "name": "Building 02 | complete editable module",
+      "min": [
+        -23.299999,
+        2.42,
+        0.1
+      ],
+      "max": [
+        -20.646999,
+        9.98,
+        3.212
+      ],
+      "collection": "03_City",
+      "slot": 2,
+      "x": -21.973499,
+      "z": 1.656,
+      "width": 2.6529999999999987,
+      "depth": 3.112,
+      "height": 7.76
+    },
+    {
+      "id": "building-03",
+      "name": "Building 03 | complete editable module",
+      "min": [
+        19.900002,
+        2.42,
+        -2.85
+      ],
+      "max": [
+        22.552999,
+        10.18,
+        0.162
+      ],
+      "collection": "03_City",
+      "slot": 3,
+      "x": 21.226501,
+      "z": -1.344,
+      "width": 2.652996999999999,
+      "depth": 3.012,
+      "height": 7.959999999999999
+    },
+    {
+      "id": "building-04",
+      "name": "Building 04 | complete editable module",
+      "min": [
+        -11.0,
+        2.42,
+        -9.799999
+      ],
+      "max": [
+        -8.147,
+        11.180001,
+        -6.888
+      ],
+      "collection": "03_City",
+      "slot": 4,
+      "x": -9.5735,
+      "z": -8.343999,
+      "width": 2.8529999999999998,
+      "depth": 2.911999,
+      "height": 8.960001
+    },
+    {
+      "id": "building-05",
+      "name": "Building 05 | complete editable module",
+      "min": [
+        7.15,
+        2.42,
+        0.5
+      ],
+      "max": [
+        10.503,
+        12.38,
+        3.612
+      ],
+      "collection": "03_City",
+      "slot": 5,
+      "x": 8.8265,
+      "z": 2.056,
+      "width": 3.3529999999999998,
+      "depth": 3.112,
+      "height": 10.16
+    },
+    {
+      "id": "low-building-0",
+      "name": "Low building 0 | complete editable module",
+      "min": [
+        -17.299999,
+        2.46,
+        9.95
+      ],
+      "max": [
+        -10.3,
+        4.86,
+        13.650001
+      ],
+      "collection": "03_City",
+      "slot": 6,
+      "x": -13.8,
+      "z": 11.8,
+      "width": 6.999998999999999,
+      "depth": 3.7000010000000003,
+      "height": 2.64
+    },
+    {
+      "id": "low-building-1",
+      "name": "Low building 1 | complete editable module",
+      "min": [
+        7.8,
+        2.46,
+        9.5
+      ],
+      "max": [
+        13.8,
+        4.56,
+        12.9
+      ],
+      "collection": "03_City",
+      "slot": 7,
+      "x": 10.8,
+      "z": 11.2,
+      "width": 6.000000000000001,
+      "depth": 3.4000000000000004,
+      "height": 2.3399999999999994
+    },
+    {
+      "id": "low-building-2",
+      "name": "Low building 2 | complete editable module",
+      "min": [
+        -23.1,
+        2.46,
+        -9.15
+      ],
+      "max": [
+        -17.300001,
+        5.16,
+        -5.25
+      ],
+      "collection": "03_City",
+      "slot": 8,
+      "x": -20.200001,
+      "z": -7.2,
+      "width": 5.799999,
+      "depth": 3.9000000000000004,
+      "height": 2.94
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "airship",
+      "name": "Airship | editable vehicle",
+      "min": [
+        -29.4,
+        26.429999,
+        -4.0
+      ],
+      "max": [
+        -18.6,
+        30.32,
+        -0.0
+      ],
+      "collection": "06_Aircraft",
+      "center": [
+        -24.0,
+        28.3749995,
+        -2.0
+      ]
+    },
+    {
+      "id": "sky-shuttle",
+      "name": "Sky shuttle | editable vehicle",
+      "min": [
+        23.276476,
+        20.432,
+        -7.68
+      ],
+      "max": [
+        28.723524,
+        21.776002,
+        -4.32
+      ],
+      "collection": "06_Aircraft",
+      "center": [
+        26.0,
+        21.104000999999997,
+        -6.0
+      ]
+    },
+    {
+      "id": "hovercar-a",
+      "name": "Hovercar A | editable vehicle",
+      "min": [
+        -20.830025,
+        14.440799,
+        3.488
+      ],
+      "max": [
+        -19.169971,
+        14.850399,
+        4.512
+      ],
+      "collection": "06_Aircraft",
+      "center": [
+        -19.999997999999998,
+        14.645599,
+        4.0
+      ]
+    },
+    {
+      "id": "hovercar-b",
+      "name": "Hovercar B | editable vehicle",
+      "min": [
+        15.403419,
+        27.291199,
+        -10.368
+      ],
+      "max": [
+        16.596581,
+        27.585601,
+        -9.632
+      ],
+      "collection": "06_Aircraft",
+      "center": [
+        16.0,
+        27.4384,
+        -10.0
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "main-island",
+      "name": "Main island | asymmetric faceted rock",
+      "min": [
+        -32.130035,
+        -16.239005,
+        -19.029989
+      ],
+      "max": [
+        32.232788,
+        2.22,
+        19.06954
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "rock-blade-00",
+      "name": "Rock blade 00",
+      "min": [
+        -24.700001,
+        -5.832,
+        7.5
+      ],
+      "max": [
+        -19.299999,
+        2.0858,
+        11.7
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "rock-blade-01",
+      "name": "Rock blade 01",
+      "min": [
+        -15.0,
+        -8.272001,
+        13.3
+      ],
+      "max": [
+        -9.0,
+        2.0858,
+        17.5
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "rock-blade-02",
+      "name": "Rock blade 02",
+      "min": [
+        -1.4,
+        -9.247999,
+        13.9
+      ],
+      "max": [
+        5.4,
+        2.0858,
+        18.1
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "rock-blade-03",
+      "name": "Rock blade 03",
+      "min": [
+        10.4,
+        -16.324001,
+        11.3
+      ],
+      "max": [
+        17.6,
+        2.0858,
+        15.5
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "rock-blade-04",
+      "name": "Rock blade 04",
+      "min": [
+        21.200001,
+        -7.052,
+        4.7
+      ],
+      "max": [
+        26.799999,
+        2.0858,
+        8.9
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-00",
+      "name": "Garden 00 | canopy module",
+      "min": [
+        -27.788851,
+        1.78,
+        4.84936
+      ],
+      "max": [
+        -23.69725,
+        4.34,
+        7.105832
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-01",
+      "name": "Garden 01 | canopy module",
+      "min": [
+        -23.43108,
+        1.868,
+        9.619488
+      ],
+      "max": [
+        -20.157795,
+        3.916,
+        11.484666
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-02",
+      "name": "Garden 02 | canopy module",
+      "min": [
+        -19.162752,
+        1.934,
+        12.147083
+      ],
+      "max": [
+        -16.503212,
+        3.598,
+        13.718791
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-03",
+      "name": "Garden 03 | canopy module",
+      "min": [
+        -10.341638,
+        1.89,
+        14.06202
+      ],
+      "max": [
+        -7.272935,
+        3.81,
+        15.829374
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-04",
+      "name": "Garden 04 | canopy module",
+      "min": [
+        -3.252195,
+        1.912,
+        14.30455
+      ],
+      "max": [
+        -0.388073,
+        3.704,
+        15.97408
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-05",
+      "name": "Garden 05 | canopy module",
+      "min": [
+        4.56892,
+        1.868,
+        13.019487
+      ],
+      "max": [
+        7.842202,
+        3.916,
+        14.884665
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-06",
+      "name": "Garden 06 | canopy module",
+      "min": [
+        15.790034,
+        1.824,
+        8.334424
+      ],
+      "max": [
+        19.472477,
+        4.128,
+        10.395248
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-07",
+      "name": "Garden 07 | canopy module",
+      "min": [
+        22.837248,
+        1.934,
+        6.347084
+      ],
+      "max": [
+        25.496788,
+        3.598,
+        7.918791
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-08",
+      "name": "Garden 08 | canopy module",
+      "min": [
+        24.65836,
+        1.89,
+        -6.53798
+      ],
+      "max": [
+        27.72706,
+        3.81,
+        -4.770626
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-09",
+      "name": "Garden 09 | canopy module",
+      "min": [
+        -17.43108,
+        1.868,
+        -11.980511
+      ],
+      "max": [
+        -14.157799,
+        3.916,
+        -10.115335
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-10",
+      "name": "Garden 10 | canopy module",
+      "min": [
+        0.390035,
+        1.824,
+        -11.265575
+      ],
+      "max": [
+        4.072477,
+        4.128,
+        -9.204751
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "garden-11",
+      "name": "Garden 11 | canopy module",
+      "min": [
+        14.747805,
+        1.912,
+        -10.495447
+      ],
+      "max": [
+        17.611927,
+        3.704,
+        -8.825918
+      ],
+      "collection": "01_Island"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | continuous primary keel",
+      "min": [
+        -6.7,
+        2.58,
+        -7.0
+      ],
+      "max": [
+        6.7,
+        34.980002,
+        3.0
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | port external hull",
+      "min": [
+        -9.1,
+        2.4,
+        -5.8
+      ],
+      "max": [
+        -3.94,
+        27.96,
+        2.4
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | starboard stepped armor",
+      "min": [
+        3.66,
+        2.4,
+        -6.2
+      ],
+      "max": [
+        8.1,
+        27.420001,
+        2.2
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | pale vertical prow",
+      "min": [
+        1.56,
+        2.94,
+        0.1
+      ],
+      "max": [
+        3.84,
+        36.600001,
+        2.32
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | command spine",
+      "min": [
+        0.3,
+        28.14,
+        -3.7
+      ],
+      "max": [
+        2.1,
+        37.230002,
+        -0.9
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | single antenna",
+      "min": [
+        1.015,
+        36.960002,
+        -2.545
+      ],
+      "max": [
+        1.105,
+        39.030001,
+        -2.455
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | long recessed service channel",
+      "min": [
+        -1.92,
+        11.4,
+        1.76
+      ],
+      "max": [
+        -1.4,
+        27.24,
+        2.0
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | cyan vertical seam",
+      "min": [
+        -1.715,
+        13.92,
+        1.985
+      ],
+      "max": [
+        -1.605,
+        26.519999,
+        2.075
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | docking beacon 0",
+      "min": [
+        -1.44,
+        4.317,
+        3.06
+      ],
+      "max": [
+        -1.16,
+        4.803,
+        3.18
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | docking beacon 1",
+      "min": [
+        -1.44,
+        5.667,
+        3.06
+      ],
+      "max": [
+        -1.16,
+        6.153,
+        3.18
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | docking beacon 2",
+      "min": [
+        -1.44,
+        7.017,
+        3.06
+      ],
+      "max": [
+        -1.16,
+        7.503,
+        3.18
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | broad foundation",
+      "min": [
+        -9.0,
+        2.22,
+        -8.0
+      ],
+      "max": [
+        9.0,
+        3.048,
+        4.0
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | large armor insert 0",
+      "min": [
+        -3.75,
+        10.859999,
+        2.08
+      ],
+      "max": [
+        -2.65,
+        14.099999,
+        2.32
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | large armor insert 1",
+      "min": [
+        0.45,
+        21.029999,
+        2.08
+      ],
+      "max": [
+        1.55,
+        25.529999,
+        2.32
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | large armor insert 2",
+      "min": [
+        -0.08,
+        29.714999,
+        1.6
+      ],
+      "max": [
+        0.68,
+        31.964999,
+        1.84
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "colony-ship",
+      "name": "Colony ship | large armor insert 3",
+      "min": [
+        5.36,
+        11.13,
+        2.08
+      ],
+      "max": [
+        6.04,
+        13.47,
+        2.32
+      ],
+      "collection": "02_ColonyShip"
+    },
+    {
+      "id": "building-00",
+      "name": "Building 00 | complete editable module",
+      "min": [
+        -15.65,
+        2.42,
+        -5.5
+      ],
+      "max": [
+        -12.297,
+        21.519999,
+        -1.988
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "building-01",
+      "name": "Building 01 | complete editable module",
+      "min": [
+        12.0,
+        2.42,
+        -6.45
+      ],
+      "max": [
+        15.253,
+        18.920001,
+        -3.038
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "building-02",
+      "name": "Building 02 | complete editable module",
+      "min": [
+        -23.299999,
+        2.42,
+        0.1
+      ],
+      "max": [
+        -20.646999,
+        9.98,
+        3.212
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "building-03",
+      "name": "Building 03 | complete editable module",
+      "min": [
+        19.900002,
+        2.42,
+        -2.85
+      ],
+      "max": [
+        22.552999,
+        10.18,
+        0.162
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "building-04",
+      "name": "Building 04 | complete editable module",
+      "min": [
+        -11.0,
+        2.42,
+        -9.799999
+      ],
+      "max": [
+        -8.147,
+        11.180001,
+        -6.888
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "building-05",
+      "name": "Building 05 | complete editable module",
+      "min": [
+        7.15,
+        2.42,
+        0.5
+      ],
+      "max": [
+        10.503,
+        12.38,
+        3.612
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "low-building-0",
+      "name": "Low building 0 | complete editable module",
+      "min": [
+        -17.299999,
+        2.46,
+        9.95
+      ],
+      "max": [
+        -10.3,
+        4.86,
+        13.650001
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "low-building-1",
+      "name": "Low building 1 | complete editable module",
+      "min": [
+        7.8,
+        2.46,
+        9.5
+      ],
+      "max": [
+        13.8,
+        4.56,
+        12.9
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "low-building-2",
+      "name": "Low building 2 | complete editable module",
+      "min": [
+        -23.1,
+        2.46,
+        -9.15
+      ],
+      "max": [
+        -17.300001,
+        5.16,
+        -5.25
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "low-building-3",
+      "name": "Low building 3 | complete editable module",
+      "min": [
+        18.9,
+        2.46,
+        -10.5
+      ],
+      "max": [
+        25.1,
+        4.66,
+        -6.7
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | terminal",
+      "min": [
+        32.799999,
+        4.22,
+        -2.89
+      ],
+      "max": [
+        36.799999,
+        6.22,
+        -1.19
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | terminal glass",
+      "min": [
+        33.349998,
+        5.04,
+        -1.21
+      ],
+      "max": [
+        36.25,
+        5.8,
+        -1.13
+      ],
+      "collection": "03_City"
+    },
+    {
+      "id": "ring-road-1",
+      "name": "Ring road 1 | deck",
+      "min": [
+        -26.0,
+        4.52,
+        -13.4
+      ],
+      "max": [
+        26.0,
+        4.92,
+        13.4
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-1",
+      "name": "Ring road 1 | outer curb",
+      "min": [
+        -26.09,
+        4.88,
+        -13.49
+      ],
+      "max": [
+        26.09,
+        5.16,
+        13.49
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-1",
+      "name": "Ring road 1 | inner curb",
+      "min": [
+        -24.799999,
+        4.88,
+        -12.2
+      ],
+      "max": [
+        24.799999,
+        5.16,
+        12.2
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-1",
+      "name": "Ring road 1 | lane marking",
+      "min": [
+        -25.34,
+        4.935,
+        -12.74
+      ],
+      "max": [
+        25.34,
+        4.965,
+        12.74
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-1",
+      "name": "Ring road 1 | support set",
+      "min": [
+        -25.004885,
+        2.22,
+        -12.877073
+      ],
+      "max": [
+        25.004887,
+        4.72,
+        12.877075
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-2",
+      "name": "Ring road 2 | deck",
+      "min": [
+        -16.5,
+        8.72,
+        -9.1
+      ],
+      "max": [
+        16.5,
+        9.12,
+        9.1
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-2",
+      "name": "Ring road 2 | outer curb",
+      "min": [
+        -16.59,
+        9.08,
+        -9.19
+      ],
+      "max": [
+        16.59,
+        9.36,
+        9.19
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-2",
+      "name": "Ring road 2 | inner curb",
+      "min": [
+        -15.48,
+        9.08,
+        -8.08
+      ],
+      "max": [
+        15.48,
+        9.36,
+        8.08
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-2",
+      "name": "Ring road 2 | lane marking",
+      "min": [
+        -15.93,
+        9.135,
+        -8.53
+      ],
+      "max": [
+        15.93,
+        9.165,
+        8.53
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "ring-road-2",
+      "name": "Ring road 2 | support set",
+      "min": [
+        -15.78246,
+        2.22,
+        -8.579968
+      ],
+      "max": [
+        15.78246,
+        8.92,
+        8.579968
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "central-arrival-terrace",
+      "name": "Central arrival terrace",
+      "min": [
+        -7.5,
+        6.37,
+        1.3
+      ],
+      "max": [
+        7.5,
+        6.87,
+        6.7
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "central-arrival-terrace",
+      "name": "Central arrival terrace | dark fascia",
+      "min": [
+        -6.8,
+        6.41,
+        6.67
+      ],
+      "max": [
+        6.8,
+        6.67,
+        6.77
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "arrival-terrace",
+      "name": "Arrival terrace | support -2.9",
+      "min": [
+        -6.15,
+        2.22,
+        3.5
+      ],
+      "max": [
+        -5.45,
+        6.62,
+        4.5
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "arrival-terrace",
+      "name": "Arrival terrace | support 2.9",
+      "min": [
+        5.45,
+        2.22,
+        3.5
+      ],
+      "max": [
+        6.15,
+        6.62,
+        4.5
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge | west service link",
+      "min": [
+        -25.700001,
+        4.58,
+        -0.63
+      ],
+      "max": [
+        -14.3,
+        4.94,
+        0.63
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge | east radial link",
+      "min": [
+        16.1,
+        4.58,
+        -0.74
+      ],
+      "max": [
+        35.099998,
+        4.94,
+        0.74
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge | east curb A",
+      "min": [
+        16.1,
+        4.84,
+        0.705
+      ],
+      "max": [
+        35.099998,
+        5.08,
+        0.855
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge | east curb B",
+      "min": [
+        16.1,
+        4.84,
+        -0.855
+      ],
+      "max": [
+        35.099998,
+        5.08,
+        -0.705
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "skywalk",
+      "name": "Skywalk | tower connection",
+      "min": [
+        6.4,
+        8.72,
+        -4.98
+      ],
+      "max": [
+        14.4,
+        9.12,
+        -3.82
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | cantilever slab",
+      "min": [
+        28.899998,
+        3.06,
+        -3.2
+      ],
+      "max": [
+        42.299999,
+        3.98,
+        3.2
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | top surface",
+      "min": [
+        28.849998,
+        3.91,
+        -3.25
+      ],
+      "max": [
+        42.349998,
+        4.17,
+        3.25
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | landing inset",
+      "min": [
+        33.299999,
+        4.16,
+        -2.0
+      ],
+      "max": [
+        39.899998,
+        4.28,
+        2.4
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | landing circle",
+      "min": [
+        35.080002,
+        4.314,
+        -1.32
+      ],
+      "max": [
+        38.119999,
+        4.346,
+        1.72
+      ],
+      "collection": "04_Roads"
+    },
+    {
+      "id": "engine-0",
+      "name": "Engine 0 | editable propulsion module",
+      "min": [
+        -19.855999,
+        -12.6,
+        7.344
+      ],
+      "max": [
+        -16.144001,
+        -1.98,
+        11.056
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "engine-1",
+      "name": "Engine 1 | editable propulsion module",
+      "min": [
+        -9.436,
+        -15.199998,
+        10.764
+      ],
+      "max": [
+        -4.564,
+        -1.98,
+        15.636
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "engine-2",
+      "name": "Engine 2 | editable propulsion module",
+      "min": [
+        3.912,
+        -16.399999,
+        9.912
+      ],
+      "max": [
+        8.088,
+        -1.980001,
+        14.088
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "engine-3",
+      "name": "Engine 3 | editable propulsion module",
+      "min": [
+        18.944,
+        -12.6,
+        5.944
+      ],
+      "max": [
+        22.655998,
+        -1.98,
+        9.656
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | diagonal brace",
+      "min": [
+        32.600933,
+        -2.455631,
+        -0.3
+      ],
+      "max": [
+        40.19907,
+        3.295631,
+        0.3
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | anchored pylon",
+      "min": [
+        32.349998,
+        -2.58,
+        -0.5
+      ],
+      "max": [
+        33.25,
+        3.22,
+        0.5
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "east-port",
+      "name": "East port | blue edge light",
+      "min": [
+        35.0,
+        3.46,
+        3.249
+      ],
+      "max": [
+        37.400002,
+        3.58,
+        3.299
+      ],
+      "collection": "05_Mechanics"
+    },
+    {
+      "id": "airship",
+      "name": "Airship | editable vehicle",
+      "min": [
+        -29.4,
+        26.429999,
+        -4.0
+      ],
+      "max": [
+        -18.6,
+        30.32,
+        -0.0
+      ],
+      "collection": "06_Aircraft"
+    },
+    {
+      "id": "sky-shuttle",
+      "name": "Sky shuttle | editable vehicle",
+      "min": [
+        23.276476,
+        20.432,
+        -7.68
+      ],
+      "max": [
+        28.723524,
+        21.776002,
+        -4.32
+      ],
+      "collection": "06_Aircraft"
+    },
+    {
+      "id": "hovercar-a",
+      "name": "Hovercar A | editable vehicle",
+      "min": [
+        -20.830025,
+        14.440799,
+        3.488
+      ],
+      "max": [
+        -19.169971,
+        14.850399,
+        4.512
+      ],
+      "collection": "06_Aircraft"
+    },
+    {
+      "id": "hovercar-b",
+      "name": "Hovercar B | editable vehicle",
+      "min": [
+        15.403419,
+        27.291199,
+        -10.368
+      ],
+      "max": [
+        16.596581,
+        27.585601,
+        -9.632
+      ],
+      "collection": "06_Aircraft"
+    },
+    {
+      "id": "distant-west-island",
+      "name": "Distant west island",
+      "min": [
+        -50.799889,
+        -1.096407,
+        -50.0177
+      ],
+      "max": [
+        -44.974564,
+        4.42,
+        -45.908867
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "distant-east-island",
+      "name": "Distant east island",
+      "min": [
+        21.555952,
+        -5.123179,
+        -41.766441
+      ],
+      "max": [
+        27.061708,
+        -0.78,
+        -38.373764
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "far-island-0",
+      "name": "Far island 0 | tiny structure 0",
+      "min": [
+        -48.880001,
+        4.42,
+        -48.360001
+      ],
+      "max": [
+        -48.16,
+        5.06,
+        -47.639999
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "far-island-0",
+      "name": "Far island 0 | tiny structure 1",
+      "min": [
+        -47.84,
+        4.42,
+        -48.360001
+      ],
+      "max": [
+        -47.119999,
+        5.06,
+        -47.639999
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "far-island-1",
+      "name": "Far island 1 | tiny structure 0",
+      "min": [
+        23.119999,
+        -0.78,
+        -40.360001
+      ],
+      "max": [
+        23.84,
+        -0.14,
+        -39.639999
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "far-island-1",
+      "name": "Far island 1 | tiny structure 1",
+      "min": [
+        24.16,
+        -0.78,
+        -40.360001
+      ],
+      "max": [
+        24.880001,
+        -0.14,
+        -39.639999
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-00",
+      "name": "Cloud bank 00 | editable mesh",
+      "min": [
+        -61.576122,
+        -19.801904,
+        -56.548512
+      ],
+      "max": [
+        -43.501453,
+        -11.099208,
+        -47.308437
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-01",
+      "name": "Cloud bank 01 | editable mesh",
+      "min": [
+        13.520063,
+        -22.731151,
+        -85.740013
+      ],
+      "max": [
+        31.594736,
+        -14.028455,
+        -76.499931
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-02",
+      "name": "Cloud bank 02 | editable mesh",
+      "min": [
+        -58.578438,
+        -30.487855,
+        -49.183655
+      ],
+      "max": [
+        -33.431068,
+        -18.379758,
+        -36.327896
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-03",
+      "name": "Cloud bank 03 | editable mesh",
+      "min": [
+        8.671024,
+        -33.420587,
+        -71.351425
+      ],
+      "max": [
+        32.246681,
+        -22.069242,
+        -59.299156
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-04",
+      "name": "Cloud bank 04 | editable mesh",
+      "min": [
+        -43.55769,
+        -42.109762,
+        -64.539452
+      ],
+      "max": [
+        -14.481043,
+        -28.109769,
+        -49.67498
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-05",
+      "name": "Cloud bank 05 | editable mesh",
+      "min": [
+        -21.267662,
+        -46.236604,
+        -77.025894
+      ],
+      "max": [
+        10.952406,
+        -30.7231,
+        -60.554451
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-06",
+      "name": "Cloud bank 06 | editable mesh",
+      "min": [
+        -63.080547,
+        -11.900409,
+        -67.44474
+      ],
+      "max": [
+        -52.864429,
+        -6.981493,
+        -62.222092
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-07",
+      "name": "Cloud bank 07 | editable mesh",
+      "min": [
+        14.485489,
+        -10.62753,
+        -97.677315
+      ],
+      "max": [
+        23.129898,
+        -6.465371,
+        -93.258148
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-08",
+      "name": "Cloud bank 08 | editable mesh",
+      "min": [
+        -44.829639,
+        -23.067127,
+        -80.884872
+      ],
+      "max": [
+        -32.255951,
+        -17.013078,
+        -74.456993
+      ],
+      "collection": "07_Environment"
+    },
+    {
+      "id": "cloud-bank-09",
+      "name": "Cloud bank 09 | editable mesh",
+      "min": [
+        -5.367098,
+        -21.766427,
+        -90.650841
+      ],
+      "max": [
+        5.634877,
+        -16.469133,
+        -85.026443
+      ],
+      "collection": "07_Environment"
+    }
+  ]
+}

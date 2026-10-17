@@ -1,0 +1,24 @@
+{
+  "id": "airship-medium",
+  "label": "Medium passenger airship",
+  "crop": [
+    338,
+    640,
+    615,
+    786
+  ],
+  "order": 12,
+  "generationId": "ab1c7c06-4ac6-4546-a8c8-ba7eb2e9c4bc",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "bf680ce0dd3647149737309224a60790c42402f9e753756fb406d603760489c8",
+  "rawSha256": "e4bbef31a6c46799969aa57991ba564c6fd24683f9c7958595c5b8831181c872",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "f12ad7f44814ea19f223bbca5069283df0d468908b8cd6ce774dcfda9ea839dc"
+}

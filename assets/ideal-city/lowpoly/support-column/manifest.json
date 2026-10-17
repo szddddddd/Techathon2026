@@ -1,0 +1,24 @@
+{
+  "id": "support-column",
+  "label": "Mechanical structural support column",
+  "crop": [
+    1228,
+    418,
+    1531,
+    596
+  ],
+  "order": 10,
+  "generationId": "b0f47814-72d6-4073-b40e-07944ecc6f72",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "7e01621e63d479983011510a5542fafe76c9b989abbd6e04e98986f4f6ce93fe",
+  "rawSha256": "ba85c80f2427f630fe1994ee4bfa5400cdfd4f8365934a5508690e7192110f9f",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "f2359849a0471e48e3680cf23117caf3685a0fc05d85625c8bb1f6dc933794bc"
+}

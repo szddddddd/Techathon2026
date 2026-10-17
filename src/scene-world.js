@@ -1,8 +1,8 @@
-import {cityCamera} from './cyber-city.js';
+import {DAY_NIGHT_PROFILES} from './day-night-environment.js';
+import {createNightEffects} from './day-night-effects.js';
+import {IDEAL_LAYOUT,idealCamera} from './ideal-layout.js';
+import {buildIdealScene,idealFacility} from './ideal-scene.js';
 import {SCENE_THEMES} from './scene-theme.js';
-import {CYBER_LAYOUT} from './cyber-layout.js';
-import {CYBER_VISUALS} from './cyber-visuals.js';
-import {buildCyberScene} from './cyber-scene.js';
 import {FUJI_VISUALS} from './fuji-visuals.js';
 import {freezeStaticTransforms} from './static-transforms.js';
 import * as T from 'three';
@@ -22,10 +22,11 @@ import {createRecordPlayer} from './record-player.js';
 import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-assets.js';
 
 export const SCENE_REGISTRY={
+ ideal:{...SCENE_THEMES.ideal,prepareAssets:()=>prepareSceneAssets('ideal'),buildTerrain:(root,options)=>{const terrain=buildIdealScene(root,options);return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:true,fogDensity:.001,mobileFogDensity:.0003,background:0x78b7e4,backgroundTop:0x559bd8,backgroundBottom:0xc7e5f5,hemi:0xd5edff,ground:0x829a7c,hemiIntensity:2.0,sun:0xfff2d5,sunIntensity:2.5,rim:0xb8ddff,rimIntensity:1,fill:0xdcefff,fillIntensity:.8,exposure:1.15,layout:IDEAL_LAYOUT,cameraFor:idealCamera,camera:idealCamera(),facilityTemplates:{accounts:()=>idealFacility('accounts'),'scene-video':()=>idealFacility('scene-video')},recordPresentation:{title:'云端音乐台',useModel:true},ariaLabel:'可拖动旋转、滚轮缩放的理想城浮空岛与殖民舰巨塔'},
  forest:{...SCENE_THEMES.forest,prepareAssets:()=>prepareSceneAssets('forest'),buildTerrain:buildForestWorld,batchForest:true,backdropGround:true,groupFocus:true,fogDensity:.0065,mobileFogDensity:.003,ariaLabel:'可拖动旋转、滚轮缩放的三维森林溪谷',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[32.8,29.5,53.8],target:[0,0,-5],mobile:[49.2,86.9,124.6],mobileTarget:[0,0,-7]}},
  fuji:{...SCENE_THEMES.fuji,prepareAssets:()=>prepareSceneAssets('fuji'),buildTerrain:(root,options)=>{const terrain=buildFujiScene(root,{reduced:options.reduced,assets:options.assets.models});return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:false,fogDensity:.003,ariaLabel:'可拖动旋转、滚轮缩放的富士樱町与蒸汽列车',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[27.1,27.1,52.5],target:[0,2,-5],mobile:[19.7,82,141],mobileTarget:[0,4,-7]}},
- cyber:{...SCENE_THEMES.cyber,...CYBER_VISUALS.environment,prepareAssets:()=>prepareSceneAssets('cyber'),buildTerrain:(root,options)=>{const terrain=buildCyberScene(root,{reduced:options.reduced,assets:options.assets.models});return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:false,fogDensity:.0012,mobileFogDensity:.0007,cameraFor:cityCamera,ariaLabel:'可拖动旋转、滚轮缩放的霓虹云港与巡航飞艇',layout:CYBER_LAYOUT,camera:{position:[40,35,62],target:[0,4,0],mobile:[48,93,145],mobileTarget:[0,5,0]}},
 };
+for(const [id,config] of Object.entries(SCENE_REGISTRY))config.dayNight=DAY_NIGHT_PROFILES[id];
 function batchForest(root,architecture,nature){
  const animated=new Set(architecture.flames||[]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));
  const buckets=new Map();root.updateMatrixWorld(true);
@@ -59,7 +60,7 @@ export async function prepareSceneWorld(id,{reduced}={}){
  const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
  if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
 
- let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies;
+ let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies,nightEffects;
  try{
   ({terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,flies}=config.buildTerrain(root,{assets,reduced}));
   terrain.theme=id;terrain.layout??=config.layout;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
@@ -73,13 +74,15 @@ export async function prepareSceneWorld(id,{reduced}={}){
     discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,templates:config.facilityTemplates,obstacleCache});
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
     record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,presentation:config.recordPresentation,externalDisposal:true});
-    terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);
+    terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);nightEffects=createNightEffects(root,id,{flies});nightEffects.setNightFactor(0);
    }catch(error){this.dispose();throw error;}
    return this;
   },
+  setNightFactor(value,camera){nightEffects?.setNightFactor(value,camera);if(architecture.lights[1])architecture.lights[1].intensity=value*1.6;},
+  nightSnapshot:()=>nightEffects?.snapshot(),
   activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
   suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
+  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[nightEffects?.root,...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
   update(now,dt,time){
    if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}

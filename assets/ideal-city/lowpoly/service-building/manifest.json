@@ -1,0 +1,24 @@
+{
+  "id": "service-building",
+  "label": "Low stepped ivory service building with planted terraces",
+  "crop": [
+    918,
+    36,
+    1208,
+    385
+  ],
+  "order": 4,
+  "generationId": "229db7c1-2473-4c5c-9c1d-1ca6e9c8f758",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "3a6ae63ed472d2d4d9f33f4be8932a3cf38d8de9531c0cd40f8e7e1a410aec60",
+  "rawSha256": "4de2597374c069681d146b71ba2baeb356247dc31aa4e8d5a6766b8187658973",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "51722f009835f6a8f00cecf80efedf20eee4303205dbc69332c2b6a111c2506e"
+}

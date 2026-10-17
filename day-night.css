@@ -1,0 +1,10 @@
+#day-night-control{position:fixed;top:max(16px,env(safe-area-inset-top));left:calc(50% + 110px);z-index:45;color:#304b61;font:14px var(--ui-font,'Segoe UI','Microsoft YaHei',sans-serif)}
+#day-night-toggle{display:flex;align-items:center;justify-content:center;gap:7px;min-width:86px;height:48px;border:1px solid #ffffffb0;border-radius:26px;background:#f1f7f3ed;box-shadow:0 6px 24px #182c3b22;color:inherit;font:inherit;cursor:pointer}
+#day-night-toggle>span:first-child{font-size:22px;line-height:1}#day-night-toggle:disabled{opacity:.6;cursor:default}
+#day-night-menu{position:absolute;top:54px;right:0;width:180px;padding:8px;background:#f3f7f5fa;border:1px solid #fff;border-radius:18px;box-shadow:0 12px 32px #142b3440}
+#day-night-menu[hidden]{display:none}#day-night-menu button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:9px 12px;border:0;border-radius:11px;background:transparent;color:#304b61;font:inherit;cursor:pointer}
+#day-night-menu small{font-size:11px;opacity:.7}#day-night-menu [aria-checked=true]{background:#dce9ec;font-weight:600}
+#day-night-control button:focus-visible{outline:2px solid #54839f;outline-offset:2px}#day-night-menu button:hover{background:#e0ebef}
+html[data-scene-transition=true] #day-night-control{visibility:hidden;pointer-events:none}
+@media(max-width:600px){#scene-switcher{--expanded-width:154px}#day-night-control{top:max(12px,env(safe-area-inset-top));left:174px}#day-night-toggle{min-width:72px;height:48px;font-size:13px}#day-night-menu{right:-22px}.scene-switcher-option{font-size:15px;padding:0 10px}.scene-switcher-caption{gap:6px}}
+@media(max-width:360px){#scene-switcher{--expanded-width:136px}#day-night-control{left:156px}#day-night-toggle{min-width:62px}}

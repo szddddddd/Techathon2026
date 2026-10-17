@@ -1,0 +1,24 @@
+{
+  "id": "airship-large",
+  "label": "Large passenger airship",
+  "crop": [
+    5,
+    640,
+    328,
+    786
+  ],
+  "order": 11,
+  "generationId": "42116ba3-5ccf-4572-9edb-e4f3c6d27da7",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "79756710e5049dadd1eed68f19c5c75143d87d72eb6566c16a08aa9081a6f148",
+  "rawSha256": "08e73c7da4ea56ad2208afa3b688bdcb67b1993879efb51c86fd533ef1d5905a",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "dc70f37b1ac6a479fda85e565127790da34579f7fa76c64e1da5932e53421f75"
+}

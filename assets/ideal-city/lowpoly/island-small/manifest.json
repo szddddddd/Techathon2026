@@ -1,0 +1,24 @@
+{
+  "id": "island-small",
+  "label": "Small distant floating rocky island with miniature foliage and buildings",
+  "crop": [
+    5,
+    820,
+    327,
+    1021
+  ],
+  "order": 16,
+  "generationId": "5a7e88d1-0fd2-43d3-bfa3-48e63be36af7",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "bba4fb8c78fd2d5c03c119861a054a0b08ffa6cdc67606461010eb6913464b0d",
+  "rawSha256": "13a20497425b576aef14d16b94a7d7b1f9f02f8e33b9e94bb397f9d36589dd74",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "fe06e716223f687828c8af94ea5410327ac6d61d0f2561ca740db4bf36b1c420"
+}

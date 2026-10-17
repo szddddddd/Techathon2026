@@ -1,7 +1,7 @@
 export const SCENE_THEMES=Object.freeze({
  forest:{id:'forest',name:'林间来信',background:0x203a32},
  fuji:{id:'fuji',name:'富士樱町',background:0xbac9cf},
- cyber:{id:'cyber',name:'霓虹云港',background:0x151b32},
+ ideal:{id:'ideal',name:'理想城',background:0x78b7e4},
 });
 export const SCENE_STORAGE_KEY='forest-letters-scene';
 export function readSceneTheme(){

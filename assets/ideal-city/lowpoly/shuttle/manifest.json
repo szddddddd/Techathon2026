@@ -1,0 +1,24 @@
+{
+  "id": "shuttle",
+  "label": "Small compact flying shuttle",
+  "crop": [
+    1228,
+    640,
+    1531,
+    786
+  ],
+  "order": 15,
+  "generationId": "eb29b15b-0245-41ec-9c49-d4872f0cef42",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "6763b5fa2a5907176700e5ed282a2b30dae24494421d782eea6aabc7df4fe91b",
+  "rawSha256": "736a174b32b08f3f12a4d8f0364676f287128e45e758da8f5b78c48a3bc7e759",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "9682759c6f0e04650b27546f8e90618b61c8f32310b059626fa34fba9db12b0b"
+}

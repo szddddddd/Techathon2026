@@ -1,0 +1,24 @@
+{
+  "id": "skybridge",
+  "label": "Enclosed blue glass skybridge attached to an elevator tower",
+  "crop": [
+    664,
+    424,
+    910,
+    596
+  ],
+  "order": 8,
+  "generationId": "32603b54-358c-4dbb-b414-0fbf128f7d01",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "38419094507152055bb17dd27b9986358fe1049c721b6dbd128402138e762573",
+  "rawSha256": "4a7b31295715e2baa6e146c3f6bc93b9a869696c57dc3fcff66cfec0bb287430",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "4bd39d126f84e3586d40f299f7b7ae0ea74c55de0b11bacb0ed7306548021f40"
+}

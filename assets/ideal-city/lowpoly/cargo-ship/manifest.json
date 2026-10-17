@@ -1,0 +1,24 @@
+{
+  "id": "cargo-ship",
+  "label": "Blocky cargo spacecraft",
+  "crop": [
+    926,
+    640,
+    1218,
+    786
+  ],
+  "order": 14,
+  "generationId": "425435ce-0b03-40d8-afd2-ade91f30fb6e",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "9b3246a18f4c32494f17305e8dc7975231b3a50c7d50c28a8938c82c3bb05207",
+  "rawSha256": "fe64c0c3a8b91c3d3f39dfc2f4de2d4ad347dd0415779b121c6962ef09a13880",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "583c32fbca2de8b247a300cd6f703e011952e5a65f952685694aa030574c9a27"
+}

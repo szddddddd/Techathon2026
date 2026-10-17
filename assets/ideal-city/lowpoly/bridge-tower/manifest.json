@@ -1,0 +1,24 @@
+{
+  "id": "bridge-tower",
+  "label": "Medium commercial tower with one projecting skybridge",
+  "crop": [
+    610,
+    36,
+    908,
+    385
+  ],
+  "order": 3,
+  "generationId": "1e7eb57f-8da5-4034-ba5d-7130bfe7cff4",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "6c787bd11c46d8506b30a6c1894db2bdc11cee0c717589e646804783c765847e",
+  "rawSha256": "560d84f9caf09603e4a877a6f3aac544021b78de8e3ca0d57a6572dd8836c73d",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "8ba6dcd5efe1618c0c11349a71f2ff4194d4b439f51e9818b89d1222eeda6a7d"
+}

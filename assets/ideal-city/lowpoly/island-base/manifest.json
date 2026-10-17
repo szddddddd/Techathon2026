@@ -1,0 +1,24 @@
+{
+  "id": "island-base",
+  "label": "Empty floating island with flat grassy top and faceted rocky underside",
+  "crop": [
+    926,
+    828,
+    1218,
+    1021
+  ],
+  "order": 19,
+  "generationId": "82ecd67c-afd7-45f8-b519-dc86499850e9",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "115ce781af1ee1b6c7e348f5a5d98f90a3a53c5d61a8308bd190a218e7f789e2",
+  "rawSha256": "861ec7dddf1ab1fc971bb5bf3490b0e6bd9b28285d384d269c6bfed79b4d1c99",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "a4b4d6e4bf98492d8ffc5257ac70713a61cfe057381266e1f6da8afd10d96987"
+}

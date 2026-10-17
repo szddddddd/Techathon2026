@@ -1,0 +1,876 @@
+{
+  "id": "ideal-lowpoly",
+  "provider": "Rodin Gen-2.5-Medium",
+  "style": "low-poly cartoon",
+  "assets": [
+    {
+      "id": "colony-core",
+      "label": "Central stepped colony spaceship tower",
+      "crop": [
+        5,
+        36,
+        325,
+        385
+      ],
+      "order": 1,
+      "generationId": "f1b59c61-63a2-47af-b391-1e6922cfdb2b",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "8b86cffa772abf6782edfdba692f3b92795bad777ef32880e3b0125244c7f510",
+      "rawSha256": "03f410183c7dfed1bc1a26c53a9ca69030356f17f4c9b73f682f6483fd3bcafc",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "c8d435215ce9ec90e3bfd4bde88ce43ed48f66690c2b8cbc380129d364e848b2"
+    },
+    {
+      "id": "office-tower",
+      "label": "Ivory and blue glass office skyscraper",
+      "crop": [
+        335,
+        36,
+        600,
+        385
+      ],
+      "order": 2,
+      "generationId": "04407280-0e1d-4eef-bdbb-abf836b88612",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "2a29d54d81702407e4143cf8b37988fad01fb6ac2f253d2287c1ab812e07fddd",
+      "rawSha256": "e2cfb12bcb701c9d7f7c39d07b8100a6c2135b4a5ea941c2497171ed62470144",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "fafe2682c223e7d0ea1d6b15239263a42f42897474e82f4daed3e1ef8af10b06"
+    },
+    {
+      "id": "bridge-tower",
+      "label": "Medium commercial tower with one projecting skybridge",
+      "crop": [
+        610,
+        36,
+        908,
+        385
+      ],
+      "order": 3,
+      "generationId": "1e7eb57f-8da5-4034-ba5d-7130bfe7cff4",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "6c787bd11c46d8506b30a6c1894db2bdc11cee0c717589e646804783c765847e",
+      "rawSha256": "560d84f9caf09603e4a877a6f3aac544021b78de8e3ca0d57a6572dd8836c73d",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "8ba6dcd5efe1618c0c11349a71f2ff4194d4b439f51e9818b89d1222eeda6a7d"
+    },
+    {
+      "id": "service-building",
+      "label": "Low stepped ivory service building with planted terraces",
+      "crop": [
+        918,
+        36,
+        1208,
+        385
+      ],
+      "order": 4,
+      "generationId": "229db7c1-2473-4c5c-9c1d-1ca6e9c8f758",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "3a6ae63ed472d2d4d9f33f4be8932a3cf38d8de9531c0cd40f8e7e1a410aec60",
+      "rawSha256": "4de2597374c069681d146b71ba2baeb356247dc31aa4e8d5a6766b8187658973",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "51722f009835f6a8f00cecf80efedf20eee4303205dbc69332c2b6a111c2506e"
+    },
+    {
+      "id": "orbital-station",
+      "label": "Circular elevated transportation station with central mechanical pylon",
+      "crop": [
+        1218,
+        36,
+        1531,
+        385
+      ],
+      "order": 5,
+      "generationId": "a3c1ee13-3024-4cbf-8da4-43c4a73dd019",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "495a42aa8fdc6fc58727180f7b25a2bd52b0e5da58fc6f7ec357be79286591fd",
+      "rawSha256": "29c8e5872cce9851a8d9fe66c3b6726817e8e88d72959e3a8d970364075fab4e",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "bebe69e57fc0197ec5464b5d817a60ceeeaf06e7b9d6a3656f0be8dc8a519eae"
+    },
+    {
+      "id": "ring-road",
+      "label": "Complete open elliptical elevated road ring with support pillars",
+      "crop": [
+        5,
+        424,
+        328,
+        596
+      ],
+      "order": 6,
+      "generationId": "7c168747-2009-4dbb-b05a-e7caa5b2744a",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "36a2a431e5085da4ae3bc659bbe35073d2a65cd950cb275a086354ce8d604b5b",
+      "rawSha256": "cb3edb716e13c9d742dbbcb3e9a7d819bd42527622fd698f61286c8fac47a2ce",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "9ec2aac0bc3c75d14b68cdcb9433789b890eb25e6dac5a2259883951f50525dd"
+    },
+    {
+      "id": "straight-road",
+      "label": "Straight elevated road segment on three support pillars",
+      "crop": [
+        338,
+        424,
+        654,
+        596
+      ],
+      "order": 7,
+      "generationId": "8c14cefc-a6c0-4a19-9802-60bf42b196e8",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "f9f51aa37e72b1c3d8df46c8dfeece6b17d287337d34783bb2b87265f8647be0",
+      "rawSha256": "784f91ab959a4d338bed7ebf787850995e24ff05294e14881b78594fc22126e2",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "412a83db9b62d76dc3ed3a33175584c1d6eb2be5f679965bd3448b2e1dbc05c1"
+    },
+    {
+      "id": "skybridge",
+      "label": "Enclosed blue glass skybridge attached to an elevator tower",
+      "crop": [
+        664,
+        424,
+        910,
+        596
+      ],
+      "order": 8,
+      "generationId": "32603b54-358c-4dbb-b414-0fbf128f7d01",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "38419094507152055bb17dd27b9986358fe1049c721b6dbd128402138e762573",
+      "rawSha256": "4a7b31295715e2baa6e146c3f6bc93b9a869696c57dc3fcff66cfec0bb287430",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "4bd39d126f84e3586d40f299f7b7ae0ea74c55de0b11bacb0ed7306548021f40"
+    },
+    {
+      "id": "landing-platform",
+      "label": "Rectangular hovering landing platform with mechanical underside",
+      "crop": [
+        920,
+        424,
+        1218,
+        596
+      ],
+      "order": 9,
+      "generationId": "c597a5e8-37c8-45f3-ba53-74460617c9a4",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "9ca2e433d8ccf5614083f2f7562dfe480947436b0a00052e52ca0a4524405027",
+      "rawSha256": "d8a654ffca7fa132f93954f7eed142892c3410362258c64a7cf357f4973dcc77",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "3280c637f497b1328ee1733825de267d75b80037ee168d45372371662e0ef48a"
+    },
+    {
+      "id": "support-column",
+      "label": "Mechanical structural support column",
+      "crop": [
+        1228,
+        418,
+        1531,
+        596
+      ],
+      "order": 10,
+      "generationId": "b0f47814-72d6-4073-b40e-07944ecc6f72",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "7e01621e63d479983011510a5542fafe76c9b989abbd6e04e98986f4f6ce93fe",
+      "rawSha256": "ba85c80f2427f630fe1994ee4bfa5400cdfd4f8365934a5508690e7192110f9f",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "f2359849a0471e48e3680cf23117caf3685a0fc05d85625c8bb1f6dc933794bc"
+    },
+    {
+      "id": "airship-large",
+      "label": "Large passenger airship",
+      "crop": [
+        5,
+        640,
+        328,
+        786
+      ],
+      "order": 11,
+      "generationId": "42116ba3-5ccf-4572-9edb-e4f3c6d27da7",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "79756710e5049dadd1eed68f19c5c75143d87d72eb6566c16a08aa9081a6f148",
+      "rawSha256": "08e73c7da4ea56ad2208afa3b688bdcb67b1993879efb51c86fd533ef1d5905a",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "dc70f37b1ac6a479fda85e565127790da34579f7fa76c64e1da5932e53421f75"
+    },
+    {
+      "id": "airship-medium",
+      "label": "Medium passenger airship",
+      "crop": [
+        338,
+        640,
+        615,
+        786
+      ],
+      "order": 12,
+      "generationId": "ab1c7c06-4ac6-4546-a8c8-ba7eb2e9c4bc",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "bf680ce0dd3647149737309224a60790c42402f9e753756fb406d603760489c8",
+      "rawSha256": "e4bbef31a6c46799969aa57991ba564c6fd24683f9c7958595c5b8831181c872",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "f12ad7f44814ea19f223bbca5069283df0d468908b8cd6ce774dcfda9ea839dc"
+    },
+    {
+      "id": "hover-car",
+      "label": "Compact hovering sports car",
+      "crop": [
+        625,
+        640,
+        916,
+        786
+      ],
+      "order": 13,
+      "generationId": "a58c9601-3f57-47c0-86bc-58570ecf1ed4",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "c212527403a5cd7466d8ea0b7d1819b14026594547bef15de9d8fe1c42054708",
+      "rawSha256": "214a4d29b733d821d8863ae6061fbe8e488cdd43ec1aad8bbc5da6ac11adbfa7",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "d8869672f735742388c7934902d8d9a0843f951e100516e427ff53d4fdf0d650"
+    },
+    {
+      "id": "cargo-ship",
+      "label": "Blocky cargo spacecraft",
+      "crop": [
+        926,
+        640,
+        1218,
+        786
+      ],
+      "order": 14,
+      "generationId": "425435ce-0b03-40d8-afd2-ade91f30fb6e",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "9b3246a18f4c32494f17305e8dc7975231b3a50c7d50c28a8938c82c3bb05207",
+      "rawSha256": "fe64c0c3a8b91c3d3f39dfc2f4de2d4ad347dd0415779b121c6962ef09a13880",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "583c32fbca2de8b247a300cd6f703e011952e5a65f952685694aa030574c9a27"
+    },
+    {
+      "id": "shuttle",
+      "label": "Small compact flying shuttle",
+      "crop": [
+        1228,
+        640,
+        1531,
+        786
+      ],
+      "order": 15,
+      "generationId": "eb29b15b-0245-41ec-9c49-d4872f0cef42",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "6763b5fa2a5907176700e5ed282a2b30dae24494421d782eea6aabc7df4fe91b",
+      "rawSha256": "736a174b32b08f3f12a4d8f0364676f287128e45e758da8f5b78c48a3bc7e759",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "9682759c6f0e04650b27546f8e90618b61c8f32310b059626fa34fba9db12b0b"
+    },
+    {
+      "id": "island-small",
+      "label": "Small distant floating rocky island with miniature foliage and buildings",
+      "crop": [
+        5,
+        820,
+        327,
+        1021
+      ],
+      "order": 16,
+      "generationId": "5a7e88d1-0fd2-43d3-bfa3-48e63be36af7",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "bba4fb8c78fd2d5c03c119861a054a0b08ffa6cdc67606461010eb6913464b0d",
+      "rawSha256": "13a20497425b576aef14d16b94a7d7b1f9f02f8e33b9e94bb397f9d36589dd74",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "fe06e716223f687828c8af94ea5410327ac6d61d0f2561ca740db4bf36b1c420"
+    },
+    {
+      "id": "island-medium",
+      "label": "Medium distant floating rocky island with miniature buildings and greenery",
+      "crop": [
+        337,
+        820,
+        615,
+        1021
+      ],
+      "order": 17,
+      "generationId": "42700633-79b7-4964-88f1-28a729bfe396",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "1449dbdae4afffa2715b858360192cc2416a9c24e44cf387d8f2d3957a26ab95",
+      "rawSha256": "e04ecc240ad8496ad1af4312e9aea11caf00632fc8a59ef1cda7caa98f4a9453",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "5a3d93c6961d0ab23e9b2f56a0ecfc0f04003c62bc3bfc6e5579f103668fc1e7"
+    },
+    {
+      "id": "island-engines",
+      "label": "Floating island underside with clustered mechanical propulsion engines",
+      "crop": [
+        625,
+        820,
+        916,
+        1021
+      ],
+      "order": 18,
+      "generationId": "325d1596-b288-4de2-a0a0-3bcd9eb6beb6",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "62bd9e1ce797bfbf78baa3698f4d76caab5c9f035f42d62f9d3d5e9b918a6720",
+      "rawSha256": "72c46f4b15b484b1794d54e9918fdc30a6312a730606c97ad338cabbcec9becb",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "4c049d60b439ac9db59c30a1b105bf49972c188ab8dd74e380577c93e46362da"
+    },
+    {
+      "id": "island-base",
+      "label": "Empty floating island with flat grassy top and faceted rocky underside",
+      "crop": [
+        926,
+        828,
+        1218,
+        1021
+      ],
+      "order": 19,
+      "generationId": "82ecd67c-afd7-45f8-b519-dc86499850e9",
+      "settings": {
+        "tier": "Gen-2.5-Medium",
+        "mesh_mode": "Raw",
+        "quality_override": 20000,
+        "geometry_file_format": "glb"
+      },
+      "referenceSha256": "115ce781af1ee1b6c7e348f5a5d98f90a3a53c5d61a8308bd190a218e7f789e2",
+      "rawSha256": "861ec7dddf1ab1fc971bb5bf3490b0e6bd9b28285d384d269c6bfed79b4d1c99",
+      "adoption": "adopted; three-angle render inspected",
+      "style": "low-poly cartoon",
+      "optimization": "1024px base colour, matte material; normal/metal maps removed",
+      "sha256": "a4b4d6e4bf98492d8ffc5257ac70713a61cfe057381266e1f6da8afd10d96987"
+    }
+  ],
+  "placements": [
+    {
+      "asset": "office-tower",
+      "name": "Building 00 | complete editable module · Rodin",
+      "min": [
+        -12.576499938964844,
+        2.22,
+        -6.355999946594238
+      ],
+      "max": [
+        -9.223499298095703,
+        21.519999237060546,
+        -2.8439998626708984
+      ]
+    },
+    {
+      "asset": "office-tower",
+      "name": "Building 01 | complete editable module · Rodin",
+      "min": [
+        8.873499870300293,
+        2.22,
+        -7.305999755859375
+      ],
+      "max": [
+        12.126500129699707,
+        18.920000762939452,
+        -3.8940000534057617
+      ]
+    },
+    {
+      "asset": "office-tower",
+      "name": "Building 02 | complete editable module · Rodin",
+      "min": [
+        -22.726499557495117,
+        2.22,
+        1.259200096130371
+      ],
+      "max": [
+        -20.07349967956543,
+        9.980000228881837,
+        4.371200084686279
+      ]
+    },
+    {
+      "asset": "office-tower",
+      "name": "Building 03 | complete editable module · Rodin",
+      "min": [
+        19.900001525878906,
+        2.22,
+        -4.50600004196167
+      ],
+      "max": [
+        22.553001403808594,
+        10.180000038146973,
+        -1.4940000772476196
+      ]
+    },
+    {
+      "asset": "bridge-tower",
+      "name": "Building 04 | complete editable module · Rodin",
+      "min": [
+        -12.42650032043457,
+        2.22,
+        -17.755998611450195
+      ],
+      "max": [
+        -9.57349967956543,
+        11.18000099182129,
+        -14.843999862670898
+      ]
+    },
+    {
+      "asset": "bridge-tower",
+      "name": "Building 05 | complete editable module · Rodin",
+      "min": [
+        7.149999618530273,
+        2.22,
+        1.9391999244689941
+      ],
+      "max": [
+        10.503000259399414,
+        12.37999984741211,
+        5.051199913024902
+      ]
+    },
+    {
+      "asset": "service-building",
+      "name": "Low building 0 | complete editable module · Rodin",
+      "min": [
+        -16.69999885559082,
+        2.22,
+        12.649999618530273
+      ],
+      "max": [
+        -9.700000762939453,
+        4.8600001049041754,
+        16.350000381469727
+      ]
+    },
+    {
+      "asset": "service-building",
+      "name": "Low building 1 | complete editable module · Rodin",
+      "min": [
+        7.800000190734863,
+        2.22,
+        15.40000057220459
+      ],
+      "max": [
+        13.800000190734863,
+        4.559999914169312,
+        18.799999237060547
+      ]
+    },
+    {
+      "asset": "service-building",
+      "name": "Low building 2 | complete editable module · Rodin",
+      "min": [
+        -21.69999885559082,
+        2.22,
+        -9.350000381469727
+      ],
+      "max": [
+        -15.899999618530273,
+        5.16000005722046,
+        -5.450000286102295
+      ]
+    },
+    {
+      "asset": "service-building",
+      "name": "Low building 3 · Rodin",
+      "min": [
+        11.899999618530273,
+        2.4600000095367434,
+        -13.899999618530273
+      ],
+      "max": [
+        18.100000381469727,
+        4.66000005722046,
+        -10.100000381469727
+      ]
+    },
+    {
+      "asset": "colony-core",
+      "name": "Colony ship · Rodin",
+      "min": [
+        -7.099999904632568,
+        2.22,
+        -10.329999923706055
+      ],
+      "max": [
+        7.099999904632568,
+        39.030001373291014,
+        3.869999885559082
+      ]
+    },
+    {
+      "asset": "ring-road",
+      "name": "Ring road 1 · Rodin",
+      "min": [
+        -26.069713592529297,
+        2.22,
+        -26.06483268737793
+      ],
+      "max": [
+        26.07428741455078,
+        5.16000005722046,
+        26.075132369995117
+      ]
+    },
+    {
+      "asset": "ring-road",
+      "name": "Ring road 2 · Rodin",
+      "min": [
+        -16.572107315063477,
+        2.22,
+        -16.570358276367188
+      ],
+      "max": [
+        16.574661254882812,
+        9.359999866485596,
+        16.57551383972168
+      ]
+    },
+    {
+      "asset": "landing-platform",
+      "name": "Central arrival terrace · Rodin",
+      "min": [
+        -7.5,
+        4.799999923706055,
+        4.100000381469727
+      ],
+      "max": [
+        7.5,
+        6.870000095367432,
+        9.5
+      ]
+    },
+    {
+      "asset": "support-column",
+      "name": "Arrival terrace support 0",
+      "min": [
+        5.450000286102295,
+        2.22,
+        6.300000190734863
+      ],
+      "max": [
+        6.150000095367432,
+        6.620000095367432,
+        7.300000190734863
+      ]
+    },
+    {
+      "asset": "support-column",
+      "name": "Arrival terrace support 1",
+      "min": [
+        -6.150000095367432,
+        2.22,
+        6.300000190734863
+      ],
+      "max": [
+        -5.450000286102295,
+        6.620000095367432,
+        7.300000190734863
+      ]
+    },
+    {
+      "asset": "straight-road",
+      "name": "Bridge west",
+      "min": [
+        -25.700000762939453,
+        2.22,
+        -0.6299999952316284
+      ],
+      "max": [
+        -14.299999237060547,
+        5.079999895095826,
+        0.6299999952316284
+      ]
+    },
+    {
+      "asset": "straight-road",
+      "name": "Bridge east",
+      "min": [
+        16.099998474121094,
+        2.22,
+        -0.8550000190734863
+      ],
+      "max": [
+        35.099998474121094,
+        5.079999895095826,
+        0.8550000190734863
+      ]
+    },
+    {
+      "asset": "skybridge",
+      "name": "Skywalk · Rodin",
+      "min": [
+        6.300000190734863,
+        5.799999685287476,
+        -6.179999828338623
+      ],
+      "max": [
+        10.300000190734863,
+        9.119999618530274,
+        -5.019999980926514
+      ]
+    },
+    {
+      "asset": "orbital-station",
+      "name": "East port · Rodin",
+      "min": [
+        28.849998474121094,
+        -3.600000648498535,
+        -6.75
+      ],
+      "max": [
+        42.349998474121094,
+        7.100000114440919,
+        6.75
+      ]
+    },
+    {
+      "asset": "airship-large",
+      "name": "Airship | editable vehicle · Rodin",
+      "min": [
+        -29.399999618530273,
+        26.429999084472655,
+        -5.400000095367432
+      ],
+      "max": [
+        -18.600000381469727,
+        30.319998474121093,
+        -1.4000000953674316
+      ]
+    },
+    {
+      "asset": "airship-medium",
+      "name": "Sky shuttle | editable vehicle · Rodin",
+      "min": [
+        23.27647590637207,
+        20.431999893188475,
+        -11.879999160766602
+      ],
+      "max": [
+        28.72352409362793,
+        21.776001663208007,
+        -8.520000457763672
+      ]
+    },
+    {
+      "asset": "hover-car",
+      "name": "Hovercar A | editable vehicle · Rodin",
+      "min": [
+        -20.83002471923828,
+        14.440799446105958,
+        6.288000106811523
+      ],
+      "max": [
+        -19.169971466064453,
+        14.850398750305176,
+        7.312000274658203
+      ]
+    },
+    {
+      "asset": "cargo-ship",
+      "name": "Hovercar B | editable vehicle · Rodin",
+      "min": [
+        15.403419494628906,
+        27.291197509765624,
+        -17.368000030517578
+      ],
+      "max": [
+        16.596580505371094,
+        27.5856005859375,
+        -16.631999969482422
+      ]
+    },
+    {
+      "asset": "island-base",
+      "name": "Rodin island rock shell",
+      "min": [
+        -31.523109436035156,
+        -16.239999084472657,
+        -31.471805572509766
+      ],
+      "max": [
+        32.052127838134766,
+        2.1799990844726564,
+        32.042598724365234
+      ]
+    },
+    {
+      "asset": "island-engines",
+      "name": "Engine · Rodin",
+      "min": [
+        -20.0,
+        -14.200000076293945,
+        5.100000381469727
+      ],
+      "max": [
+        21.0,
+        -0.3000004577636717,
+        26.350000381469727
+      ]
+    }
+  ],
+  "layoutTransform": {
+    "version": 2,
+    "depthScale": 1.7,
+    "groupCenters": {
+      "0": [
+        -10.9,
+        -4.6
+      ],
+      "1": [
+        10.5,
+        -5.6
+      ],
+      "4": [
+        -11.0,
+        -16.3
+      ],
+      "6": [
+        -13.2,
+        14.5
+      ],
+      "7": [
+        10.8,
+        17.1
+      ],
+      "8": [
+        -18.8,
+        -7.4
+      ],
+      "2": [
+        -21.4,
+        2.8152
+      ],
+      "3": [
+        21.226501,
+        -3
+      ]
+    },
+    "coreSquare": 14.2,
+    "portSquare": 13.5,
+    "roadWidth": 2.2,
+    "staticBuildingCenter": [
+      15,
+      -12
+    ]
+  },
+  "ground": "Original authored flat surface retained; generated island used as rock shell",
+  "sceneSha256": "6f311c438f8f3e70ea307fcf91cbe09220ac7003ca138f999e3df9453edc0476"
+}

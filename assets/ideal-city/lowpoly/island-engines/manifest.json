@@ -1,0 +1,24 @@
+{
+  "id": "island-engines",
+  "label": "Floating island underside with clustered mechanical propulsion engines",
+  "crop": [
+    625,
+    820,
+    916,
+    1021
+  ],
+  "order": 18,
+  "generationId": "325d1596-b288-4de2-a0a0-3bcd9eb6beb6",
+  "settings": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 20000,
+    "geometry_file_format": "glb"
+  },
+  "referenceSha256": "62bd9e1ce797bfbf78baa3698f4d76caab5c9f035f42d62f9d3d5e9b918a6720",
+  "rawSha256": "72c46f4b15b484b1794d54e9918fdc30a6312a730606c97ad338cabbcec9becb",
+  "adoption": "adopted; three-angle render inspected",
+  "style": "low-poly cartoon",
+  "optimization": "1024px base colour, matte material; normal/metal maps removed",
+  "sha256": "4c049d60b439ac9db59c30a1b105bf49972c188ab8dd74e380577c93e46362da"
+}

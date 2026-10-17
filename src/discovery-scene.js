@@ -63,6 +63,8 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
     for(const child of old){child.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const m of [].concat(o.material||[]))materials.add(m);});group.remove(child);}
     geometries.forEach(g=>g.dispose());materials.forEach(m=>{if(m.map)m.map.dispose();m.dispose();});
     const model=typeof source==='function'?source():source.clone(true);group.add(model);
+    const spec=model.userData.discoverySurface;
+    if(spec){surface.geometry.dispose();surface.geometry=new THREE.PlaneGeometry(spec.width,spec.height);surface.position.fromArray(spec.position);surface.material.color.setHex(spec.tint);surface.material.transparent=true;surface.material.opacity=spec.opacity;surface.material.side=THREE.DoubleSide;surface.material.depthWrite=false;surface.userData.baseTint=spec.tint;group.userData.holographic=true;}
   }
   replaceShell(kiosk,'accounts',journalSurface);replaceShell(cinema,'scene-video',screen);
   const cinemaSpot=facilities.cinema;register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
@@ -74,7 +76,8 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
     const accounts=kind==='accounts',group=accounts?kiosk:cinema;
     group.updateWorldMatrix(true,false);
     const scale=group.getWorldScale(new THREE.Vector3());
-    return {position:group.localToWorld(new THREE.Vector3(0,accounts?1.27:2.12,accounts ? .20 : .07)),quaternion:group.getWorldQuaternion(new THREE.Quaternion()),width:(accounts?1.48:1.64)*Math.abs(scale.x),height:(accounts?1.16:2.91)*Math.abs(scale.y)};
+    const plane=accounts?journalSurface:screen;
+    return {position:group.localToWorld(plane.position.clone()),quaternion:group.getWorldQuaternion(new THREE.Quaternion()),width:plane.geometry.parameters.width*Math.abs(scale.x),height:plane.geometry.parameters.height*Math.abs(scale.y)};
   }
   function move(position,target,restore=false,duration=750){
     // Settling superseded callers keeps rapid switches and dismissals last-wins.
@@ -98,19 +101,20 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
     return move(saved.position,saved.target,true,duration);
   }
   function setBoardActive(kind,active){(kind==='accounts'?journalSurface:screen).visible=!active;}
-  function setEmphasis(kind,value){(kind==='accounts'?journalSurface:screen).material.color.setScalar(1+Math.max(0,value)*.12);}
+  function setEmphasis(kind,value){const plane=kind==='accounts'?journalSurface:screen;plane.material.color.setHex(plane.userData.baseTint??0xffffff).multiplyScalar(1+Math.max(0,value)*.12);}
   function updatePreview(kind,id){return (kind==='accounts'?journalPreview:cinemaPreview)?.update(id);}
   function preview(kind){return (kind==='accounts'?journalPreview:cinemaPreview)?.data;}
   const sceneIcons=typeof document==='undefined'?null:createDiscoverySceneIcons({camera,groups:{accounts:kiosk,'scene-video':cinema},onOpen,preview,ui,interactive:()=>!transition&&!focusKind&&controls.enabled});
   function pose(){return {position:camera.position.toArray(),target:controls.target.toArray(),enabled:controls.enabled};}
   function update(now){
     sceneIcons?.update();
+    if(!document.hidden)for(const group of [kiosk,cinema])if(group.userData.holographic)group.traverse(o=>{const scan=o.userData.hologramScan;if(scan)o.position.y=THREE.MathUtils.lerp(scan.min,scan.max,reduced()?.5:(now/7000)%1);});
     if(transition){const current=transition,t=(reduced()?1:Math.min(1,(now-current.start)/Math.max(1,current.duration))),s=t*t*t*(t*(t*6-15)+10);camera.position.lerpVectors(current.from,current.position,s);controls.target.lerpVectors(current.targetFrom,current.target,s);camera.lookAt(controls.target);if(t===1){if(current.restore){controls.enabled=saved?.enabled??true;controls.minDistance=saved?.minDistance??6;controls.enableDamping=saved?.enableDamping??true;saved=null;}transition=null;current.resolve();}}
     else if(focusedPose){camera.position.copy(focusedPose.position);controls.target.copy(focusedPose.target);camera.lookAt(controls.target);}
 
   }
   function up(e){const p=down;down=null;if(!p||p.id!==e.pointerId||Math.hypot(e.clientX-p.x,e.clientY-p.y)>6)return;const rect=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);const hit=ray.intersectObjects(pickables,true)[0];if(!hit)return;const obstacles=ray.intersectObjects(placement.occluders,false);if(obstacles[0]&&obstacles[0].distance<hit.distance-.05)return;const kind=hit.object.userData.discoveryKind;onOpen?.(kind);}
   const pointer=e=>{if(document.querySelector('dialog[open]'))return;if(e.button===0)down={x:e.clientX,y:e.clientY,id:e.pointerId};};renderer.domElement.addEventListener('pointerdown',pointer);renderer.domElement.addEventListener('pointerup',up);
-  function screenPoint(kind){const group=kind==='accounts'?kiosk:cinema;const p=group.localToWorld(new THREE.Vector3(0,kind==='accounts'?1.4:2.1,.12)).project(camera);const rect=renderer.domElement.getBoundingClientRect();return {x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(-p.y*.5+.5)*rect.height};}
+  function screenPoint(kind){const group=kind==='accounts'?kiosk:cinema,plane=kind==='accounts'?journalSurface:screen;const p=group.localToWorld(plane.position.clone()).project(camera);const rect=renderer.domElement.getBoundingClientRect();return {x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(-p.y*.5+.5)*rect.height};}
   return {get labelAnchors(){return sceneIcons?.anchors||[];},focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){placement.dispose();transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
 }

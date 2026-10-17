@@ -4,8 +4,6 @@ import {PLACEMENTS} from '../src/layout.js';
 import {treeAssetPath} from '../src/tree-assets.js';
 import {GROUP_TYPES} from '../src/group-catalog.js';
 import {FUJI_VISUALS} from '../src/fuji-visuals.js';
-import {CYBER_ASSET_SIZES} from '../src/scene-assets.js';
-import {CITY_ASSETS} from '../src/cyber-city-layout.js';
 import {FRIENDS} from '../src/social-store.js';
 import {ACCOUNTS,ARTICLES,CREATORS,VIDEOS} from '../src/discovery-catalog.js';
 import {MUSIC_TRACKS} from '../src/sound.js';
@@ -14,6 +12,8 @@ import {MUSIC_TRACKS} from '../src/sound.js';
 // scenes, their explicit failure fallbacks, friend portraits and desktop pets.
 export async function currentProjectAssets(){
  const files=new Set();
+ files.add('assets/ideal-city/scene.glb');files.add('assets/ideal-city/manifest.json');
+ files.add('assets/ideal-city/lowpoly/scene.glb');files.add('assets/ideal-city/lowpoly/manifest.json');
  const addModel=(folder,manifest=false)=>{files.add(folder+'/scene.glb');if(manifest)files.add(folder+'/manifest.json');};
  const kinds=new Set([...PLACEMENTS.filter(p=>p.enabled!==false).map(p=>p.kind),'tree','tree_birch','tree_maple','rock','grass','fern_large']);
  for(const kind of kinds)files.add(treeAssetPath(kind));
@@ -23,7 +23,6 @@ export async function currentProjectAssets(){
  for(const {id} of GROUP_TYPES)addModel('assets/rodin-groups/'+id);
  const fujiFolders=new Set(['fuji',...Object.values(FUJI_VISUALS.treeAssets),...FUJI_VISUALS.treeFallbacks,'sakura_a','sakura_b',...['locomotive','carriage','station','track','gate',...GROUP_TYPES.map(t=>t.id)].map(k=>'railway-'+k)]);
  for(const folder of fujiFolders)addModel('assets/rodin-fuji/'+folder,true);
- for(const key of Object.keys(CYBER_ASSET_SIZES))addModel(`assets/${CITY_ASSETS[key]?'rodin-cyber-city-v2':'rodin-cyber'}/${key}`,true);
  for(const friend of FRIENDS){addModel(`assets/rodin-friends/${friend.animal}`);files.add(`assets/rodin-friends/${friend.animal}/portrait.webp`);}
  function media(value){if(typeof value==='string'&&value.startsWith('assets/')&&/\.(?:jpg|png|webp|svg|mp3|mp4|webm)$/.test(value))files.add(value);else if(Array.isArray(value))value.forEach(media);else if(value&&typeof value==='object')Object.values(value).forEach(media);}
  media([ACCOUNTS,ARTICLES,CREATORS,VIDEOS,MUSIC_TRACKS]);
