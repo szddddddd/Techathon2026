@@ -10,7 +10,7 @@ await fs.writeFile(path.join(root,'package.json'),JSON.stringify({version:'1.0.0
 await fs.writeFile(path.join(root,'package-lock.json'),'{}');
 for(const name of ['index','pet'])await fs.writeFile(path.join(root,name+'.html'),'<head><title>Fixture</title></head>');
 await fs.writeFile(path.join(root,'src/value.js'),'export const value=1;');
-for(const name of ['main','asset-review','pet'])await fs.writeFile(path.join(root,'src',name+'.js'),"import {value} from './value.js';globalThis.fixture=value;");
+for(const name of ['main','asset-review','pet','rig-review','character-rig-worker'])await fs.writeFile(path.join(root,'src',name+'.js'),"import {value} from './value.js';globalThis.fixture=value;");
 async function build(...args){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[path.join(root,'scripts/build.mjs'),...args],{windowsHide:true});let log='';child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);child.once('error',reject);child.once('exit',code=>code?reject(new Error(log)):resolve(log));});}
 assert.match(await build(),/Built Forest/);assert.match(await build(),/Reused unchanged/);
 const source=path.join(root,'src/value.js'),old=await fs.stat(source);

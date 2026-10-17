@@ -1,0 +1,131 @@
+{
+  "createdAt": "2026-10-17T16:21:00.135Z",
+  "rigVersion": 3,
+  "sourceHash": "3227d679c006a75dc4406ea66bd5c522a41f42ee22e31b1293be05f3def5cfbc",
+  "verifiedModels": [
+    "kangaroo",
+    "fox",
+    "rabbit",
+    "bear",
+    "procedural A-pose biped",
+    "procedural T-pose biped",
+    "compatible skinned fixture",
+    "unsupported sphere fixture"
+  ],
+  "cases": 40,
+  "screenshots": 80,
+  "clips": 40,
+  "clipSeconds": 12,
+  "maxPenetrationHeightRatio": 0.0016832747415522435,
+  "footSlip": [
+    {
+      "animal": "kangaroo",
+      "maxSlip": 0.023330389193979784
+    },
+    {
+      "animal": "fox",
+      "maxSlip": 0.017856770676860645
+    },
+    {
+      "animal": "rabbit",
+      "maxSlip": 0.0280274366575326
+    },
+    {
+      "animal": "bear",
+      "maxSlip": 0.024098646873408125
+    }
+  ],
+  "performance": {
+    "before": {
+      "median": 16.699999999999818,
+      "p95": 33.29999999999927,
+      "cpuPerFrame": 5.207766666666666,
+      "frameCPU": {
+        "median": 2.8000001907348633,
+        "p95": 42.19999980926514
+      }
+    },
+    "after": {
+      "median": 16.699999999999818,
+      "p95": 33.30000000000018,
+      "cpuPerFrame": 5.644616666666666,
+      "frameCPU": {
+        "median": 3,
+        "p95": 44
+      }
+    },
+    "ratios": {
+      "frameMedian": 1.0714284984432971,
+      "frameP95": 1.0426540331485894,
+      "median": 1,
+      "p95": 1.0000000000000273,
+      "cpu": 1.0838843266147355
+    }
+  },
+  "stableResources": {
+    "forest": [
+      {
+        "round": 2,
+        "geometries": 418,
+        "textures": 173
+      },
+      {
+        "round": 3,
+        "geometries": 418,
+        "textures": 173
+      },
+      {
+        "round": 4,
+        "geometries": 418,
+        "textures": 173
+      }
+    ],
+    "fuji": [
+      {
+        "round": 2,
+        "geometries": 463,
+        "textures": 174
+      },
+      {
+        "round": 3,
+        "geometries": 463,
+        "textures": 174
+      },
+      {
+        "round": 4,
+        "geometries": 463,
+        "textures": 174
+      }
+    ],
+    "ideal": [
+      {
+        "round": 2,
+        "geometries": 282,
+        "textures": 170
+      },
+      {
+        "round": 3,
+        "geometries": 282,
+        "textures": 170
+      },
+      {
+        "round": 4,
+        "geometries": 282,
+        "textures": 170
+      }
+    ]
+  },
+  "sceneChecks": [
+    "forest: rig, safe rest, reduced motion, chat override, rapid statuses, expiration",
+    "fuji: rig, safe rest, reduced motion, chat override, rapid statuses, expiration",
+    "ideal: rig, safe rest, reduced motion, chat override, rapid statuses, expiration"
+  ],
+  "customChecks": [
+    "asynchronous model loading preserves chat",
+    "unsupported shape remains static",
+    "Worker bound custom model appears",
+    "cross-tab correction preserves position and messages"
+  ],
+  "errors": [],
+  "scopeLimit": "No real user-provided custom GLB was available. Contact numerical bounds cover the authored clips and straight walking; scene interaction regressions additionally cover navigation and dragging."
+}

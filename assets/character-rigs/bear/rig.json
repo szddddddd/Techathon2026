@@ -1,0 +1,446 @@
+{
+  "version": 3,
+  "sourceHash": "63dc881475d311c15b4c24bf2915ff9a3191529cdac01934ab2e5c60a471489a",
+  "profile": {
+    "version": 3,
+    "animal": "bear",
+    "config": {
+      "center": [
+        0,
+        -0.04
+      ],
+      "hips": 0.235,
+      "spine": 0.35,
+      "chest": 0.46,
+      "neck": 0.57,
+      "head": 0.735,
+      "hipWidth": 0.115,
+      "knee": 0.125,
+      "ankle": 0.045,
+      "footZ": 0.075,
+      "shoulder": [
+        0.19,
+        0.51,
+        -0.015
+      ],
+      "elbow": [
+        0.255,
+        0.39,
+        0.015
+      ],
+      "hand": [
+        0.285,
+        0.29,
+        0.035
+      ],
+      "armGate": 0.17,
+      "earBase": 0.91,
+      "earTip": 0.985,
+      "earWidth": 0.195,
+      "tail": [
+        [
+          0,
+          0.16,
+          -0.16
+        ],
+        [
+          0,
+          0.16,
+          -0.21
+        ]
+      ],
+      "tailGate": -0.19,
+      "stride": 0.14
+    },
+    "joints": [
+      {
+        "name": "root",
+        "parent": null,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "limit": [
+          1.7,
+          1.7,
+          1.7
+        ]
+      },
+      {
+        "name": "hips",
+        "parent": "root",
+        "position": [
+          0,
+          0.235,
+          -0.04
+        ],
+        "limit": [
+          0.7,
+          0.35,
+          0.35
+        ]
+      },
+      {
+        "name": "spine",
+        "parent": "hips",
+        "position": [
+          0,
+          0.35,
+          -0.04
+        ],
+        "limit": [
+          0.4,
+          0.3,
+          0.25
+        ]
+      },
+      {
+        "name": "chest",
+        "parent": "spine",
+        "position": [
+          0,
+          0.46,
+          -0.04
+        ],
+        "limit": [
+          0.4,
+          0.35,
+          0.3
+        ]
+      },
+      {
+        "name": "neck",
+        "parent": "chest",
+        "position": [
+          0,
+          0.57,
+          -0.04
+        ],
+        "limit": [
+          0.45,
+          0.6,
+          0.3
+        ]
+      },
+      {
+        "name": "head",
+        "parent": "neck",
+        "position": [
+          0,
+          0.735,
+          -0.0049999999999999975
+        ],
+        "limit": [
+          0.5,
+          0.6,
+          0.3
+        ]
+      },
+      {
+        "name": "upperArmL",
+        "parent": "chest",
+        "position": [
+          0.19,
+          0.51,
+          -0.015
+        ],
+        "limit": [
+          1.9,
+          1,
+          1.6
+        ]
+      },
+      {
+        "name": "forearmL",
+        "parent": "upperArmL",
+        "position": [
+          0.255,
+          0.39,
+          0.015
+        ],
+        "limit": [
+          2.1,
+          0.4,
+          0.45
+        ]
+      },
+      {
+        "name": "handL",
+        "parent": "forearmL",
+        "position": [
+          0.285,
+          0.29,
+          0.035
+        ],
+        "limit": [
+          0.6,
+          0.6,
+          0.6
+        ]
+      },
+      {
+        "name": "thighL",
+        "parent": "hips",
+        "position": [
+          0.115,
+          0.235,
+          -0.04
+        ],
+        "limit": [
+          1.65,
+          0.5,
+          0.4
+        ]
+      },
+      {
+        "name": "calfL",
+        "parent": "thighL",
+        "position": [
+          0.115,
+          0.125,
+          -0.025
+        ],
+        "limit": [
+          2.5,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "name": "footL",
+        "parent": "calfL",
+        "position": [
+          0.115,
+          0.045,
+          0.075
+        ],
+        "limit": [
+          1.5,
+          0.3,
+          0.3
+        ]
+      },
+      {
+        "name": "toeL",
+        "parent": "footL",
+        "position": [
+          0.115,
+          0.025,
+          0.14
+        ],
+        "limit": [
+          0.6,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "name": "earL",
+        "parent": "head",
+        "position": [
+          0.195,
+          0.91,
+          -0.04
+        ],
+        "limit": [
+          0.3,
+          0.25,
+          0.35
+        ]
+      },
+      {
+        "name": "earTipL",
+        "parent": "earL",
+        "position": [
+          0.195,
+          0.985,
+          -0.04
+        ],
+        "limit": [
+          0.3,
+          0.25,
+          0.35
+        ]
+      },
+      {
+        "name": "upperArmR",
+        "parent": "chest",
+        "position": [
+          -0.19,
+          0.51,
+          -0.015
+        ],
+        "limit": [
+          1.9,
+          1,
+          1.6
+        ]
+      },
+      {
+        "name": "forearmR",
+        "parent": "upperArmR",
+        "position": [
+          -0.255,
+          0.39,
+          0.015
+        ],
+        "limit": [
+          2.1,
+          0.4,
+          0.45
+        ]
+      },
+      {
+        "name": "handR",
+        "parent": "forearmR",
+        "position": [
+          -0.285,
+          0.29,
+          0.035
+        ],
+        "limit": [
+          0.6,
+          0.6,
+          0.6
+        ]
+      },
+      {
+        "name": "thighR",
+        "parent": "hips",
+        "position": [
+          -0.115,
+          0.235,
+          -0.04
+        ],
+        "limit": [
+          1.65,
+          0.5,
+          0.4
+        ]
+      },
+      {
+        "name": "calfR",
+        "parent": "thighR",
+        "position": [
+          -0.115,
+          0.125,
+          -0.025
+        ],
+        "limit": [
+          2.5,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "name": "footR",
+        "parent": "calfR",
+        "position": [
+          -0.115,
+          0.045,
+          0.075
+        ],
+        "limit": [
+          1.5,
+          0.3,
+          0.3
+        ]
+      },
+      {
+        "name": "toeR",
+        "parent": "footR",
+        "position": [
+          -0.115,
+          0.025,
+          0.14
+        ],
+        "limit": [
+          0.6,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "name": "earR",
+        "parent": "head",
+        "position": [
+          -0.195,
+          0.91,
+          -0.04
+        ],
+        "limit": [
+          0.3,
+          0.25,
+          0.35
+        ]
+      },
+      {
+        "name": "earTipR",
+        "parent": "earR",
+        "position": [
+          -0.195,
+          0.985,
+          -0.04
+        ],
+        "limit": [
+          0.3,
+          0.25,
+          0.35
+        ]
+      },
+      {
+        "name": "tail0",
+        "parent": "hips",
+        "position": [
+          0,
+          0.16,
+          -0.16
+        ],
+        "limit": [
+          0.4,
+          0.5,
+          0.3
+        ]
+      },
+      {
+        "name": "tail1",
+        "parent": "tail0",
+        "position": [
+          0,
+          0.16,
+          -0.21
+        ],
+        "limit": [
+          0.4,
+          0.5,
+          0.3
+        ]
+      }
+    ],
+    "overrides": []
+  },
+  "diagnostics": {
+    "ok": true,
+    "reason": "已指定角色绑定配置",
+    "vertices": 9981,
+    "joints": 26,
+    "maxInfluences": 4
+  },
+  "meshes": [
+    {
+      "skinIndex": {
+        "offset": 0,
+        "length": 39924
+      },
+      "skinWeight": {
+        "offset": 79848,
+        "length": 39924
+      },
+      "witnesses": {
+        "offset": 239544,
+        "length": 502
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {chromium,baseURL} from './test-runtime.mjs';
+const out='.test-results/skeletal-actions',browser=await chromium.launch({channel:'msedge',headless:true}),context=await browser.newContext({viewport:{width:1100,height:800},recordVideo:{dir:out+'/videos',size:{width:1100,height:800}}}),page=await context.newPage(),errors=[],results=[];page.on('pageerror',e=>errors.push(e.message));
+try{await page.goto(baseURL+'/rig-review.html');await page.waitForFunction(()=>__rigReview.ready);await page.fill('#speed','0');
+ for(const animal of ['kangaroo','fox','rabbit','bear']){await page.evaluate(a=>__rigReview.load(a),animal);for(const state of ['','walk','happy','emo','tired','busy','relax','music','exercise','travel']){
+  await page.selectOption('#state',state);const result=await page.evaluate(()=>{const a=__rigReview.actions;let penetration=0,difference=0;for(let i=0;i<720;i++){__rigReview.step(1/60);if(i%12===0){const exact=a.measure(true),pose=__rigReview.pose;penetration=Math.max(penetration,-exact.minY);difference=Math.max(difference,Math.abs(exact.minY-.008-pose.jump));}}return{pose:__rigReview.pose,penetration,difference,skinned:a.meshes.length};});
+  assert.equal(result.pose.rig,'ready');assert.ok(result.skinned>0);assert.ok(result.penetration<.015,`${animal}/${state} ground ${result.penetration}`);
+  for(const view of ['front','side']){await page.evaluate(v=>__rigReview.view(v),view);await page.waitForTimeout(50);await page.screenshot({path:`${out}/${animal}-${state||'idle'}-${view}.jpg`,type:'jpeg',quality:88});}
+  await page.evaluate(()=>document.querySelector('#speed').value=1);await page.waitForTimeout(1000);await page.evaluate(()=>document.querySelector('#speed').value=0);results.push({animal,state,...result});console.log(animal,state,result.penetration);
+ }}assert.deepEqual(errors,[]);await fs.writeFile(out+'/cycles.json',JSON.stringify({results,errors},null,2));
+}finally{const video=page.video();await context.close();await video.saveAs(out+'/all-actions.webm');await browser.close();}

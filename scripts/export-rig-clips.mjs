@@ -1,0 +1,11 @@
+import {spawn} from 'node:child_process';import {once} from 'node:events';import fs from 'node:fs/promises';import path from 'node:path';import {chromium,baseURL} from './test-runtime.mjs';
+const out='.test-results/skeletal-actions/clips';await fs.mkdir(out,{recursive:true});
+const runtime=path.join(process.env.LOCALAPPDATA,'ms-playwright'),versions=(await fs.readdir(runtime)).filter(n=>n.startsWith('ffmpeg-')).sort().reverse(),ffmpeg=process.env.FFMPEG_PATH||path.join(runtime,versions[0],'ffmpeg-win64.exe');
+const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:1000,height:800}});
+try{await page.goto(baseURL+'/rig-review.html');await page.waitForFunction(()=>window.__rigReview?.ready);await page.fill('#speed','0');
+for(const animal of ['kangaroo','fox','rabbit','bear']){await page.evaluate(a=>__rigReview.load(a),animal);for(const state of ['','walk','happy','emo','tired','busy','relax','music','exercise','travel']){
+ await page.selectOption('#state',state);await page.evaluate(()=>__rigReview.view('front'));const file=`${out}/${animal}-${state||'idle'}.webm`,encoder=spawn(ffmpeg,['-y','-hide_banner','-loglevel','error','-f','image2pipe','-vcodec','mjpeg','-r','24','-i','pipe:0','-an','-c:v','libvpx-vp9','-threads','2','-deadline','realtime','-b:v','600k',file],{windowsHide:true});let errors='';encoder.stderr.on('data',d=>errors+=d);const finished=new Promise((resolve,reject)=>{encoder.on('error',reject);encoder.on('exit',code=>code?reject(Error(errors)):resolve());});
+ for(let second=0;second<12;second++){if(second===8)await page.evaluate(()=>__rigReview.view('side'));const frames=await page.evaluate(()=>{const frames=[];for(let i=0;i<24;i++){__rigReview.step(1/24);__rigReview.renderFrame();frames.push(__rigReview.renderer.domElement.toDataURL('image/jpeg',.85).split(',')[1]);}return frames;});for(const frame of frames)if(!encoder.stdin.write(Buffer.from(frame,'base64')))await once(encoder.stdin,'drain');if(second===7||second===11)await page.screenshot({path:`.test-results/skeletal-actions/${animal}-${state||'idle'}-${second===7?'front':'side'}.jpg`,type:'jpeg',quality:90});}
+ encoder.stdin.end();await finished;console.log(animal,state||'idle');
+}}
+}finally{await browser.close();}

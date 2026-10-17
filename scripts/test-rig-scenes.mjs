@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {chromium,baseURL} from './test-runtime.mjs';
+const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:1200,height:900},reducedMotion:'reduce'}),errors=[],checks=[],resources=[];page.on('pageerror',e=>errors.push(e.message));
+try{await page.goto(baseURL+'/?scene=forest');await page.waitForFunction(()=>window.__sceneTheme?.ready,null,{timeout:180000});await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){await __socialStore.addFriend(id);await __socialStore.receiveMessage(id,{text:'骨骼场景检查'},'rig-scene-'+id);}});await page.waitForFunction(()=>__characterPlacement.snapshot().characters.length===4);
+for(let round=0;round<5;round++)for(const scene of ['forest','fuji','ideal']){
+ if(await page.evaluate(()=>__sceneTheme.id)!==scene)await page.evaluate(scene=>__sceneTheme.switch(scene),scene);await page.waitForFunction(()=>!__sceneTheme.switching&&__characterPlacement.snapshot().characters.length===4);await page.evaluate(()=>__socialStore.publishStatus({kind:'tired'},'tuantuan'));await page.waitForTimeout(700);
+ const pose=await page.evaluate(()=>__characterPlacement.snapshot().characters.find(r=>r.id==='tuantuan').pose);assert.equal(pose.rig,'ready');assert.ok(pose.canRest?pose.lie>.99:pose.sit>.99);assert.equal(pose.jump,0);
+ if(round===0){await page.evaluate(()=>__socialUI.openFriend('tuantuan'));await page.waitForFunction(()=>__uiInteractions.state('meeting')==='open');await page.waitForTimeout(150);assert.equal(await page.evaluate(()=>__characterPlacement.snapshot().characters.find(r=>r.id==='tuantuan').pose.lie),0);
+  await page.evaluate(async()=>{for(const kind of ['emo','happy','busy','music','tired'])await __socialStore.publishStatus({kind},'tuantuan');});assert.equal(await page.evaluate(()=>__characterPlacement.snapshot().characters.find(r=>r.id==='tuantuan').pose.jump),0);await page.evaluate(()=>__socialUI.closeMeeting());await page.waitForTimeout(300);
+  await page.evaluate(()=>{__socialStore.state.statuses.tuantuan.expiresAt=Date.now()-1;});await page.waitForFunction(()=>__characterPlacement.snapshot().characters.find(r=>r.id==='tuantuan').pose.kind===null);
+  await page.screenshot({path:'.test-results/skeletal-actions/scene-'+scene+'.jpg',type:'jpeg'});checks.push(scene+': rig, safe rest, reduced motion, chat override, rapid statuses, expiration');
+ }
+ resources.push({round,scene,...await page.evaluate(()=>__sceneTheme.resourceSnapshot())});
+}
+for(const scene of ['forest','fuji','ideal']){const samples=resources.filter(r=>r.scene===scene&&r.round>=2);assert.equal(new Set(samples.map(r=>r.geometries)).size,1,'geometry stable '+scene);assert.equal(new Set(samples.map(r=>r.textures)).size,1,'textures stable '+scene);}
+assert.deepEqual(errors,[]);await fs.writeFile('.test-results/skeletal-actions/scene-regression.json',JSON.stringify({checks,resources,errors},null,2));console.log('PASS three scenes, status/chat/reduced motion, five scene cycles and stable resources');
+}catch(e){await page.screenshot({path:'.test-results/skeletal-actions/scene-failure.jpg'});await fs.writeFile('.test-results/skeletal-actions/scene-failure.json',JSON.stringify({error:String(e),errors,checks,resources},null,2));throw e;}finally{await browser.close();}
+

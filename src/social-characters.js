@@ -1,8 +1,8 @@
 import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
 import {avatarURL} from './avatar-url.js';
+import {loadRiggedCharacter,cloneRigModel,setRigStatus,disposeRigTemplate} from './character-rig.js';
 import {createCharacterActions} from './character-actions.js';
 import * as THREE from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {buildWalkingGraph,walkingRoute,canWalkStep} from './companion-walk.js';
 import {WALKWAYS,distanceToSegment} from './layout.js';
 import {createCharacterDrag} from './character-drag.js';
@@ -143,9 +143,9 @@ export function createCharacterPlaceholder(friend){
 export async function createCharacters({scene,camera,controls,renderer,terrain,generated,onSelect,onPlace,onPlacementError,reduced,pickOccluder,obstacleCache}){
   let context=createPlacementContext({scene,terrain,generated,obstacleCache});
   const root=new THREE.Group();root.name='Social companions · interactive';scene.add(root);
-  const loader=new GLTFLoader(),models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
+  const models=new Map(),records=new Map(),ray=new THREE.Raycaster(),loadingCustom=new Map();
   await Promise.all(ANIMALS.map(async animal=>{
-    try{const gltf=await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`);models.set(animal,gltf.scene);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
+    try{const model=await loadRiggedCharacter(`assets/rodin-friends/${animal}/scene.glb`,{animal});models.set(animal,model);}catch(error){console.warn(`Social companion ${animal}: visible identity placeholder until the local model is available.`);}
   }));
   const leafCanvas=document.createElement('canvas');leafCanvas.width=leafCanvas.height=48;const lc=leafCanvas.getContext('2d');lc.fillStyle='#eff5bd';lc.beginPath();lc.moveTo(7,41);lc.bezierCurveTo(0,10,25,0,42,6);lc.bezierCurveTo(43,25,28,42,7,41);lc.fill();const leafTexture=new THREE.CanvasTexture(leafCanvas);
   let selected=null,saved=null,transition=null,lastOcclusion=0,anchors=[],savedPlacements={},gathering=null,gatherTransition=null,suspended=false,sceneRestoring=null;
@@ -155,7 +155,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   const residents=()=>[...records.values()].filter(r=>r.group.visible&&!r.slot?.unplaced);
   let socialState={statuses:{}};
   function create(friend){
-    const group=new THREE.Group(),body=((models.get(friend.id)||models.get(friend.animal))?.clone(true)||createCharacterPlaceholder(friend));
+    const group=new THREE.Group(),template=models.get(friend.id)||models.get(friend.animal),body=template?cloneRigModel(template):createCharacterPlaceholder(friend);
     const box=new THREE.Box3().setFromObject(body),size=box.getSize(new THREE.Vector3()),height=friend.height||1.9;
     const scale=height/size.y;body.scale.multiplyScalar(scale);
     body.position.sub(new THREE.Vector3((box.min.x+box.max.x)/2,box.min.y,(box.min.z+box.max.z)/2).multiplyScalar(scale));
@@ -169,13 +169,30 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       o.material=Array.isArray(o.material)?o.material.map(adapt):adapt(o.material);
       o.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,alphaHash:true});materials.push(o.customDepthMaterial);
     });
-    const actions=createCharacterActions({body,poseRoot,holder:bodyHolder,animal:friend.animal,height});
+    const actions=createCharacterActions({body,poseRoot,holder:bodyHolder,animal:friend.animal,height,id:friend.id});setRigStatus(friend.id,body.userData.characterRig||{status:'attention',diagnostics:{reason:'骨骼待校正'}});
     const moteGeo=new THREE.BufferGeometry(),motePositions=new Float32Array(12*3);moteGeo.setAttribute('position',new THREE.BufferAttribute(motePositions,3));
     const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:0xe4ecac,map:leafTexture,size:.2,transparent:true,opacity:1,depthWrite:false}));group.add(motes);
     group.name=`Friend · ${friend.id}`;group.userData.friendId=friend.id;group.userData.placeholder=!!body.userData.placeholder;
     group.traverse(o=>{o.userData.socialCharacter=true;o.userData.friendId=friend.id;});root.add(group);
     return {friend,group,bodyHolder,poseRoot,actions,materials,presentation:{alpha:1},ring,outline,motes,motePositions,height,radius:Math.max(.35,radius),bodyRadius:characterBodyRadius(radius),spawn:performance.now(),occluded:false,gait,walk:null};
   }
+  let disposed=false;
+  const correctionListener=async event=>{
+    for(const [key,template] of [...models])if(template.userData.characterRig?.hash===event.detail.hash){
+      const friend=[...records.values()].find(r=>r.friend.id===key||r.friend.animal===key)?.friend;
+      const url=ANIMALS.includes(key)?`assets/rodin-friends/${key}/scene.glb`:friend?.modelUrl&&avatarURL(friend.modelUrl);if(!url)continue;
+      try{const model=await loadRiggedCharacter(url,{animal:ANIMALS.includes(key)?key:'custom'});if(disposed)return;models.set(key,model);
+        for(const r of records.values())if(r.friend.id===key||r.friend.animal===key){
+          if(r.placing)drag.cancel();const fresh=create(r.friend),yaw=r.bodyHolder.rotation.y;
+          r.actions.dispose();for(const m of r.materials)m.dispose();r.bodyHolder.removeFromParent();
+          r.bodyHolder=fresh.bodyHolder;r.poseRoot=fresh.poseRoot;r.actions=fresh.actions;r.materials=fresh.materials;r.bodyHolder.rotation.y=yaw;r.group.add(r.bodyHolder);
+          fresh.group.removeFromParent();fresh.ring.geometry.dispose();fresh.ring.material.dispose();fresh.motes.geometry.dispose();fresh.motes.material.dispose();r.pose=null;
+        }
+        disposeRigTemplate(template);
+      }catch(error){console.warn('角色骨骼校正未应用：',error.message);}
+    }
+  };
+  window.addEventListener('character-rig-corrected',correctionListener);
   function resetWalk(record,slot){
     record.slot=slot;const graph=buildWalkingGraph(context,slot,{range:gathering?1.2:3.2});
     record.walk={graph,node:0,route:[],sequence:slot.id.length,wait:4,phase:0,heading:record.walk?.heading??.35,speed:.24+(slot.id.length%3)*.025};
@@ -187,13 +204,14 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   }
   function sync(friends,{transient=false}={}){
     const wanted=new Set(friends.slice(0,FRIEND_SCENE_CAPACITY).map(f=>f.id));
-    for(const [id,r] of records)if(!wanted.has(id)&&r.group.visible){if(r.placing)drag.cancel();r.group.visible=false;r.slot=null;r.walk=null;r.actions.meshes.forEach(m=>m.morphTargetInfluences.fill(0));}
+    for(const [id,r] of records)if(!wanted.has(id)&&r.group.visible){if(r.placing)drag.cancel();r.group.visible=false;r.slot=null;r.walk=null;r.actions.reset();}
     const used=residents().map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.radius+.12}));
     for(const friend of friends.slice(0,FRIEND_SCENE_CAPACITY)){
       if(friend.animal==='custom'&&!models.has(friend.id)){
         if(!friend.modelUrl)continue;
         if(!loadingCustom.has(friend.id)){
-          const load=loader.loadAsync(avatarURL(friend.modelUrl)).then(gltf=>{models.set(friend.id,gltf.scene);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
+          setRigStatus(friend.id,{status:'preparing',diagnostics:{reason:'正在准备骨骼'}});
+          const load=loadRiggedCharacter(avatarURL(friend.modelUrl)).then(model=>{models.set(friend.id,model);audit.rosterKey='';}).catch(()=>{audit.modelErrors??={};audit.modelErrors[friend.id]='模型加载失败，请检查本地生成服务。';}).finally(()=>{setTimeout(()=>loadingCustom.delete(friend.id),10000);});
           loadingCustom.set(friend.id,load);
         }
         continue;
@@ -252,7 +270,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   }});
   const placement={
     activity(){return [...records.values()].map(r=>({id:r.friend.id,visible:r.group.visible,updates:r.actionUpdates||0}));},
-    snapshot(){return{...drag.snapshot(),characters:residents().map(r=>({id:r.friend.id,position:r.group.position.toArray(),home:r.slot,radius:r.radius,walking:!!r.walk?.route.length,presentation:r.presentation,pose:r.pose})),cached:records.size};},
+    snapshot(){return{...drag.snapshot(),characters:residents().map(r=>({id:r.friend.id,position:r.group.position.toArray(),home:r.slot,radius:r.radius,walking:!!r.walk?.route.length,presentation:r.presentation,pose:r.pose,rig:r.actions.binding})),cached:records.size};},
     reviewView(id){const r=records.get(id);if(!r)return null;const target=r.group.position.clone().add(new THREE.Vector3(0,r.height*.43,0)),view=chooseCharacterView(context,target,new THREE.Vector3(4,2.6,5));return {position:view.position.toArray(),target:target.toArray(),visibleSamples:view.visibleSamples};},
     project(x,y,z){const p=new THREE.Vector3(x,y,z).project(camera),rect=renderer.domElement.getBoundingClientRect();return{x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(.5-p.y*.5)*rect.height};},
     inspect(id,x,z){const r=records.get(id);return r?inspectPlacement(r,x,z):{ok:false};},
@@ -284,8 +302,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
         r.restInfo={ok:c.ok&&(c.normal?.y??1)>.99,at:now,x:r.group.position.x,z:r.group.position.z};
       }
       const canRest=currentStatus?.kind!=='tired'||!!r.restInfo?.ok;
-      if(currentStatus?.kind==='tired'&&!canRest&&walk&&!walk.route.length&&!r.placing&&selected!==id){const dest=walk.graph.nodes.findIndex(n=>{const c=context.inspect(n.x,n.z,poseRadius,residents().filter(o=>o!==r).map(o=>({x:o.group.position.x,z:o.group.position.z,radius:Math.max(o.bodyRadius,(o.pose?.lie||0)>.05?o.height*.65:0)})),{manual:true});return c.ok&&(c.normal?.y??1)>.99;});if(dest>=0&&dest!==walk.node){const parents=new Map([[walk.node,-1]]),q=[walk.node];for(let i=0;i<q.length;i++)for(const n of walk.graph.nodes[q[i]].links)if(!parents.has(n)){parents.set(n,q[i]);q.push(n);}if(parents.has(dest)){let n=dest,route=[];while(n!==walk.node){route.push(n);n=parents.get(n);}walk.route=route.reverse();walk.wait=0;}}}
-      if(walk&&!gatherTransition&&!drag.busy&&selected!==id&&!r.presentation.chatting&&(policy.allowed||(currentStatus?.kind==='tired'&&!canRest&&walk.route.length))&&motion&&!document.hidden&&age>1){
+      if(walk&&!gatherTransition&&!drag.busy&&selected!==id&&!r.presentation.chatting&&policy.allowed&&motion&&!document.hidden&&age>1){
         walk.wait=Math.max(0,walk.wait-delta);
         if(!walk.route.length&&walk.wait===0){walk.route=walkingRoute(walk.graph,walk.node,walk.sequence++,{range:currentStatus?.kind==='relax'?1.3:currentStatus?.kind==='busy'?1.8:3.2});if(!walk.route.length)walk.wait=3;}
         if(walk.route.length&&walk.wait===0){
@@ -300,7 +317,6 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       }
       const facing=Math.atan2(camera.position.x-r.group.position.x,camera.position.z-r.group.position.z);
       let desired=selected===id||r.placing?facing:(walk?.heading??.35);
-      if(currentStatus?.kind==='relax'&&!moving&&!isReduced())desired+=Math.sin(seconds*.5)*.3;
       const angle=Math.atan2(Math.sin(desired-r.bodyHolder.rotation.y),Math.cos(desired-r.bodyHolder.rotation.y));r.bodyHolder.rotation.y+=angle*Math.min(1,delta*3);
       let groundPad=0;if(currentStatus?.kind==='tired'&&canRest)for(let i=0;i<8;i++){const a=i*Math.PI/4;groundPad=Math.max(groundPad,(terrain.sample?.(r.group.position.x+Math.cos(a)*poseRadius*.7,r.group.position.z+Math.sin(a)*poseRadius*.7).height??r.group.position.y)-r.group.position.y);}
       r.actionUpdates=(r.actionUpdates||0)+1;r.pose=r.actions.update({now,dt:delta,status:currentStatus,moving,phase:walk?.phase||0,override:r.placing||selected===id||!!r.presentation.chatting||!!gatherTransition,reduced:isReduced(),canRest,groundPad});
@@ -357,6 +373,6 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   function suspend(value){suspended=!!value;if(suspended){drag.cancel();anchors=[];}root.visible=!suspended;}
   function cancelPlacement(){if(drag.snapshot().pending)return false;drag.cancel();return true;}
   function getSceneState(){return{theme:terrain.theme||'forest',suspended,positions:Object.fromEntries(residents().map(r=>[r.friend.id,{x:r.group.position.x,z:r.group.position.z}])),cachedThemes:[...scenePositions.keys()],cachedCharacters:records.size,contextObstacles:context.obstacles.length};}
-  function dispose(){drag.dispose();context.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
+  function dispose(){disposed=true;window.removeEventListener('character-rig-corrected',correctionListener);drag.dispose();context.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
   return {root,sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

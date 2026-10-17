@@ -1,3 +1,4 @@
+import {rigStatus,subscribeRigStatus} from './character-rig.js';
 import {avatarURL} from './avatar-url.js';
 import {friendAvatar} from './social-store.js';
 
@@ -20,7 +21,7 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
     if(!store.state.friends.includes(f.id))return '';
     const ready=!!f.modelUrl,phase=ready?'ready':f.modelPhase||'queued';
     const progress=phaseProgress[phase];
-     return `<div class="contact-model-line" data-model-phase="${esc(phase)}"><span class="contact-model-dot ${ready?'is-ready':''}"></span><span>${esc(phaseText[phase]||'正在准备森林形象')}</span>${ready&&f.jobId?'<button type="button" data-profile-action="preview">查看形象 ›</button>':['failed','waiting_connection'].includes(phase)?'<button type="button" data-profile-action="retry">重试</button>':''}</div>${progress!==undefined&&activePhases.has(phase)?`<div class="contact-model-progress" role="progressbar" aria-label="虚拟形象生成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span><small>${progress}%</small></div>`:''}${!ready?'<p class="contact-model-note">形象准备不影响聊天，就绪后会自动用于森林场景。</p>':''}${preview&&ready&&f.jobId?`<iframe class="contact-model-preview" title="好友森林形象" src="${esc(avatarURL('/asset-review.html?avatar-job='+f.jobId+'&embed=1'))}"></iframe>`:''}`;
+     return `${rigStatus(f.id)?.status==='attention'?'<p class="contact-rig-note" role="status">骨骼待校正 · 当前形象静态显示，聊天和拖放不受影响。</p>':''}<div class="contact-model-line" data-model-phase="${esc(phase)}"><span class="contact-model-dot ${ready?'is-ready':''}"></span><span>${esc(phaseText[phase]||'正在准备森林形象')}</span>${ready&&f.jobId?'<button type="button" data-profile-action="preview">查看形象 ›</button>':['failed','waiting_connection'].includes(phase)?'<button type="button" data-profile-action="retry">重试</button>':''}</div>${progress!==undefined&&activePhases.has(phase)?`<div class="contact-model-progress" role="progressbar" aria-label="虚拟形象生成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span><small>${progress}%</small></div>`:''}${!ready?'<p class="contact-model-note">形象准备不影响聊天，就绪后会自动用于森林场景。</p>':''}${preview&&ready&&f.jobId?`<iframe class="contact-model-preview" title="好友森林形象" src="${esc(avatarURL('/asset-review.html?avatar-job='+f.jobId+'&embed=1'))}"></iframe>`:''}`;
   }
   function draw(){
     const f=current();
@@ -62,8 +63,9 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
       selected=store.getFriend(id);preview=false;draw();onComplete(selected.name);avatarUrl='';requestId=null;for(const key of Object.keys(draft))draft[key]='';
     }catch(error){feedback(error.message);onError(error);}finally{adding=false;if(button.isConnected)button.disabled=false;}
   });
+  const unsubscribeRig=subscribeRigStatus(id=>{if(selected?.id===id){const el=body.querySelector('.contact-model-status');if(el)el.innerHTML=modelHTML(current());}});
   const unsubscribe=store.subscribe((state,event)=>{
     if(selected&&event.type==='friend-model'&&event.friendId===selected.id){const el=body.querySelector('.contact-model-status');if(el)el.innerHTML=modelHTML(current());}
   });
-  return{open(profile=null,{account='',origin}={}){capture();selected=profile;preview=false;if(!profile&&account&&!draft.account)draft.account=account;draw();ui.open('friend-profile',{origin:origin||ui.source()});},dispose(){unsubscribe();shell.remove();}};
+  return{open(profile=null,{account='',origin}={}){capture();selected=profile;preview=false;if(!profile&&account&&!draft.account)draft.account=account;draw();ui.open('friend-profile',{origin:origin||ui.source()});},dispose(){unsubscribeRig();unsubscribe();shell.remove();}};
 }

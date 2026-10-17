@@ -12,7 +12,7 @@ const tools=['scripts/build.mjs','package.json','package-lock.json'];
 let cached,unchanged=false;
 try{
  cached=JSON.parse(await fs.readFile(cacheFile,'utf8'));
- const required=[...tools,'src/main.js','src/asset-review.js','src/pet.js','dist/world.js','dist/review.js','dist/pet.js'];
+ const required=[...tools,'src/main.js','src/asset-review.js','src/pet.js','src/rig-review.js','dist/world.js','dist/review.js','dist/pet.js','dist/rig-review.js','src/character-rig-worker.js','dist/rig-worker.js'];
  if(!process.argv.includes('--force')&&cached.esbuild===esbuildVersion&&cached.node===process.versions.node&&required.every(name=>typeof cached.files?.[name]==='string')){
   const current=await fingerprint(Object.keys(cached.files));
   unchanged=Object.entries(cached.files).every(([name,hash])=>current[name]===hash);
@@ -21,7 +21,7 @@ try{
 if(!unchanged){
  // One graph lets esbuild parse shared dependencies (especially Three.js) once.
  // Keep standalone IIFE bundles, so pages still load exactly the same scripts.
- const result=await build({absWorkingDir:root,entryPoints:{world:'src/main.js',review:'src/asset-review.js',pet:'src/pet.js'},bundle:true,format:'iife',minify:true,outdir:'dist',metafile:true,write:false,logLevel:'info'});
+ const result=await build({absWorkingDir:root,entryPoints:{world:'src/main.js',review:'src/asset-review.js',pet:'src/pet.js','rig-review':'src/rig-review.js','rig-worker':'src/character-rig-worker.js'},bundle:true,format:'iife',minify:true,outdir:'dist',metafile:true,write:false,logLevel:'info'});
  // Include imported dependencies and the outputs: deleted or edited bundles cannot
  // produce a false cache hit, even when source file timestamps are preserved.
  const files=await fingerprint([...new Set([...tools,...Object.keys(result.metafile.inputs)])]);

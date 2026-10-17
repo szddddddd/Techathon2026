@@ -1,4 +1,5 @@
 import {createMountainGeometry} from './mountain-profile.js';
+import {styleMountainTerraces} from './mountain-terraces.js';
 import {TERRACE_EXTENSION,terraceHeight} from './terrace-profile.js';
 import * as THREE from 'three';
 import {bankOutlines,landAreaAudit,querySurface,surfaceHeight,WORLD_BOUNDS} from './world-surface.js';
@@ -70,6 +71,7 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
   const mountain=new THREE.Group();mountain.name='Continuous spring mountain range';mountain.userData.kind='mountain';mountain.userData.layoutId='mountain_range';
   if(valleyAssets?.mountain_range)mountain.add(valleyAssets.mountain_range.model.clone(true));
   else{const fallback=new THREE.Mesh(createMountainGeometry(),mat(0xffffff,{vertexColors:true,side:THREE.DoubleSide}));fallback.castShadow=true;fallback.receiveShadow=true;mountain.add(fallback);mountain.userData.fallback=true;}
+  styleMountainTerraces(mountain,{cloneMaterials:!mountain.userData.fallback});
   mountain.traverse(o=>{o.userData.generatedProp=true;});root.add(mountain);mountains.push(mountain);
   // Clip the support mesh at the slope breaks so render, ray picking and
   // analytical walking elevations agree exactly without dense tessellation.
