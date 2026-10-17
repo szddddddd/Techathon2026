@@ -1,3 +1,5 @@
+import {createModManager} from './mods/manager.js';
+import {routeMod} from './mods/catalog.js';
 import {createSceneControls} from './scene-controls.js';
 import {createDayNightClock} from './day-night-clock.js';
 import {createDayNightEnvironment} from './day-night-environment.js';
@@ -51,12 +53,27 @@ async function boot(){
  sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;rim.position.set(12,8,-15);fill.position.set(-12,-10,22);scene.add(hemi,sun,rim,fill);
  const ground=new T.Mesh(new T.PlaneGeometry(1000,1000),new T.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-25;ground.name='Distant ground beneath floating island';scene.add(ground);
  const store=captureIndex?null:await createSocialStore(),sound=store?createSound({store}):null;
+ const mods=store?await createModManager():null;window.__mods=mods;
+ let workshop=null,workshopLoading=null,workshopAttempt=0;
+ async function loadWorkshop(){
+  if(workshop)return workshop;if(!workshopLoading)workshopLoading=(async()=>{
+   const version=document.querySelector('meta[name="forest-version"]')?.content||'1';
+   if(!document.querySelector('link[data-workshop-style]'))await new Promise((resolve,reject)=>{const l=document.createElement('link');l.rel='stylesheet';l.href=new URL('workshop.css?v='+version,document.baseURI);l.dataset.workshopStyle='';l.onload=resolve;l.onerror=()=>{l.remove();reject(Error('工坊样式加载失败，请重试'));};document.head.append(l);});
+   const url=new URL('dist/workshop.js',document.baseURI);url.searchParams.set('v',version);url.searchParams.set('attempt',String(++workshopAttempt));
+   const {createWorkshopUI}=await import(url.href);
+   return workshop=createWorkshopUI({manager:mods,ui,onError:message=>socialUI?.toast(message),onClearContent:id=>store.clearModData(id)});
+  })().catch(error=>{workshopLoading=null;throw error;});return workshopLoading;
+ }
+ const openWorkshop=async(options={})=>{try{(await loadWorkshop()).open(options);}catch(error){socialUI?.toast(error.message);}};
+ if(mods)mods.onUnavailable=(id,options)=>openWorkshop({id,origin:options?.origin});
+ window.__workshop={open:openWorkshop};
+ window.addEventListener('pagehide',event=>{if(!event.persisted){void (workshop?.flush()||Promise.resolve()).catch(()=>{}).finally(()=>mods?.dispose());workshop?.dispose();}},{once:true});
  let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,switching=false,committing=false,switchCount=0,clockTime=0,sceneSwitcher,sceneControls;
  const groupCamera=createGroupCamera({camera,controls,reduced});window.__groupCamera=groupCamera;
  const cameraPoses=new Map();let uiState={};ui.subscribe(s=>uiState=s);
  const soundCamera=createSoundCamera({camera,controls,getRoot:()=>world.record.root,reduced});window.__sound=sound;window.__soundCamera=soundCamera;
  const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
- const mountOptions={camera,controls,renderer,ui,sound,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
+ const mountOptions={camera,controls,renderer,ui,sound,mods,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
  await world.mount(mountOptions);scene.add(world.root);
  let timeStorage;try{timeStorage=localStorage;}catch{}
  const dayNight=createDayNightClock({storage:timeStorage,reduced:()=>reduced.matches,hidden:()=>document.hidden});
@@ -92,11 +109,25 @@ async function boot(){
  const resetCamera=()=>{cancelReset();const c=defaultCamera(),mobile=innerWidth<700,damping=controls.enableDamping;controls.enableDamping=false;controls.update();camera.position.fromArray(mobile?c.mobile:c.position);controls.target.fromArray(mobile?c.mobileTarget:c.target);controls.enabled=true;controls.update();controls.enableDamping=damping;};
  applyEnvironment();resetCamera();window.__cameraPanBounds=constrainCameraPan(controls,camera,{getBounds:()=>world.terrain.bounds});
  characters=await createCharacters({scene,camera,controls,renderer,terrain:world.terrain,generated:world.generated,obstacleCache:world.obstacleCache,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
- socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onGroupSceneClose:immediate=>groupCamera.close(immediate),getAnchorObstacles:()=>[],onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
+ socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,mods,onOpenWorkshop:origin=>openWorkshop({origin}),onGroupSceneClose:immediate=>groupCamera.close(immediate),getAnchorObstacles:()=>[],onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
  if(store)groupBuildings=await createGroupScene({scene,camera,canvas:renderer.domElement,controls,reduced,store,socialUI,ui,theme:world.id,templates:world.assets.groups,isOccluded:point=>world.terrain.isOccluded?.(camera,point)||false,slots:world.layout.slots,queue:world.layout.queue,onFocus:async point=>{if(!world.config.groupFocus)return;if(roam?.busy)await roam.exit();boards?.dismiss();valley.finishCamera();characters.restore({preserveCamera:true});characters.finishCamera();groupCamera.open(point);},obstacles:()=>world.discovery.labelAnchors});
+ if(mods){
+  mods.register('moments',{open:options=>socialUI.openModMoments(options),disable:()=>socialUI.refreshMods()});
+  for(const id of ['notes','focus'])mods.register(id,{load:loadWorkshop,open:options=>workshop.openApp(id,options),disable:()=>workshop?.closeApp(id)});
+ }
  const player=store?createContentPlayer({store}):null;
- const contentUI=store?createDiscoveryUI({store,player,ui,onShare:ref=>socialUI.shareContent(ref),onClose:()=>{},onRequestClose:()=>boards?.exit(),onNavigate:route=>{if(route.type==='article')world.discovery.updatePreview('accounts',route.id);if(route.type==='video')world.discovery.updatePreview('scene-video',route.id);},onScenePlay:id=>boards.open('scene-video',{type:'video',id})}):null;
+ const contentUI=store?createDiscoveryUI({store,player,ui,mods,onShare:ref=>socialUI.shareContent(ref),onClose:()=>{},onRequestClose:()=>boards?.exit(),onNavigate:route=>{if(route.type==='article')world.discovery.updatePreview('accounts',route.id);if(route.type==='video')world.discovery.updatePreview('scene-video',route.id);},onScenePlay:id=>mods.open('videos',{scene:true,route:{type:'video',id}})}):null;
+ let lastFacilityKey='';
+ function applyModFacilities(){if(!mods)return;const key=world.id+':'+mods.enabled('accounts')+':'+mods.enabled('videos');world.discovery.setModuleEnabled('accounts',mods.enabled('accounts'));world.discovery.setModuleEnabled('scene-video',mods.enabled('videos'));if(lastFacilityKey.startsWith(world.id+':')&&key!==lastFacilityKey)characters?.refreshObstacles();lastFacilityKey=key;}
+ if(mods){
+  for(const [id,kind] of [['accounts','accounts'],['videos','scene-video']])mods.register(id,{open:options=>options.scene?boards?.open(kind,options.route):contentUI.open(options.route||(id==='accounts'?'accounts':'videos'),{resume:!options.route,...options,nav:'mod-'+id}),disable(){applyModFacilities();},enable(){applyModFacilities();}});
+  mods.beforeChange=async id=>{if(switching)throw Error('请等待场景切换完成');if(!characters.cancelPlacement())throw Error('请等待人物安放完成');await workshop?.flush();await socialUI.prepareModDisable(id);if(['accounts','videos'].includes(id)){
+   const kind=id==='accounts'?'accounts':'scene-video';if(boards?.kind===kind){boards.dismiss();contentUI.stopScene();world.discovery.update(performance.now()+10);}else if(contentUI.isOpen&&!['follows','collections','history'].includes(contentUI.route?.type)&&routeMod(contentUI.route)===id)contentUI.stopScene();await store.flush();
+  }};
+  mods.subscribe((_,event)=>{if(event.type==='modules'){applyModFacilities();socialUI.refreshMods();}if(event.type==='timer-complete')socialUI.toast('这段专注已完成，休息一下吧。');if(event.type==='error')socialUI.toast(event.error.message);});
+ }
  function connectSceneControllers(){
+  applyModFacilities();
   valley=createValleySocial({landmarks:world.landmarks,terrain:world.terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});
   trainFollow=(world.terrain.train||world.terrain.airship)?createTrainFollow({train:world.terrain.train||world.terrain.airship,presentation:world.terrain.airship?.presentation,camera,controls,canvas:renderer.domElement,ui,reduced,beforeOpen:async()=>{if(roam?.busy)await roam.exit();valley.finishCamera();characters.finishCamera();}}):null;
   if(store)boards=createDiscoveryBoards({camera,facilities:world.discovery,contentUI,player,beforeFocus:async()=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}});
@@ -107,8 +138,14 @@ async function boot(){
  const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
  window.__socialStore=store;window.__socialUI=socialUI;window.__groupBuildings=groupBuildings;window.__characterPlacement=characters.placement;window.__discoveryUI=contentUI;window.__contentPlayer=player;
  // Open the inbox for a shareable local demo URL; loading samples still requires consent.
+ if(store&&new URLSearchParams(location.search).get('workshop')==='1')void openWorkshop();
  if(store&&new URLSearchParams(location.search).get('inbox')==='1')document.querySelector('.social-dock [data-action="directory"]')?.click();
- window.__openSceneDiscovery=async kind=>{if(roam?.busy)await roam.exit();return boards.open(kind);};window.__openDiscovery=(route,options)=>contentUI?.open(route,options);
+ window.__openSceneDiscovery=async kind=>{if(roam?.busy)await roam.exit();return mods?.open(kind==='accounts'?'accounts':'videos',{scene:true});};window.__openDiscovery=(route,options={})=>{
+  if(route==='discover')return openWorkshop({origin:options.origin});
+  const type=typeof route==='string'?route:route?.type;
+  if(['follows','collections','history'].includes(type)){const id=mods.enabled('accounts')?'accounts':'videos';if(!mods.enabled(id))return mods.onUnavailable('accounts',options);return mods.open(id,{...options,route});}
+  return mods?.open(routeMod(route),{...options,route});
+ };
  function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
   if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
  // Publish the authoritative clock through both native IPC and the web bridge.
@@ -130,7 +167,7 @@ async function boot(){
    candidate=await prepareSceneWorld(id,{reduced});if(uiState.modal)throw Error('请先完成当前窗口操作。');if(!characters.cancelPlacement())throw Error('请等待人物安放完成。');
    if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();
    socialUI.setSceneTransition(true);await socialUI.saveSessionDraft();
-   await candidate.mount(mountOptions);scene.add(candidate.root);candidate.root.visible=false;
+   await candidate.mount(mountOptions);candidate.discovery.setModuleEnabled('accounts',mods?.enabled('accounts')??true);candidate.discovery.setModuleEnabled('scene-video',mods?.enabled('videos')??true);scene.add(candidate.root);candidate.root.visible=false;
    if(uiState.modal)throw Error('请先完成当前窗口操作。');
    await fadeCanvas(1,0);
    if(boards?.kind){contentUI.detachScene();boards.dismiss();old.discovery.update(performance.now()+10);}

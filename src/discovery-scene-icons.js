@@ -3,7 +3,7 @@ import * as THREE from 'three';
 const icons={accounts:'<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 8h8M8 12h8M8 16h5M9 4v17"/>','scene-video':'<rect x="3" y="5" width="18" height="14" rx="4"/><path d="m10 9 5 3-5 3Z"/>'};
 
 /** Screen-sized controls follow the real boards; the existing scene transition owns opening. */
-export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,interactive=()=>true}){
+export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,isEnabled=()=>true,interactive=()=>true}){
   const root=document.createElement('div');root.id='discovery-scene-icons';root.setAttribute('aria-label','场景内容入口');document.body.append(root);
   let locked=false,focusOnReturn=null,anchors=[];const unsubscribe=ui?.subscribe(s=>{locked=!!s.main||!!s.modal;root.hidden=locked||!interactive();});
   const entries=Object.entries(groups).map(([kind,group])=>{
@@ -20,7 +20,7 @@ export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,inter
     for(const e of entries){
       e.point.set(0,e.kind==='accounts'?2.7:4.1,0);e.group.localToWorld(e.point).project(camera);
       const x=(e.point.x*.5+.5)*innerWidth,y=(.5-e.point.y*.5)*innerHeight;
-      e.button.hidden=e.point.z< -1||e.point.z>1||x<8||x>innerWidth-8||y<8||y>innerHeight-50;
+      e.button.hidden=!isEnabled(e.kind)||e.point.z< -1||e.point.z>1||x<8||x>innerWidth-8||y<8||y>innerHeight-50;
       if(e.button.hidden)continue;
       const title=preview(e.kind)?.title||'';if(e.previous!==title){e.button.querySelector('small').textContent=title;e.previous=title;}
       // Reserve the expanded footprint even at rest: hover must never move its own hit target.

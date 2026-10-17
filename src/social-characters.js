@@ -39,9 +39,10 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
       solid.matrixAutoUpdate=false;solid.matrixWorld.copy(mesh.matrixWorld);accelerateStaticRaycast(solid);solidMeshes.push(solid);
     }
     const triangles=createPlacementTriangles(meshes);triangles.getBounds(bounds);
-    const obstacle={id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes};
+    const obstacle={owner,id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes};
     obstacles.push(obstacle);obstacleCache?.set(owner,{signature,obstacle});
   }
+  for(const owner of owners)if(owner.userData.layoutId?.startsWith('discovery-'))owner.traverse(mesh=>{if(!mesh.isMesh||mesh.raycast===mesh.userData.modRaycast)return;const original=mesh.raycast;mesh.raycast=function(ray,hits){if(!owner.userData.modDisabled)return original.call(this,ray,hits);};mesh.userData.modRaycast=mesh.raycast;});
   const ray=new THREE.Raycaster();
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
     const walkway=(terrain.walkways??WALKWAYS).find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
@@ -57,6 +58,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
     }
     const point=new THREE.Vector2(x,z),clearance=radius+(manual?.06:.35);
     for(const obstacle of obstacles){
+      if(obstacle.owner?.userData.modDisabled)continue;
       if(manual&&['grass','fern_large'].includes(obstacle.kind))continue;
       if(obstacle.bounds.distanceToPoint(point)>=clearance)continue;
       if(obstacle.triangles.intersects(x,z,clearance,groundY+.06,groundY+2.23))return {ok:false,reason:'obstacle',id:obstacle.id};
@@ -274,6 +276,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     for(const [id,r] of records){
       if(!r.group.visible)continue;
       const seconds=now/1000,age=(now-r.spawn)/1000,motion=isReduced()?0:1;
+      if(r.modRelocation){const move=r.modRelocation,t=isReduced()?1:Math.min(1,(now-move.start)/400);r.group.position.lerpVectors(move.from,move.to,t*t*(3-2*t));if(t===1)r.modRelocation=null;}
       const walk=r.walk,delta=Math.min(dt||0,.05),status=socialState.statuses?.[id],currentStatus=status?.expiresAt>Date.now()?status:null,policy=r.actions.policy(now,currentStatus,isReduced());let moving=false;
       if(walk&&r.lastStatusKind!==currentStatus?.kind){r.lastStatusKind=currentStatus?.kind;walk.route=[];walk.wait=.3;}
       const displayAlpha=r.presentation.alpha*(r.friend.animal==='custom'?Math.min(1,age/(isReduced()?.1:.65)):1);
@@ -284,7 +287,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
         r.restInfo={ok:c.ok&&(c.normal?.y??1)>.99,at:now,x:r.group.position.x,z:r.group.position.z};
       }
       const canRest=currentStatus?.kind!=='tired'||!!r.restInfo?.ok;
-      if(walk&&!gatherTransition&&!drag.busy&&selected!==id&&!r.presentation.chatting&&policy.allowed&&motion&&!document.hidden&&age>1){
+      if(walk&&!r.modRelocation&&!gatherTransition&&!drag.busy&&selected!==id&&!r.presentation.chatting&&policy.allowed&&motion&&!document.hidden&&age>1){
         walk.wait=Math.max(0,walk.wait-delta);
         if(!walk.route.length&&walk.wait===0){walk.route=walkingRoute(walk.graph,walk.node,walk.sequence++,{range:currentStatus?.kind==='relax'?1.3:currentStatus?.kind==='busy'?1.8:3.2});if(!walk.route.length)walk.wait=3;}
         if(walk.route.length&&walk.wait===0){
@@ -354,7 +357,19 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
   }
   function suspend(value){suspended=!!value;if(suspended){drag.cancel();anchors=[];}root.visible=!suspended;}
   function cancelPlacement(){if(drag.snapshot().pending)return false;drag.cancel();return true;}
-  function getSceneState(){return{theme:terrain.theme||'forest',suspended,positions:Object.fromEntries(residents().map(r=>[r.friend.id,{x:r.group.position.x,z:r.group.position.z}])),cachedThemes:[...scenePositions.keys()],cachedCharacters:records.size,contextObstacles:context.obstacles.length};}
+  function refreshObstacles(){
+    drag.cancel();let used=[];
+    for(const r of residents()){
+      const here={x:r.group.position.x,z:r.group.position.z},check=context.inspect(here.x,here.z,r.bodyRadius,used,{manual:true});let slot={...r.slot,...here,y:check.y??r.slot.y,manualPlacement:true,placementRadius:r.bodyRadius};
+      if(!check.ok){
+        let found=null;for(let distance=.4;distance<=9&&!found;distance+=.4)for(let i=0;i<24;i++){const x=here.x+Math.cos(i*Math.PI/12)*distance,z=here.z+Math.sin(i*Math.PI/12)*distance,c=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(c.ok){found={x,y:c.y,z};break;}}
+        if(found){slot={...slot,...found};r.modRelocation={start:performance.now(),from:r.group.position.clone(),to:new THREE.Vector3(found.x,found.y,found.z)};}
+      }
+      resetWalk(r,slot);r.restInfo=null;used.push({x:slot.x,z:slot.z,radius:r.bodyRadius});
+    }
+    lastOcclusion=0;refreshAudit();
+  }
+  function getSceneState(){return{theme:terrain.theme||'forest',suspended,positions:Object.fromEntries(residents().map(r=>[r.friend.id,{x:r.group.position.x,z:r.group.position.z}])),cachedThemes:[...scenePositions.keys()],cachedCharacters:records.size,contextObstacles:context.obstacles.length,activeObstacles:context.obstacles.filter(o=>!o.owner?.userData.modDisabled).length};}
   function dispose(){disposed=true;window.removeEventListener('character-rig-corrected',correctionListener);drag.dispose();context.dispose();leafTexture.dispose();root.removeFromParent();for(const r of records.values()){r.actions.dispose();for(const m of r.materials)m.dispose();r.motes.geometry.dispose();r.motes.material.dispose();r.ring.geometry.dispose();r.ring.material.dispose();}records.clear();}
-  return {root,sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
+  return {root,refreshObstacles,sync,setPresence,setScene,suspend,cancelPlacement,getSceneState,setSocialState:state=>{socialState=state;},get residentIds(){return residents().map(r=>r.friend.id);},focus,restore,finishCamera,beginGather,endGather,get gathering(){return!!gathering;},update,placement,setPlacements:positions=>{savedPlacements=structuredClone(positions||{});},pulse:id=>{const r=records.get(id);if(r)r.messageAt=performance.now();},getAnchors:()=>anchors,getScreenAnchor:id=>anchors.find(a=>a.id===id)||null,dispose,audit};
 }

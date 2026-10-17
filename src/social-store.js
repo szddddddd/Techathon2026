@@ -118,6 +118,15 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
     selectMusicTrack(id){return mutate('sound-settings',next=>{if(!['forest','spring'].includes(id))throw new Error('未知的背景音乐。');next.settings.musicTrack=id;next.settings.musicEnabled=true;});},
     setDemoPaused(value){return mutate('demo-paused',next=>{next.settings.demoPaused=!!value;});},
     restartDemo(){return mutate('demo-restart',next=>{next.settings.demoCursor=0;next.settings.demoPaused=false;});},
+    clearModData(id){return mutate('content-clear',next=>{
+      if(id==='moments'){next.posts=[];next.seenPosts={};return;}
+      if(!['accounts','videos'].includes(id))throw Error('未知模块');
+      const type=id==='accounts'?'article':'video',d=next.discovery;
+      d[id==='accounts'?'accountFollows':'creatorFollows']=[];
+      for(const key of ['likes','collections'])d[key]=d[key].filter(k=>!k.startsWith(type+':'));
+      d.history=d.history.filter(r=>r.type!==type);
+      for(const key of ['comments','progress'])for(const k of Object.keys(d[key]))if(k.startsWith(type+':'))delete d[key][k];
+    },{id});},
     followContent(kind,id){return mutate('discovery-follow',next=>{if(kind!=='account'&&kind!=='creator')throw new Error('不支持的关注类型。');if(!(kind==='account'?getAccount(id):getCreator(id)))throw new Error('这个账号不存在。');const field=kind==='account'?'accountFollows':'creatorFollows',list=next.discovery[field];next.discovery[field]=list.includes(id)?list.filter(value=>value!==id):[...list,id];},{kind,id});},
     toggleContentLike(ref){return mutate('discovery-like',next=>{const key=contentKey(ref),list=next.discovery.likes;next.discovery.likes=list.includes(key)?list.filter(value=>value!==key):[...list,key];},{ref});},
     toggleContentCollection(ref){return mutate('discovery-collection',next=>{const key=contentKey(ref),list=next.discovery.collections;next.discovery.collections=list.includes(key)?list.filter(value=>value!==key):[...list,key];},{ref});},

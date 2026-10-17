@@ -1,0 +1,147 @@
+{
+  "ok": true,
+  "errors": [],
+  "missing": [],
+  "externalRequests": [],
+  "resources": {
+    "before": {
+      "memory": {
+        "switches": 2,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 88,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 5.350000000000001,
+              "z": 14.100000000000001
+            },
+            "ali": {
+              "x": -12.900000000000011,
+              "z": 12.15
+            },
+            "shanshan": {
+              "x": -20.750000000000007,
+              "z": -20.550000000000008
+            },
+            "xiaomian": {
+              "x": -20.050000000000004,
+              "z": 10.85
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "diag": {
+        "listeners": 3,
+        "adapters": 5,
+        "loaded": [
+          "notes",
+          "focus",
+          "accounts"
+        ],
+        "timerScheduled": false
+      }
+    },
+    "after": {
+      "memory": {
+        "switches": 2,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 88,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 5.350000000000001,
+              "z": 14.100000000000001
+            },
+            "ali": {
+              "x": -12.900000000000011,
+              "z": 12.15
+            },
+            "shanshan": {
+              "x": -20.750000000000007,
+              "z": -20.550000000000008
+            },
+            "xiaomian": {
+              "x": -20.050000000000004,
+              "z": 10.85
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "diag": {
+        "listeners": 3,
+        "adapters": 5,
+        "loaded": [
+          "notes",
+          "focus",
+          "accounts"
+        ],
+        "timerScheduled": false
+      }
+    }
+  },
+  "checks": [
+    "lazy loading",
+    "five working modules",
+    "install and pin",
+    "uninstall confirmation",
+    "retained data",
+    "notes delete and persistence",
+    "timer pause/resume/completion",
+    "chat draft retention",
+    "three scenes and facilities",
+    "failed scene rollback",
+    "unavailable route guard",
+    "repeat toggle resource stability",
+    "mobile keyboard and overflow"
+  ]
+}

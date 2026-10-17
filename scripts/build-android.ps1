@@ -38,10 +38,13 @@ if ($LASTEXITCODE -ne 0) { throw 'APK build failed' }
 $apk=Join-Path $repo 'android/app/build/outputs/apk/release/app-release.apk'
 & "$env:ANDROID_HOME/build-tools/35.0.0/apksigner.bat" verify --verbose $apk
 if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed' }
+$versionName=(Select-String -Path (Join-Path $repo 'android/app/build.gradle') -Pattern "versionName\s+'([^']+)'" | Select-Object -First 1).Matches.Groups[1].Value
+if (-not $versionName) { throw 'Android versionName missing' }
+$fileVersion=$versionName -replace '[^A-Za-z0-9.-]','-'
 $dest=Join-Path $repo 'downloads'
 New-Item -ItemType Directory -Force $dest | Out-Null
-Copy-Item -LiteralPath $apk -Destination "$dest/WeRoam-1.3.1-android.apk" -Force
-$stream=[IO.File]::OpenRead("$dest/WeRoam-1.3.1-android.apk")
+Copy-Item -LiteralPath $apk -Destination "$dest/WeRoam-$fileVersion-android.apk" -Force
+$stream=[IO.File]::OpenRead("$dest/WeRoam-$fileVersion-android.apk")
 try { $hash=([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($stream))).Replace('-','').ToLower() } finally { $stream.Dispose() }
-[IO.File]::WriteAllText("$dest/WeRoam-1.3.1-android.apk.sha256","$hash  WeRoam-1.3.1-android.apk`n")
-Write-Output "Signed APK: $dest/WeRoam-1.3.1-android.apk"
+[IO.File]::WriteAllText("$dest/WeRoam-$fileVersion-android.apk.sha256","$hash  WeRoam-$fileVersion-android.apk`n")
+Write-Output "Signed APK: $dest/WeRoam-$fileVersion-android.apk"

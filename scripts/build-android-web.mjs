@@ -9,7 +9,7 @@ const files=[];
 async function collect(dir){for(const entry of await fs.readdir(path.join(root,dir),{withFileTypes:true})){const rel=path.posix.join(dir,entry.name);if(entry.isDirectory())await collect(rel);else if(runtime.test(rel))files.push(rel);}}
 await collect('assets');
 files.push(...(await fs.readdir(root)).filter(name=>name.endsWith('.css')),'startup.js','mobile/android-runtime.js','mobile/android.css');
-files.push('dist/world.js','dist/inbox.js','dist/rig-worker.js');
+files.push('dist/world.js','dist/inbox.js','dist/workshop.js','dist/rig-worker.js');
 await fs.mkdir(webDir,{recursive:true});
 const inventory=[];
 for(const rel of files){const dest=path.join(webDir,rel),data=await fs.readFile(path.join(root,rel));await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,data);inventory.push({path:rel,bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')});}

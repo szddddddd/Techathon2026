@@ -63,6 +63,11 @@ try{
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.setViewportSize({width:393,height:852});await page.reload();await ready('ideal');
  assert.ok(await page.evaluate(()=>Object.values(__socialStore.state.customFriends).some(f=>f.name==='手机测试好友')));
+ // Lazy workshop and local modules are included in the offline Android bundle.
+ await page.setViewportSize({width:393,height:852});await page.evaluate(()=>__workshop.open());await page.waitForFunction(()=>__uiInteractions.state('workshop')==='open');
+ await page.locator('[data-w-detail=notes]').tap();await page.locator('[data-w-action=install]').tap();await page.locator('[data-w-action=open]').tap();await page.waitForFunction(()=>__uiInteractions.state('mod-app')==='open');
+ await page.locator('[data-note-new]').tap();await page.locator('#mod-app textarea').fill('安卓离线便签');await page.waitForFunction(()=>__mods.state.data.notes?.items[0]?.text==='安卓离线便签');
+ await page.screenshot({path:out+'/workshop-notes.jpg',type:'jpeg',quality:87});assert.equal(await page.evaluate(()=>__weroamHandleBack()),true);await page.waitForFunction(()=>__uiInteractions.state('mod-app')==='closed');
  assert.deepEqual(errors,[]);assert.deepEqual(egress,[]);assert.deepEqual(missing,[]);
  await fs.writeFile(out+'/results.json',JSON.stringify({ok:true,assets:inventory.files.length,bytes:inventory.bytes,scenes:3,errors,egress,missing,evidence:'Packaged assets in a touch browser, not an Android device acceptance test.'},null,2));
  console.log('PASS: byte-identical assets, offline three scenes, touch inbox, back/draft, avatar upload without network, rotation/keyboard viewport and persistence');

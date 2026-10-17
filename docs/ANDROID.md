@@ -4,9 +4,9 @@
 
 ## 安装
 
-当前版本 `1.3.1-demo.2`（versionCode `1030102`）包含手机性能优化，沿用原签名，可覆盖安装并保留手机本地数据。[优化与验收说明](MOBILE-PERFORMANCE.md)。
+当前版本 `v0.1 beta`（versionCode `1030103`）包含手机性能优化，沿用原签名，可覆盖安装并保留手机本地数据。[优化与验收说明](MOBILE-PERFORMANCE.md)。
 
-执行 `npm run android:build` 后，安装包位于 `downloads/WeRoam-1.3.1-android.apk`，同目录提供 SHA-256 校验文件。
+执行 `npm run android:build` 后，安装包位于 `downloads/WeRoam-v0.1-beta-android.apk`，同目录提供 SHA-256 校验文件。
 
 执行 `npm run android:download`，用手机扫描下载页二维码或打开终端列出的局域网地址。电脑和手机需要处于可以互访的网络；校园网隔离、Windows 防火墙可能阻止访问，脚本不会改动防火墙。也可以通过 USB 将 APK 复制到手机。
 

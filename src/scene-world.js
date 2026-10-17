@@ -70,10 +70,11 @@ export async function prepareSceneWorld(id,{reduced}={}){
  return{
   id,config,background,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
   get discovery(){return discovery;},get record(){return record;},
-  async mount({camera,controls,renderer,ui,sound,onDiscovery,onRecord}){
+  async mount({camera,controls,renderer,ui,sound,mods,onDiscovery,onRecord}){
    gate=gatedUI(ui);
    try{
     discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,templates:config.facilityTemplates,obstacleCache});
+    discovery.setModuleEnabled('accounts',mods?.enabled('accounts')??true);discovery.setModuleEnabled('scene-video',mods?.enabled('videos')??true);
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
     record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,presentation:config.recordPresentation,externalDisposal:true});
     terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);nightEffects=createNightEffects(root,id,{flies});nightEffects.setNightFactor(0);

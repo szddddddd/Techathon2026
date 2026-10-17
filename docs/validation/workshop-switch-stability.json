@@ -1,0 +1,1171 @@
+{
+  "ok": true,
+  "baseline": {
+    "fuji": {
+      "scene": "fuji",
+      "resources": {
+        "switches": 1,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji"
+          ],
+          "sharedResources": 542
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -5.249999999999995,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    "ideal": {
+      "scene": "ideal",
+      "resources": {
+        "switches": 2,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    "forest": {
+      "scene": "forest",
+      "resources": {
+        "switches": 3,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "scene": "fuji",
+      "resources": {
+        "switches": 4,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -4.849999999999994,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 1,
+      "scene": "ideal",
+      "resources": {
+        "switches": 5,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 1,
+      "scene": "forest",
+      "resources": {
+        "switches": 6,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 2,
+      "scene": "fuji",
+      "resources": {
+        "switches": 7,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -4.849999999999994,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 2,
+      "scene": "ideal",
+      "resources": {
+        "switches": 8,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 2,
+      "scene": "forest",
+      "resources": {
+        "switches": 9,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 3,
+      "scene": "fuji",
+      "resources": {
+        "switches": 10,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -4.849999999999994,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 3,
+      "scene": "ideal",
+      "resources": {
+        "switches": 11,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 3,
+      "scene": "forest",
+      "resources": {
+        "switches": 12,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 4,
+      "scene": "fuji",
+      "resources": {
+        "switches": 13,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -4.849999999999994,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 4,
+      "scene": "ideal",
+      "resources": {
+        "switches": 14,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 4,
+      "scene": "forest",
+      "resources": {
+        "switches": 15,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 5,
+      "scene": "fuji",
+      "resources": {
+        "switches": 16,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 267,
+        "textures": 91,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": -3.2499999999999956
+            },
+            "ali": {
+              "x": 18.800000000000004,
+              "z": 11.050000000000008
+            },
+            "shanshan": {
+              "x": -10.449999999999998,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": -4.849999999999994,
+              "z": -7.799999999999997
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 54,
+          "activeObstacles": 54
+        },
+        "calls": 295,
+        "triangles": 1905857
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 5,
+      "scene": "ideal",
+      "resources": {
+        "switches": 17,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 87,
+        "textures": 35,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "ideal",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 2.100000000000001,
+              "z": 17.349999999999998
+            },
+            "ali": {
+              "x": 18.599999999999994,
+              "z": 9.8
+            },
+            "shanshan": {
+              "x": -2.449999999999999,
+              "z": 14.750000000000002
+            },
+            "xiaomian": {
+              "x": -16.150000000000013,
+              "z": 11.5
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 56,
+          "activeObstacles": 56
+        },
+        "calls": 104,
+        "triangles": 916300
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    },
+    {
+      "round": 5,
+      "scene": "forest",
+      "resources": {
+        "switches": 18,
+        "controls": {
+          "enabled": true,
+          "enableDamping": true,
+          "minDistance": 6
+        },
+        "geometries": 224,
+        "textures": 96,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "sharedResources": 623
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "tuantuan": {
+              "x": 18.800000000000004,
+              "z": 4.218847493575595e-15
+            },
+            "ali": {
+              "x": 14.900000000000011,
+              "z": 1.3000000000000043
+            },
+            "shanshan": {
+              "x": 12.95000000000001,
+              "z": -5.849999999999996
+            },
+            "xiaomian": {
+              "x": 22.049999999999997,
+              "z": -1.2999999999999958
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji",
+            "ideal"
+          ],
+          "cachedCharacters": 4,
+          "contextObstacles": 70,
+          "activeObstacles": 70
+        },
+        "calls": 300,
+        "triangles": 1139494
+      },
+      "mods": {
+        "listeners": 2,
+        "adapters": 5,
+        "loaded": [],
+        "timerScheduled": false
+      },
+      "facilities": [
+        true,
+        true
+      ]
+    }
+  ],
+  "errors": []
+}

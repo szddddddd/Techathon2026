@@ -2,6 +2,8 @@
 
 # WeRoam
 
+**版本 v0.1 beta**
+
 ### 让每一次聊天，都有一处风景。
 
 把微信带进三维世界，让熟悉的社交，多一份相伴的美好。
@@ -22,9 +24,15 @@
 
 [架构、演示步骤与验证说明](docs/UNIVERSAL-INBOX.md) · `npm run test:inbox` · `npm run test:inbox:browser`
 
+## 创意工坊与 Mod
+
+底部创意工坊替代原“发现”。朋友圈、公众号、视频号默认已安装，便签和专注计时可一键安装使用；支持启用、停用、固定及卸载，内容保存在本机。公众号或视频号停用时，对应三维设施一起隐藏。
+
+[本地工坊预览](http://localhost:8080/?scene=fuji&workshop=1) · [使用与验证说明](docs/WORKSHOP.md) · `npm run test:mods` · `npm run test:mods:browser`
+
 ## 安卓安装版
 
-`npm run android:build` 生成可直接安装的 `downloads/WeRoam-1.3.1-android.apk`；`npm run android:download` 提供局域网扫码下载页。完整保留三场景资源，消息与草稿保存在手机；手机版暂不连接新头像的三维生成服务或 Windows 桌宠。
+`npm run android:build` 生成可直接安装的 `downloads/WeRoam-v0.1-beta-android.apk`；`npm run android:download` 提供局域网扫码下载页。完整保留三场景资源，消息与草稿保存在手机；手机版暂不连接新头像的三维生成服务或 Windows 桌宠。
 
 [安装、构建与验证范围](docs/ANDROID.md) · `npm run test:android`
 

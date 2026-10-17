@@ -40,7 +40,9 @@ export function createDiscoveryBoards({camera,facilities,contentUI,player,before
     hero.style.opacity=String(reverse?Math.sin(Math.PI*p):ease(p/.12)*(1-ease((p-.78)/.22)));
   }
   async function open(nextKind,route){
+    if(facilities.isModuleEnabled&&!facilities.isModuleEnabled(nextKind==='accounts'?'accounts':'scene-video'))return false;
     await beforeFocus?.();
+    if(facilities.isModuleEnabled&&!facilities.isModuleEnabled(nextKind==='accounts'?'accounts':'scene-video'))return false;
     finish?.(false);finish=null;
     if(kind){facilities.setEmphasis(kind,0);facilities.setBoardActive(kind,false);}
     contentUI.stopScene();frame.hidden=true;hero.hidden=true;player.pause();

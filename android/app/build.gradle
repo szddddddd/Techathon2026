@@ -12,8 +12,8 @@ android {
         applicationId 'app.weroam.mobile'
         minSdk 26
         targetSdk 36
-        versionCode 1030102
-        versionName '1.3.1-demo.2'
+        versionCode 1030103
+        versionName 'v0.1 beta'
         testInstrumentationRunner 'app.weroam.mobile.SmokeInstrumentation'
     }
     signingConfigs {

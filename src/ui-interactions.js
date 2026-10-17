@@ -1,3 +1,5 @@
+import {modIcon} from './mods/catalog.js';
+
 /** Shared surface lifecycle. Scene camera timelines remain owned by their modules. */
 export function createUIInteractions() {
   const layers = new Map(), listeners = new Set();
@@ -145,7 +147,8 @@ export function createUIInteractions() {
 export function createDock({root,ui}) {
   const dock=root.querySelector('.social-dock');dock.id='social-dock';dock.setAttribute('aria-label','主导航');
   const icons={directory:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v2"/>','public-moments':'<circle cx="12" cy="12" r="3"/><path d="M12 3v4m0 10v4M3 12h4m10 0h4M5.6 5.6l2.8 2.8m7.2 7.2 2.8 2.8M5.6 18.4l2.8-2.8m7.2-7.2 2.8-2.8"/>',discover:'<circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5Z"/>',me:'<circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>'};
-  for(const b of dock.querySelectorAll('[data-action]'))b.querySelector('span').innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${icons[b.dataset.action]}</svg>`;
+  for(const b of dock.querySelectorAll('[data-action]'))b.querySelector('span').innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${icons[b.dataset.action]||''}</svg>`;
+  for(const b of dock.querySelectorAll('[data-mod-entry], [data-action=workshop]'))b.querySelector('span').innerHTML=modIcon(b.dataset.modEntry||'workshop');
   const reveal=document.createElement('button');reveal.id='dock-reveal';reveal.className='dock-reveal';reveal.type='button';
   reveal.setAttribute('aria-label','展开主导航');reveal.setAttribute('aria-controls','social-dock');reveal.innerHTML='<span></span><i hidden></i>';
   root.append(reveal);

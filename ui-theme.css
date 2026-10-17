@@ -151,3 +151,8 @@ body.sound-scene-open #first-invitation{visibility:hidden}
 @media(max-width:360px){#social .dock-button{font-size:10px!important;gap:4px;padding:7px 4px}#social .dock-button svg{width:19px;height:19px}}
 
 #social .photo-button:has(img.unavailable){position:relative;background:var(--scene-color-e8eddf,#e8eddf);min-height:80px}#social .photo-button img.unavailable{opacity:0}#social .photo-button:has(img.unavailable)::after{content:"图片暂不可用";position:absolute;inset:0;display:grid;place-items:center;color:var(--scene-color-73816b,#73816b);font-size:12px}
+
+/* Fixed core navigation with a horizontally scrollable Mod region. */
+#social .social-dock .dock-mods{display:flex;gap:3px;min-width:0;overflow-x:auto;scrollbar-width:none;align-items:center}#social .dock-mods::-webkit-scrollbar{display:none}#social .social-dock>.dock-button{flex-shrink:0}#social .dock-mods .dock-button{flex-shrink:0}#social .dock-button[hidden]{display:none!important}#social .social-dock{justify-content:flex-start}#social .dock-button{min-width:76px;padding:8px 11px}#social .social-dock .dock-mods:empty{display:none}
+
+@media(max-width:700px){#social .social-dock{width:calc(100vw - 24px);max-width:520px;gap:2px;padding:5px;border-radius:20px}#social .social-dock .dock-button{width:56px;min-width:56px;min-height:48px;padding:5px 3px;flex-direction:column;gap:3px;font-size:10px!important}#social .social-dock>.dock-button[data-action=workshop]{width:64px;min-width:64px}#social .social-dock .dock-mods{flex:1;gap:0}#social .social-dock .dock-mods:empty{display:flex}#social .social-dock .dock-mods .dock-button{flex:1;min-width:52px}#social .dock-button svg{width:20px;height:20px}}

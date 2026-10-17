@@ -1,3 +1,4 @@
+import {MODS,modIcon} from './mods/catalog.js';
 import {appIcon} from './inbox/icons.js';
 import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupUI,groupAvatar} from './group-ui.js';
@@ -18,12 +19,12 @@ const date = value => new Date(value).toLocaleDateString('zh-CN',{month:'long',d
 const STICKERS = [ ['🌼','送你一朵小花'], ['🐾','我来啦！'], ['☕','歇一会儿'], ['🌙','晚安好梦'], ['🫶','接住温柔'], ['🍀','好运发生'] ];
 const EMOJI = ['😊','🥰','😂','🥹','🤔','😴','😭','✨','💛','🌿','🌈','👍'];
 
-export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},onMountPet=()=>{},getAnchorObstacles=()=>[],onGroupSceneClose=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
+export function createSocialUI({store,characters,controls,ui,mods,onOpenWorkshop=()=>{},onOpenSound=()=>{},onMountPet=()=>{},getAnchorObstacles=()=>[],onGroupSceneClose=()=>{},onOpenContent=(route,options)=>window.__openDiscovery?.(route,options)}) {
   const root=document.createElement('div');root.id='social';document.body.append(root);
   root.innerHTML=`
     <div id="friend-anchors"></div>
     <div id="first-invitation" class="invitation"><span class="invitation-icon">✉</span><h1>给风景，添一位朋友。</h1><p>从一次问好开始，让小小的溪谷热闹起来。</p><button class="primary" data-action="directory">认识第一位朋友 <span>↗</span></button></div>
-    <nav class="social-dock"><button data-action="directory" class="dock-button"><span>♧</span> 消息 <b id="total-unread" hidden></b></button><button data-action="public-moments" class="dock-button" aria-label="公共朋友圈"><span>▧</span> 朋友圈 <b id="public-feed-unread" hidden></b></button><button data-action="discover" class="dock-button"><span>✧</span> 发现</button><button data-action="me" class="dock-button"><span>◉</span> 我</button></nav>
+    <nav class="social-dock"><button data-action="directory" class="dock-button"><span>♧</span> 消息 <b id="total-unread" hidden></b></button><div class="dock-mods" aria-label="已固定模块"><button data-action="mod-moments" data-mod-entry="moments" class="dock-button"><span>▧</span> 朋友圈<b id="public-feed-unread" hidden></b></button><button data-action="mod-accounts" data-mod-entry="accounts" class="dock-button"><span>▤</span> 公众号</button><button data-action="mod-videos" data-mod-entry="videos" class="dock-button"><span>▷</span> 视频号</button><button data-action="mod-notes" data-mod-entry="notes" class="dock-button"><span>▱</span> 便签</button><button data-action="mod-focus" data-mod-entry="focus" class="dock-button"><span>◷</span> 专注计时</button></div><button data-action="workshop" class="dock-button"><span>◇</span> 创意工坊</button><button data-action="me" class="dock-button"><span>◉</span> 我</button></nav>
     <section id="directory" class="drawer paper" hidden aria-label="好友通讯录"><button class="ui-close" data-ui-close="directory" aria-label="关闭好友通讯录">×</button><header><div><small>OUR LITTLE NEIGHBOURHOOD</small><h2>溪谷里的朋友</h2></div></header><p class="muted">每一次认识，都是风景的新一页。</p><label class="search">⌕ <input id="friend-search" placeholder="搜索昵称或演示 ID" aria-label="搜索好友"></label><div class="directory-tabs"><button data-action="directory-tab" data-tab="all" class="active">添加好友</button><button data-action="directory-tab" data-tab="added">我的朋友 <span id="friend-count"></span></button></div><div id="friend-list"></div></section>
     <section id="meeting" hidden aria-label="好友会客空间" data-moments="closed">
       <div class="meeting-workspace">
@@ -109,7 +110,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   function renderInboxSummary(){
     $('first-invitation').hidden=store.state.friends.length>0||store.state.groups.some(g=>!g.leftAt)||!!conversations.inbox?.gateway.list().length;
     const count=store.state.friends.reduce((n,id)=>n+unread(id),0)+store.state.groups.filter(g=>!g.leftAt).reduce((n,g)=>n+groupUnread(store.state,g.id).length,0)+conversations.externalUnread();$('total-unread').textContent=count;$('total-unread').hidden=!count;
-    const newPosts=getNewPublicPosts(store.state).length;$('public-feed-unread').hidden=!newPosts;$('public-feed-unread').textContent=newPosts;$('public-feed-unread').setAttribute('aria-label',`${newPosts}条新动态`);dock.unread(count+newPosts);
+    const newPosts=(!mods||mods.enabled('moments'))?getNewPublicPosts(store.state).length:0;$('public-feed-unread').hidden=!newPosts;$('public-feed-unread').textContent=newPosts;$('public-feed-unread').setAttribute('aria-label',`${newPosts}条新动态`);dock.unread(count+newPosts);
   }
   function renderSummary(){
     renderInboxSummary();
@@ -122,7 +123,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     for(const id of store.state.friends){let node=anchorNodes.get(id);if(!node){node=document.createElement('div');node.className='friend-anchor';node.hidden=true;node.dataset.friend=id;$('friend-anchors').append(node);anchorNodes.set(id,node);anchorSizes.observe(node);}
       const st=statusOf(id),info=st&&stateInfo(st.kind),messages=store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me'),last=messages.at(-1),n=unread(id);
       node.classList.toggle('has-unread',n>0);
-      const fresh=postsOf(id).some(p=>p.createdAt>(store.state.seenPosts[id]||0));
+      const fresh=(!mods||mods.enabled('moments'))&&postsOf(id).some(p=>p.createdAt>(store.state.seenPosts[id]||0));
       const tier=unreadTier(n);node.dataset.unreadTier=tier;
       const html=`<div class="anchor-identity"><button class="anchor-name" data-action="open-friend" data-id="${id}">${person(id).sourcePlatform?appIcon(person(id).sourcePlatform):''}${esc(person(id).name)} ${fresh?'<i class="memory-spark"></i>':''}${(store.state.pinnedFriends||[]).includes(id)?'<i class="anchor-pin" aria-label="置顶好友">⌃</i>':''}</button>${st?`<button class="status-badge" data-action="status" data-id="${id}" aria-label="查看${esc(person(id).name)}的${esc(info.label)}状态">${esc(info.icon)} <span>${esc(info.label)}</span></button>`:''}</div><div class="unread-visual" ${n?'':'hidden'}><button class="letter-stack" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读来信">${Array.from({length:tier},(_,i)=>`<i style="--letter:${i}"></i>`).join('')}</button><button class="unread-dot" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读">${n>99?'99+':n}</button></div>${last&&n?`<button class="head-message" data-action="open-friend" data-id="${id}">${esc(last.type==='image'?'[图片]':last.type==='sticker'?'[表情]':last.text||'分享了一段回忆')}</button>`:''}`;
 
@@ -136,6 +137,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(html!==lastMeetingList){lastMeetingList=html;$('meeting-friend-list').innerHTML=html;}
   }
   function setMoments(open){
+    if(open&&!active?.startsWith('group:')&&mods&&!mods.enabled('moments')){mods.onUnavailable?.('moments',{origin:actionSource});return;}
     if(active?.startsWith('group:')){momentsOpen=false;$('moments-panel').hidden=true;$('meeting').dataset.moments='closed';$('moments-toggle').textContent='群资料 ···';if(open)groups.showInfo(active.slice(6),$('moments-toggle'));return;}
     momentsOpen=!!open;$('meeting').dataset.moments=open?'open':'closed';$('moments-panel').hidden=!open;
     $('moments-toggle').setAttribute('aria-expanded',String(!!open));$('moments-toggle').innerHTML=open?'朋友圈 <span>↙</span>':'朋友圈 <span>↗</span>';
@@ -160,7 +162,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   function renderChatTitle(){if(!active)return;const group=active.startsWith('group:')?groupOf(store.state,active.slice(6)):null;
     $('meeting-avatar').innerHTML=group?groupAvatar(store.state,group):person(active).avatarUrl?`<img src="${esc(friendAvatar(person(active)))}" alt="">`:esc(person(active).emoji);
     $('meeting-name').textContent=group?`${group.name}（${group.memberIds.length}）`:person(active).name;$('meeting-signature').textContent=group?(group.notice||'朋友们在这里相聚'):person(active).signature;if(group)$('meeting-name').insertAdjacentHTML('beforeend',appIcon(group.sourcePlatform||'wechat'));else if(person(active).sourcePlatform)$('meeting-name').insertAdjacentHTML('beforeend',appIcon(person(active).sourcePlatform));
-    $('moments-toggle').textContent=group?'群资料 ···':'朋友圈 ↗';$('mention-button').hidden=!group;
+    $('moments-toggle').hidden=!group&&!!mods&&!mods.enabled('moments');$('moments-toggle').textContent=group?'群资料 ···':'朋友圈 ↗';$('mention-button').hidden=!group;
   }
   function renderAttachment(){const box=$('chat-attachment');box.hidden=!attachment;if(attachment){box.innerHTML=`<img data-media="${esc(attachment)}" alt="待发送图片"><span>图片准备好了</span><button class="icon-button" data-action="remove-attachment" aria-label="移除图片">移除</button>`;hydrate(box);}}
   async function openConversation(ref,options={}){
@@ -232,14 +234,15 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   const shareKey=()=>shareReference?shareReference.type+':'+shareReference.id:null;
   function saveShareDraft(){const key=shareKey(),form=$('content-share-form');if(!key||!form)return;const old=shareDrafts.get(key)||{};const fd=new FormData(form);shareDrafts.set(key,{...old,mode:shareMode,...Object.fromEntries(fd)});}
   function shareContent(ref){
+    if(mods&&!mods.enabled(ref.type==='video'?'videos':'accounts')){mods.onUnavailable?.(ref.type==='video'?'videos':'accounts');return Promise.resolve(false);}
     if(!getContent(ref)){toast('这条内容暂不可用。');return Promise.resolve(false);}
-    saveShareDraft();clearTimeout(shareCloseTimer);shareResolve?.(false);shareReference={...ref};shareMode=shareDrafts.get(shareKey())?.mode||'friend';renderContentShare();
+    saveShareDraft();clearTimeout(shareCloseTimer);shareResolve?.(false);shareReference={...ref};shareMode=shareDrafts.get(shareKey())?.mode||'friend';if(mods&&!mods.enabled('moments'))shareMode='friend';renderContentShare();
     ui.open('share',{origin:ui.source()});
     return new Promise(resolve=>{shareResolve=resolve;});
   }
   function renderContentShare(){
     const d=$('content-share-dialog');
-    d.innerHTML=chrome('分享发现','share',true)+`<small class="eyebrow">A GOOD STORY, SHARED</small><h2>把发现分享出去</h2>${contentCard(shareReference)}<div class="content-share-tabs"><button type="button" data-share-mode="friend" aria-pressed="${shareMode==='friend'}">发送给会话</button><button type="button" data-share-mode="post" aria-pressed="${shareMode==='post'}">分享到朋友圈</button></div><form id="content-share-form">${shareMode==='friend'?`<fieldset><legend>选择好友或群聊</legend>${mixedConversations(store.state).map(conversationKey).map(id=>`<label class="content-recipient"><input type="radio" name="friend" value="${esc(id)}" required>${id.startsWith('group:')?groupAvatar(store.state,groupOf(store.state,id.slice(6))):avatar(id)}<span>${esc(person(id).name)}</span></label>`).join('')||'<p class="muted">还没有好友。添加好友后，就能把喜欢的内容送给他。</p>'}</fieldset>`:'<textarea name="text" rows="3" maxlength="2000" placeholder="说说为什么想分享…" aria-label="分享附言"></textarea>'}<p class="muted" role="status" id="content-share-result"></p><button class="primary" type="submit" ${shareMode==='friend'&&!mixedConversations(store.state).length?'disabled':''}>${shareMode==='friend'?'确认发送':'发布到朋友圈'} ↗</button></form><button class="text-button" type="button" data-share-back>← 返回内容</button>`;
+    d.innerHTML=chrome('分享发现','share',true)+`<small class="eyebrow">A GOOD STORY, SHARED</small><h2>把发现分享出去</h2>${contentCard(shareReference)}<div class="content-share-tabs"><button type="button" data-share-mode="friend" aria-pressed="${shareMode==='friend'}">发送给会话</button><button type="button" data-share-mode="post" ${mods&&!mods.enabled('moments')?'hidden':''} aria-pressed="${shareMode==='post'}">分享到朋友圈</button></div><form id="content-share-form">${shareMode==='friend'?`<fieldset><legend>选择好友或群聊</legend>${mixedConversations(store.state).map(conversationKey).map(id=>`<label class="content-recipient"><input type="radio" name="friend" value="${esc(id)}" required>${id.startsWith('group:')?groupAvatar(store.state,groupOf(store.state,id.slice(6))):avatar(id)}<span>${esc(person(id).name)}</span></label>`).join('')||'<p class="muted">还没有好友。添加好友后，就能把喜欢的内容送给他。</p>'}</fieldset>`:'<textarea name="text" rows="3" maxlength="2000" placeholder="说说为什么想分享…" aria-label="分享附言"></textarea>'}<p class="muted" role="status" id="content-share-result"></p><button class="primary" type="submit" ${shareMode==='friend'&&!mixedConversations(store.state).length?'disabled':''}>${shareMode==='friend'?'确认发送':'发布到朋友圈'} ↗</button></form><button class="text-button" type="button" data-share-back>← 返回内容</button>`;
     const draft=shareDrafts.get(shareKey());if(draft)for(const field of d.querySelectorAll('input,textarea'))if(field.name in draft){if(field.type==='radio')field.checked=field.value===draft[field.name];else field.value=draft[field.name];}
   }
   $('content-share-dialog').addEventListener('input',saveShareDraft);
@@ -253,7 +256,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   $('content-share-dialog').addEventListener('submit',async e=>{
     e.preventDefault();e.stopPropagation();const form=e.target,button=form.querySelector('[type="submit"]');if(button.disabled||!shareReference)return;
     button.disabled=true;const ref={...shareReference},fd=new FormData(form),mode=shareMode;
-    const ok=await attempt(async()=>{if(mode==='friend')await sendConversation(conversationRef(String(fd.get('friend'))),{type:'content',contentRef:ref,text:getContent(ref).title});else await store.publishPost({text:String(fd.get('text')||''),mediaIds:[],contentRef:ref});return true;});
+    const ok=await attempt(async()=>{if(mods&&(!mods.enabled(ref.type==='video'?'videos':'accounts')||mode==='post'&&!mods.enabled('moments')))throw Error('模块已停用');if(mode==='friend')await sendConversation(conversationRef(String(fd.get('friend'))),{type:'content',contentRef:ref,text:getContent(ref).title});else await store.publishPost({text:String(fd.get('text')||''),mediaIds:[],contentRef:ref});return true;});
     if(ok){$('content-share-result').textContent=mode==='friend'?'已发送给选中的会话。':'已分享到朋友圈。';const done=shareResolve;shareResolve=null;done?.(true);shareCloseTimer=setTimeout(()=>{const key=shareKey();ui.close('share').then(()=>shareDrafts.delete(key));},650);}else button.disabled=false;
   });
   root.addEventListener('input',e=>{const form=e.target.closest('.comment-form');if(form)commentDrafts.set(form.dataset.post,e.target.value);});
@@ -270,8 +273,9 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     d.classList.toggle('public-moments-dialog',kind==='public-moments');
     const title=kind==='public-moments'?'朋友圈':kind==='me'?'我的林间角落':kind==='publish'?'记录此刻':kind==='profile'?'编辑资料':'我的朋友圈';
     d.setAttribute('aria-label',kind==='public-moments'?'公共朋友圈':title);
+    queueMicrotask(refreshMods);
     d.innerHTML=chrome(title,child?'compose':'social',child)+html;if(kind==='my-memories')d.querySelector('.ui-titlebar').insertAdjacentHTML('afterbegin','<button class="ui-back" data-action="me" aria-label="返回我的角落">←</button>');
-    if(!child)ui.setNav('social',kind==='public-moments'?'public-moments':'me');
+    if(!child)ui.setNav('social',kind==='public-moments'?'mod-moments':'me');
     ui.open(child?'compose':'social',{origin:actionSource});if(replacing)ui.transition(d);
     if(!child){const feed=d.querySelector('.public-moments-scroll')||d;feed.scrollTop=viewScrolls.get(kind)||0;}
     restoreFormDrafts(d,kind==='publish'?'publish-'+publishKind:'profile-form');hydrate(d);
@@ -285,16 +289,39 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(!refresh)ui.open('status',{origin:statusOrigin});else positionStatus();hydrate(d);
   }
   function showMe(){const st=statusOf('me');dialog(`<small class="eyebrow">MY LITTLE CORNER</small><h2>我的林间角落</h2><div class="profile-line">${profileLine('me')}</div><button class="secondary edit-profile" data-action="edit-profile">编辑资料</button><div class="me-actions"><button data-action="publish-status">${st?esc(stateInfo(st.kind).icon):'☀'}<strong>${st?'更新状态':'发布状态'}</strong><small>让朋友知道此刻的你</small></button><button data-action="publish-post">✧<strong>发布朋友圈</strong><small>文字与照片，都会发光</small></button><button data-action="my-memories">◌<strong>我的朋友圈</strong><small>${postsOf('me').length} 条朋友圈</small></button>${st?'<button data-action="status" data-id="me">◉<strong>查看我的状态</strong><small>可以随时结束</small></button>':''}</div><div class="content-library-links"><button data-action="settings">⚙ 设置</button><button data-action="content-library" data-kind="follows">♧ 我的关注</button><button data-action="content-library" data-kind="collections">◇ 我的收藏</button><button data-action="content-library" data-kind="history">◷ 最近浏览</button></div><div class="demo-controls"><div><strong>本地演示</strong><p>朋友的回复与更新来自预设故事。</p></div><button class="secondary" data-action="pause-demo">${store.state.settings.demoPaused?'继续故事':'暂停故事'}</button><button class="text-button" data-action="replay-demo">重播故事</button></div>`,'me');}
+  function refreshMods(){
+    const enabled=id=>!mods||mods.enabled(id);
+    for(const m of MODS){const b=root.querySelector(`[data-mod-entry="${m.id}"]`);if(b)b.hidden=!!mods&&(!mods.enabled(m.id)||!mods.state.modules[m.id].pinned);}
+    for(const b of root.querySelectorAll('[data-action="publish-post"],[data-action="my-memories"],[data-share-mode="post"]'))b.hidden=!enabled('moments');
+    for(const b of root.querySelectorAll('[data-action="content-library"]'))b.hidden=!enabled('accounts')&&!enabled('videos');
+    $('moments-toggle').hidden=!active?.startsWith('group:')&&!enabled('moments');
+    if(!enabled('moments')&&momentsOpen)setMoments(false);
+    renderInboxSummary();renderAnchors();
+  }
+  async function prepareModDisable(id){
+    saveFormDrafts();saveShareDraft();
+    if(id==='moments'){
+      if(momentsOpen)setMoments(false);
+      if(['public-moments','my-memories'].includes(dialogKind))await ui.close('social',{immediate:true,restoreFocus:false});
+      if(publishKind==='post'&&ui.state('compose')!=='closed')await ui.close('compose',{immediate:true,restoreFocus:false});
+      if(shareMode==='post'&&ui.state('share')!=='closed')await ui.close('share',{immediate:true,restoreFocus:false});
+    }
+    if(['accounts','videos'].includes(id)&&shareReference?.type===(id==='accounts'?'article':'video'))await ui.close('share',{immediate:true,restoreFocus:false});
+  }
   function showProfileEditor(){dialog(`<form id="profile-form"><label>昵称<input name="name" value="${esc(store.state.profile.name)}" maxlength="24" required></label><label>个性签名<textarea name="signature" maxlength="100" rows="2">${esc(store.state.profile.signature)}</textarea></label><button class="secondary" type="submit">保存资料</button></form>`,'profile');}
-  function showPublish(kind){publishReturn=dialogKind==='public-moments'?'public-moments':null;saveFormDrafts();publishFileVersion++;publishKind=kind;publishingFiles=publishDrafts.get(kind)||[];dialog(`<small class="eyebrow">${kind==='status'?'A FEELING, FOR TODAY':'A MEMORY, TO KEEP'}</small><h2>${kind==='status'?'此刻，你是什么心情？':'分享今天的生活'}</h2><form id="publish-form" data-draft-key="publish-${kind}">${kind==='status'?`<div class="state-options">${STATES.map((s,i)=>`<label><input type="radio" name="kind" value="${esc(s.id)}" ${i===0?'checked':''}><span>${esc(s.icon)} ${esc(s.label)}</span></label>`).join('')}</div>`:''}<textarea name="text" rows="4" maxlength="2000" placeholder="${kind==='status'?'记录此刻的心情…':'今天有什么值得记住？'}" aria-label="发布文案"></textarea><label class="upload-area">＋ ${kind==='status'?'添加一张照片':'添加照片（最多九张）'}<input id="publish-files" type="file" accept="image/*" ${kind==='post'?'multiple':''}></label><div id="publish-previews">${publishingFiles.map(id=>`<img data-media="${esc(id)}" alt="待发布照片">`).join('')}</div><p class="muted">${kind==='status'?'24 小时后自动结束。':'只保存在当前浏览器。'} 每张图片不超过 10 MB。</p><button class="primary" type="submit">${kind==='status'?'就用这个状态':'发布朋友圈'} ↗</button></form>`,'publish');}
-  function showOwnMemories(){dialog(`<div class="own-moments">${timelineHTML('me')}</div>`,'my-memories');}
+  function showPublish(kind){if(kind==='post'&&mods&&!mods.enabled('moments'))return mods.onUnavailable('moments');publishReturn=dialogKind==='public-moments'?'public-moments':null;saveFormDrafts();publishFileVersion++;publishKind=kind;publishingFiles=publishDrafts.get(kind)||[];dialog(`<small class="eyebrow">${kind==='status'?'A FEELING, FOR TODAY':'A MEMORY, TO KEEP'}</small><h2>${kind==='status'?'此刻，你是什么心情？':'分享今天的生活'}</h2><form id="publish-form" data-draft-key="publish-${kind}">${kind==='status'?`<div class="state-options">${STATES.map((s,i)=>`<label><input type="radio" name="kind" value="${esc(s.id)}" ${i===0?'checked':''}><span>${esc(s.icon)} ${esc(s.label)}</span></label>`).join('')}</div>`:''}<textarea name="text" rows="4" maxlength="2000" placeholder="${kind==='status'?'记录此刻的心情…':'今天有什么值得记住？'}" aria-label="发布文案"></textarea><label class="upload-area">＋ ${kind==='status'?'添加一张照片':'添加照片（最多九张）'}<input id="publish-files" type="file" accept="image/*" ${kind==='post'?'multiple':''}></label><div id="publish-previews">${publishingFiles.map(id=>`<img data-media="${esc(id)}" alt="待发布照片">`).join('')}</div><p class="muted">${kind==='status'?'24 小时后自动结束。':'只保存在当前浏览器。'} 每张图片不超过 10 MB。</p><button class="primary" type="submit">${kind==='status'?'就用这个状态':'发布朋友圈'} ↗</button></form>`,'publish');}
+  function showOwnMemories(){if(mods&&!mods.enabled('moments'))return mods.onUnavailable('moments');dialog(`<div class="own-moments">${timelineHTML('me')}</div>`,'my-memories');}
   function showPicker(kind){picker=picker===kind?null:kind;const el=$('chat-picker');if(!picker){ui.close('picker');return;}el.innerHTML=picker==='emoji'?`<div class="emoji-grid">${EMOJI.map(e=>`<button data-action="insert-emoji" data-value="${e}">${e}</button>`).join('')}</div>`:picker==='stickers'?`<div class="sticker-grid">${STICKERS.map(([e,t])=>`<button data-action="send-sticker" data-value="${e} ${t}"><span>${e}</span>${t}</button>`).join('')}</div>`:'';if(picker)ui.open('picker',{origin:actionSource,focus:false});else ui.close('picker');}
   function sendConversation(ref,payload){if(ref.kind==='friend')return store.sendMessage(ref.id,payload);const g=groupOf(store.state,ref.id),mentions=(g?.memberIds||[]).filter(id=>payload.text?.includes('@'+person(id).name));if(payload.text?.includes('@所有人'))mentions.push('all');return store.sendGroupMessage(ref.id,{...payload,mentionIds:mentions});}
   async function send(payload){if(!active)return false;const id=active,submittedText=$('chat-input').value,submittedAttachment=attachment,isComposer=payload.type==='text'||payload.type==='image';if(isComposer)clearTimeout(draftTimer);const result=await attempt(async()=>{await sendConversation(conversationRef(id),payload);return true;});if(result){ui.close('picker');picker=null;if(id===active){if(isComposer&&$('chat-input').value===submittedText){$('chat-input').value='';draftValues.set(id,'');await attempt(()=>store.setConversationDraft(conversationRef(id),''));}if(isComposer&&attachment===submittedAttachment){attachment=null;$('chat-attachment').hidden=true;await attempt(()=>store.setConversationAttachment(conversationRef(id),null));}$('chat-messages').scrollTop=$('chat-messages').scrollHeight;}}return !!result;}
   root.addEventListener('click',async e=>{
     const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action,id=button.dataset.id;actionSource=button;
-    if(action==='public-moments')showPublicFeed();
-    if(action==='discover')onOpenContent('discover',{resume:true,origin:button});
+    if(action==='workshop')return onOpenWorkshop(button);
+    if(action?.startsWith('mod-'))return attempt(()=>mods.open(action.slice(4),{origin:button}));
+    const momentsActions=['public-moments','post','feed-author','like','share-post','publish-post','my-memories'];
+    if(mods&&momentsActions.includes(action)&&!mods.enabled('moments'))return mods.onUnavailable('moments',{origin:button});
+    if(action==='public-moments')return mods?attempt(()=>mods.open('moments',{origin:button})):showPublicFeed();
+    if(action==='discover')return onOpenWorkshop(button);
     if(action==='open-content')onOpenContent({type:button.dataset.contentType,id:button.dataset.contentId});
     if(action==='content-library')onOpenContent(button.dataset.kind,{owner:'me',origin:button,onBack:()=>showMe()});
     if(action==='feed-author'){if(id==='me'){showOwnMemories();}else{ui.close('social',{immediate:true,restoreFocus:false});await openFriend(id);setMoments(true);}}
@@ -331,7 +358,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(form.id==='chat-form'){const text=$('chat-input').value.trim();if(!text&&!attachment)return;button.disabled=true;try{await send(attachment?{type:'image',mediaId:attachment,text}:{type:'text',text});}finally{button.disabled=false;}return;}
     if(form.classList.contains('comment-form')){const input=form.elements.comment;const text=input.value.trim();if(!text)return;button.disabled=true;const ok=await attempt(async()=>{commentDrafts.delete(form.dataset.post);try{await store.addComment(form.dataset.post,text);}catch(error){commentDrafts.set(form.dataset.post,text);throw error;}return true;});if(!ok)button.disabled=false;return;}
     if(form.id==='profile-form'){const fd=new FormData(form);const ok=await attempt(async()=>{await store.updateProfile({name:String(fd.get('name')).trim(),signature:String(fd.get('signature')).trim()});return true;});if(ok){await ui.close('compose');formDrafts.delete('profile-form');showMe();toast('资料已保存。');}return;}
-    if(form.id==='publish-form'){const fd=new FormData(form),text=String(fd.get('text')).trim();if(publishKind==='post'&&!text&&!publishingFiles.length)return toast('写一点文字，或添一张照片吧。');button.disabled=true;const ok=await attempt(async()=>{if(publishKind==='status')await store.publishStatus({kind:fd.get('kind'),text,mediaId:publishingFiles[0]});else await store.publishPost({text,mediaIds:publishingFiles});return true;});button.disabled=false;if(ok){formDrafts.delete('publish-'+publishKind);publishDrafts.delete(publishKind);publishingFiles=[];form.reset();ui.close('compose',{immediate:true,restoreFocus:false});formDrafts.delete('publish-'+publishKind);publishDrafts.delete(publishKind);toast(publishKind==='status'?'心情已挂在今天的枝头。':'朋友圈已发布。');if(publishReturn==='public-moments')showPublicFeed();else showMe();}}
+    if(form.id==='publish-form'){if(publishKind==='post'&&mods&&!mods.enabled('moments'))return toast('朋友圈已停用，草稿已保留');const fd=new FormData(form),text=String(fd.get('text')).trim();if(publishKind==='post'&&!text&&!publishingFiles.length)return toast('写一点文字，或添一张照片吧。');button.disabled=true;const ok=await attempt(async()=>{if(publishKind==='status')await store.publishStatus({kind:fd.get('kind'),text,mediaId:publishingFiles[0]});else await store.publishPost({text,mediaIds:publishingFiles});return true;});button.disabled=false;if(ok){formDrafts.delete('publish-'+publishKind);publishDrafts.delete(publishKind);publishingFiles=[];form.reset();ui.close('compose',{immediate:true,restoreFocus:false});formDrafts.delete('publish-'+publishKind);publishDrafts.delete(publishKind);toast(publishKind==='status'?'心情已挂在今天的枝头。':'朋友圈已发布。');if(publishReturn==='public-moments')showPublicFeed();else showMe();}}
   });
   $('friend-search').addEventListener('input',renderDirectory);
   $('meeting-search').addEventListener('input',renderMeetingFriends);
@@ -380,5 +407,6 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;const a=anchors.find(a=>a.id===p.id);node.style.setProperty('--identity-offset',`${((a?.headY??p.y)-p.y+40).toFixed(2)}px`);node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;}
   }
 
-  return {openFriend,update,prepareFrame,saveSessionDraft,loadInbox:()=>conversations.loadInbox(),get inbox(){return conversations.inbox;},setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){hover.dispose();groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
+  refreshMods();
+  return {openModMoments:()=>showPublicFeed(),refreshMods,prepareModDisable,openFriend,update,prepareFrame,saveSessionDraft,loadInbox:()=>conversations.loadInbox(),get inbox(){return conversations.inbox;},setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){hover.dispose();groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
 }
