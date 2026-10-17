@@ -23,10 +23,11 @@ export function createDiscoverySceneIcons({camera,groups,onOpen,preview,ui,inter
       e.button.hidden=e.point.z< -1||e.point.z>1||x<8||x>innerWidth-8||y<8||y>innerHeight-50;
       if(e.button.hidden)continue;
       const title=preview(e.kind)?.title||'';if(e.previous!==title){e.button.querySelector('small').textContent=title;e.previous=title;}
-      const width=e.button.matches(':focus-visible')||(matchMedia('(hover:hover)').matches&&e.button.matches(':hover'))?172:44;
-      visible.push({entry:e,width,x:Math.max(width/2+8,Math.min(innerWidth-width/2-8,x)),y:Math.max(30,y)});
+      // Reserve the expanded footprint even at rest: hover must never move its own hit target.
+      const width=172;
+      visible.push({entry:e,width,x,y});
     }
-    if(visible.length===2&&Math.abs(visible[0].x-visible[1].x)<(visible[0].width+visible[1].width)/2+8&&Math.abs(visible[0].y-visible[1].y)<52)visible.sort((a,b)=>a.y-b.y)[0].y=Math.max(8,Math.min(visible[0].y,visible[1].y)-54);
+    // Each entrance stays on its projected world point; labels never displace each other or social anchors.
     if(focusOnReturn&&!focusOnReturn.hidden){focusOnReturn.focus({preventScroll:true});focusOnReturn=null;}
     anchors=visible.map(({entry:e,width,x,y})=>({id:'discovery-'+e.kind,x,y,width,height:44,visible:true,fixed:true}));
     for(const {entry:e,x,y} of visible){const transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;if(e.button.style.transform!==transform)e.button.style.transform=transform;}

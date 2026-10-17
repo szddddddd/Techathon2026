@@ -1,6 +1,6 @@
+import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupMessageBoard} from './group-message-board.js';
 import {unreadTier} from './social-presence.js';
-import {createAnchorLayout} from './social-anchor-layout.js';
 import * as T from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {GROUP_TYPES,groupOf} from './group-catalog.js';import {GROUP_SLOTS,GROUP_QUEUE} from './community-layout.js';import {createGroupBuilding} from './group-building-model.js';import {createGroupPresence} from './group-presence.js';
 export {createCommunityGround} from './town-landscape.js';
@@ -25,13 +25,13 @@ export async function loadGroupTemplates({basePath='assets/rodin-groups',assetUr
 }
 export async function createGroupScene({scene,camera,canvas,controls,reduced,store,socialUI,ui,onFocus=async()=>{},obstacles=()=>[],isOccluded=()=>false,theme='forest',createTemplate,templates:prepared,slots=GROUP_SLOTS,queue=GROUP_QUEUE}){
  let ownTemplates=prepared?null:await loadGroupTemplates({createTemplate,theme}),bundle=prepared||ownTemplates,templates=bundle.templates||bundle,failures=bundle.failures||[];
- const root=new T.Group();root.name='Live group buildings';scene.add(root);const labels=document.createElement('div');labels.id='group-building-labels';document.body.append(labels);const anchorLayout=createAnchorLayout();let lastFrame=performance.now(),lastViewport='',suspended=false,uiHidden=false,disposed=false;const unsubscribe=ui?.subscribe(s=>{uiHidden=!!s.main||!!s.modal;labels.hidden=suspended||uiHidden;});
+ const root=new T.Group();root.name='Live group buildings';scene.add(root);const labels=document.createElement('div');labels.id='group-building-labels';document.body.append(labels);let suspended=false,uiHidden=false,disposed=false;const unsubscribe=ui?.subscribe(s=>{uiHidden=!!s.main||!!s.modal;labels.hidden=suspended||uiHidden;});
  const messageBoard=createGroupMessageBoard({scene:root,store,position:queue,theme});
  const template=id=>bundle.get?bundle.get(id):templates[id];
  function placeBoard(){messageBoard.setTheme(theme);messageBoard.root.position.set(queue.x,queue.y??2.22,queue.z);messageBoard.root.scale.setScalar(theme==='forest'?1:.45);}
  placeBoard();
  async function openBoard(){socialUI.openGroupQueue(()=>presence.snapshot().queue,queueButton);await onFocus(messageBoard.focus());}
- const queueButton=document.createElement('button');queueButton.className='group-queue-anchor';queueButton.setAttribute('aria-label','更多群聊');labels.append(queueButton);queueButton.addEventListener('click',()=>{if(presence.snapshot().queue.length){socialUI.openGroupQueue(()=>presence.snapshot().queue,queueButton);void onFocus(messageBoard.focus());}else void openBoard();});
+ const queueButton=document.createElement('button');queueButton.className='group-queue-anchor scene-entry-icon';queueButton.type='button';queueButton.setAttribute('aria-label','更多群聊');queueButton.innerHTML='<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 15h4l3 3V9a3 3 0 0 0-3-3h-2"/><path d="M6 16l-3 3V6a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3Z"/><path d="M7 8h5M7 11h3"/></svg></span><span class="scene-content-copy"><strong>群聊</strong><small>查看群聊与来信</small></span>';const queueHint=queueButton.querySelector('small');labels.append(queueButton);queueButton.addEventListener('click',()=>{if(presence.snapshot().queue.length){socialUI.openGroupQueue(()=>presence.snapshot().queue,queueButton);void onFocus(messageBoard.focus());}else void openBoard();});
  const presence=createGroupPresence({theme}),actors=new Map(),idleBuildings=new Map(),ray=new T.Raycaster();let down=null,queueKey='',previousUnread=new Map(),savedBindingsKey='';
  function clearIdle(a){a.body.removeFromParent();a.materials.forEach(m=>m.dispose());}
  function ensureIdle(slot,type){
@@ -57,17 +57,18 @@ export async function createGroupScene({scene,camera,canvas,controls,reduced,sto
  function project(x,y,z){const p=new T.Vector3(x,y,z).project(camera);return{x:(p.x*.5+.5)*innerWidth,y:(.5-p.y*.5)*innerHeight,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1};}
  function hit(x,y){if(suspended||disposed)return;ray.setFromCamera(new T.Vector2(x/innerWidth*2-1,1-y/innerHeight*2),camera);const h=ray.intersectObjects([...actors.values()].map(a=>a.body).concat([...idleBuildings.values()].filter(a=>a.body.visible).map(a=>a.body)),true)[0];return h&&!isOccluded(h.point)?h:undefined;}
  function pick(x,y){return hit(x,y)?.object.userData.groupId;}
+ const hover=createSceneLabelHover({canvas,selector:'.group-building-anchor',dataKey:'group',pick});
  const pointerDown=e=>{down=null;if(!suspended&&!disposed&&e.button===0&&controls.enabled&&!document.querySelector('dialog[open]'))down={x:e.clientX,y:e.clientY,id:e.pointerId};};
  const pointerUp=e=>{const d=down;down=null;if(suspended||disposed||!d||e.pointerId!==d.id||Math.hypot(d.x-e.clientX,d.y-e.clientY)>6||!controls.enabled)return;ray.setFromCamera(new T.Vector2(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2),camera);if(ray.intersectObject(messageBoard.root,true).length){void openBoard();return;}const id=pick(e.clientX,e.clientY);if(id)void openGroup(id);};
  canvas.addEventListener('pointerdown',pointerDown);canvas.addEventListener('pointerup',pointerUp);
  function releaseActor(a){
   ensureIdle(a.slot,a.type);a.group.removeFromParent();if(document.activeElement===a.node)document.querySelector('#dock-reveal')?.focus({preventScroll:true});a.node.remove();a.doorPulse?.geometry.dispose();a.glow.geometry.dispose();a.identity.traverse(m=>m.geometry?.dispose());for(const m of a.materials)m.dispose();a.outline.traverse(m=>m.material?.dispose());a.letters.traverse(m=>m.geometry?.dispose());
  }
- function update(now){if(suspended||disposed)return;const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;const data=presence.update({state:store.state,activeGroup:socialUI.activeConversation?.kind==='group'?socialUI.activeConversation.id:null,chatVisible:socialUI.chatVisible},now,reduced.matches),wanted=new Set(data.entries.map(e=>e.id));
+ function update(now){if(suspended||disposed)return;const data=presence.update({state:store.state,activeGroup:socialUI.activeConversation?.kind==='group'?socialUI.activeConversation.id:null,chatVisible:socialUI.chatVisible},now,reduced.matches),wanted=new Set(data.entries.map(e=>e.id));
   for(const [id,a] of actors)if(!wanted.has(id)){releaseActor(a);actors.delete(id);previousUnread.delete(id);}
   for(const entry of data.entries){const g=groupOf(store.state,entry.id);if(!g)continue;let a=actors.get(g.id);if(a&&(a.type!==g.type||a.source!==templates[g.type])){releaseActor(a);actors.delete(g.id);a=null;}if(!a){a=make(entry,g.type);actors.set(g.id,a);}const idle=idleBuildings.get(entry.slot),appearance=idle&&idle.type!==g.type?Math.max(0,Math.min(1,(now-a.appearanceStart)/(reduced.matches?80:320))):1;for(const m of a.materials)m.opacity=entry.alpha;a.body.traverse(o=>{if(o.isMesh)for(const m of [].concat(o.material))m.opacity=appearance;});a.group.visible=true;a.outline.visible=entry.selected;a.glow.material.emissiveIntensity=entry.unread?.7:.06;a.letters.children.forEach((m,i)=>m.visible=i<(entry.unread>=20?4:entry.unread>=6?3:entry.unread>=2?2:entry.unread?1:0));
    if(a.doorPulse){if(entry.unread>(previousUnread.get(g.id)||0))a.messageAt=now;const pulse=Math.max(0,1-(now-a.messageAt)/1800);a.doorPulse.material.emissiveIntensity=.25+(reduced.matches?0:1.5*Math.sin(pulse*Math.PI));}
-   const title=g.name+(entry.pinned?' · 置顶':'');a.node.title=title;a.node.setAttribute('aria-label',title+'，'+entry.unread+'条未读来信');a.node.classList.toggle('selected',entry.selected);a.node.dataset.unreadTier=unreadTier(entry.unread);
+   const title=g.name;a.node.classList.toggle('is-hovered',!uiHidden&&controls.enabled&&hover.get(now)===g.id);a.node.setAttribute('aria-label',title+'，'+entry.unread+'条未读来信');a.node.classList.toggle('selected',entry.selected);a.node.dataset.unreadTier=unreadTier(entry.unread);
    const key=title+'|'+entry.unread;if(a.key!==key){
     a.key=key;a.node.replaceChildren();
     if(entry.unread){const stack=document.createElement('span');stack.className='letter-stack';stack.setAttribute('aria-hidden','true');for(let i=0;i<unreadTier(entry.unread);i++){const letter=document.createElement('i');letter.style.setProperty('--letter',i);stack.append(letter);}const count=document.createElement('b');count.className='group-unread-count';count.textContent=entry.unread>99?'99+':entry.unread;a.node.append(stack,count);}
@@ -86,20 +87,21 @@ export async function createGroupScene({scene,camera,canvas,controls,reduced,sto
   const bindings=Object.fromEntries(data.entries.filter(e=>e.pinned).map(e=>[e.id,e.slot])),saveKey=theme+'|'+JSON.stringify(bindings);
   if(saveKey!==savedBindingsKey){savedBindingsKey=saveKey;void store.setGroupBuildingSlots(theme,bindings).catch(error=>socialUI.toast?.(error.message));}
   messageBoard.update(data.queue);
-  const viewport=innerWidth+'x'+innerHeight;if(viewport!==lastViewport){anchorLayout.clear();lastViewport=viewport;}
-  const qp=project(queue.x,queue.y??(theme==='fuji'?4.3:6.45),queue.z);
-  for(const point of anchorLayout.update([...obstacles(),{id:'@queue',x:qp.x,y:qp.y,width:60,height:48,visible:qp.visible}],{now,moving:false,width:innerWidth,height:innerHeight,dt:reduced.matches?1:dt,maxLanes:6})){if(point.id==='@queue')queueButton.style.transform=`translate(${point.x}px,${point.y}px) translate(-50%,-50%)`;}
-  const p=project(queue.x,queue.y??(theme==='fuji'?4.3:6.45),queue.z);queueButton.hidden=!p.visible;const nextQueueKey=data.queue.join('|');if(nextQueueKey!==queueKey){queueKey=nextQueueKey;socialUI.refreshGroupQueue();}queueButton.textContent=data.queue.length?'··· +'+data.queue.length:'群聊';
+  // Project a fixed world anchor above the board, accounting for the compact Fuji scale.
+  const boardTop=messageBoard.root.position.y+3.9*messageBoard.root.scale.y;
+  const qp=project(messageBoard.root.position.x,boardTop+.65,messageBoard.root.position.z);
+  queueButton.style.transform=`translate3d(${qp.x.toFixed(1)}px,${(qp.y-22).toFixed(1)}px,0)`;
+  queueButton.hidden=!qp.visible;const nextQueueKey=data.queue.join('|');if(nextQueueKey!==queueKey){queueKey=nextQueueKey;socialUI.refreshGroupQueue();}const hint=data.queue.length?`${data.queue.length} 个群聊在候场`:'查看群聊与来信';if(queueHint.textContent!==hint)queueHint.textContent=hint;queueButton.setAttribute('aria-label',data.queue.length?`更多群聊，${data.queue.length} 个群聊在候场`:'更多群聊');
  }
  function setScene(next){
   const nextBundle=next.templates||bundle,nextTemplates=nextBundle.templates||nextBundle,nextSlots=next.slots||slots;
   if(nextSlots.length<GROUP_SLOTS.length||(!nextBundle.get&&GROUP_TYPES.some(t=>!nextTemplates[t.id])))throw new Error('Scene needs nine plots and complete building templates');
-  down=null;for(const actor of actors.values())releaseActor(actor);actors.clear();for(const idle of idleBuildings.values())clearIdle(idle);idleBuildings.clear();
+  down=null;hover.clear();for(const actor of actors.values())releaseActor(actor);actors.clear();for(const idle of idleBuildings.values())clearIdle(idle);idleBuildings.clear();
   if(ownTemplates&&nextBundle!==ownTemplates){ownTemplates.dispose();ownTemplates=null;}
   scene=next.scene||scene;scene.add(root);slots=nextSlots;queue=next.queue||queue;theme=next.theme||theme;bundle=nextBundle;templates=nextTemplates;failures=bundle.failures||[];presence.setScene(theme);savedBindingsKey='';placeBoard();
-  anchorLayout.clear();lastViewport='';lastFrame=performance.now();previousUnread.clear();
-  update(lastFrame);
+  previousUnread.clear();
+  update(performance.now());
  }
  function suspend(value){suspended=!!value;root.visible=!suspended;labels.hidden=suspended||uiHidden;if(suspended)down=null;}
- return{root,messageBoard,get assets(){return{ready:Object.keys(templates).filter(id=>!bundle.loading?.has(id)&&!failures.includes(id)),loading:[...bundle.loading?.keys()||[]],failures:[...failures]};},update,setScene,suspend,get theme(){return theme;},get slots(){return slots;},snapshot:presence.snapshot,get failures(){return failures;},project,pick,hit,dispose(){if(disposed)return;disposed=true;messageBoard.dispose();unsubscribe?.();anchorLayout.clear();canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);for(const a of actors.values())releaseActor(a);actors.clear();for(const a of idleBuildings.values())clearIdle(a);idleBuildings.clear();root.removeFromParent();labels.remove();ownTemplates?.dispose();}};
+ return{root,messageBoard,get assets(){return{ready:Object.keys(templates).filter(id=>!bundle.loading?.has(id)&&!failures.includes(id)),loading:[...bundle.loading?.keys()||[]],failures:[...failures]};},update,setScene,suspend,get theme(){return theme;},get slots(){return slots;},snapshot:presence.snapshot,get failures(){return failures;},project,pick,hit,dispose(){if(disposed)return;disposed=true;hover.dispose();messageBoard.dispose();unsubscribe?.();canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);for(const a of actors.values())releaseActor(a);actors.clear();for(const a of idleBuildings.values())clearIdle(a);idleBuildings.clear();root.removeFromParent();labels.remove();ownTemplates?.dispose();}};
 }

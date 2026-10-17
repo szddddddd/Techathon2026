@@ -3,10 +3,11 @@ import {indexedDB} from 'fake-indexeddb';
 import {createSocialStore} from '../src/social-store.js';
 import {ACCOUNTS,ARTICLES,CREATORS,VIDEOS,getContent,getAccount,getCreator,validContentRef,contentCardHTML} from '../src/discovery-catalog.js';
 
-assert.equal(ACCOUNTS.length,4);assert.equal(ARTICLES.length,12);assert.equal(CREATORS.length,4);assert.equal(VIDEOS.length,6);
-assert.equal(new Set([...ARTICLES,...VIDEOS].map(item=>item.id)).size,18);
+assert.equal(ACCOUNTS.length,4);assert.equal(ARTICLES.length,12);assert.equal(CREATORS.length,5);assert.equal(VIDEOS.length,7);
+assert.equal(new Set([...ARTICLES,...VIDEOS].map(item=>item.id)).size,19);
 for(const article of ARTICLES){assert.ok(getAccount(article.accountId));if(article.accountId==='hyper3d'){assert.ok(article.sourceUrl.startsWith('https://docs.hyper3d.ai/'));assert.ok(article.blocks.some(b=>b.type==='paragraph'));continue;}assert.ok(article.blocks.filter(block=>block.type==='paragraph').reduce((sum,block)=>sum+block.text.length,0)>=450,`${article.id} must contain a complete article`);assert.ok(getContent({type:'video',id:article.videoId}));}
-for(const video of VIDEOS){assert.ok(getCreator(video.creatorId));assert.ok(getContent({type:'article',id:video.articleId}));assert.equal(video.duration,12);}
+for(const video of VIDEOS){assert.ok(getCreator(video.creatorId));if(video.articleId)assert.ok(getContent({type:'article',id:video.articleId}));assert.ok(video.duration>0);}
+const demo=getContent({type:'video',id:'video-hyper3d-agent-ready'});assert.equal(getCreator(demo.creatorId).name,'aaaaa');assert.equal(demo.duration,34.69);assert.equal(demo.objectFit,'contain');assert.match(demo.description,/#Hyper3D #AgentReady/);
 assert.equal(validContentRef({type:'article',id:'video-1'}),false);
 assert.equal(validContentRef({type:'post',id:'article-1'}),false);
 assert.match(contentCardHTML({type:'article',id:'article-1'}),/data-action="open-content"/);

@@ -1,8 +1,21 @@
 html[data-scene="fuji"],html[data-scene="fuji"] body{background:#b797ac}
-/* Compact town labels include their message and envelope in the measured box,
-   allowing projected public controls to reserve real clickable space. */
-html[data-scene="fuji"] #social .friend-anchor{height:auto}
-html[data-scene="fuji"] #social .friend-anchor .head-message{position:static;bottom:auto;order:-1;width:auto;max-width:170px}
+/* Stable footprints: revealing identity never moves the envelope or its hit target. */
+#social .friend-anchor,#group-building-labels .group-building-anchor{width:76px;height:40px;min-height:40px;max-width:none;gap:0;overflow:visible;pointer-events:none;backdrop-filter:none;background:transparent;box-shadow:none}
+#social .friend-anchor .anchor-identity{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);padding-bottom:4px;visibility:hidden;pointer-events:none}
+#social .friend-anchor .anchor-identity button{pointer-events:none}
+#social .friend-anchor:is(.is-hovered,:focus-within) .anchor-identity{visibility:visible;pointer-events:auto}
+#social .friend-anchor:is(.is-hovered,:focus-within) .anchor-identity button{pointer-events:auto}
+#social .friend-anchor .unread-visual{position:relative;width:76px;height:40px;flex:none}
+#group-building-labels .group-building-anchor:not([data-unread-tier="0"]){pointer-events:auto}
+#group-building-labels .group-building-anchor .group-sign-copy{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);max-width:180px;visibility:hidden;pointer-events:none}
+#group-building-labels .group-building-anchor:is(.is-hovered,:hover,:focus-visible) .group-sign-copy{visibility:visible;pointer-events:auto}
+#group-building-labels .group-building-anchor:is(:hover,:focus-visible){background:transparent;outline:none}
+#group-building-labels .group-building-anchor:focus-visible .group-sign-copy{outline:2px solid #66865b}
+#social .friend-anchor .letter-stack,#group-building-labels .letter-stack{position:absolute;left:14px;top:2px;width:48px;height:36px;padding:0;border:0;background:transparent;box-shadow:none;isolation:isolate;z-index:0}
+#social .friend-anchor .unread-visual .unread-dot,#group-building-labels .group-unread-count{position:absolute!important;inset:0 auto auto 50px!important;z-index:2;display:grid!important;place-items:center;width:var(--unread-size);min-width:var(--unread-size);max-width:none;height:var(--unread-size);padding:0 2px;box-sizing:border-box;border:0;border-radius:50%;background:var(--unread-color);color:#fff;box-shadow:0 2px 6px #7c332131;font:10px/1 sans-serif;isolation:isolate;pointer-events:auto}
+#social .friend-anchor .unread-dot::before{display:none}
+#social .friend-anchor .head-message{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);width:max-content;max-width:170px;margin:0;display:none!important}
+#social .friend-anchor.has-unread.show-message .head-message{display:block!important}
 /* Hide both outgoing anchors and newly mounted incoming anchors until handoff ends. */
 html[data-scene-transition=true] :is(#friend-anchors,#group-building-labels,#discovery-scene-icons,#record-player-control,#train-station-control,#train-follow-exit,.valley-popover,#character-drag-hint){visibility:hidden!important;pointer-events:none!important}
 .scene-travel{position:fixed;inset:0;z-index:44;display:grid;place-items:center;background:linear-gradient(145deg,#e6eee7ed,#f8f5edee);backdrop-filter:blur(20px);color:#3b5547;font-family:var(--ui-font,-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif)}

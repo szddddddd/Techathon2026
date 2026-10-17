@@ -26,7 +26,7 @@ export function createContentPlayer({store}) {
         if(restoreMetadata)video.removeEventListener('loadedmetadata',restoreMetadata);
         video.removeAttribute('src');video.load();
         if(blobUrl){URL.revokeObjectURL(blobUrl);blobUrl=null;}
-        activeId=id;failed=false;wantsPlay=autoplay;video.poster=content.poster||content.cover||'';
+        activeId=id;failed=false;wantsPlay=autoplay;video.poster=content.poster||content.cover||'';video.style.objectFit=content.objectFit||'cover';
         const saved=store.state.discovery?.progress?.[`video:${id}`];
         const position=typeof saved==='object'?saved.value:Number(saved)||0;
         // The bundled Python server does not serve byte ranges. A complete local

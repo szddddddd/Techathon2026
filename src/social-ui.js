@@ -1,3 +1,4 @@
+import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupUI,groupAvatar} from './group-ui.js';
 import {groupOf,groupUnread,mixedConversations,conversationKey,conversationRef} from './group-catalog.js';
 import {createFriendModels} from './friend-models.js';
@@ -77,6 +78,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   }
   function showDirectory(){renderDirectory();ui.open('directory',{origin:actionSource});}
   const anchorNodes=new Map();const messageWindows=new Map();const draftValues=new Map();const unreadArrival=new Map();
+  const hover=createSceneLabelHover({canvas:document.querySelector('#viewport canvas'),selector:'.friend-anchor',dataKey:'friend',pick:(x,y)=>characters.placement.pick(x,y)});
   const anchorLayout=createAnchorLayout();let orbiting=false,lastCameraMotion=-Infinity,lastAnchorFrame=0;
   const orbitStart=()=>{closeStatus({restoreFocus:false});orbiting=true;lastCameraMotion=performance.now();};
   const orbitEnd=()=>{orbiting=false;lastCameraMotion=performance.now();};
@@ -108,7 +110,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     const count=store.state.friends.reduce((n,id)=>n+unread(id),0)+store.state.groups.filter(g=>!g.leftAt).reduce((n,g)=>n+groupUnread(store.state,g.id).length,0);$('total-unread').textContent=count;$('total-unread').hidden=!count;
     const newPosts=getNewPublicPosts(store.state).length;$('public-feed-unread').hidden=!newPosts;$('public-feed-unread').textContent=newPosts;$('public-feed-unread').setAttribute('aria-label',`${newPosts}条新动态`);dock.unread(count+newPosts);
     const signature=store.state.friends.join(',');if(signature!==lastFriendSignature){lastFriendSignature=signature;renderDirectory();}
-    for(const id of store.state.friends){const latest=store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me').at(-1);if(latest&&unreadArrival.get(id)?.id!==latest.id){if(unreadArrival.has(id))characters.pulse?.(id);unreadArrival.set(id,{id:latest.id,at:performance.now()});}}
+    for(const id of store.state.friends){const latest=store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me').at(-1);if(latest&&unreadArrival.get(id)?.id!==latest.id){if(unreadArrival.has(id))characters.pulse?.(id);unreadArrival.set(id,{id:latest.id,at:performance.now()-Math.max(0,Date.now()-latest.createdAt)});}}
     characters.setSocialState(store.state);renderDirectory();renderAnchors();renderMeetingFriends();
   }
   function renderAnchors(){
@@ -351,7 +353,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(statusOwner&&statusOrigin){const source=typeof statusOrigin==='function'?statusOrigin():statusOrigin;if(!source?.isConnected||source.closest('[hidden]'))closeStatus();}
     for(const node of anchorNodes.values())node.hidden=true;
     const dt=Math.min(.05,(now-lastAnchorFrame)/1000||1/60);lastAnchorFrame=now;
-    const moving=orbiting||now-lastCameraMotion<180,anchors=characters.getAnchors();let expanded=0;
+    const moving=orbiting||now-lastCameraMotion<180,anchors=characters.getAnchors();
     root.classList.toggle('is-orbiting',orbiting);
     for(const a of anchors){
       const node=anchorNodes.get(a.id);if(!node)continue;
@@ -363,14 +365,13 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
         if(now-(node._occlusionSince||0)>200)node._occluded=!!a.occluded;
       }
       node.classList.toggle('occluded',node._occluded);
-      const fresh=now-(unreadArrival.get(a.id)?.at||-Infinity)<8000;
-      const show=(fresh&&expanded<3)||active===a.id;if(show)expanded++;
-      if(!moving||node._showMessage===undefined)node._showMessage=show;
-      node.classList.toggle('show-message',node._showMessage);
+      const fresh=now-(unreadArrival.get(a.id)?.at??-Infinity)<3000;
+      node.classList.toggle('show-message',fresh&&node.classList.contains('has-unread'));
+      node.classList.toggle('is-hovered',!sceneTransition&&!orbiting&&controls.enabled&&hover.get(now)===a.id);
     }
-    const obstacles=getAnchorObstacles().filter(a=>a.visible),centered=obstacles.length>0;const measured=anchors.map(a=>{const node=anchorNodes.get(a.id),height=node?._anchorHeight||36;return{...a,y:a.y-(centered?height/2:0),width:node?._anchorWidth||150,height};});const positions=anchorLayout.update([...measured,...obstacles.map(a=>({...a,fixed:true}))],{now,moving,width:innerWidth,height:innerHeight,dt});
-    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${(p.y+(centered?(node._anchorHeight||36)/2:0)).toFixed(2)}px,0) translate(-50%,-100%)`;}
+    const measured=anchors.map(a=>{const node=anchorNodes.get(a.id),height=node?._anchorHeight||36;return{...a,width:node?._anchorWidth||150,height};});const positions=anchorLayout.update(measured,{now,moving,width:innerWidth,height:innerHeight,dt});
+    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;}
   }
 
-  return {openFriend,update,prepareFrame,saveSessionDraft,setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
+  return {openFriend,update,prepareFrame,saveSessionDraft,setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){hover.dispose();groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
 }
