@@ -1,4 +1,6 @@
 /* Contact profiles and add-friend search share the woodland window material. */
+/* The social overlay passes pointer events through; its modal must opt back in. */
+#social #add-friends-dialog{pointer-events:auto;box-sizing:border-box;width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - 40px);overflow:auto;overscroll-behavior:contain}
 .avatar-window{box-sizing:border-box;inset:0;margin:auto;width:min(480px,calc(100vw - 32px));max-height:calc(min(var(--ui-height,100dvh),100dvh) - 40px);padding:0;border:1px solid var(--ui-line);border-radius:22px;background:var(--ui-paper);color:var(--ui-ink);box-shadow:var(--ui-shadow);backdrop-filter:blur(24px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;outline:none;font:14px/1.6 var(--ui-font)}
 .avatar-window::backdrop{background:#142d3245;backdrop-filter:blur(3px)}
 .avatar-window .ui-titlebar{position:sticky;top:0;z-index:2;padding:8px 16px;background:var(--scene-color-f7f9f0ed,#f7f9f0ed)}.avatar-window .ui-titlebar>span{flex:1;font-size:13px;font-weight:500}

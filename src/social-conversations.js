@@ -46,7 +46,7 @@ export function createConversations({root,store,friends,ui,onError=console.error
   add.addEventListener('input',e=>{if(e.target.id==='contact-search'){addQuery=e.target.value;renderAddResults();}});
   add.addEventListener('click',e=>{
     const result=e.target.closest('[data-contact-profile]');if(result)onViewProfile(person(result.dataset.contactProfile),()=>add.querySelector(`[data-contact-profile="${CSS.escape(result.dataset.contactProfile)}"]`));
-    if(e.target.closest('[data-new-contact]'))onNewContact({account:/^[a-zA-Z0-9_.-]{3,64}$/.test(addQuery)?addQuery:'',origin:add.querySelector('[data-new-contact]')});
+    if(e.target.closest('[data-new-contact]'))onNewContact({account:/^[\p{L}\p{N}_.-]{3,64}$/u.test(addQuery.trim())?addQuery.trim():'',origin:add.querySelector('[data-new-contact]')});
   });
   const click=async e=>{
     const t=e.target.closest('[data-conversation-tab]');if(t){tab=t.dataset.conversationTab;render();ui.transition(directory.querySelector('#friend-list'));}

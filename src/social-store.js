@@ -73,7 +73,7 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
     getFriend(id){return friendOf(state,id);},
     addAvatarContact(profile){return mutate('friend-added',next=>{
       const account=String(profile.account||'').trim(),name=String(profile.name||'').trim();
-      if(!/^[a-zA-Z0-9_.-]{3,64}$/.test(account)||!name||! /^[a-f0-9-]{36}$/.test(profile.jobId||''))throw new Error('请填写昵称和有效账号（3–64 位字母、数字、点、下划线或短横线）。');
+      if(!/^[\p{L}\p{N}_.-]{3,64}$/u.test(account)||!name||! /^[a-f0-9-]{36}$/.test(profile.jobId||''))throw new Error('请填写昵称和有效账号（3–64 位中文、字母、数字、点、下划线或短横线）。');
       if(allFriends(next).some(f=>(f.account||f.id).toLowerCase()===account.toLowerCase()))throw new Error('这个账号已经在联系人中。');
       const avatarUrl=String(profile.avatarUrl||'');if(!/^data:image\/(png|jpeg|webp);base64,[a-zA-Z0-9+/]+=*$/.test(avatarUrl)||avatarUrl.length>8*1024*1024)throw new Error('请选择有效的好友头像。');
       const id=`avatar-${profile.jobId}`;
