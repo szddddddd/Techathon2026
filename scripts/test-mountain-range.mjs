@@ -8,7 +8,7 @@ import {riverCenter,riverHalfWidth,riverLevel,sampleRiver,riverWave,RIVER_START,
 import {MOUNTAIN_RANGE} from '../src/mountain-profile.js';
 import {querySurface,inWorld} from '../src/world-surface.js';
 
-const out='validation/mountain-range';await fs.mkdir(out,{recursive:true});const checks=[],model=await loadGeometryGLB('assets/rodin-mountain/scene.glb');
+const out='.test-results/mountain-range';await fs.mkdir(out,{recursive:true});const checks=[],model=await loadGeometryGLB('assets/rodin-mountain/scene.glb');
 assert.equal(UPPER_CASCADES.length,3);assert.deepEqual(UPPER_CASCADES.map(c=>c.drop),[1,1.2,.8]);assert.equal(riverLevel(RIVER_START),10.2);
 for(let z=RIVER_START;z<RIVER_JOIN;z+=.005)assert.ok(riverLevel(z+.005)<=riverLevel(z)+1e-7,'flow never goes uphill');
 assert.ok(Math.abs(riverLevel(RIVER_JOIN-1e-5)-.38)<1e-7);assert.ok(Math.abs(riverCenter(RIVER_JOIN-1e-5)-riverCenter(RIVER_JOIN))<.0001);assert.ok(Math.abs(riverHalfWidth(RIVER_JOIN-1e-5)-riverHalfWidth(RIVER_JOIN))<.0001);

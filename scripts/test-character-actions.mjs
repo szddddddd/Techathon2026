@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 
 import {chromium,baseURL} from './test-runtime.mjs';
-const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']}),out='validation/presence/actions';await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']}),out='.test-results/presence/actions';await fs.mkdir(out,{recursive:true});
 const context=await browser.newContext({viewport:{width:960,height:720},recordVideo:{dir:out+'/raw',size:{width:960,height:720}}}),page=await context.newPage(),errors=[],poses=[];page.on('pageerror',e=>errors.push(e.message));
 const subjects=[['tuantuan','kangaroo'],['ali','fox'],['xiaomian','rabbit'],['shanshan','bear']],states=['happy','emo','tired','busy','relax','music','exercise','travel'];
 try{
@@ -20,4 +20,4 @@ try{
   }
  }
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>__socialStore.publishStatus({kind:'tired'},'shanshan'));await page.waitForTimeout(300);const rest=await page.evaluate(()=>__characterPlacement.snapshot().characters.find(r=>r.id==='shanshan').pose);assert.ok(rest.lie>.99);assert.equal(rest.jump,0);assert.deepEqual(errors,[]);await fs.writeFile(`${out}/results.json`,JSON.stringify({poses,errors,reducedMotion:rest},null,2));console.log('PASS: 32 species/state snapshots, grounded bounds, posed picking and static reduced-motion rest.');
-}catch(e){await page.screenshot({path:`${out}/failure.jpg`});await fs.writeFile(`${out}/failure.json`,JSON.stringify({poses,errors,error:String(e)},null,2));throw e;}finally{const video=page.video();await context.close();await video.saveAs('validation/presence/state-actions.webm');await browser.close();}
+}catch(e){await page.screenshot({path:`${out}/failure.jpg`});await fs.writeFile(`${out}/failure.json`,JSON.stringify({poses,errors,error:String(e)},null,2));throw e;}finally{const video=page.video();await context.close();await video.saveAs('.test-results/presence/state-actions.webm');await browser.close();}

@@ -1,82 +1,8 @@
 {
   "id": "cafe",
   "name": "深夜拉面与咖啡屋",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "bce4eaab-009f-4266-80e7-e348a632df28",
-  "parameters": {
-    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. A cozy cyberpunk ramen-and-coffee shop: squat two-storey dark metal building, amber-lit shopfront, shallow maroon awning, blank vertical neon sign housing, tiny outdoor counter integrated against facade, side utility pipes. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "texture_delight": true
-  },
-  "reference": "reference.png",
-  "referenceSha256": "a7566819c75f69088369e3fe04f6965525c000ad41fb705fd30e015b42e8087d",
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
-  "imagePrompt": "../../../output/imagegen/cyber/cafe-prompt.txt",
-  "targetSize": [
-    4.4,
-    3.4,
-    3.8
-  ],
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "20c38441446fe2ff296a71db28f4802df9873492385a54a3ca9f2f9585f6522a",
-  "bytes": 9146508,
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 0,
-  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
-  "sourceSha256": "20c38441446fe2ff296a71db28f4802df9873492385a54a3ca9f2f9585f6522a",
-  "sceneSha256": "81d00d65723e78de9b6a85620c4f3c432838c241fc64a3da86dd0e9efe18f430",
-  "sourceBytes": 9146508,
-  "sceneBytes": 3071936,
-  "optimization": {
-    "geometry": "unchanged source mesh (approximately 30000 triangles)",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "visualReview": {
-    "views": [
-      "preview-front.png",
-      "preview-side.png",
-      "preview-rear.png"
-    ],
-    "severeDefects": false,
-    "notes": "雨棚、柜台、座位与背部管线完整；烘焙窗光被delight移除。"
-  }
+  "sha256": "81d00d65723e78de9b6a85620c4f3c432838c241fc64a3da86dd0e9efe18f430"
 }

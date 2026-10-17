@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {chromium,baseURL} from './test-runtime.mjs';
 
-const out=process.env.CYBER_BROWSER_OUT||'validation/cyber-browser';await fs.mkdir(out,{recursive:true});
+const out=process.env.CYBER_BROWSER_OUT||'.test-results/cyber-browser';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await context.newPage();
 const checks=[],errors=[],samples={},resources=[],report={checks,errors,samples,resources};

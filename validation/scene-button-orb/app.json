@@ -1,9 +1,0 @@
-{
-  "checks": [
-    "48px orb",
-    "proximity expands without scene change",
-    "click switches then folds again",
-    "391px safe positioning"
-  ],
-  "errors": []
-}

@@ -1,4 +1,4 @@
-const out=process.env.FUJI_VALIDATION_DIR||'validation/showa-town';
+const out=process.env.FUJI_VALIDATION_DIR||'.test-results/showa-town';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import * as T from 'three';

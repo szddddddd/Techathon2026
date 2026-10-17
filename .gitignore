@@ -6,6 +6,10 @@ __pycache__/
 .forest-runtime.json
 .forest-avatar-data/
 .test-results/
+# Generated checks, concepts and generation task records are not runtime assets.
+/validation/
+/output/
+/records/
 *.log
 validation/**/raw/
 validation/**/recordings/
@@ -20,25 +24,9 @@ validation/scene-polish/*-map-*.png
 *.pem
 *.key
 
-# Do not add obsolete working copies
-previous-*/
-
-# Raw API records may contain resumable subscription keys or signed URLs.
-records/*
-!records/rodin-friends/
-records/rodin-friends/*
-!records/rodin-friends/summary.json
-!records/rodin-friends/inspection.json
-!records/rodin-friends/curation.json
-
 # OS/editor files
 Thumbs.db
 Desktop.ini
 .DS_Store
 .vscode/
 .idea/
-
-# Temporary capture fragments (keep named final recordings)
-validation/**/.capture-recordings/
-
-validation/**/.recordings/

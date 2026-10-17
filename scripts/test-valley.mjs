@@ -1,3 +1,5 @@
+import {mkdir as ensureReportDirectory} from 'node:fs/promises';
+await ensureReportDirectory('.test-results',{recursive:true});
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import * as THREE from 'three';
@@ -26,4 +28,4 @@ assert.ok(graph.nodes.length>35);for(const a of graph.nodes)for(const i of a.lin
 scene.updateMatrixWorld(true);const ray=new THREE.Raycaster(),errors=[];
 for(let z=-13.4;z<0;z+=.23){ray.set(new THREE.Vector3(23,25,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(context.meadows,false)[0];assert.ok(hit);errors.push(Math.abs(hit.point.y-querySurface(23,z).height));}assert.ok(Math.max(...errors)<.045);
 for(const z of [-11,-5,1.5,7,11])assert.equal(riverHalfWidth(z),.7*(4.9+Math.sin(z*.6)*.24));assert.equal(riverLevel(1.5),.22);assert.equal(riverLevel(7),-.07999999999999999);
-const report={area,maxSlope,rampNodes:graph.nodes.length,maxVisualHeightError:Math.max(...errors),checks:['rear terrain expanded to support deeper mountains','continuous 22 degree supported ramp','terrace support','mountains and cliffs rejected','lamp and elevated rails collide','walk edges respect elevation','rendered terrain matches query','original river width and bridge level unchanged']};await fs.writeFile(process.env.FOREST_VALLEY_REPORT||'validation/valley-geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+const report={area,maxSlope,rampNodes:graph.nodes.length,maxVisualHeightError:Math.max(...errors),checks:['rear terrain expanded to support deeper mountains','continuous 22 degree supported ramp','terrace support','mountains and cliffs rejected','lamp and elevated rails collide','walk edges respect elevation','rendered terrain matches query','original river width and bridge level unchanged']};await fs.writeFile(process.env.FOREST_VALLEY_REPORT||'.test-results/valley-geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

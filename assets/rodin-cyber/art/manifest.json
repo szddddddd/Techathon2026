@@ -1,82 +1,8 @@
 {
   "id": "art",
   "name": "全息艺术工坊",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "709a25dc-aaf4-47fd-8f0c-c67962fad3ca",
-  "parameters": {
-    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. A neighborhood holographic art workshop: asymmetrical stepped block volumes, large display window with an abstract solid sculpture, purple and cyan frame accents, workshop entrance and small skylight. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "texture_delight": true
-  },
-  "reference": "reference.png",
-  "referenceSha256": "7b13d821c4cdc7522ee3c30880405658e10945b1cd2bf85d16b1097d0c078077",
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
-  "imagePrompt": "../../../output/imagegen/cyber/art-prompt.txt",
-  "targetSize": [
-    4.4,
-    4.8,
-    3.8
-  ],
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "812759733ab2c27fdbd86966d992ba146b83087405d8c1296b9ff6f8f2643700",
-  "bytes": 9587340,
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 0,
-  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
-  "sourceSha256": "812759733ab2c27fdbd86966d992ba146b83087405d8c1296b9ff6f8f2643700",
-  "sceneSha256": "c7a492ade195cc751f7384130807e6eaf40a59de939bb40750fa702aa809deeb",
-  "sourceBytes": 9587340,
-  "sceneBytes": 3326044,
-  "optimization": {
-    "geometry": "unchanged source mesh (approximately 30000 triangles)",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "visualReview": {
-    "views": [
-      "preview-front.png",
-      "preview-side.png",
-      "preview-rear.png"
-    ],
-    "severeDefects": false,
-    "notes": "展示窗、阶梯屋顶与植被完整；窗内艺术细节简化。"
-  }
+  "sha256": "c7a492ade195cc751f7384130807e6eaf40a59de939bb40750fa702aa809deeb"
 }

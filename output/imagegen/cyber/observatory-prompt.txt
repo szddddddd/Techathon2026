@@ -1,8 +1,0 @@
-Use case: stylized-concept
-Asset type: single isolated reference for image-to-3D generation, one complete object.
-Style: polished stylized miniature game asset for a cozy rain-after cyberpunk floating town; readable chunky beveled forms, convincing details, not realistic dystopian ruin.
-Palette: graphite charcoal, deep desaturated blue-violet, restrained cyan and rose-magenta details, warm amber windows.
-Framing: centered full object, three-quarter front view showing front and right side, entire top and bottom visible, generous margin, plain uniform light gray background.
-Lighting: even neutral studio light, gentle contact shadow only, details clearly visible, emission colors visible without bloom halos or clipped whites.
-Constraints: no text, no people, no scenery, no ground slab, no border, no detached decorative objects, no labels or collage. Building entrance faces the viewer; all geometry is connected and has complete back and sides.
-Subject: A small futuristic neighborhood observatory: graphite low rectangular annex, compact rounded telescope dome on roof, modest satellite receiver dish, cyan panel accents, amber doorway. No giant tower.

@@ -1,3 +1,5 @@
+import {mkdir as ensureReportDirectory} from 'node:fs/promises';
+await ensureReportDirectory('.test-results/floating-island',{recursive:true});
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import * as T from 'three';
@@ -30,4 +32,4 @@ for(let z=COMMUNITY_BOUNDS.minZ+1;z<=.1;z+=.16){const q=context.inspect(COMMUNIT
 const position=rock.geometry.attributes.position;for(const n of position.array)assert.ok(Number.isFinite(n));
 assert.equal(scene.getObjectByName('West rock body'),undefined);assert.equal(scene.getObjectByName('East rock body'),undefined);
 const report={checks:['shared angular shoreline meets meadow','single tapered rock body without corner spike roots','all nine buildings remain level on dry land','riverside full-body passage','old slab extrusions removed'],shoreChecks,cornerChecks,pathChecks,minRiverClearance,rockTriangles:rock.geometry.index.count/3,bottom:bounds.min.y};
-await fs.writeFile(process.env.FOREST_ISLAND_REPORT||'validation/floating-island/geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));
+await fs.writeFile(process.env.FOREST_ISLAND_REPORT||'.test-results/floating-island/geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 
 import {chromium,baseURL} from './test-runtime.mjs';
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
-const out='validation/interaction';await fs.mkdir(out,{recursive:true});
+const out='.test-results/interaction';await fs.mkdir(out,{recursive:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:out+'/recording',size:{width:1440,height:1000}}});
 const page=await context.newPage(),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
 const settled=async(id,value='open')=>page.waitForFunction(({id,value})=>__uiInteractions.state(id)===value,{id,value});

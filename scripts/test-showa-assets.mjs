@@ -1,6 +1,8 @@
+import {mkdir as ensureReportDirectory} from 'node:fs/promises';
+await ensureReportDirectory('.test-results/showa-town',{recursive:true});
 import {normalizeSceneAsset} from '../src/scene-assets.js';
 import {FUJI_VISUALS} from '../src/fuji-visuals.js';
-const out=process.env.FUJI_VALIDATION_DIR||'validation/showa-town';
+const out=process.env.FUJI_VALIDATION_DIR||'.test-results/showa-town';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import * as T from 'three';

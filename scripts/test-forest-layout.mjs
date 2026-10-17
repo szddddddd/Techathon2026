@@ -65,5 +65,5 @@ for(const fallback of [false,true]){
  reports.push({fallback,forestTrees:trees.length,streetTrees:COMMUNITY_TREES.length,landRocks:rocks.length,pathSamples,roots,checks:['shared world coordinates','all roots supported and grounded','all nine building entrances and town paths clear','ramp and central lawn clear','tree collisions registered','golden lamp unchanged']});
 }
 const report={createdAt:new Date().toISOString(),reports};
-await fs.mkdir('validation/forest-layout',{recursive:true});await fs.writeFile('validation/forest-layout/geometry.json',JSON.stringify(report,null,2));
+await fs.mkdir('.test-results/forest-layout',{recursive:true});await fs.writeFile('.test-results/forest-layout/geometry.json',JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {chromium,baseURL} from './test-runtime.mjs';
-const out='validation/avatar-pipeline';await fs.mkdir(out,{recursive:true});
+const out='.test-results/avatar-pipeline';await fs.mkdir(out,{recursive:true});
 const image=await fs.readFile('assets/rodin-friends/kangaroo/portrait.webp'),glb=await fs.readFile('assets/rodin-friends/kangaroo/scene.glb');
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
 const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:out+'/recordings',size:{width:1440,height:1000}}});

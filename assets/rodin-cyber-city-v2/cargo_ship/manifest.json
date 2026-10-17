@@ -1,74 +1,8 @@
 {
   "id": "cargo_ship",
   "name": "小型货运飞船",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "f0158755-5368-4b7e-a765-84135916b4dd",
-  "parameters": {
-    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One small industrial cargo spacecraft, compact wide hull, visible cargo container bay, four angular propulsion units, orange industrial markings, pilot cockpit at right-facing nose, no wings wider than body.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "texture_delight": true
-  },
-  "reference": "reference.png",
-  "referenceSha256": "b2abd73bf94612282ab25f5306250b5c5e0972a6eb81c3490427ea8a7a6580b0",
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
-  "imagePrompt": "../../../output/imagegen/cyber-city-v2/cargo_ship-prompt.txt",
-  "targetSize": [
-    4.8,
-    1.8,
-    2.3
-  ],
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "4d7c5935915e809da71a611aa5bf003503bd9e4d6ed07b334fd1de7c6bf36707",
-  "bytes": 9699996,
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 1.5707963267948966,
-  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
-  "sourceSha256": "4d7c5935915e809da71a611aa5bf003503bd9e4d6ed07b334fd1de7c6bf36707",
-  "sceneSha256": "49294def26c41d8b0d2615d6865727271dd165e2caaac5296869b0a8a6825814",
-  "sourceBytes": 9699996,
-  "sceneBytes": 2900576,
-  "optimization": {
-    "geometry": "gltf-transform 4.5.1 meshoptimizer simplify ratio 0.45 error 0.002; original and pre-simplification scene-detail.glb retained",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+  "sha256": "49294def26c41d8b0d2615d6865727271dd165e2caaac5296869b0a8a6825814"
 }

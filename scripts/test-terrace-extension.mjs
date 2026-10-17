@@ -7,7 +7,7 @@ import {buildValleyLandmarks} from '../src/valley-landmarks.js';
 import {createPlacementContext} from '../src/social-characters.js';
 import {buildWalkingGraph} from '../src/companion-walk.js';
 import {querySurface} from '../src/world-surface.js';
-const out='validation/terrace-extension';await fs.mkdir(out,{recursive:true});
+const out='.test-results/terrace-extension';await fs.mkdir(out,{recursive:true});
 const mountain=await loadGeometryGLB('assets/rodin-mountain/scene.glb'),reports=[];
 for(const fallback of [false,true]){
  const scene=new T.Scene(),terrain=buildTerrain(scene,{valleyAssets:fallback?{}:{mountain_range:mountain}});

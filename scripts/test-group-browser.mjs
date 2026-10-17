@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {chromium,baseURL} from './test-runtime.mjs';import {ARTICLES} from '../src/discovery-catalog.js';
-const out='validation/group-bindings/full-flow';await fs.mkdir(out,{recursive:true});
+const out='.test-results/group-bindings/full-flow';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']}),context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',recordVideo:{dir:out+'/raw',size:{width:1440,height:1000}}}),page=await context.newPage(),checks=[],errors=[];
 page.on('pageerror',e=>errors.push(e.message));const ready=()=>page.waitForFunction(()=>window.__groupBuildings&&window.__socialUI,null,{timeout:180000}),state=id=>page.waitForFunction(id=>__uiInteractions.state(id)==='open',id),close=async()=>{await page.evaluate(()=>__socialUI.closeMeeting());await page.waitForFunction(()=>__uiInteractions.state('meeting')==='closed');};
 try{

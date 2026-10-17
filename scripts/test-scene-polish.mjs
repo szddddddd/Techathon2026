@@ -10,8 +10,8 @@ import {placeRodinProps} from '../src/rodin-props.js';
 import {buildValleyLandmarks} from '../src/valley-landmarks.js';
 import {createPlacementContext} from '../src/social-characters.js';
 
-const out='validation/scene-polish';await fs.mkdir(out,{recursive:true});
-const assets=Object.fromEntries(await Promise.all(Object.keys(ASSET_NAMES).map(async k=>[k,await loadGeometryGLB(treeAssetPath(k))])));
+const out='.test-results/scene-polish';await fs.mkdir(out,{recursive:true});
+const assets=Object.fromEntries(await Promise.all([...new Set(PLACEMENTS.map(p=>p.kind))].map(async k=>[k,await loadGeometryGLB(treeAssetPath(k))])));
 const scene=new THREE.Scene(),terrain=buildTerrain(scene,{rodinBridge:true}),generated=placeRodinProps(scene,assets,terrain);
 const landmarks=buildValleyLandmarks({scene,terrain,assets});
 assert.equal(landmarks.root.getObjectByName('Valley viewing frame'),undefined);

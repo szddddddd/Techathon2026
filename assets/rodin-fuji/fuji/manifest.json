@@ -1,77 +1,8 @@
 {
   "id": "fuji",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "294064b2-ccd0-4085-aa2d-b1162df9155d",
-  "parameters": {
-    "prompt": "One complete iconic Mount Fuji mountain, faithfully reconstruct the supplied generated reference image. Broad gently concave volcanic slopes with natural radial erosion gullies, interlocking rock planes and continuous low foothills. Slightly irregular summit with a subtle recessed crater formed in the mountain, not a separate ring. Organic ivory snow cap with thin tapering snow fingers in gullies, no straight or angular cutout edge. Light blue-grey volcanic rock and muted sage foothills, richly detailed softly faceted hand-painted miniature, bright matte pastel colors. One continuous mountain, width 36 depth 22 height 16.5. Complete back and sides with consistent natural terrain detail. Entire mountain only, irregular natural grounded base; no ground disc, pedestal, floating island, background plane, trees, buildings, rivers, water, people, text or baked shadows. Avoid a perfect smooth cone and detached rocks.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb"
-  },
-  "reference": "reference.png",
-  "referenceSha256": "4ee859b0b52c11e2dc56ea433dbad92c7ea1a1bc7de459caf43fc84bdefd2576",
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "0c8d8928ad9d7057286b0c2cb737542d4b9ebe41b85e7eb82bb71122f5c4126b",
-  "bytes": 8987612,
-  "rotationY": 0,
-  "adoption": "accepted after front, rear and side visual inspection; crater, erosion ridges and organic snowline visible",
-  "sourceSha256": "0c8d8928ad9d7057286b0c2cb737542d4b9ebe41b85e7eb82bb71122f5c4126b",
-  "sceneSha256": "ac53d5779078a11402f92e57e5b3ca58194c1cfa828d683f9a1d7ff93b9da803",
-  "sourceBytes": 8987612,
-  "sceneBytes": 2324596,
-  "optimization": {
-    "geometry": "unchanged 30000 triangle source mesh",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "revision": 2,
   "name": "富士山 · 图像参考重建",
-  "previousGenerationId": "2fe08a84-503e-4a86-ac3f-f7573ff2dd4e",
-  "referenceImageGeneration": "../../../output/imagegen/fuji-v2-reference.json",
-  "inspection": {
-    "views": [
-      "preview-front.png",
-      "preview-rear.png",
-      "preview-side.png"
-    ],
-    "severeDefects": [],
-    "notes": "Front has richer gullies and foothills; unseen rear is inferred by Rodin and has broader, simpler slopes."
-  }
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
+  "rotationY": 0,
+  "sha256": "ac53d5779078a11402f92e57e5b3ca58194c1cfa828d683f9a1d7ff93b9da803"
 }

@@ -1,74 +1,8 @@
 {
   "id": "spire_c",
   "name": "垂直居住巨构",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "43e9d02d-83df-447d-b080-9c205163576a",
-  "parameters": {
-    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A slender immense residential megabuilding, height nine times width, stacked apartment blocks, irregular inset balconies, exposed service pipes, orange apartment windows, central open mechanical belt, rooftop antenna cluster.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "texture_delight": true
-  },
-  "reference": "reference.png",
-  "referenceSha256": "81c9be2856acf5ae0fd85540abdd7ba39b6ca2c9bf1b7e8453ac2226794d653a",
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
-  "imagePrompt": "../../../output/imagegen/cyber-city-v2/spire_c-prompt.txt",
-  "targetSize": [
-    5,
-    46,
-    4
-  ],
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "c70886ec2315f1db43015feff33afa343de730708238d39bfca3d75f4d9326fa",
-  "bytes": 14799640,
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 0,
-  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
-  "sourceSha256": "c70886ec2315f1db43015feff33afa343de730708238d39bfca3d75f4d9326fa",
-  "sceneSha256": "8bc728497e436d87e3aa5e6da1fbaaecf35a464c7797aa07f5f26f14bbba56d4",
-  "sourceBytes": 14799640,
-  "sceneBytes": 4494808,
-  "optimization": {
-    "geometry": "gltf-transform 4.5.1 simplify ratio 0.4 error 0.005; original and scene-detail retained",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+  "sha256": "8bc728497e436d87e3aa5e6da1fbaaecf35a464c7797aa07f5f26f14bbba56d4"
 }

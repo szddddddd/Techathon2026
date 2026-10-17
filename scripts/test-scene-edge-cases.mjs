@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import {chromium,baseURL} from './test-runtime.mjs';
-const out=process.env.FOREST_TEST_OUTPUT||'validation/scene-button-slide';await fs.mkdir(out,{recursive:true});
+const out=process.env.FOREST_TEST_OUTPUT||'.test-results/scene-button-slide';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await context.newPage(),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
 const option=()=>page.locator("#scene-switcher .scene-switcher-option"),ready=id=>page.waitForFunction(id=>window.__sceneTheme?.ready&&__sceneTheme.id===id&&!__sceneTheme.switching&&document.querySelector('#scene-switcher').dataset.busy==='false',id,{timeout:180000});
 async function drag(from,to,release=true){const r=await option().boundingBox(),x=r.x+r.width/2,y=r.y+r.height/2;await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+(to==='fuji'?1:-1)*r.width*.4,y,{steps:12});if(release)await page.mouse.up();}

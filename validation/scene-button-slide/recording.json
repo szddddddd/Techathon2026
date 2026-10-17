@@ -1,9 +1,0 @@
-{
-  "flow": [
-    "forest → fuji by click",
-    "fuji → forest by click",
-    "forest → fuji by click"
-  ],
-  "errors": [],
-  "video": "click-scene-switch.webm"
-}

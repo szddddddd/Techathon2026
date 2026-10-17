@@ -2,7 +2,7 @@ import {FUJI_VISUALS} from '../src/fuji-visuals.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {chromium,baseURL} from './test-runtime.mjs';
-const out=process.env.FUJI_VALIDATION_DIR||'validation/dusk-sakura';await fs.mkdir(out,{recursive:true});
+const out=process.env.FUJI_VALIDATION_DIR||'.test-results/dusk-sakura';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']}),errors=[];
 const url=new URL(baseURL);url.searchParams.set('scene','fuji');
 const ready=page=>page.waitForFunction(()=>window.__sceneTheme?.ready&&!__sceneTheme.switching,null,{timeout:180000});

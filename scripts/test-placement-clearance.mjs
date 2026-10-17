@@ -1,3 +1,5 @@
+import {mkdir as ensureReportDirectory} from 'node:fs/promises';
+await ensureReportDirectory('.test-results',{recursive:true});
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import * as THREE from 'three';
@@ -32,4 +34,4 @@ let routeExample;
 for(const point of examples){const graph=buildWalkingGraph(context,{...point,y:2.22,radius:fullRadius,placementRadius:body,manualPlacement:true});const route=walkingRoute(graph,0);if(route.length){routeExample={...point,nodes:graph.nodes.length,route:route.length};break;}}
 assert.ok(routeExample,'relaxed placement supports walking around new homes');
 const report={createdAt:new Date().toISOString(),gridStep:.75,total,before,after,gain:after/before,fullRadius,bodyRadius:body,newlyAllowedByPreviousReason:gained,examples,routeExample,checks:['paths usable','river, cliff, cottage and campfire blocked','friend overlap blocked','formerly accepted positions retained','walking uses placement clearance']};
-await fs.writeFile('validation/placement-clearance.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+await fs.writeFile('.test-results/placement-clearance.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

@@ -1,86 +1,8 @@
 {
   "id": "railway-gate",
   "name": "昭和道口信号机",
-  "kind": "railway",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "25cb07cd-3704-4765-861d-257c71c66742",
-  "phase": "downloaded",
-  "parameters": {
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "prompt": "One complete Japanese railway crossing signal and barrier motor pedestal assembly, yellow and charcoal striped upright post, black X crossing sign, two round red signal lenses, cream weathered square motor cabinet at bottom. A small round hinge axle at waist height but NO barrier arm: animated arm is added separately. Richly detailed bright Showa miniature, soft facets and matte surfaces. Flat grounded base, no floor, rails, road, people, text or background. Match supplied image; single compact upright object."
-  },
-  "targetSize": {
-    "width": 0.65,
-    "depth": 0.6,
-    "height": 2.5
-  },
-  "front": "+Z",
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "0ca8d64d7a8674e9673ae80fea8dae98e90c785ef0b538fd5b1b883645905808",
-  "bytes": 10715648,
-  "references": [
-    "reference.png"
-  ],
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 0,
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2",
-  "imagePrompt": "../../../output/imagegen/railway-town/gate-prompt.txt",
-  "referenceHashes": [
-    "14eaebe50bc8bbcb60c99f804a67db9e30f667bfc62df31c3194c42924162ff1"
-  ],
-  "adoption": "adopted after generated-reference and front/rear/side inspection; normalized scene layout checked",
-  "downloadedAt": "2026-10-16T10:55:43.192Z",
-  "sourceSha256": "0ca8d64d7a8674e9673ae80fea8dae98e90c785ef0b538fd5b1b883645905808",
-  "sceneSha256": "1252c0bff8050095724c9ad07bb8f7130174d8b6c37e6eef9012d2dff7dfcd2f",
-  "sourceBytes": 10715648,
-  "sceneBytes": 3212588,
-  "optimization": {
-    "geometry": "unchanged 30000 triangle source mesh",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "inspectionViews": [
-    "preview-front.png",
-    "preview-rear.png",
-    "preview-side.png"
-  ],
-  "runtimeRole": "reusable independent asset; animations and group identity authored in runtime"
+  "sha256": "1252c0bff8050095724c9ad07bb8f7130174d8b6c37e6eef9012d2dff7dfcd2f"
 }

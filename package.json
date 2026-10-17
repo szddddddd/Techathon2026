@@ -15,9 +15,6 @@
     "benchmark:performance": "node scripts/benchmark-performance.mjs",
     "test:avatar": "node scripts/test-avatar-pipeline.mjs && node scripts/test-friend-models.mjs && node scripts/test-avatar-browser.mjs",
     "test:regression": "node scripts/run-regression.mjs",
-    "audit:social": "node scripts/audit-social-characters.mjs",
-    "record:discovery": "node scripts/record-discovery.mjs",
-    "audit:discovery": "node scripts/audit-discovery.mjs",
     "test:presence": "node scripts/test-presence-policy.mjs && node scripts/test-social-presence.mjs",
     "test:actions": "node scripts/test-character-actions.mjs && node scripts/test-action-interactions.mjs",
     "test:interactions": "node scripts/test-ui-interactions.mjs && node scripts/test-ui-edge-cases.mjs",
@@ -36,7 +33,9 @@
     "test:river": "node scripts/test-river.mjs && node scripts/test-river-browser.mjs",
     "test:valley": "node scripts/test-valley.mjs && node scripts/test-valley-browser.mjs",
     "test:mountain": "node scripts/test-mountain-range.mjs && node scripts/test-mountain-browser.mjs",
-    "test:groups": "node scripts/test-group-chat.mjs && node scripts/test-group-scene.mjs && node scripts/test-group-browser.mjs"
+    "test:groups": "node scripts/test-group-chat.mjs && node scripts/test-group-scene.mjs && node scripts/test-group-browser.mjs",
+    "test:assets": "node scripts/test-project-assets.mjs",
+    "test:scenes": "node scripts/test-current-scenes.mjs"
   },
   "keywords": [],
   "author": "",

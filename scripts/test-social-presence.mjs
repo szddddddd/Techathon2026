@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 
 import {chromium,baseURL} from './test-runtime.mjs';
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
-const out='validation/presence';await fs.mkdir(out,{recursive:true});
+const out='.test-results/presence';await fs.mkdir(out,{recursive:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:out+'/raw',size:{width:1440,height:1000}}}),page=await context.newPage(),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
 const resident=ids=>page.waitForFunction(ids=>{const actual=__characterPlacement.snapshot().characters.map(c=>c.id).sort();return JSON.stringify(actual)===JSON.stringify([...ids].sort());},ids);
 const snap=()=>page.evaluate(()=>__characterPlacement.snapshot());const shot=name=>page.screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:90});

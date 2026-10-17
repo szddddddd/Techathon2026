@@ -1,9 +1,0 @@
-{
-  "flow": [
-    "forest → fuji by drag",
-    "fuji → forest by drag",
-    "forest → fuji by drag"
-  ],
-  "errors": [],
-  "video": "drag-scene-switch.webm"
-}

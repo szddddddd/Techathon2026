@@ -1,4 +1,4 @@
-/** Scene-only palette derived from output/imagegen/dusk-sakura/concept-overall.png. */
+/** Scene-private dusk sakura palette. */
 export const FUJI_VISUALS={
  id:'dusk-sakura-v3',ground:0xc38c9f,groundShade:0xb77c96,volcanic:0x8d84a1,snow:0xf1e4e6,
  cliffs:[0xb27d93,0xa27591,0x8e6882,0xba8699],cliffDepth:0x68546e,

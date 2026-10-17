@@ -1,8 +1,0 @@
-{
-  "passed": true,
-  "fixedSlots": 9,
-  "towers": 11,
-  "paths": 23,
-  "flightSamples": 8000,
-  "occlusionChecks": 1
-}

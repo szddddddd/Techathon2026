@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import {spawn} from 'node:child_process';
-const out='validation/mountain-range',results=[];
+const out='.test-results/mountain-range',results=[];
 const scripts=['test-social-store','test-social-feed','test-discovery-store','test-pet-state','test-river','test-valley','audit-rodin-valley','test-placement-clearance','test-mountain-browser','test-rodin-valley-browser','test-river-browser','test-valley-browser','test-character-drag','test-camera-pan','test-social-presence','test-discovery-scene-icons'];
 for(const name of scripts){
  const start=Date.now();let output='';

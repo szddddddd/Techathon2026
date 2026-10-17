@@ -4,7 +4,7 @@ import {chromium,baseURL} from './test-runtime.mjs';
 import {FUJI_RAIL} from '../src/fuji-profile.js';
 import {FUJI_LAYOUT} from '../src/fuji-layout.js';
 
-const out=process.env.FUJI_VALIDATION_DIR||'validation/showa-town';
+const out=process.env.FUJI_VALIDATION_DIR||'.test-results/showa-town';
 await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});

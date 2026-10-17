@@ -1,1 +1,0 @@
-Public feed query tests passed.

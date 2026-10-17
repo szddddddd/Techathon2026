@@ -1,3 +1,5 @@
+import {mkdir as ensureReportDirectory} from 'node:fs/promises';
+await ensureReportDirectory('.test-results/railway-town',{recursive:true});
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import * as T from 'three';
@@ -21,4 +23,4 @@ const scene=new T.Scene(),terrain=buildFujiScene(scene,{reduced:true,assets}),co
 for(const path of L.paths)for(let i=1;i<path.points.length;i++){const a=path.points[i-1],b=path.points[i],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.4);for(let j=0;j<=n;j++){const x=a[0]+(b[0]-a[0])*j/n,z=a[1]+(b[1]-a[1])*j/n,r=context.inspect(x,z,.63,[],{walking:true});samples++;if(!r.ok)failures.push({path:path.id,x,z,...r});}}
 const train=terrain.train.snapshot();assert.equal(train.assets.track,true);assert.equal(train.assets.gate,true);
 for(let i=0;i<3;i++){const p=sampleRail(STATION.stop-i*FUJI_CARRIAGE.spacing),along=projectRail(p.x,p.z).d;assert.ok(Math.abs(along-STATION.center)+(i?FUJI_CARRIAGE.length/2:1.9)<STATION.length/2,'Whole stopped train fits platform');}
-const report={bounds,walking:{samples,radius:.63,failures},wholeTrainFitsPlatform:true};await fs.writeFile('validation/railway-town/assets.json',JSON.stringify(report,null,2));console.log(JSON.stringify({samples,failures,assets:bounds.length}));assert.deepEqual(failures,[]);
+const report={bounds,walking:{samples,radius:.63,failures},wholeTrainFitsPlatform:true};await fs.writeFile('.test-results/railway-town/assets.json',JSON.stringify(report,null,2));console.log(JSON.stringify({samples,failures,assets:bounds.length}));assert.deepEqual(failures,[]);

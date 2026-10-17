@@ -3,12 +3,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const $ = id => document.getElementById(id);
-import { ASSET_NAMES as originalNames } from './layout.js';
+import { ASSET_NAMES as originalNames, PLACEMENTS } from './layout.js';
 import {TREE_VARIANTS,treeAssetPath,lightTreeFoliage} from './tree-assets.js';
 import {VALLEY_ASSET_NAMES} from './valley-assets.js';
 const avatarJob=new URLSearchParams(location.search).get('avatar-job');
 const validAvatarJob=/^[a-f0-9-]{36}$/.test(avatarJob||'');
-const names={...originalNames,...VALLEY_ASSET_NAMES,...(validAvatarJob?{'generated-avatar':'新朋友的形象'}:{})};
+const activeKinds=new Set([...PLACEMENTS.map(p=>p.kind),'tree','tree_birch','tree_maple','mountain_range','letter_tree','wood_bench','notice_board']);
+const names={...Object.fromEntries(Object.entries({...originalNames,...VALLEY_ASSET_NAMES}).filter(([id])=>activeKinds.has(id))),...(validAvatarJob?{'generated-avatar':'新朋友的形象'}:{})};
 if(validAvatarJob&&new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('avatar-embed');
 const status = $('status');
 const viewport = $('viewport');
@@ -83,7 +84,7 @@ function boot() {
   scene.add(floor);
 
   const loader = new GLTFLoader();
-  let current = null, selected = 'cart', generation = 0, stopped = false, frameId = null;
+  let current = null, selected = 'tree', generation = 0, stopped = false, frameId = null;
   let radius = 1, center = new THREE.Vector3(0, .5, 0), previousTime = performance.now();
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -228,7 +229,7 @@ function boot() {
   }, { once: true });
   requestAnimationFrame(frame);
   window.__assetReview={view(theta=0,elevation=.4){const offset=new THREE.Vector3(Math.sin(theta)*Math.cos(elevation),Math.sin(elevation),Math.cos(theta)*Math.cos(elevation)).multiplyScalar(radius*3.3);camera.position.copy(center).add(offset);controls.target.copy(center);controls.update();},get bounds(){return current?new THREE.Box3().setFromObject(current):null;}};
-  selectAsset(validAvatarJob?'generated-avatar':new URLSearchParams(location.search).get('asset') in names?new URLSearchParams(location.search).get('asset'):'cart');
+  selectAsset(validAvatarJob?'generated-avatar':new URLSearchParams(location.search).get('asset') in names?new URLSearchParams(location.search).get('asset'):'tree');
 }
 
 try { boot(); }

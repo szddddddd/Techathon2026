@@ -1,74 +1,8 @@
 {
   "id": "podium_market",
   "name": "商业街裙楼",
-  "provider": "Hyper3D MCP OAuth",
-  "generationId": "bd118bb5-7923-45ac-b90f-a89efdd265a3",
-  "parameters": {
-    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One narrow-depth multi-story cyberpunk street shop block, width 4.7 height 3.5 depth 1.4, warm restaurant windows, rain canopy, modular flat back wall for attachment to tower, metal service boxes and small unlettered signs.",
-    "tier": "Gen-2.5-Medium",
-    "mesh_mode": "Raw",
-    "quality_override": 30000,
-    "geometry_file_format": "glb",
-    "texture_delight": true
-  },
-  "reference": "reference.png",
-  "referenceSha256": "aa57d83b389489a973b705e67ed8eb390a5c31541dc8d2d0b68d092b4d60a93f",
-  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
-  "imagePrompt": "../../../output/imagegen/cyber-city-v2/podium_market-prompt.txt",
-  "targetSize": [
-    4.7,
-    3.5,
-    1.4
-  ],
-  "original": "source.glb",
-  "scene": "scene.glb",
-  "sha256": "d83a7522096ef21657c348fbc4f5cf94648b8de6a374c59bbe12b49ffbc9c254",
-  "bytes": 9321712,
+  "provider": "Hyper3D Rodin",
+  "file": "scene.glb",
   "rotationY": 0,
-  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
-  "sourceSha256": "d83a7522096ef21657c348fbc4f5cf94648b8de6a374c59bbe12b49ffbc9c254",
-  "sceneSha256": "391c8305efd8eae1963bb1cd8b43219c236be4b060e75962a1fbc6fd923bd228",
-  "sourceBytes": 9321712,
-  "sceneBytes": 3049360,
-  "optimization": {
-    "geometry": "gltf-transform 4.5.1 meshoptimizer simplify ratio 0.45 error 0.002; original and pre-simplification scene-detail.glb retained",
-    "textures": [
-      {
-        "name": "texture_normal",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_diffuse",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      },
-      {
-        "name": "texture_metallic-texture_roughness",
-        "source": [
-          2048,
-          2048
-        ],
-        "scene": [
-          1024,
-          1024
-        ]
-      }
-    ],
-    "diffuse": "JPEG quality 93, no chroma subsampling",
-    "normalAndMetalRough": "PNG"
-  },
-  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+  "sha256": "391c8305efd8eae1963bb1cd8b43219c236be4b060e75962a1fbc6fd923bd228"
 }
