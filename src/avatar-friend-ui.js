@@ -3,6 +3,8 @@ import {friendAvatar} from './social-store.js';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const phaseText={queued:'正在准备森林形象',waiting_connection:'形象稍后继续准备',image_submitting:'正在准备森林形象',image_review:'正在准备森林形象',model_uploading:'正在准备森林形象',rodin_submitting:'正在准备森林形象',model_processing:'森林形象正在成形',downloading:'森林形象即将就绪',ready:'森林形象已就绪',failed:'形象暂未完成',attention:'形象准备已暂停',cancelled:'形象暂未完成'};
+const phaseProgress={queued:4,image_submitting:16,image_review:28,model_uploading:38,rodin_submitting:45,model_processing:72,downloading:92};
+const activePhases=new Set(Object.keys(phaseProgress));
 
 /** Ordinary contact profile. Model creation never gates adding a friend or chatting. */
 export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=()=>{},onError=()=>{}}){
@@ -17,7 +19,8 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
   function modelHTML(f){
     if(!store.state.friends.includes(f.id))return '';
     const ready=!!f.modelUrl,phase=ready?'ready':f.modelPhase||'queued';
-    return `<div class="contact-model-line" data-model-phase="${esc(phase)}"><span class="contact-model-dot ${ready?'is-ready':''}"></span><span>${esc(phaseText[phase]||'正在准备森林形象')}</span>${ready&&f.jobId?'<button type="button" data-profile-action="preview">查看形象 ›</button>':['failed','waiting_connection'].includes(phase)?'<button type="button" data-profile-action="retry">重试</button>':''}</div>${!ready?'<p class="contact-model-note">形象准备不影响聊天，就绪后会自动用于森林场景。</p>':''}${preview&&ready&&f.jobId?`<iframe class="contact-model-preview" title="好友森林形象" src="${esc(avatarURL('/asset-review.html?avatar-job='+f.jobId+'&embed=1'))}"></iframe>`:''}`;
+    const progress=phaseProgress[phase];
+     return `<div class="contact-model-line" data-model-phase="${esc(phase)}"><span class="contact-model-dot ${ready?'is-ready':''}"></span><span>${esc(phaseText[phase]||'正在准备森林形象')}</span>${ready&&f.jobId?'<button type="button" data-profile-action="preview">查看形象 ›</button>':['failed','waiting_connection'].includes(phase)?'<button type="button" data-profile-action="retry">重试</button>':''}</div>${progress!==undefined&&activePhases.has(phase)?`<div class="contact-model-progress" role="progressbar" aria-label="虚拟形象生成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span><small>${progress}%</small></div>`:''}${!ready?'<p class="contact-model-note">形象准备不影响聊天，就绪后会自动用于森林场景。</p>':''}${preview&&ready&&f.jobId?`<iframe class="contact-model-preview" title="好友森林形象" src="${esc(avatarURL('/asset-review.html?avatar-job='+f.jobId+'&embed=1'))}"></iframe>`:''}`;
   }
   function draw(){
     const f=current();

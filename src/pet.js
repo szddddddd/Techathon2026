@@ -284,9 +284,19 @@ function renderNotifications(items) {
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
 if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; setTheme(payload.state?.sceneId); renderNotifications(messageItems(payload)); });
+const roleRaycaster=new THREE.Raycaster();
+function friendAt(event){
+  const domId=event.target.closest('[data-friend]')?.dataset.friend;if(domId)return domId;
+  const rect=canvas.getBoundingClientRect();roleRaycaster.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,1-(event.clientY-rect.top)/rect.height*2),camera);
+  foreground.updateMatrixWorld(true);
+  const candidates=[...notificationRecords].filter(([,r])=>r.model&&r.phase!=='leaving');
+  const hits=roleRaycaster.intersectObjects(candidates.map(([,r])=>r.model),true);
+  for(const hit of hits)for(const [id,r]of candidates){let o=hit.object;while(o){if(o===r.model)return id;o=o.parent;}}
+  return null;
+}
 viewport.addEventListener('click', event => {
   if (!dragged) {
-    const id = event.target.closest('[data-friend]')?.dataset.friend || clickedFriend;
+    const id = clickedFriend || friendAt(event);
     const record = notificationRecords.get(id);
     if (record?.phase === 'leaving') return;
     if (record) { record.acknowledgedAt = performance.now(); record.letterUntil = 0; record.node.dataset.acknowledged = 'true'; }
@@ -300,7 +310,7 @@ viewport.addEventListener('pointerover', event => { hoveredFriend = event.target
 notices.addEventListener('focusin', event => { hoveredFriend = event.target.closest('[data-friend]')?.dataset.friend || null; });
 notices.addEventListener('focusout', () => { hoveredFriend = null; });
 viewport.addEventListener('contextmenu', event => { event.preventDefault(); bridge?.showMenu?.(); });
-viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = event.target.closest('[data-friend]')?.dataset.friend || null; viewport.setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; bridge?.dragStart?.(event.screenX, event.screenY); });
+viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = friendAt(event); (event.target.closest('[data-friend]')||viewport).setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; bridge?.dragStart?.(event.screenX, event.screenY); });
 viewport.addEventListener('pointermove', event => {
   pointer.set(event.clientX / innerWidth * 2 - 1,1 - event.clientY / innerHeight * 2);
   if (!dragStart || event.buttons !== 1) return;
@@ -399,6 +409,7 @@ function frame(now) {
     record.position.lerp(new THREE.Vector3(slot.x,slot.y,slot.z), blend);
     record.scale += (slot.scale - record.scale) * blend;
     const position = record.position.clone();
+    if(currentTheme==='fuji'&&!minimalMode)position.y-=1.45*record.scale/3;
     const direction = minimalMode || record.index === 1 ? -1 : 1;
     let turn = 0, lean = 0, squash = 0;
     if (!reduced && entering) {

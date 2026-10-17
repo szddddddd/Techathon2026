@@ -17,8 +17,8 @@ import {createRecordPlayer} from './record-player.js';
 import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-assets.js';
 
 export const SCENE_REGISTRY={
- forest:{id:'forest',name:'林间来信',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[40,36,66],target:[0,0,-5],mobile:[60,106,152],mobileTarget:[0,0,-7]}},
- fuji:{id:'fuji',name:'富士樱町',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[33,33,64],target:[0,2,-5],mobile:[24,100,172],mobileTarget:[0,4,-7]}},
+ forest:{id:'forest',name:'林间来信',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[32.8,29.5,53.8],target:[0,0,-5],mobile:[49.2,86.9,124.6],mobileTarget:[0,0,-7]}},
+ fuji:{id:'fuji',name:'富士樱町',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[27.1,27.1,52.5],target:[0,2,-5],mobile:[19.7,82,141],mobileTarget:[0,4,-7]}},
 };
 function batchForest(root,architecture,nature){
  const animated=new Set(architecture.flames||[]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));

@@ -117,6 +117,17 @@
 }
 #sound-settings{box-sizing:border-box;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 80px);padding:24px;border:1px solid var(--ui-line);border-radius:22px;background:var(--ui-paper);color:var(--ui-ink);font:14px/1.6 var(--ui-font);box-shadow:var(--ui-shadow)}
 #sound-settings{position:fixed;inset:32px 4vw 96px auto;margin:auto 0;width:min(400px,40vw);height:max-content;max-height:calc(100dvh - 128px);overflow:auto;padding:28px;background:#f7f7eefa}
+/* Compact the desktop record-player panel without clipping small screens. */
+@media(min-width:700px){
+ #sound-settings{padding:22px;inset:24px 4vw 64px auto;max-height:calc(100dvh - 88px)}
+ #sound-settings .sound-eyebrow{margin-top:16px}
+ #sound-settings .sound-intro{margin:12px 0}
+ #sound-settings .sound-library h3{margin:16px 0 10px}
+ #sound-settings .sound-track{padding:12px}
+ #sound-settings .sound-library-note{margin:10px 0 12px}
+ #sound-settings .sound-row{padding:14px 0}
+}
+#sound-settings #sound-playback-status{margin-bottom:0}
 #sound-settings::backdrop{background:#142d3220;backdrop-filter:none}
 #sound-settings[data-scene=true]::backdrop{background:linear-gradient(90deg,transparent 30%,#203a3220)}
 .sound-eyebrow{font-size:10px;letter-spacing:.22em;color:#7a896b;margin:24px 0 0}

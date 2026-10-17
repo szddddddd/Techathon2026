@@ -27,18 +27,7 @@ export function createFloatingIsland(height){
  for(let row=0;row<rings.length-1;row++)for(let i=0;i<n;i++){const a=row*n+i,b=row*n+(i+1)%n,c=a+n,d=b+n;indices.push(a,b,c,b,d,c);}
  const bottom=positions.length/3;positions.push(2,-14.25,-9);const c=new T.Color(0x5e776f);colors.push(c.r,c.g,c.b);
  for(let i=0;i<n;i++)indices.push((rings.length-1)*n+i,(rings.length-1)*n+(i+1)%n,bottom);
- // Large embedded rock roots break the underside into distinct hanging masses.
- // Their upper ends remain inside the island, never on the walkable meadow.
- for(const [x,z,rx,rz,depth] of [[-15,3.5,4.8,4.2,16],[14,4,5.2,4,17.3],[23,-10,3.5,5,12.8],[-20,-13,4,5,13.7],[2,-12,6,5,18]]){
-  const start=positions.length/3;
-  for(let layer=0;layer<2;layer++)for(let i=0;i<6;i++){
-   const a=i/6*Math.PI*2+.25,scale=layer?.68:1,y=layer?-9-.6*Math.sin(a*2):-3.1;
-   positions.push(x+Math.cos(a)*rx*scale,y,z+Math.sin(a)*rz*scale);
-   const rock=new T.Color(layer?0x6e8378:0x8b9688).multiplyScalar(.95+.08*Math.sin(i*2.4+x));colors.push(rock.r,rock.g,rock.b);
-  }
-  const tip=positions.length/3;positions.push(x+1.1,-depth,z-.6);colors.push(c.r,c.g,c.b);
-  for(let i=0;i<6;i++){const a=start+i,b=start+(i+1)%6;indices.push(a,b,a+6,b,b+6,a+6,a+6,b+6,tip);}
- }
+ // Keep the continuous sealed taper, without separate hanging rock spikes.
  const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));geometry.setIndex(indices);geometry.computeVertexNormals();
  const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({vertexColors:true,roughness:1,flatShading:true,side:T.DoubleSide}));mesh.name='Continuous floating island rock';mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.floatingIsland=true;
  return mesh;

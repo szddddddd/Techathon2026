@@ -45,7 +45,7 @@ export function createWebPet({store,ui,onOpenFriend,getSceneId=()=> 'forest',bri
         const status=await request('status?client='+encodeURIComponent(client));online=true;if(revision===visibilityRevision)visible=!!status.visible;subscribeVisibility();
         if(instance!==status.instance){instance=status.instance;lastSignature='';lastOpen=0;}
         await sync();
-        if(status.open&&status.open.sequence>lastOpen){lastOpen=status.open.sequence;window.focus();if(store.state.friends.includes(status.open.friendId))await onOpenFriend(status.open.friendId);await request('ack',{client,sequence:lastOpen});}
+        if(status.open&&status.open.sequence>lastOpen){window.focus();if(store.state.friends.includes(status.open.friendId))await onOpenFriend(status.open.friendId);await request('ack',{client,sequence:status.open.sequence});lastOpen=status.open.sequence;}
       }
     }catch{online=false;visible=false;lastSignature='';}finally{polling=false;if(!disposed)badge();}
   }

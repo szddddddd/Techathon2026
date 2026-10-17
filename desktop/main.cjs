@@ -113,7 +113,8 @@ function createMainWindow() {
   mainReady = false;
   mainWindow = new BrowserWindow({ width: 1440, height: 920, minWidth: 900, minHeight: 650, show: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
   secureWindow(mainWindow);
-  mainWindow.webContents.on('did-start-loading', () => { mainReady = false; });
+  // Scene switches update history in place; only a new document invalidates IPC readiness.
+  mainWindow.webContents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => { if(isMainFrame&&!isInPlace)mainReady = false; });
   mainWindow.loadFile(path.join(ROOT, 'index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
   mainWindow.on('close', event => { if (!app.isQuitting) { event.preventDefault(); mainWindow.hide(); } });

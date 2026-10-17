@@ -167,6 +167,10 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     if(isNew||!wasOpen)setMoments(false);
     if(group){characters.restore({preserveCamera:true});}else {onGroupSceneClose(true);characters.focus(id);}
     renderMeetingFriends();lastMessageSignature='';lastPostSignature='';renderMessages(true);
+    // Opening a conversation acknowledges its entire backlog, including unloaded history.
+    const unread=group?(store.state.messagesByGroup[ref.id]||[]):store.state.messages.filter(m=>m.friendId===ref.id);
+    const ids=unread.filter(m=>!m.read&&m.senderId!=='me').map(m=>m.id);
+    if(ids.length)await attempt(()=>group?store.markGroupRead(ref.id,ids):store.markRead(ref.id,ids));
   }
   let marking=false;
   async function markVisibleRead(){
@@ -187,7 +191,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
       if(m.type==='content')content=contentCard(m.contentRef);
       return stamp+`<div class="message ${m.senderId==='me'?'outgoing':'incoming'}" data-message="${esc(m.id)}">${avatar(m.senderId)}<div class="message-body ${m.type}">${active.startsWith('group:')&&m.senderId!=='me'?`<small class="group-sender">${esc(person(m.senderId).name)}</small>`:''}${content}</div></div>`;
     }).join('');hydrate(feed);
-    const renderedFriend=active,generation=++renderVersion;requestAnimationFrame(()=>{if(active!==renderedFriend||generation!==renderVersion)return;if(restore){const saved=store.state.scrolls[renderedFriend];feed.scrollTop=saved??feed.scrollHeight;}else if(nearEnd)feed.scrollTop=feed.scrollHeight;else feed.scrollTop=oldScroll;markVisibleRead();});
+    const renderedFriend=active,generation=++renderVersion;requestAnimationFrame(()=>{if(active!==renderedFriend||generation!==renderVersion)return;if(restore){feed.scrollTop=feed.scrollHeight;}else if(nearEnd)feed.scrollTop=feed.scrollHeight;else feed.scrollTop=oldScroll;markVisibleRead();});
   }
   function profileHTML(id){const f=person(id);return `<div class="moments-profile"><div class="moments-cover"><img src="assets/social/forest.svg" alt="林间封面"></div><div class="moments-identity"><h2>${esc(f.name)}</h2>${avatar(id)}</div><p class="moments-signature">${esc(f.signature)}</p></div>`;}
   function timelineHTML(id){return profileHTML(id)+`<div class="moments-timeline">${postsOf(id).map(post=>{const d=new Date(post.createdAt);return `<article class="moment-entry" data-post-id="${esc(post.id)}"><time class="moment-date" datetime="${d.toISOString()}"><strong>${String(d.getDate()).padStart(2,'0')}</strong><small>${d.getMonth()+1}月</small></time><div class="moment-content">${postHTML(post,id==='me',true)}</div></article>`;}).join('')||'<p class="empty-note">还没有朋友圈。<br>把生活的小事留在这里。</p>'}</div>`;}

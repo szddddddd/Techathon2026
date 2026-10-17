@@ -16,7 +16,7 @@ export function createFujiPet({root,minimal=false}) {
   function addAsset(model,position,scale,name){if(disposed)return null;const holder=model.clone(true);holder.name=name;holder.position.set(...position);holder.scale.multiplyScalar(scale);holder.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});root.add(holder);return holder;}
   async function loadAsset(folder,key){try{const gltf=await loader.loadAsync(`assets/rodin-fuji/${folder}/scene.glb`);return normalizeSceneAsset(gltf.scene,key,{sourceFolder:folder});}catch(error){console.warn(`Fuji pet asset unavailable: ${folder}`,error);return null;}}
   async function loadLandscape(){
-    const mountain=await loadAsset('fuji','fuji');
+    const mountain=minimal?null:await loadAsset('fuji','fuji');
     if(mountain&&!disposed){const holder=addAsset(mountain,[.35,0,-.65],.16,'Mount Fuji · main scene asset');if(holder)moving.push({kind:'mountain',object:holder});}
     const treeFolders=['sakura-yoshino-v3','sakura-reference-03','sakura-reference-05'];
     const treeModels=await Promise.all(treeFolders.map(folder=>loadAsset(folder,'sakura_a')));
