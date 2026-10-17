@@ -5,6 +5,13 @@
 #social .chat-back{display:none}@media(max-width:760px){#social .meeting-workspace,#social #meeting[data-moments=open] .meeting-workspace{grid-template-columns:minmax(0,1fr);gap:0}#social .meeting-friends{display:none}#social .chat-panel,#social .memory-panel{grid-column:1}#social .chat-back{display:grid;place-items:center;min-width:36px;min-height:44px;border-radius:10px;background:transparent;font-size:20px}#social .meeting-title{flex-wrap:nowrap!important}#social .meeting-title h2{font-size:14px!important;letter-spacing:0}}
 
 #group-building-labels[hidden]{display:none}
+/* Use the same icon card and expanding caption as the other scene entrances. */
+#group-building-labels .group-queue-anchor.scene-entry-icon{box-sizing:border-box;position:absolute;top:0;left:0;margin-left:-22px;margin-top:-22px;display:flex;align-items:center;justify-content:flex-start;gap:0;width:44px;min-width:44px;height:44px;min-height:44px;padding:6px;border:1px solid #ffffffb0;border-radius:15px;background:rgba(248,250,236,.94);box-shadow:0 5px 20px #203d3226;color:#456346;font:12px/1.45 system-ui;backdrop-filter:blur(12px);overflow:hidden;pointer-events:auto}
+#group-building-labels .group-queue-anchor.scene-entry-icon[hidden]{display:none}
+#group-building-labels .group-queue-anchor.scene-entry-icon:hover{background:#fffff4;box-shadow:0 7px 23px #203d3238}
+#group-building-labels .group-queue-anchor.scene-entry-icon:focus-visible{width:172px;margin-left:-86px;outline:2px solid #66865b;outline-offset:3px}
+@media(hover:hover){#group-building-labels .group-queue-anchor.scene-entry-icon:hover{width:172px!important;max-width:172px!important;margin-left:-86px!important}}
+#group-building-labels .group-queue-anchor.scene-entry-icon:focus-visible{width:172px!important;max-width:172px!important;margin-left:-86px!important}
 
 
 

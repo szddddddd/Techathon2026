@@ -80,11 +80,12 @@ export const ARTICLES=[...HYPER3D_ARTICLES,...drafts.map(([accountId,title,summa
 export const JOURNAL_ACCOUNTS=[HYPER3D_ACCOUNT];
 export const JOURNAL_ARTICLES=HYPER3D_ARTICLES;
 export const CREATORS=[
+  {id:'aaaaa',name:'aaaaa',emoji:'🌿',description:'记录创作与灵感。',cover:'assets/discovery/hyper3d-agent-ready.jpg'},
   {id:'tuantuan',friendId:'tuantuan',name:'团团的木屋日常',emoji:'🦘',description:'把小事过成好日子。',cover:image('forest')},
   {id:'ali',friendId:'ali',name:'阿栗慢慢走',emoji:'🦊',description:'今天也想走远一点。',cover:image('camp')},
   {id:'xiaomian',friendId:'xiaomian',name:'小眠听溪水',emoji:'🐰',description:'慢一点，也会抵达。',cover:image('river')},
   {id:'shanshan',friendId:'shanshan',name:'山山的晴天收藏',emoji:'🐻',description:'收集森林里的好天气。',cover:image('sky')},
-].map(item=>({...item,signature:item.description,avatar:`assets/rodin-friends/${({tuantuan:'kangaroo',ali:'fox',xiaomian:'rabbit',shanshan:'bear'})[item.id]}/portrait.webp`}));
+].map(item=>({...item,signature:item.description,avatar:item.id==='aaaaa'?item.cover:`assets/rodin-friends/${({tuantuan:'kangaroo',ali:'fox',xiaomian:'rabbit',shanshan:'bear'})[item.id]}/portrait.webp`}));
 const videoDrafts=[
   ['tuantuan','木屋门前，留一杯茶给你','今天没有大事发生，只有木屋前的光和等你经过的下午。','article-2',['ali','xiaomian']],
   ['ali','出门以后，慢慢走','把同一条路重新走一遍，会遇见不一样的风。','article-4',['tuantuan','shanshan']],
@@ -94,6 +95,34 @@ const videoDrafts=[
   ['tuantuan','送你一片森林的晴天','没有特别的理由，只是看见好天气时想到了你。','article-9',['xiaomian','ali','shanshan']],
 ];
 export const VIDEOS=videoDrafts.map(([creatorId,title,description,articleId,likedBy],i)=>({id:`video-${i+1}`,creatorId,title,description,articleId,likedBy,friendLikes:likedBy,src:`assets/discovery/video-${i+1}.webm`,poster:`assets/discovery/video-${i+1}.jpg`,cover:`assets/discovery/video-${i+1}.jpg`,duration:12,createdAt:start-i*3600000,publishedAt:start-i*3600000}));
+VIDEOS.unshift({
+  id:'video-hyper3d-agent-ready',creatorId:'aaaaa',
+  title:'Hyper3D Agent-Ready｜3D生成，迎来下一代用户——Agent',
+  description:`「Hyper3D Agent-Ready」当AGI开始调用专业工具，创作有了新的完成方式。3D生成，正在迎来它的下一代用户——Agent。
+
+今天，最新功能Hyper3D Agentic Mode正式上线，让AI接手3D生成中的更多专业判断。从自然语言编辑、分件，到Hyper3D MCP，再到Agentic Mode，Hyper3D率先完成「Agent-Ready」的能力拼图。
+
+🖍️ 自然语言驱动，让创作持续深入
+3D Editing局部编辑、BANG递归分件，用语言轻松修改
+
+🔗 Hyper3D MCP，融入Agent工作流
+适配GPT-6 Astra等前沿通用模型，串联多工具协作与后续创作
+
+🧩 Agentic Mode，接手更多专业判断
+兼具Hyper3D Rodin生成能力与LLM多模态上下文分析能力，让AI参与更多创作环节：
+◆ 自动理解输入、按需增强，无需用户追求“完美输入”
+◆ 工业图纸、角色多视图、电商同物多图排版，自动识别主体、理解局部需求
+◆ 自主判断任务最合适的建模路径，从创意资产拓展到工业模型
+◆ 支持自然语言调整参数、动画与材质，让生成更接近创作需求
+
+从「Production-Ready」，到「Agent-Ready」，Hyper3D成为给所有Agent准备好的3D工作台。
+3D生成的下半场，现在开局。
+
+登录HYPER3D.AI，感受Agent-Ready的AI 3D体验！
+#Hyper3D #AgentReady #AgenticMode #Rodin #3D生成 #AI3D`,
+  src:'assets/discovery/hyper3d-agent-ready.mp4',poster:'assets/discovery/hyper3d-agent-ready.jpg',cover:'assets/discovery/hyper3d-agent-ready.jpg',
+  duration:34.69,objectFit:'contain',likedBy:[],friendLikes:[],createdAt:Date.UTC(2026,9,17),publishedAt:Date.UTC(2026,9,17)
+});
 export const getAccount=id=>ACCOUNTS.find(item=>item.id===id)||null;
 export const getCreator=id=>CREATORS.find(item=>item.id===id)||null;
 export function getContent(ref){return ref?.type==='article'?ARTICLES.find(item=>item.id===ref.id)||null:ref?.type==='video'?VIDEOS.find(item=>item.id===ref.id)||null:null;}
