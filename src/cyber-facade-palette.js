@@ -1,9 +1,11 @@
+import {applyAirshipLivery} from './airship-livery.js';
 import * as T from 'three';
 
 // Recolor private city albedo copies once at load time. Original GLBs and
 // other scenes stay intact; normal maps and the source-derived window glow remain.
 export function applyCyberFacadePalette(root,key){
  if(typeof document==='undefined')return;
+ if(key==='airship'){applyAirshipLivery(root);return;}
  const copies=new Map();
  root.traverse(mesh=>{if(!mesh.isMesh)return;for(const material of [].concat(mesh.material)){
   const source=material.map;if(!source?.image)continue;
