@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { notificationItems } from './pet-state.js';
+import { notificationItems, petNickname } from './pet-state.js';
+import { createFujiPet } from './pet-fuji.js';
 
 const FRIEND_META = {
   tuantuan: { name: '团团', emoji: '🦘', color: 0xeaba43, position: [-.55, 0] },
@@ -49,6 +50,13 @@ const animated = [];
 const notificationRecords = new Map();
 const loader = new GLTFLoader();
 const modelCache = new Map();
+let friendDetails = {};
+function friendMeta(id){
+  const detail=friendDetails[id];
+  if(FRIEND_META[id])return FRIEND_META[id];
+  const modelUrl=id.startsWith('avatar-')&&/^[a-f0-9-]{36}$/.test(id.slice(7))&&detail?.modelUrl===`/api/avatar/assets/${id.slice(7)}/scene.glb`?detail.modelUrl:null;
+  return {name:petNickname(detail?.name),emoji:modelUrl?'':'🌿',modelUrl};
+}
 let settings = { reminders: true };
 let dragStart = null;
 let dragged = false;
@@ -82,7 +90,7 @@ function localWind(object, radius, dt, reduced) {
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const smooth = value => value * value * (3 - 2 * value);
-const slots = minimalMode ? [{x:.85,y:.12,z:.75,scale:.75}] : [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
+const slots = minimalMode ? [{x:.85,y:.12,z:.75,scale:1.125}] : [{x:0,y:.22,z:1.35,scale:1}, {x:-1.65,y:.28,z:.65,scale:.86}, {x:1.65,y:.28,z:.65,scale:.86}];
 function setPhase(record, phase) {
   record.phase = phase; record.phaseStart = performance.now(); record.node.dataset.phase = phase;
 }
@@ -194,6 +202,15 @@ function buildWoods() {
   for(const x of [-.19,.19])add(new THREE.CylinderGeometry(.025,.025,.43,5),frameMaterial,[x,-.49,.15],lanternGroup);
   lanternLight = new THREE.PointLight(0xffcf68,1.2,4.5); lanternLight.position.set(1.57,1.69,.15); root.add(lanternLight);
 }
+let currentTheme=null,fujiPet=null;
+function setTheme(id){
+  const next=id==='fuji'?'fuji':'forest';if(next===currentTheme)return;
+  const geometries=new Set(),materials=new Set();root.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of [].concat(o.material))materials.add(m);});
+  root.clear();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
+  animated.length=0;lantern=lanternLight=lanternGroup=null;fujiPet?.dispose?.();fujiPet=null;currentTheme=next;
+  if(next==='fuji')fujiPet=createFujiPet({root,minimal:minimalMode});else buildWoods();
+  document.documentElement.dataset.petScene=next;document.documentElement.dataset.petFujiAssets=next==='fuji'?'loading':'ready';viewport.setAttribute('aria-label',`${next==='fuji'?'富士樱町':'林间来信'}${minimalMode?'极简':''}桌宠`);
+}
 function resize() { renderer.setSize(innerWidth, innerHeight, false); const aspect=innerWidth/innerHeight; camera.left = -4*aspect; camera.right = 4*aspect; camera.top = 4; camera.bottom = -4; camera.updateProjectionMatrix(); }
 function disposeRole(model) {
   model?.removeFromParent();
@@ -203,12 +220,14 @@ function disposeRole(model) {
 }
 function clearNotice(id) { const record = notificationRecords.get(id); if (!record) return; disposeRole(record.model); record.node.remove(); notificationRecords.delete(id); }
 async function loadRole(friendId, record, index) {
-  const meta = FRIEND_META[friendId];
-  if (!meta) return;
+  const meta = friendMeta(friendId);
+  if (!FRIEND_META[friendId]&&!meta.modelUrl)return;
+  const animal = friendId === 'tuantuan' ? 'kangaroo' : friendId === 'ali' ? 'fox' : friendId === 'xiaomian' ? 'rabbit' : 'bear';
+  const url=meta.modelUrl||`assets/rodin-friends/${animal}/scene.glb`;
+  record.loadingUrl=url;
   try {
-    let source = modelCache.get(friendId);
-    const animal = friendId === 'tuantuan' ? 'kangaroo' : friendId === 'ali' ? 'fox' : friendId === 'xiaomian' ? 'rabbit' : 'bear';
-    if (!source) { source = (await loader.loadAsync(`assets/rodin-friends/${animal}/scene.glb`)).scene; modelCache.set(friendId, source); }
+    let source = modelCache.get(url);
+    if (!source) { source = (await loader.loadAsync(url)).scene; modelCache.set(url, source); }
     let model = source.clone(true); const box = new THREE.Box3().setFromObject(model); const size = box.getSize(new THREE.Vector3());
     const scale = 1.45 / Math.max(size.y, .01);
     model.scale.setScalar(scale);
@@ -216,15 +235,15 @@ async function loadRole(friendId, record, index) {
     const holder = new THREE.Group(); holder.add(model); model = holder;
     model.position.set((index - 1) * 1.55, .25, 1.1);
     model.traverse(object => { if (object.isMesh) { object.castShadow = true; object.material = Array.isArray(object.material) ? object.material.map(value => value.clone()) : object.material.clone(); } });
-    if (notificationRecords.get(friendId) !== record) { disposeRole(model); return; }
+    if (notificationRecords.get(friendId) !== record || record.loadingUrl!==url) { disposeRole(model); return; }
     model.position.copy(record.position);
-    foreground.add(model); record.model = model;
+    disposeRole(record.model);foreground.add(model); record.model = model;record.loadedUrl=url;
     record.materials = new Map();
     model.traverse(object => { if (object.isMesh) for (const value of [].concat(object.material)) record.materials.set(value, {opacity:value.opacity,transparent:value.transparent}); });
     record.opacity = -1;
     if (record.phase === 'entering') setPhase(record, 'entering');
     const role = record.node.querySelector('.role'); role.textContent = ''; role.dataset.model = friendId; role.style.background = 'transparent';
-  } catch (_) {}
+  } catch (_) {if(record.loadingUrl===url){record.loadingUrl=null;record.node.dataset.modelError='true';}}
 }
 function renderNotifications(items) {
   const visible = settings.reminders ? items.slice(0, minimalMode ? 1 : 3) : [];
@@ -234,7 +253,7 @@ function renderNotifications(items) {
     else if (record.phase !== 'leaving') setPhase(record, 'leaving');
   }
   visible.forEach((item, index) => {
-    const meta = FRIEND_META[item.friendId] || { name: '朋友', emoji: '🌿' };
+    const meta = friendMeta(item.friendId);
     let record = notificationRecords.get(item.friendId);
     if (!record) {
       const node = document.createElement('button'); node.type = 'button'; node.className = 'notice-role';
@@ -254,6 +273,8 @@ function renderNotifications(items) {
     record.messageId = item.id; record.text = item.text; record.index = index;
     record.node.dataset.slot = String(index);
     record.node.querySelector('.notice').textContent = meta.name;
+    if(meta.modelUrl&&record.loadingUrl!==meta.modelUrl)loadRole(item.friendId,record,index);
+    if(!minimalMode){record.node.querySelector('.friend-tag').textContent=meta.name;record.node.querySelector('.letter strong').textContent=meta.name;}
     if(!minimalMode){
       record.node.querySelector('.summary').textContent = item.text || '有一条新消息';
       record.node.title = `${meta.name}：${item.text || '有一条新消息'}`;
@@ -262,10 +283,20 @@ function renderNotifications(items) {
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
-if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) }; renderNotifications(messageItems(payload)); });
+if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; setTheme(payload.state?.sceneId); renderNotifications(messageItems(payload)); });
+const roleRaycaster=new THREE.Raycaster();
+function friendAt(event){
+  const domId=event.target.closest('[data-friend]')?.dataset.friend;if(domId)return domId;
+  const rect=canvas.getBoundingClientRect();roleRaycaster.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,1-(event.clientY-rect.top)/rect.height*2),camera);
+  foreground.updateMatrixWorld(true);
+  const candidates=[...notificationRecords].filter(([,r])=>r.model&&r.phase!=='leaving');
+  const hits=roleRaycaster.intersectObjects(candidates.map(([,r])=>r.model),true);
+  for(const hit of hits)for(const [id,r]of candidates){let o=hit.object;while(o){if(o===r.model)return id;o=o.parent;}}
+  return null;
+}
 viewport.addEventListener('click', event => {
   if (!dragged) {
-    const id = event.target.closest('[data-friend]')?.dataset.friend || clickedFriend;
+    const id = clickedFriend || friendAt(event);
     const record = notificationRecords.get(id);
     if (record?.phase === 'leaving') return;
     if (record) { record.acknowledgedAt = performance.now(); record.letterUntil = 0; record.node.dataset.acknowledged = 'true'; }
@@ -279,7 +310,7 @@ viewport.addEventListener('pointerover', event => { hoveredFriend = event.target
 notices.addEventListener('focusin', event => { hoveredFriend = event.target.closest('[data-friend]')?.dataset.friend || null; });
 notices.addEventListener('focusout', () => { hoveredFriend = null; });
 viewport.addEventListener('contextmenu', event => { event.preventDefault(); bridge?.showMenu?.(); });
-viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = event.target.closest('[data-friend]')?.dataset.friend || null; viewport.setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; bridge?.dragStart?.(event.screenX, event.screenY); });
+viewport.addEventListener('pointerdown', event => { if (event.button !== 0) return; clickedFriend = friendAt(event); (event.target.closest('[data-friend]')||viewport).setPointerCapture(event.pointerId); dragStart = { x: event.screenX, y: event.screenY }; dragged = false; latestPointer = null; bridge?.dragStart?.(event.screenX, event.screenY); });
 viewport.addEventListener('pointermove', event => {
   pointer.set(event.clientX / innerWidth * 2 - 1,1 - event.clientY / innerHeight * 2);
   if (!dragStart || event.buttons !== 1) return;
@@ -300,7 +331,7 @@ viewport.addEventListener('pointerup', endDrag);
 viewport.addEventListener('pointercancel', endDrag);
 viewport.addEventListener('lostpointercapture', () => { if (dragStart) endDrag(); });
 window.addEventListener('blur', endDrag);
-buildWoods(); resize(); window.addEventListener('resize', resize);
+setTheme(query.get('scene')); resize(); window.addEventListener('resize', resize);
 let start = performance.now(), frameId=0;
 function requestFrame(){if(!frameId&&!document.hidden&&active)frameId=requestAnimationFrame(frame);}
 document.addEventListener('visibilitychange',requestFrame);
@@ -310,6 +341,7 @@ function frame(now) {
   if (document.hidden || !active) return;
   const reduced = reducedMotion.matches, t = reduced ? 0 : (now - start) / 1000;
   const dt = Math.min((now - lastFrame) / 1000, .05); lastFrame = now;
+  fujiPet?.update(t,reduced);
   const blend = reduced ? 1 : 1 - Math.exp(-dt * 9);
   presence += ((nearby || hoveredFriend ? 1 : 0) - presence) * blend;
   const signal = !reduced && now < signalUntil ? Math.sin((1 - (signalUntil - now) / 1000) * Math.PI) : 0;
@@ -377,6 +409,7 @@ function frame(now) {
     record.position.lerp(new THREE.Vector3(slot.x,slot.y,slot.z), blend);
     record.scale += (slot.scale - record.scale) * blend;
     const position = record.position.clone();
+    if(currentTheme==='fuji'&&!minimalMode)position.y-=1.45*record.scale/3;
     const direction = minimalMode || record.index === 1 ? -1 : 1;
     let turn = 0, lean = 0, squash = 0;
     if (!reduced && entering) {

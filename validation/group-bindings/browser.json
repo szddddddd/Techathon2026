@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "nine real unbound buildings render; no labels or idle-building chat target",
+    "reading a queued group does not summon a building",
+    "forest: label opens correct conversation; read binding remains through chat, then releases",
+    "forest: pinned read group and slot survive refresh with nine buildings",
+    "fuji: label opens correct conversation; read binding remains through chat, then releases",
+    "fuji: pinned read group and slot survive refresh with nine buildings",
+    "empty pinned group binds in both scenes; separate scene slots restore",
+    "mobile label keeps 44px target; leaving releases binding without deleting building"
+  ],
+  "errors": []
+}

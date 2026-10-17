@@ -1,0 +1,129 @@
+[
+  {
+    "id": "forest",
+    "switches": 1,
+    "controls": {
+      "enabled": true,
+      "enableDamping": true,
+      "minDistance": 6
+    },
+    "geometries": 381,
+    "textures": 145,
+    "worldRoots": 1,
+    "assetCache": {
+      "themes": [
+        "fuji",
+        "forest"
+      ],
+      "sharedResources": 544
+    },
+    "characters": {
+      "theme": "forest",
+      "suspended": false,
+      "positions": {},
+      "cachedThemes": [
+        "fuji"
+      ],
+      "cachedCharacters": 0,
+      "contextObstacles": 65
+    },
+    "calls": 331,
+    "triangles": 966929
+  },
+  {
+    "id": "fuji",
+    "switches": 2,
+    "controls": {
+      "enabled": true,
+      "enableDamping": true,
+      "minDistance": 6
+    },
+    "geometries": 440,
+    "textures": 147,
+    "worldRoots": 1,
+    "assetCache": {
+      "themes": [
+        "fuji",
+        "forest"
+      ],
+      "sharedResources": 544
+    },
+    "characters": {
+      "theme": "fuji",
+      "suspended": false,
+      "positions": {},
+      "cachedThemes": [
+        "fuji",
+        "forest"
+      ],
+      "cachedCharacters": 0,
+      "contextObstacles": 56
+    },
+    "calls": 298,
+    "triangles": 1926732
+  },
+  {
+    "id": "forest",
+    "switches": 3,
+    "controls": {
+      "enabled": true,
+      "enableDamping": true,
+      "minDistance": 6
+    },
+    "geometries": 381,
+    "textures": 145,
+    "worldRoots": 1,
+    "assetCache": {
+      "themes": [
+        "fuji",
+        "forest"
+      ],
+      "sharedResources": 544
+    },
+    "characters": {
+      "theme": "forest",
+      "suspended": false,
+      "positions": {},
+      "cachedThemes": [
+        "fuji",
+        "forest"
+      ],
+      "cachedCharacters": 0,
+      "contextObstacles": 65
+    },
+    "calls": 331,
+    "triangles": 966929
+  },
+  {
+    "id": "fuji",
+    "switches": 4,
+    "controls": {
+      "enabled": true,
+      "enableDamping": true,
+      "minDistance": 6
+    },
+    "geometries": 440,
+    "textures": 147,
+    "worldRoots": 1,
+    "assetCache": {
+      "themes": [
+        "fuji",
+        "forest"
+      ],
+      "sharedResources": 544
+    },
+    "characters": {
+      "theme": "fuji",
+      "suspended": false,
+      "positions": {},
+      "cachedThemes": [
+        "fuji",
+        "forest"
+      ],
+      "cachedCharacters": 0,
+      "contextObstacles": 56
+    },
+    "calls": 298,
+    "triangles": 1926732
+  }
+]

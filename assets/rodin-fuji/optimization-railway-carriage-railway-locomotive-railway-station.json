@@ -1,0 +1,21 @@
+{
+  "assets": [
+    {
+      "id": "railway-carriage",
+      "sourceBytes": 9433556,
+      "sceneBytes": 2922144
+    },
+    {
+      "id": "railway-locomotive",
+      "sourceBytes": 9293172,
+      "sceneBytes": 2956932
+    },
+    {
+      "id": "railway-station",
+      "sourceBytes": 11529220,
+      "sceneBytes": 3671832
+    }
+  ],
+  "sourceBytes": 30255948,
+  "sceneBytes": 9550908
+}

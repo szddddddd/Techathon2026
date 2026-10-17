@@ -9,6 +9,8 @@ function webPort(root) {
 }
 function validState(payload) {
   const state = payload?.state;
-  return !!state && Array.isArray(state.friends) && state.friends.length <= 32 && state.friends.every(id => typeof id === 'string' && /^[\w-]{1,80}$/.test(id)) && Array.isArray(state.messages) && state.messages.length <= 1000 && state.messages.every(message => message && typeof message.id === 'string' && typeof message.friendId === 'string' && typeof message.senderId === 'string' && typeof message.read === 'boolean' && Number.isFinite(message.createdAt) && typeof message.text === 'string' && message.text.length <= 300) && Number.isSafeInteger(payload.unreadCount) && payload.unreadCount >= 0;
+  const details=state?.friendDetails;
+  const validDetails=details===undefined||(details&&typeof details==='object'&&!Array.isArray(details)&&Object.keys(details).length<=32&&Object.entries(details).every(([id,f])=>state.friends?.includes(id)&&f&&typeof f.name==='string'&&f.name.length<=80&&(f.modelUrl===null||(id.startsWith('avatar-')&&/^[a-f0-9-]{36}$/.test(id.slice(7))&&f.modelUrl===`/api/avatar/assets/${id.slice(7)}/scene.glb`))));
+  return !!state && (state.sceneId === undefined || ['forest','fuji'].includes(state.sceneId)) && validDetails && Array.isArray(state.friends) && state.friends.length <= 32 && state.friends.every(id => typeof id === 'string' && /^[\w-]{1,80}$/.test(id)) && Array.isArray(state.messages) && state.messages.length <= 1000 && state.messages.every(message => message && typeof message.id === 'string' && typeof message.friendId === 'string' && typeof message.senderId === 'string' && typeof message.read === 'boolean' && Number.isFinite(message.createdAt) && typeof message.text === 'string' && message.text.length <= 300) && Number.isSafeInteger(payload.unreadCount) && payload.unreadCount >= 0;
 }
 module.exports = { webPort, validState };

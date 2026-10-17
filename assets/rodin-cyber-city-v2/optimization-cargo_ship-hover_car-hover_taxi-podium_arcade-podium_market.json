@@ -1,0 +1,31 @@
+{
+  "assets": [
+    {
+      "id": "cargo_ship",
+      "sourceBytes": 9699996,
+      "sceneBytes": 3177988
+    },
+    {
+      "id": "hover_car",
+      "sourceBytes": 8328056,
+      "sceneBytes": 2567832
+    },
+    {
+      "id": "hover_taxi",
+      "sourceBytes": 7789640,
+      "sceneBytes": 2601312
+    },
+    {
+      "id": "podium_arcade",
+      "sourceBytes": 8172664,
+      "sceneBytes": 2733344
+    },
+    {
+      "id": "podium_market",
+      "sourceBytes": 9321712,
+      "sceneBytes": 3249512
+    }
+  ],
+  "sourceBytes": 43312068,
+  "sceneBytes": 14329988
+}

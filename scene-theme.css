@@ -1,0 +1,18 @@
+html[data-scene="fuji"],html[data-scene="fuji"] body{background:#b797ac}
+/* Compact town labels include their message and envelope in the measured box,
+   allowing projected public controls to reserve real clickable space. */
+html[data-scene="fuji"] #social .friend-anchor{height:auto}
+html[data-scene="fuji"] #social .friend-anchor .head-message{position:static;bottom:auto;order:-1;width:auto;max-width:170px}
+/* Hide both outgoing anchors and newly mounted incoming anchors until handoff ends. */
+html[data-scene-transition=true] :is(#friend-anchors,#group-building-labels,#discovery-scene-icons,#record-player-control,#train-station-control,#train-follow-exit,.valley-popover,#character-drag-hint){visibility:hidden!important;pointer-events:none!important}
+.scene-travel{position:fixed;inset:0;z-index:44;display:grid;place-items:center;background:linear-gradient(145deg,#e6eee7ed,#f8f5edee);backdrop-filter:blur(20px);color:#3b5547;font-family:var(--ui-font,-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif)}
+.scene-travel[data-destination=fuji]{background:linear-gradient(145deg,#e6dae7f0,#fae7edef);color:#715b75}
+.scene-travel-content{display:flex;flex-direction:column;align-items:center;gap:15px;padding:28px;text-align:center}.scene-travel i{width:60px;height:60px;display:grid;place-items:center;border:1px solid #fff9;border-radius:22px;background:#fff6;box-shadow:0 10px 40px #526b5820}.scene-travel i svg{width:36px;height:36px}.scene-travel-eyebrow{font-size:12px;letter-spacing:.16em;opacity:.7}.scene-travel strong{font-size:26px;font-weight:550;letter-spacing:.12em}.scene-travel-detail{font-size:12px;opacity:.65}
+.scene-travel-progress{width:124px;height:3px;border-radius:3px;background:#83968533;overflow:hidden;margin-top:9px}.scene-travel-progress::after{content:'';display:block;width:48%;height:100%;border-radius:inherit;background:currentColor;opacity:.6;animation:scene-travel-progress 1.2s ease-in-out infinite}.scene-travel button{min-height:44px;border:1px solid #b7c4b0;border-radius:22px;padding:0 20px;color:inherit;background:#fff9;cursor:pointer}.scene-travel[data-failed=true] .scene-travel-eyebrow,.scene-travel[data-failed=true] .scene-travel-progress{display:none}
+@keyframes scene-travel-progress{from{transform:translateX(-100%)}to{transform:translateX(310%)}}
+@media(prefers-reduced-motion:reduce){.scene-travel-progress::after{animation:none;width:100%;opacity:.35}}
+@supports not (backdrop-filter:blur(1px)){.scene-travel{background:#edf0e8}.scene-travel[data-destination=fuji]{background:#eee1e9}}
+
+html[data-scene="cyber"],html[data-scene="cyber"] body{background:#343650}
+html[data-scene="cyber"] #scene-switcher .scene-switcher-track{background:linear-gradient(145deg,#f8f5f0cf,#e3e7f0ad)}
+.scene-travel[data-destination=cyber]{background:linear-gradient(145deg,#d5e1edf0,#e5d7e9ef);color:#424d68}

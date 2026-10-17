@@ -1,3 +1,4 @@
+import {createNeonFacility} from './public-facility-models.js';
 import * as THREE from 'three';
 import {createPlacementContext} from './social-characters.js';
 import {createDiscoveryPreview} from './discovery-previews.js';
@@ -5,7 +6,7 @@ import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
 import {COMMUNITY_FACILITIES} from './community-layout.js';
 
 /** Authored timber props: every board remains individually editable. */
-export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,obstacleCache}){
+export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,facilities=COMMUNITY_FACILITIES,obstacleCache,templates={}}){
   const placement=createPlacementContext({scene,terrain,generated,obstacleCache});
   const holder=generated||new THREE.Group();if(!generated){holder.name='Interactive woodland facilities';scene.add(holder);}
   const mats={wood:new THREE.MeshStandardMaterial({color:0x806044,roughness:1}),edge:new THREE.MeshStandardMaterial({color:0xb99b6f,roughness:1}),cream:new THREE.MeshStandardMaterial({color:0xf0e8ca,roughness:1}),green:new THREE.MeshStandardMaterial({color:0x6a8668,roughness:1}),orange:new THREE.MeshStandardMaterial({color:0xc58f54,roughness:1}),dark:new THREE.MeshStandardMaterial({color:0x37473e,roughness:1})};
@@ -17,8 +18,9 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   }
   // Keep both facilities on the front (+Z) side of the cottage; never search behind it.
   function find(preferred,radius,used,footprint){
-    const choices=[];for(let z=-9;z<=9;z+=.3)for(let x=-27;x<=-4;x+=.3){if(x>0||z < -1.5)continue;choices.push({x,z,d:Math.hypot(x-preferred[0],z-preferred[1])});}choices.sort((a,b)=>a.d-b.d);
+    const choices=[];if(terrain.theme&&terrain.theme!=='forest'){choices.push({x:preferred[0],z:preferred[1],d:0});for(let dz=-3;dz<=3;dz+=.3)for(let dx=-3;dx<=3;dx+=.3)choices.push({x:preferred[0]+dx,z:preferred[1]+dz,d:Math.hypot(dx,dz)});}else for(let z=-9;z<=9;z+=.3)for(let x=-27;x<=-4;x+=.3){if(x>0||z < -1.5)continue;choices.push({x,z,d:Math.hypot(x-preferred[0],z-preferred[1])});}choices.sort((a,b)=>a.d-b.d);
     for(const p of choices){
+      if(terrain.facilitySpaceClear&&!terrain.facilitySpaceClear(p.x,p.z))continue;
       if(used.some(u=>Math.hypot(p.x-u.x,p.z-u.z)<radius+u.radius+.35))continue;
       if(!footprint){const check=placement.inspect(p.x,p.z,radius,used);if(check.ok)return {...p,y:check.y,radius};continue;}
       let ok=true,y=2.22;const [width,depth,centerZ]=footprint;
@@ -55,9 +57,17 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   const lens=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.16,12),mats.dark);lens.rotation.x=Math.PI/2;lens.position.set(.62,.55,.87);cinema.add(lens);
   for(const [x,z,c] of [[-.65,1.02,mats.orange],[-.06,1.38,mats.green]])box(cinema,'Hand stitched seat cushion',x,.1,z,.48,.18,.48,c);
   cinema.scale.setScalar(.82);
-  const cinemaSpot=COMMUNITY_FACILITIES.cinema;register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
+  function replaceShell(group,kind,surface){
+    const source=templates[kind]||(terrain.theme==='cyber'?()=>createNeonFacility(kind):null);if(!source)return;
+    const old=group.children.filter(child=>child!==surface),geometries=new Set(),materials=new Set();
+    for(const child of old){child.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const m of [].concat(o.material||[]))materials.add(m);});group.remove(child);}
+    geometries.forEach(g=>g.dispose());materials.forEach(m=>{if(m.map)m.map.dispose();m.dispose();});
+    const model=typeof source==='function'?source():source.clone(true);group.add(model);
+  }
+  replaceShell(kiosk,'accounts',journalSurface);replaceShell(cinema,'scene-video',screen);
+  const cinemaSpot=facilities.cinema;register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
   // Reserve the larger screen first, then stagger the journal beside the front path.
-  const kioskSpot=COMMUNITY_FACILITIES.kiosk;register(kiosk,'accounts',[kioskSpot.x,kioskSpot.z],1.1,[1.9,.9,.05]);
+  const kioskSpot=facilities.kiosk;register(kiosk,'accounts',[kioskSpot.x,kioskSpot.z],1.1,[1.9,.9,.05]);
   let saved=null,transition=null,down=null,focusKind=null,focusedPose=null;
   const reduced=()=>typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   function surface(kind){
@@ -102,5 +112,5 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   function up(e){const p=down;down=null;if(!p||p.id!==e.pointerId||Math.hypot(e.clientX-p.x,e.clientY-p.y)>6)return;const rect=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);const hit=ray.intersectObjects(pickables,true)[0];if(!hit)return;const obstacles=ray.intersectObjects(placement.occluders,false);if(obstacles[0]&&obstacles[0].distance<hit.distance-.05)return;const kind=hit.object.userData.discoveryKind;onOpen?.(kind);}
   const pointer=e=>{if(document.querySelector('dialog[open]'))return;if(e.button===0)down={x:e.clientX,y:e.clientY,id:e.pointerId};};renderer.domElement.addEventListener('pointerdown',pointer);renderer.domElement.addEventListener('pointerup',up);
   function screenPoint(kind){const group=kind==='accounts'?kiosk:cinema;const p=group.localToWorld(new THREE.Vector3(0,kind==='accounts'?1.4:2.1,.12)).project(camera);const rect=renderer.domElement.getBoundingClientRect();return {x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(-p.y*.5+.5)*rect.height};}
-  return {get labelAnchors(){return sceneIcons?.anchors||[];},focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
+  return {get labelAnchors(){return sceneIcons?.anchors||[];},focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){placement.dispose();transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
 }

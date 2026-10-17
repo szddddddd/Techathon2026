@@ -4,7 +4,7 @@ import {FOREST_TREES,FOREST_ROCKS} from './forest-layout.js';
 import {groundTree} from './tree-assets.js';
 
 // Authored vegetation and forest details. All geometry is constructed here.
-export function buildNature(scene, { rodin = false, expanded = false, terrain } = {}) {
+export function buildNature(scene, { rodin = false, expanded = false, terrain, fallbackTrees = false } = {}) {
   let seed = 81397;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const between = (a, b) => a + random() * (b - a);
@@ -89,11 +89,11 @@ export function buildNature(scene, { rodin = false, expanded = false, terrain } 
     }
     return g;
   }
-  if(!rodin)for(const [i,p] of FOREST_TREES.entries()){
+  if(!rodin||fallbackTrees)for(const [i,p] of FOREST_TREES.entries()){
     const g=tree(p.x,p.z,p.size,p.size*.065,i%leaves.length);
-    g.name=p.id;g.rotation.y=p.rotation;g.userData.layoutId=p.id;g.userData.kind=p.kind;
+    g.name=p.id;g.rotation.y=p.rotation;g.userData.layoutId=p.id;g.userData.kind=p.kind;g.userData.proceduralTree=true;
     if(terrain)groundTree(g,terrain.sample);
-    // Collision captures these meshes before main.js batches their shared materials.
+    // Collision captures these meshes before scene-world batches shared materials.
   }
 
   function rock(x, z, size, parent = root, y = 2.2) {
@@ -106,13 +106,13 @@ export function buildNature(scene, { rodin = false, expanded = false, terrain } 
     g.userData.layoutId=p.id;g.userData.kind='rock';props.add(g);
     rock(0,0,p.size*.65,g,-p.size*.15);
   }
-  if(!rodin){
+  if(!rodin||fallbackTrees){
     props.updateWorldMatrix(true,true);
     props.userData.inventory=props.children.map(g=>{
       const bounds=new THREE.Box3().setFromObject(g);
       return{id:g.userData.layoutId,kind:g.userData.kind,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()}};
     });
-    setReservedFootprints(props.userData.inventory.map(({bounds:b})=>({minX:b.min[0],maxX:b.max[0],minZ:b.min[2],maxZ:b.max[2]})));
+    if(!rodin)setReservedFootprints(props.userData.inventory.map(({bounds:b})=>({minX:b.min[0],maxX:b.max[0],minZ:b.min[2],maxZ:b.max[2]})));
   }
   const leafShape = new THREE.Shape(); leafShape.moveTo(0,0);leafShape.quadraticCurveTo(.33,.42,0,1);leafShape.quadraticCurveTo(-.29,.38,0,0);
   const leafGeo = new THREE.ShapeGeometry(leafShape,5);

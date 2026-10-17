@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';import {chromium,baseURL} from './test-runtime.mjs';
+const out='validation/scene-button-slide',raw=out+'/.capture-recordings';await fs.mkdir(raw,{recursive:true});
+const browser=await chromium.launch({channel:'msedge',headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'no-preference',recordVideo:{dir:raw,size:{width:1440,height:1000}}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+const ready=id=>page.waitForFunction(id=>window.__sceneTheme?.ready&&__sceneTheme.id===id&&!__sceneTheme.switching,id,{timeout:180000});
+async function clickScene(from,to){await page.locator('#scene-switcher .scene-switcher-option').click();await ready(to);await page.mouse.move(1200,900);await page.waitForTimeout(1000);}
+
+try{
+ await page.goto(baseURL+'/?scene=forest');await ready('forest');await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of['tuantuan','ali','xiaomian','shanshan'])await __socialStore.addFriend(id);});await page.waitForTimeout(700);
+ await clickScene('forest','fuji');await page.screenshot({path:out+'/desktop.png'});await page.locator('#scene-switcher').screenshot({path:out+'/capsule.png'});await clickScene('fuji','forest');await page.locator('#scene-switcher').screenshot({path:out+'/capsule-forest.png'});await clickScene('forest','fuji');assert.deepEqual(errors,[]);
+ const video=page.video();await page.close();await context.close();await video.saveAs(out+'/click-scene-switch.webm');await fs.unlink(await video.path());
+ const mobile=await browser.newPage({viewport:{width:391,height:844},reducedMotion:'reduce'});await mobile.goto(baseURL+'/?scene=fuji');await mobile.waitForFunction(()=>window.__sceneTheme?.ready&&window.__groupBuildings,null,{timeout:180000});await mobile.evaluate(async()=>{await __socialStore.setDemoPaused(true);await __socialStore.addFriend('tuantuan');await __socialStore.addFriend('ali');});await mobile.waitForTimeout(350);await mobile.screenshot({path:out+'/mobile.png'});await mobile.locator('#scene-switcher').screenshot({path:out+'/capsule-mobile.png'});await mobile.close();await fs.writeFile(out+'/recording.json',JSON.stringify({flow:['forest → fuji by click','fuji → forest by click','forest → fuji by click'],errors,video:'click-scene-switch.webm'},null,2));console.log('Recorded three real scene button clicks; desktop and mobile screenshots saved');
+}finally{await context.close();await browser.close();}

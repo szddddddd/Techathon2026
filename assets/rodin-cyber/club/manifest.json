@@ -1,0 +1,82 @@
+{
+  "id": "club",
+  "name": "霓虹社区会馆",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "68fed870-a320-4821-8a06-83de28ccb2c0",
+  "parameters": {
+    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. A welcoming two-storey cyberpunk community clubhouse: offset flat roof, broad recessed warm amber entrance porch, a physical circular sign frame without lettering, restrained cyan edge strips, graphite walls and rose accent panels. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "24a9c4733cd2c650ea209f450ba0a4bfac66cec778bed9e8ba6c211ea2803835",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber/club-prompt.txt",
+  "targetSize": [
+    4.4,
+    4.2,
+    3.8
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "a0337801e2631aa6d74b479fc718428a0cf5642398fd5965237673da1bfb01ca",
+  "bytes": 10285492,
+  "rotationY": 0,
+  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
+  "sourceSha256": "a0337801e2631aa6d74b479fc718428a0cf5642398fd5965237673da1bfb01ca",
+  "sceneSha256": "d7e25679413bbb445a1920b5078aa86629c83b21b003ce872d033a3571b8024b",
+  "sourceBytes": 10285492,
+  "sceneBytes": 3364232,
+  "optimization": {
+    "geometry": "unchanged source mesh (approximately 30000 triangles)",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "visualReview": {
+    "views": [
+      "preview-front.png",
+      "preview-side.png",
+      "preview-rear.png"
+    ],
+    "severeDefects": false,
+    "notes": "完整门廊、环形招牌、露台与背墙；参考中的暖窗需运行时恢复。"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "single name and one scene icon; enlarged 17px text; hover and focus create no popup",
+    "two-way dragging commits only on release; short drag snaps back",
+    "click toggles scenes; Home/End/arrows select scenes; repeated selection is a no-op",
+    "Esc, pointer cancellation and window blur cancel pending drags",
+    "modal disables both options and cancels dragging",
+    "deferred load keeps committed scene and blocks duplicate activation",
+    "failed switch returns to original; retry succeeds; external setCurrent synchronizes radios",
+    "391px layout avoids roam; real touch input drags; both targets are at least 44px",
+    "reduced motion freezes loading shimmer; dispose removes control and listeners"
+  ],
+  "errors": [],
+  "mobile": {
+    "bar": {
+      "x": 12,
+      "y": 12,
+      "width": 196,
+      "height": 48
+    },
+    "roam": {
+      "x": 279,
+      "y": 12,
+      "width": 96,
+      "height": 44
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "hover/focus never opens a window; cancelled drag does not rotate or pan the camera",
+    "modal disables the single scene switch",
+    "loading page restored; scene anchors hidden during load; failure removes loading page and restores original world/data",
+    "retry succeeds in the same capsule",
+    "rapid clicks commit one switch",
+    "external switch synchronizes capsule; real drag switches scene; canvas fades finish cleanly",
+    "outgoing and newly mounted incoming anchors both stay hidden until the loading page closes"
+  ],
+  "errors": [],
+  "mobile": {
+    "bar": {
+      "x": 12,
+      "y": 12,
+      "width": 220,
+      "height": 54
+    },
+    "roam": {
+      "x": 287,
+      "y": 14,
+      "width": 90,
+      "height": 38
+    }
+  }
+}

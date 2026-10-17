@@ -1,0 +1,5 @@
+Use case: stylized-concept
+Asset type: isolated 3D reconstruction reference
+Input image: style reference only; extract palette, material and architectural language, not overall scene.
+Primary request: One straight miniature Japanese railway track module, longitudinal direction X, two precisely parallel steel rails on six warm weathered timber sleepers and a shallow pale grey gravel bed. Complete 3.48 long by 1.65 wide module with flat grounded underside. Bright softly faceted handmade miniature, detailed matte wood and light silver grey steel. Railway only, no train, plants, landscape, people, text, ground plane or shadows. No curves, junctions or gaps. Match supplied image.
+Composition: ONE complete isolated object on plain warm white background, three-quarter front view, entire base and roof visible, generous margin, no labels or watermark. For train bodies the long axis runs left to right with locomotive front to image right; do not include wheels. For buildings emphasize distinctive roof silhouette and actual front door. No surrounding town, trees, railway (unless track itself), people or cast shadows.

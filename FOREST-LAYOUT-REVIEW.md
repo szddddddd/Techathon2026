@@ -27,7 +27,7 @@
 
 ## 性能
 
-同一台机器、Edge headless D3D11、1440 × 1000、空庭院；3 个全新浏览器上下文，各测一次冷加载与热加载，帧采样各 120 帧。时间取三轮中位数，完整数据见 [performance.json](validation/forest-layout/performance.json) 及同目录原始记录。
+以下为场景入口重构前的原始性能记录，不代表合入富士樱町后的最新加载时间。同一台机器、Edge headless D3D11、1440 × 1000、空庭院；3 个全新浏览器上下文，各测一次冷加载与热加载，帧采样各 120 帧。时间取三轮中位数，完整数据见 [performance.json](validation/forest-layout/performance.json) 及同目录原始记录。
 
 | 指标 | 修改前 | 修改后 |
 | --- | ---: | ---: |
@@ -66,4 +66,10 @@ node scripts/test-group-scene.mjs
 node scripts/audit-bridge.mjs --out validation/forest-layout/bridge.json
 ```
 
-本轮在 `main` 上完成本地修改和验证，未提交或推送 GitHub，未修改本地已有的 `AGENTS.md` 内容。
+## 合入最新 main
+
+在远程基线 `513465e` 上接入树林修改，沿用新的 `scene-world.js` 与 `scene-assets.js` 场景创建、资源缓存及销毁流程。森林专用树木布局不进入富士樱町；往返场景时按同一坐标重建。树模型失败时使用 24 棵程序树，其他道具继续采用本地模型，桥梁等关键资源加载失败仍保留原有的场景切换回滚行为。
+
+重新执行构建、基础数据测试、四类性能单元检查、树林几何检查和浏览器集成检查。正常树与强制模型失败两种模式都通过森林 → 富士樱町 → 森林往返，树木仍为 24+6 棵且只有一个活动场景。九类建筑、手机布局、聚会和资源录制检查通过。山谷检查包括真实树灯点击、四角色平台拖放、坡面散步及八人聚会，约 8 秒采样为 59.99 FPS、P95 帧间隔 16.8 ms。未在此轮重新测完整冷/热加载基准或真实手机性能。
+
+新证据位于 `validation/forest-layout/integration/`，此前同级证据为最初树林调整的历史记录。本次保留本地已有的 `AGENTS.md`，不随代码提交；原 stash 备份保留。

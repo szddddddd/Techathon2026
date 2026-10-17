@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {loadGeometryGLB} from '../scripts/glb-geometry.mjs';
 import {Hyper3dClient,resultData} from './hyper3d-client.mjs';
 import {readImageConfig} from './image-config.mjs';
+import {RodinRestClient} from './rodin-rest-client.mjs';
 
 const ID=/^[a-f0-9-]{36}$/;
 const style='Cozy woodland miniature game character, softly faceted low-poly sculpted forms, hand-painted matte materials, warm cream and muted sage/olive accents, gentle rounded proportions matching a forest diorama. ';
@@ -20,10 +21,11 @@ export class AvatarPipeline {
   }
   async init(){
     await fs.mkdir(this.dataDir,{recursive:true});await this.loadConfig();
+    if(this.client instanceof Hyper3dClient){try{await fs.access(path.join(this.root,'.forest-avatar-data','hyper3d-config.json'));this.client=new RodinRestClient({root:this.root});}catch{}}
     for(const name of await fs.readdir(this.dataDir)){if(!ID.test(name))continue;try{const job=JSON.parse(await fs.readFile(path.join(this.dataDir,name,'job.json'),'utf8'));this.jobs.set(job.id,job);if(['image_submitting','rodin_submitting'].includes(job.phase)){job.phase='attention';job.error='上次提交的结果尚未确认。请先到生成服务检查，避免重复付费。';await this.save(job);}else if(job.phase==='model_uploading'){job.phase='image_review';this.run(job.id);}else if(['queued','model_processing','downloading'].includes(job.phase))this.run(job.id);}catch{}}
     return this;
   }
-  public(job){if(!job)return null;const {uploadId,...safe}=job;return clone(safe);}
+  public(job){if(!job)return null;const {uploadId,subscriptionKey,...safe}=job;return clone(safe);}
   list(){return [...this.jobs.values()].sort((a,b)=>b.createdAt-a.createdAt).map(j=>this.public(j));}
   async save(job){job.updatedAt=Date.now();await atomic(path.join(this.dataDir,job.id,'job.json'),job);}
   async loadConfig(){
@@ -32,7 +34,7 @@ export class AvatarPipeline {
     catch{this.apiKey='';this.configError='生图服务暂未连接，请检查本项目的本地配置后重试。';}
   }
   async status(connect=true){
-    let hyper3d={connected:false,tools:[],error:''};if(connect){try{const s=await this.client.tools();hyper3d={connected:!!s.tools?.rodin_generate,tools:Object.keys(s.tools||{}),error:''};}catch{hyper3d.error='请在 Codex 中完成 Hyper3D MCP 的 OAuth 登录。';}}
+    let hyper3d={connected:false,tools:[],error:''};if(connect){try{const s=await this.client.tools();hyper3d={connected:!!s.tools?.rodin_generate,tools:Object.keys(s.tools||{}),error:''};}catch{hyper3d.error='请检查本项目 Rodin REST 密钥，或 Codex 的 Hyper3D MCP 登录。';}}
     return {image:{configured:!!this.apiKey||!!this.imageEditor,error:this.configError},hyper3d};
   }
   create(input){
@@ -67,16 +69,23 @@ export class AvatarPipeline {
       if(job.phase==='image_review'){
         job.phase='model_uploading';await this.save(job);
         const bytes=await fs.readFile(path.join(this.dataDir,job.id,'reference.img'));
+        if(this.client.generateImage){
+          job.phase='rodin_submitting';await this.save(job);
+          let generation;try{generation=await this.client.generateImage(bytes,job.referenceMime,style+'One complete full-body character matching the reference, standing on both feet, separated limbs. No ground, no pedestal, no extra objects.');}catch{const e=new Error('Rodin 提交结果未确认，请先检查原任务，不会自动重复提交。');e.ambiguous=true;throw e;}
+          job.generationId=generation.generation_id;job.phase='model_processing';await this.save(job);
+        }else{
         const uploads=resultData(await this.client.call('rodin_create_uploads',{files:[{filename:'forest-character.'+({'image/png':'png','image/webp':'webp','image/jpeg':'jpg'}[job.referenceMime]),mime_type:job.referenceMime,size_bytes:bytes.length}]}));const upload=uploads.uploads?.[0];if(!upload?.upload_id)throw new Error('未能创建模型参考图上传。');
         const put=await this.upload(upload.upload_url,{method:'PUT',headers:upload.headers,body:bytes,signal:AbortSignal.timeout(90000)});if(!put.ok)throw new Error('参考图上传失败，可重试本步骤。');
         job.uploadId=upload.upload_id;job.phase='rodin_submitting';await this.save(job);
         let generation;try{generation=resultData(await this.client.call('rodin_generate',{reference_upload_ids:[upload.upload_id],prompt:style+'One complete full-body character matching the reference, standing on both feet, separated limbs. No ground, no pedestal, no extra objects.',tier:'Gen-2.5-Medium',mesh_mode:'Raw',quality_override:12000,geometry_file_format:'glb'}));}catch{const e=new Error('Rodin 提交结果未确认，请到 Hyper3D Mine 检查，不会自动重复提交。');e.ambiguous=true;throw e;}
         if(!generation.generation_id){const e=new Error('Rodin 未返回任务编号，请先查看 Hyper3D Mine。');e.ambiguous=true;throw e;}
         job.generationId=generation.generation_id;job.phase='model_processing';await this.save(job);
+        }
       }
       if(job.phase==='model_processing'){
         for(let i=0;i<360;i++){
           if(job.phase==='cancelled')return;
+          if(this.client.generateImage&&i===0)await new Promise(r=>setTimeout(r,this.pollMs));
           const status=resultData(await this.client.call('rodin_get_status',{generation_id:job.generationId}));job.stage=status.stage;await this.save(job);
           if(status.status==='failed')throw new Error('Rodin 生成失败，可查看 Hyper3D 的任务记录。');
           if(status.status==='completed'){job.phase='downloading';await this.save(job);break;}

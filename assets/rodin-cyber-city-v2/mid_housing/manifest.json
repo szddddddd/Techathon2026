@@ -1,0 +1,74 @@
+{
+  "id": "mid_housing",
+  "name": "堆叠住宅楼",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "fcf578be-92f2-47b2-8c04-20fab76fc751",
+  "parameters": {
+    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A tall slender stacked residential tower, height eight times width, alternating apartment modules and recessed service balconies, warm inhabited windows.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "64a065d55b5a8bcc108d79f86fc31b2d02d679d22e57928d0eaf24619841b85f",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber-city-v2/mid_housing-prompt.txt",
+  "targetSize": [
+    3.6,
+    28,
+    3.4
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "6fe71b8773bff11266f93bf978eb6c13518acac2020107603601365a2c9ed9e5",
+  "bytes": 12038520,
+  "rotationY": 0,
+  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
+  "sourceSha256": "6fe71b8773bff11266f93bf978eb6c13518acac2020107603601365a2c9ed9e5",
+  "sceneSha256": "c67026a13794517b09cdf5e70441f40c319909dd3df333f301d88bbf8af6da73",
+  "sourceBytes": 12038520,
+  "sceneBytes": 3621040,
+  "optimization": {
+    "geometry": "gltf-transform 4.5.1 simplify ratio 0.4 error 0.005; original and scene-detail retained",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+}

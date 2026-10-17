@@ -46,6 +46,11 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
     if(sceneKind){onRequestClose();return;}
     return ui.close('discovery');
   }
+  function detachScene(){
+    if(!sceneKind)return;
+    rememberSession();sceneKind=null;layer.externalMotion=false;playbackBlocked=false;stage='window';
+    shell.removeAttribute('data-motion');windowNode.style.opacity='';windowNode.style.clipPath='';windowNode.inert=false;shell.style.removeProperty('--backdrop-alpha');
+  }
   function normalizeRoute(route){if(route==='videos'){videoTab='recommend';return{type:'video',id:VIDEOS[0]?.id};}return route;}
   function prepareScene(kind,route){
     rememberSession();player.pause();ownerNav='discover';returnToOwner=null;ui.setNav('discovery','discover');sceneKind=kind;playbackBlocked=true;stage='opening';
@@ -141,7 +146,7 @@ export function createDiscoveryUI({store,ui,onShare=()=>{},onClose=()=>{},onScen
       stage='window';
       if(resume){({search,articleTab,videoTab,personalTab,commentsOpen}=dockSession);current=structuredClone(dockSession.current);stack=structuredClone(dockSession.stack);playbackRequested=dockSession.wantPlay;render();}else{if(fresh||nextOwner==='me'){stack=[];current=null;}navigate(normalizeRoute(route));}
     },
-    prepareScene,settleScene,startClosing,reveal,stopScene,dismissBoard:stopScene,
+    prepareScene,settleScene,startClosing,reveal,stopScene,detachScene,dismissBoard:stopScene,
     get shell(){return shell;},get windowNode(){return windowNode;},
     back,
     get stage(){return stage;},

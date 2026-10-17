@@ -9,7 +9,7 @@ import {buildTerrain} from '../src/terrain.js';
 import {createPlacementContext} from '../src/social-characters.js';
 const scene=new T.Scene(),terrain=buildTerrain(scene),context=createPlacementContext({scene,terrain});scene.updateMatrixWorld(true);
 const rock=terrain.root.getObjectByName('Continuous floating island rock');assert.ok(rock);
-const bounds=new T.Box3().setFromObject(rock);assert.ok(bounds.min.y<=-17&&bounds.max.y>=2.2);
+const bounds=new T.Box3().setFromObject(rock);assert.ok(bounds.min.y<=-14.25&&bounds.max.y>=2.2);
 let shoreChecks=0,cornerChecks=0,pathChecks=0,minRiverClearance=Infinity;
 const ray=new T.Raycaster();
 for(const [x,z] of ISLAND_OUTLINE){
@@ -29,5 +29,5 @@ assert.ok(minRiverClearance>2,'buildings must leave a dry-bank corridor');
 for(let z=COMMUNITY_BOUNDS.minZ+1;z<=.1;z+=.16){const q=context.inspect(COMMUNITY_RIVER_WALK_X,z,.63,[],{manual:true});assert.ok(q.ok,JSON.stringify({z,q}));pathChecks++;}
 const position=rock.geometry.attributes.position;for(const n of position.array)assert.ok(Number.isFinite(n));
 assert.equal(scene.getObjectByName('West rock body'),undefined);assert.equal(scene.getObjectByName('East rock body'),undefined);
-const report={checks:['shared angular shoreline meets meadow','single tapered rock body with embedded hanging rock masses','all nine buildings remain level on dry land','riverside full-body passage','old slab extrusions removed'],shoreChecks,cornerChecks,pathChecks,minRiverClearance,rockTriangles:rock.geometry.index.count/3,bottom:bounds.min.y};
+const report={checks:['shared angular shoreline meets meadow','single tapered rock body without corner spike roots','all nine buildings remain level on dry land','riverside full-body passage','old slab extrusions removed'],shoreChecks,cornerChecks,pathChecks,minRiverClearance,rockTriangles:rock.geometry.index.count/3,bottom:bounds.min.y};
 await fs.writeFile(process.env.FOREST_ISLAND_REPORT||'validation/floating-island/geometry.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

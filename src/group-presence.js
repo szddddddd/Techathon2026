@@ -1,31 +1,50 @@
 import {GROUP_CAPACITY} from './community-layout.js';
-import {groupUnread,recentGroups} from './group-catalog.js';
-/** The latest nine conversations stay after reading; retained groups keep their slots. */
-export function createGroupPresence(){
- const entries=new Map();let queue=[],lastState,lastActive;
- function reconcile(input,now){
-  const {state,activeGroup}=input,ranked=recentGroups(state),wanted=ranked.slice(0,GROUP_CAPACITY),ids=new Set(wanted.map(g=>g.id));
-  for(const [id,e] of entries){
-   e.unread=groupUnread(state,id).length;e.selected=id===activeGroup;
-   if(ids.has(id)){if(e.phase==='leaving'){e.phase='entering';e.from=e.alpha;e.start=now;}}
-   else if(e.phase!=='leaving'){e.phase='leaving';e.from=e.alpha;e.start=now;}
+import {GROUP_TYPES,groupUnread} from './group-catalog.js';
+
+/** Buildings outlive conversations. Only unread and pinned groups acquire slots. */
+export function createGroupPresence({theme='forest'}={}){
+ const scenes=new Map();let serial=0,cachedState,cached;
+ const current=()=>{if(!scenes.has(theme))scenes.set(theme,{entries:new Map(),queue:[],types:GROUP_TYPES.map(t=>t.id)});return scenes.get(theme);};
+ function update({state,activeGroup},now=performance.now(),reduced=false){
+  const s=current();
+  if(cachedState!==state){
+   const groups=state.groups.filter(g=>!g.leftAt),byId=new Map(groups.map(g=>[g.id,g]));
+   const pins=(state.pinnedGroups||[]).filter(id=>byId.has(id)).slice(0,GROUP_CAPACITY),pinned=new Set(pins);
+   const unread=new Map(groups.map(g=>[g.id,groupUnread(state,g.id)]));
+   const first=new Map(groups.map(g=>[g.id,unread.get(g.id).reduce((time,m)=>Math.min(time,m.createdAt),Infinity)]));
+   const waiting=groups.filter(g=>unread.get(g.id).length&&!pinned.has(g.id)).sort((a,b)=>first.get(a.id)-first.get(b.id)||a.id.localeCompare(b.id));
+   cachedState=state;cached={byId,pins,pinned,unread,waiting};
   }
-  for(const g of wanted){
-   if(entries.size>=GROUP_CAPACITY)break;if(entries.has(g.id))continue;
-   const used=new Set([...entries.values()].map(e=>e.slot));let slot=0;while(used.has(slot))slot++;
-   entries.set(g.id,{id:g.id,slot,phase:'entering',alpha:0,from:0,start:now,unread:groupUnread(state,g.id).length,selected:g.id===activeGroup});
+  const {byId,pins,pinned,unread,waiting}=cached;
+  for(const [id,e]of s.entries){
+   if(!byId.has(id)){s.entries.delete(id);continue;}
+   s.types[e.slot]=byId.get(id).type;e.unread=unread.get(id).length;e.pinned=pinned.has(id);e.selected=id===activeGroup;
+   if(e.pinned||e.unread||e.selected){
+    e.releaseAt=null;
+    if(e.phase==='leaving'){e.phase='entering';e.from=e.alpha;e.start=now;}
+   }else{
+    e.releaseAt??=now+800;
+    if(now>=e.releaseAt&&e.phase!=='leaving'){e.phase='leaving';e.from=e.alpha;e.start=e.releaseAt;}
+   }
+   if(e.phase==='entering'){const t=Math.min(1,(now-e.start)/(reduced?80:320));e.alpha=e.from+(1-e.from)*t;if(t===1)e.phase='present';}
+   if(e.phase==='leaving'){const t=Math.min(1,(now-e.start)/(reduced?80:220));e.alpha=e.from*(1-t);if(t===1)s.entries.delete(id);}
   }
-  queue=ranked.slice(GROUP_CAPACITY).map(g=>g.id);
- }
- function update(input,now=performance.now(),reduced=false){
-  if(lastState!==input.state||lastActive!==input.activeGroup){reconcile(input,now);lastState=input.state;lastActive=input.activeGroup;}
-  let changed=false;
-  for(const [id,e] of entries){
-   if(e.phase==='entering'){const t=Math.min(1,(now-e.start)/(reduced?80:500));e.alpha=e.from+(1-e.from)*t;if(t===1)e.phase='present';}
-   if(e.phase==='leaving'){const t=Math.min(1,(now-e.start)/(reduced?80:450));e.alpha=e.from*(1-t);if(t===1){entries.delete(id);changed=true;}}
+  function acquire(id,isPinned){
+   if(s.entries.has(id))return;
+   const used=new Map([...s.entries.values()].map(e=>[e.slot,e]));
+   const saved=state.groupBuildingSlots?.[theme]?.[id];
+   let slot=isPinned&&Number.isInteger(saved)&&saved>=0&&saved<GROUP_CAPACITY&&!used.has(saved)?saved:-1;
+   if(slot<0){slot=s.types.findIndex((type,i)=>!used.has(i)&&type===byId.get(id).type);if(slot<0)slot=s.types.findIndex((_,i)=>!used.has(i));}
+   if(slot<0&&isPinned){const victim=[...s.entries.values()].filter(e=>!pinned.has(e.id)).sort((a,b)=>b.enteredOrder-a.enteredOrder)[0];if(victim){slot=victim.slot;s.entries.delete(victim.id);}}
+   if(slot<0)return;
+   s.types[slot]=byId.get(id).type;
+   s.entries.set(id,{id,slot,phase:'entering',alpha:0,from:0,start:now,releaseAt:null,enteredOrder:++serial,unread:unread.get(id).length,pinned:isPinned,selected:id===activeGroup});
   }
-  if(changed)reconcile(input,now);
+  for(const id of pins)acquire(id,true);
+  for(const g of waiting)acquire(g.id,false);
+  s.queue=waiting.filter(g=>!s.entries.has(g.id)).map(g=>g.id);
   return snapshot();
  }
- const snapshot=()=>({entries:[...entries.values()].map(e=>({...e})),queue:[...queue]});return{update,snapshot};
+ function snapshot(){const s=current();return{entries:[...s.entries.values()].map(e=>({...e})),queue:[...s.queue],buildings:s.types.map((type,slot)=>({slot,type,groupId:[...s.entries.values()].find(e=>e.slot===slot)?.id||null}))};}
+ return{update,snapshot,setScene(next){theme=next;current();}};
 }

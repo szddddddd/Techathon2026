@@ -1,0 +1,159 @@
+{
+  "version": 2,
+  "batchSize": 14,
+  "paidSubmissions": 14,
+  "revisionSubmissions": 0,
+  "workflow": "project-configured OpenAI compatible gpt-image-2 via bundled imagegen CLI -> Hyper3D MCP OAuth Rodin",
+  "referenceDirectory": "../../output/imagegen/railway-town",
+  "parameters": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb"
+  },
+  "originalAssetsPreserved": true,
+  "sourceBytes": 163395716,
+  "sceneBytes": 51829948,
+  "assets": [
+    {
+      "id": "railway-art",
+      "name": "陶艺工坊",
+      "generationId": "6184b4a5-bc89-4deb-ac9c-1bbd9a58abc0",
+      "sourceBytes": 12761928,
+      "sceneBytes": 4093960,
+      "manifest": "railway-art/manifest.json",
+      "model": "railway-art/scene.glb",
+      "reference": "railway-art/reference.png"
+    },
+    {
+      "id": "railway-cafe",
+      "name": "樱花喫茶",
+      "generationId": "e8d4c511-86b2-4d63-b49a-5440d5554501",
+      "sourceBytes": 13028388,
+      "sceneBytes": 4084012,
+      "manifest": "railway-cafe/manifest.json",
+      "model": "railway-cafe/scene.glb",
+      "reference": "railway-cafe/reference.png"
+    },
+    {
+      "id": "railway-carriage",
+      "name": "木窗客车",
+      "generationId": "49078feb-5a52-4a83-9268-f9480f3c32bd",
+      "sourceBytes": 9433556,
+      "sceneBytes": 2922144,
+      "manifest": "railway-carriage/manifest.json",
+      "model": "railway-carriage/scene.glb",
+      "reference": "railway-carriage/reference.png"
+    },
+    {
+      "id": "railway-classroom",
+      "name": "木造学舍",
+      "generationId": "f4a7c48e-6ff0-477b-8d70-a14ffa0ebe4a",
+      "sourceBytes": 11690248,
+      "sceneBytes": 3840776,
+      "manifest": "railway-classroom/manifest.json",
+      "model": "railway-classroom/scene.glb",
+      "reference": "railway-classroom/reference.png"
+    },
+    {
+      "id": "railway-club",
+      "name": "町内会馆",
+      "generationId": "62b86a83-e9f0-470f-96c1-7d9323fb97a4",
+      "sourceBytes": 13362556,
+      "sceneBytes": 4295660,
+      "manifest": "railway-club/manifest.json",
+      "model": "railway-club/scene.glb",
+      "reference": "railway-club/reference.png"
+    },
+    {
+      "id": "railway-gate",
+      "name": "昭和道口信号机",
+      "generationId": "25cb07cd-3704-4765-861d-257c71c66742",
+      "sourceBytes": 10715648,
+      "sceneBytes": 3212588,
+      "manifest": "railway-gate/manifest.json",
+      "model": "railway-gate/scene.glb",
+      "reference": "railway-gate/reference.png"
+    },
+    {
+      "id": "railway-lab",
+      "name": "山麓研究所",
+      "generationId": "9c2f647a-21a7-4986-aeed-8167ff958d29",
+      "sourceBytes": 13424764,
+      "sceneBytes": 4157468,
+      "manifest": "railway-lab/manifest.json",
+      "model": "railway-lab/scene.glb",
+      "reference": "railway-lab/reference.png"
+    },
+    {
+      "id": "railway-library",
+      "name": "町立书屋",
+      "generationId": "e69a01ff-a40b-46ff-9221-78e6e0ff2105",
+      "sourceBytes": 11067480,
+      "sceneBytes": 3606400,
+      "manifest": "railway-library/manifest.json",
+      "model": "railway-library/scene.glb",
+      "reference": "railway-library/reference.png"
+    },
+    {
+      "id": "railway-locomotive",
+      "name": "樱町蒸汽机车",
+      "generationId": "7ce80280-2b61-405f-9996-409e691755a3",
+      "sourceBytes": 9293172,
+      "sceneBytes": 2956932,
+      "manifest": "railway-locomotive/manifest.json",
+      "model": "railway-locomotive/scene.glb",
+      "reference": "railway-locomotive/reference.png"
+    },
+    {
+      "id": "railway-music",
+      "name": "木音堂",
+      "generationId": "0e595ad5-ada1-42c7-b73f-2f24c28edd68",
+      "sourceBytes": 11550860,
+      "sceneBytes": 3766220,
+      "manifest": "railway-music/manifest.json",
+      "model": "railway-music/scene.glb",
+      "reference": "railway-music/reference.png"
+    },
+    {
+      "id": "railway-observatory",
+      "name": "星见观测所",
+      "generationId": "d3aeda87-392e-453d-a39b-ba79b212458d",
+      "sourceBytes": 12474548,
+      "sceneBytes": 3729480,
+      "manifest": "railway-observatory/manifest.json",
+      "model": "railway-observatory/scene.glb",
+      "reference": "railway-observatory/reference.png"
+    },
+    {
+      "id": "railway-sport",
+      "name": "樱町道场",
+      "generationId": "c9ee120c-c794-4676-a6be-fab20a97bde2",
+      "sourceBytes": 11447336,
+      "sceneBytes": 3835604,
+      "manifest": "railway-sport/manifest.json",
+      "model": "railway-sport/scene.glb",
+      "reference": "railway-sport/reference.png"
+    },
+    {
+      "id": "railway-station",
+      "name": "樱町小站",
+      "generationId": "5884197f-d0ea-4a4a-b462-44eace5fd069",
+      "sourceBytes": 11529220,
+      "sceneBytes": 3671832,
+      "manifest": "railway-station/manifest.json",
+      "model": "railway-station/scene.glb",
+      "reference": "railway-station/reference.png"
+    },
+    {
+      "id": "railway-track",
+      "name": "木枕铁道模块",
+      "generationId": "c865c24c-d095-4f0f-9564-d7916558655b",
+      "sourceBytes": 11616012,
+      "sceneBytes": 3656872,
+      "manifest": "railway-track/manifest.json",
+      "model": "railway-track/scene.glb",
+      "reference": "railway-track/reference.png"
+    }
+  ]
+}

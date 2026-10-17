@@ -1,0 +1,4082 @@
+[
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -13.22068870194239,
+    "trainZ": -9.660633118810779,
+    "animationTime": 11.459199999999992,
+    "distance": 28.819839556814383,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -13.22068870194239,
+        2.5,
+        -9.660633118810779
+      ],
+      [
+        -16.20915429709143,
+        2.5,
+        -11.174143981772382
+      ],
+      [
+        -19.270945776279795,
+        2.5,
+        -12.531820996569694
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 11.459199999999992,
+      "updates": 685,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -11.884320663249902,
+    "trainZ": -8.9641840910849,
+    "animationTime": 12.476699999999969,
+    "distance": 30.326797024184984,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -11.884320663249902,
+        2.5,
+        -8.9641840910849
+      ],
+      [
+        -14.8591283076976,
+        2.5,
+        -10.504604311429516
+      ],
+      [
+        -17.88166900379572,
+        2.5,
+        -11.948182271526216
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 12.476699999999969,
+      "updates": 746,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -10.566520147235657,
+    "trainZ": -8.285674709438588,
+    "animationTime": 13.477499999999951,
+    "distance": 31.80902113558007,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -10.566520147235657,
+        2.5,
+        -8.285674709438588
+      ],
+      [
+        -13.540810559679004,
+        2.5,
+        -9.827102159120823
+      ],
+      [
+        -16.53447600215176,
+        2.5,
+        -11.330206182502524
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 13.477499999999951,
+      "updates": 806,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -9.219626346483311,
+    "trainZ": -7.609813173241656,
+    "animationTime": 14.494999999999937,
+    "distance": 33.315978602950686,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -9.219626346483311,
+        2.5,
+        -7.609813173241656
+      ],
+      [
+        -12.204385590559076,
+        2.5,
+        -9.13076257432462
+      ],
+      [
+        -15.181265845700185,
+        2.5,
+        -10.667137899881139
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 14.494999999999937,
+      "updates": 867,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -7.893885080554033,
+    "trainZ": -6.946942540277016,
+    "animationTime": 15.495799999999926,
+    "distance": 34.798202714345784,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -7.893885080554033,
+        2.5,
+        -6.946942540277016
+      ],
+      [
+        -10.887929480981583,
+        2.5,
+        -8.449643843265786
+      ],
+      [
+        -13.861159663058372,
+        2.5,
+        -9.993133451522858
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 15.495799999999926,
+      "updates": 927,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -6.568143844104821,
+    "trainZ": -6.28407192205241,
+    "animationTime": 16.496599999999898,
+    "distance": 36.28042682574086,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -6.568143844104821,
+        2.5,
+        -6.28407192205241
+      ],
+      [
+        -9.564474252104365,
+        2.5,
+        -7.782237126052182
+      ],
+      [
+        -12.546262387201429,
+        2.5,
+        -9.309005218649656
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 16.496599999999898,
+      "updates": 987,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -5.220280455887258,
+    "trainZ": -5.61014022794363,
+    "animationTime": 17.514099999999868,
+    "distance": 37.78738429311145,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -5.220280455887258,
+        2.5,
+        -5.61014022794363
+      ],
+      [
+        -8.21661087257529,
+        2.5,
+        -7.108305436287645
+      ],
+      [
+        -11.208884893896261,
+        2.5,
+        -8.614499857113943
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 17.514099999999868,
+      "updates": 1048,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -3.8724162331435306,
+    "trainZ": -4.936208116571765,
+    "animationTime": 18.53159999999985,
+    "distance": 39.29434176048206,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -3.8724162331435306,
+        2.5,
+        -4.936208116571765
+      ],
+      [
+        -6.868747376106647,
+        2.5,
+        -6.4343736880533235
+      ],
+      [
+        -9.865078230706832,
+        2.5,
+        -7.932539115353416
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 18.53159999999985,
+      "updates": 1109,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -2.524685629260238,
+    "trainZ": -4.262342814630118,
+    "animationTime": 19.548999999999833,
+    "distance": 40.80115112392467,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -2.524685629260238,
+        2.5,
+        -4.262342814630118
+      ],
+      [
+        -5.521016294275208,
+        2.5,
+        -5.760508147137604
+      ],
+      [
+        -8.517346959264204,
+        2.5,
+        -7.258673479632102
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 19.548999999999833,
+      "updates": 1170,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": -1.1768217244631867,
+    "trainZ": -3.5884108622315933,
+    "animationTime": 20.56649999999979,
+    "distance": 42.308108591295245,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        -1.1768217244631867,
+        2.5,
+        -3.5884108622315933
+      ],
+      [
+        -4.173152831207582,
+        2.5,
+        -5.0865764156037905
+      ],
+      [
+        -7.16948339413595,
+        2.5,
+        -6.584741697067975
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 20.56649999999979,
+      "updates": 1231,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 0.17104164820852993,
+    "trainZ": -2.914479175895735,
+    "animationTime": 21.583999999999765,
+    "distance": 43.81506605866584,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        0.17104164820852993,
+        2.5,
+        -2.914479175895735
+      ],
+      [
+        -2.8252893326469617,
+        2.5,
+        -4.41264466632348
+      ],
+      [
+        -5.82161983411651,
+        2.5,
+        -5.910809917058255
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 21.583999999999765,
+      "updates": 1292,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 1.4966512846515145,
+    "trainZ": -2.251674357674243,
+    "animationTime": 22.584699999999724,
+    "distance": 45.2971420661329,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        1.4966512846515145,
+        2.5,
+        -2.251674357674243
+      ],
+      [
+        -1.4996800596489896,
+        2.5,
+        -3.7498400298244947
+      ],
+      [
+        -4.496011148188687,
+        2.5,
+        -5.248005574094343
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 22.584699999999724,
+      "updates": 1352,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 2.844647547137299,
+    "trainZ": -1.5776762264313504,
+    "animationTime": 23.6022999999997,
+    "distance": 46.804247637431494,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "closed",
+      "closure": 1,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        2.844647547137299,
+        2.5,
+        -1.5776762264313504
+      ],
+      [
+        -0.15168399195701043,
+        2.5,
+        -3.075841995978505
+      ],
+      [
+        -3.1480148357595494,
+        2.5,
+        -4.574007417879774
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 23.6022999999997,
+      "updates": 1413,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 4.170389408940366,
+    "trainZ": -0.9148052955298172,
+    "animationTime": 24.603099999999667,
+    "distance": 48.286471748826564,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "opening",
+      "closure": 0.38839999999999836,
+      "occupants": 0,
+      "entryAllowed": false
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        4.170389408940366,
+        2.5,
+        -0.9148052955298172
+      ],
+      [
+        1.1740580244582601,
+        2.5,
+        -2.4129709877708705
+      ],
+      [
+        -1.8222733050572244,
+        2.5,
+        -3.911136652528612
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 24.603099999999667,
+      "updates": 1473,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 5.518120873793217,
+    "trainZ": -0.24093956310339149,
+    "animationTime": 25.62049999999964,
+    "distance": 49.793281112269156,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        5.518120873793217,
+        2.5,
+        -0.24093956310339149
+      ],
+      [
+        2.521789334647667,
+        2.5,
+        -1.7391053326761665
+      ],
+      [
+        -0.4745419577791651,
+        2.5,
+        -3.2372709788895824
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 25.62049999999964,
+      "updates": 1534,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 6.866117539053229,
+    "trainZ": 0.4330587695266146,
+    "animationTime": 26.63809999999961,
+    "distance": 51.300386683567744,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        6.866117539053229,
+        2.5,
+        0.4330587695266146
+      ],
+      [
+        3.869785726848585,
+        2.5,
+        -1.0651071365757074
+      ],
+      [
+        0.8734544150536867,
+        2.5,
+        -2.5632727924731564
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 26.63809999999961,
+      "updates": 1595,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 8.209698837988926,
+    "trainZ": 1.1154594948810805,
+    "animationTime": 27.655599999999577,
+    "distance": 52.807344150938334,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        8.209698837988926,
+        2.5,
+        1.1154594948810805
+      ],
+      [
+        5.217649625763113,
+        2.5,
+        -0.3911751871184437
+      ],
+      [
+        2.221318202058422,
+        2.5,
+        -1.889340898970789
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 27.655599999999577,
+      "updates": 1656,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 9.545791106356203,
+    "trainZ": 1.8121097550348733,
+    "animationTime": 28.67299999999953,
+    "distance": 54.314153514380905,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        9.545791106356203,
+        2.5,
+        1.8121097550348733
+      ],
+      [
+        6.565381378101457,
+        2.5,
+        0.28269068905072836
+      ],
+      [
+        3.569049564477619,
+        2.5,
+        -1.2154752177611905
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 28.67299999999953,
+      "updates": 1717,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 10.880221810565214,
+    "trainZ": 2.512262539163521,
+    "animationTime": 29.690499999999492,
+    "distance": 55.821110981751474,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        10.880221810565214,
+        2.5,
+        2.512262539163521
+      ],
+      [
+        7.910736569579641,
+        2.5,
+        0.9615954158794999
+      ],
+      [
+        4.916913459275876,
+        2.5,
+        -0.5415432703620618
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 29.690499999999492,
+      "updates": 1778,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 12.196620919554416,
+    "trainZ": 3.1934857194788235,
+    "animationTime": 30.691299999999455,
+    "distance": 57.30333509314654,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        12.196620919554416,
+        2.5,
+        3.1934857194788235
+      ],
+      [
+        9.226233882523713,
+        2.5,
+        1.6445596266741564
+      ],
+      [
+        6.242655279432383,
+        2.5,
+        0.12132763971619136
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 30.691299999999455,
+      "updates": 1838,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 13.544273875959266,
+    "trainZ": 3.8677949410090458,
+    "animationTime": 31.708799999999414,
+    "distance": 58.81029256051711,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        13.544273875959266,
+        2.5,
+        3.8677949410090458
+      ],
+      [
+        10.560564024587222,
+        2.5,
+        2.3449043896143382
+      ],
+      [
+        7.589433005220477,
+        2.5,
+        0.7974190738279193
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 31.708799999999414,
+      "updates": 1899,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 14.88297210919674,
+    "trainZ": 4.502992574573298,
+    "animationTime": 32.70959999999947,
+    "distance": 60.292081651958085,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        14.88297210919674,
+        2.5,
+        4.502992574573298
+      ],
+      [
+        11.875137458988371,
+        2.5,
+        3.028705751774367
+      ],
+      [
+        8.906107683676762,
+        2.5,
+        1.477158484750482
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 32.70959999999947,
+      "updates": 1959,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.012036662980876,
+    "trainZ": 5.005175421188246,
+    "animationTime": 33.72709999999955,
+    "distance": 61.52781949852825,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.012036662980876,
+        2.5,
+        5.005175421188246
+      ],
+      [
+        12.977205891255442,
+        2.5,
+        3.5876991935679894
+      ],
+      [
+        10.00055807068341,
+        2.5,
+        2.0509396659364625
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 33.72709999999955,
+      "updates": 2020,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.402596654263775,
+    "trainZ": 5.171059868591838,
+    "animationTime": 34.74449999999963,
+    "distance": 61.95214945072199,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.402596654263775,
+        2.5,
+        5.171059868591838
+      ],
+      [
+        13.357397165839865,
+        2.5,
+        3.776139009926026
+      ],
+      [
+        10.376239091379642,
+        2.5,
+        2.248220174150261
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 34.74449999999963,
+      "updates": 2081,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 35.761999999999716,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 35.761999999999716,
+      "updates": 2142,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 36.76279999999979,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 36.76279999999979,
+      "updates": 2202,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 37.7802999999999,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 37.7802999999999,
+      "updates": 2263,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 38.7811,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 38.7811,
+      "updates": 2323,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 39.798600000000086,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 39.798600000000086,
+      "updates": 2384,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 40.79940000000018,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 40.79940000000018,
+      "updates": 2444,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 41.81690000000028,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 41.81690000000028,
+      "updates": 2505,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.410713882212484,
+    "trainZ": 5.174466489432236,
+    "animationTime": 42.817700000000364,
+    "distance": 61.960952223072134,
+    "stopped": true,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.410713882212484,
+        2.5,
+        5.174466489432236
+      ],
+      [
+        13.365295967635804,
+        2.5,
+        3.7800264043343983
+      ],
+      [
+        10.384033705634884,
+        2.5,
+        2.2523106852810417
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 42.817700000000364,
+      "updates": 2565,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 16.48882332513185,
+    "trainZ": 5.2071643602290285,
+    "animationTime": 43.83520000000043,
+    "distance": 62.04562958333118,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        16.48882332513185,
+        2.5,
+        5.2071643602290285
+      ],
+      [
+        13.441293446712253,
+        2.5,
+        3.817368909244326
+      ],
+      [
+        10.45901695015916,
+        2.5,
+        2.2916525514534256
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 43.83520000000043,
+      "updates": 2626,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 17.19217953205754,
+    "trainZ": 5.495162891892806,
+    "animationTime": 44.852600000000514,
+    "distance": 62.80567090137683,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        17.19217953205754,
+        2.5,
+        5.495162891892806
+      ],
+      [
+        14.125458205483842,
+        2.5,
+        4.148392767173868
+      ],
+      [
+        11.132479567011138,
+        2.5,
+        2.6439459064804516
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 44.852600000000514,
+      "updates": 2687,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 18.52230943717469,
+    "trainZ": 6.0123069533487845,
+    "animationTime": 45.870100000000605,
+    "distance": 64.23282167627721,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        18.52230943717469,
+        2.5,
+        6.0123069533487845
+      ],
+      [
+        15.421180354144022,
+        2.5,
+        4.746513067393806
+      ],
+      [
+        12.40111947180368,
+        2.5,
+        3.297621508521891
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 45.870100000000605,
+      "updates": 2748,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 19.913525240700636,
+    "trainZ": 6.523640169787013,
+    "animationTime": 46.870900000000695,
+    "distance": 65.71504578767245,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        19.913525240700636,
+        2.5,
+        6.523640169787013
+      ],
+      [
+        16.783933454911395,
+        2.5,
+        5.329378207969598
+      ],
+      [
+        13.728367839776478,
+        2.5,
+        3.957424024199467
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 46.870900000000695,
+      "updates": 2808,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 21.311198660265877,
+    "trainZ": 7.017072266256838,
+    "animationTime": 47.871700000000764,
+    "distance": 67.19726989906768,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        21.311198660265877,
+        2.5,
+        7.017072266256838
+      ],
+      [
+        18.161912925507405,
+        2.5,
+        5.875325281157341
+      ],
+      [
+        15.069603513221487,
+        2.5,
+        4.588261885068367
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 47.871700000000764,
+      "updates": 2868,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 22.735668743554022,
+    "trainZ": 7.508810027039495,
+    "animationTime": 48.88920000000085,
+    "distance": 68.70422736643843,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        22.735668743554022,
+        2.5,
+        7.508810027039495
+      ],
+      [
+        19.574139178517317,
+        2.5,
+        6.401133924919744
+      ],
+      [
+        16.45062591011494,
+        2.5,
+        5.19119302299524
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 48.88920000000085,
+      "updates": 2929,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 24.137576718768102,
+    "trainZ": 7.990553483602829,
+    "animationTime": 49.89010000000092,
+    "distance": 70.18659958176166,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": true,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        24.137576718768102,
+        2.5,
+        7.990553483602829
+      ],
+      [
+        20.97067980698152,
+        2.5,
+        6.898206004092534
+      ],
+      [
+        17.82544302760507,
+        2.5,
+        5.745435565606884
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 49.89010000000092,
+      "updates": 2989,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 25.560612627953763,
+    "trainZ": 8.485517492988185,
+    "animationTime": 50.907400000001,
+    "distance": 71.69326084127641,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        25.560612627953763,
+        2.5,
+        8.485517492988185
+      ],
+      [
+        22.394296432715983,
+        2.5,
+        7.391496527902726
+      ],
+      [
+        19.235044524498964,
+        2.5,
+        6.277396721524179
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 50.907400000001,
+      "updates": 3050,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 26.97968183593725,
+    "trainZ": 8.992607084606297,
+    "animationTime": 51.92490000000112,
+    "distance": 73.20021830864722,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        26.97968183593725,
+        2.5,
+        8.992607084606297
+      ],
+      [
+        23.819527188946157,
+        2.5,
+        7.881026480301021
+      ],
+      [
+        20.653307860898558,
+        2.5,
+        6.786725058593236
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 51.92490000000112,
+      "updates": 3111,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 28.37263257363479,
+    "trainZ": 9.499676276405523,
+    "animationTime": 52.9258000000012,
+    "distance": 74.68259052397046,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        28.37263257363479,
+        2.5,
+        9.499676276405523
+      ],
+      [
+        25.220259694694587,
+        2.5,
+        8.366175470567422
+      ],
+      [
+        22.05327983605714,
+        2.5,
+        7.274061194116678
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 52.9258000000012,
+      "updates": 3171,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 29.765388805491238,
+    "trainZ": 10.006837652237676,
+    "animationTime": 53.926600000001294,
+    "distance": 76.16481463536572,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        29.765388805491238,
+        2.5,
+        10.006837652237676
+      ],
+      [
+        26.61728918512094,
+        2.5,
+        8.861434039561145
+      ],
+      [
+        23.455047079510862,
+        2.5,
+        7.755764478821643
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 53.926600000001294,
+      "updates": 3231,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 31.181208474250077,
+    "trainZ": 10.522524486220163,
+    "animationTime": 54.944000000001395,
+    "distance": 77.6716239988085,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        31.181208474250077,
+        2.5,
+        10.522524486220163
+      ],
+      [
+        28.03344400170954,
+        2.5,
+        9.37618620656657
+      ],
+      [
+        24.879415359619646,
+        2.5,
+        8.247340967119232
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 54.944000000001395,
+      "updates": 3292,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 32.573898107055996,
+    "trainZ": 11.029879843311173,
+    "animationTime": 55.9448000000015,
+    "distance": 79.15384811020377,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        32.573898107055996,
+        2.5,
+        11.029879843311173
+      ],
+      [
+        29.426215184911282,
+        2.5,
+        9.883317474981022
+      ],
+      [
+        26.277517707390906,
+        2.5,
+        8.739561748643018
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 55.9448000000015,
+      "updates": 3352,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 33.98980416643796,
+    "trainZ": 11.545758995491909,
+    "animationTime": 56.962300000001605,
+    "distance": 80.66080557757456,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        33.98980416643796,
+        2.5,
+        11.545758995491909
+      ],
+      [
+        30.84218327901344,
+        2.5,
+        10.399030810701001
+      ],
+      [
+        27.694394066431347,
+        2.5,
+        9.252756701954931
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 56.962300000001605,
+      "updates": 3413,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 35.40569693571322,
+    "trainZ": 12.061673486442954,
+    "animationTime": 57.97980000000171,
+    "distance": 82.16776304494536,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        35.40569693571322,
+        2.5,
+        12.061673486442954
+      ],
+      [
+        32.25811545103928,
+        2.5,
+        10.914833946290665
+      ],
+      [
+        29.11041693291971,
+        2.5,
+        9.768317166578491
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 57.97980000000171,
+      "updates": 3474,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  },
+  {
+    "theme": "fuji",
+    "river": false,
+    "terrace": false,
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 88.12183715828279,
+    "trainCarriages": 2,
+    "obstacleGroups": 53,
+    "adoptedAssets": [
+      "fuji",
+      "sakura_a",
+      "sakura_b",
+      "locomotive",
+      "station",
+      "carriage",
+      "track",
+      "gate",
+      "classroom",
+      "sport",
+      "lab",
+      "club",
+      "library",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "trainX": 36.798346762657296,
+    "trainZ": 12.569133660136858,
+    "animationTime": 58.98060000000182,
+    "distance": 83.64998715634064,
+    "stopped": false,
+    "holding": false,
+    "crossing": {
+      "state": "open",
+      "closure": 0,
+      "occupants": 0,
+      "entryAllowed": true
+    },
+    "steamVisible": false,
+    "cycleSeconds": 70,
+    "stationSeconds": 8,
+    "easingSeconds": 2.5,
+    "arrivalSeconds": 43.08613025056267,
+    "carriagePositions": [
+      [
+        36.798346762657296,
+        2.5,
+        12.569133660136858
+      ],
+      [
+        33.650787529099226,
+        2.5,
+        11.422235145424901
+      ],
+      [
+        30.50315243971518,
+        2.5,
+        10.275540958715935
+      ]
+    ],
+    "reduced": false,
+    "assets": {
+      "locomotive": true,
+      "carriage": true,
+      "track": true,
+      "gate": true
+    },
+    "petals": {
+      "clock": 58.98060000000182,
+      "updates": 3534,
+      "active": true,
+      "enabled": true,
+      "reduced": false,
+      "airVisible": true,
+      "airCapacity": 160,
+      "validParticles": 160,
+      "groundCount": 1200,
+      "roofStops": 0,
+      "batches": 2
+    }
+  }
+]

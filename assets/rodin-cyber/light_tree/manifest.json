@@ -1,0 +1,82 @@
+{
+  "id": "light_tree",
+  "name": "光树会客厅",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "9ef663f4-1265-4cd2-9bb1-0608313430fa",
+  "parameters": {
+    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. One seven-unit tall sculptural fiber-optic meeting tree: coherent silver-gray branching trunk with gentle organic forks, broad open asymmetrical crown made of thick translucent cyan and rose fiber bundles with small luminous tips. Solid connected readable branches, comfortable clear lower trunk. No bench, ground disc or other objects. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "e6fc88d08b5c2c16f21ad5da8e836352e2e96b7679cd05ff163791818e9b52bb",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber/light_tree-prompt.txt",
+  "targetSize": [
+    5,
+    7,
+    5
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "ab5be7cdebbb8e94992be0d5250b5a5e19aa5f669cfbb2bf629a1f1c1b743bf2",
+  "bytes": 11210100,
+  "rotationY": 0,
+  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
+  "sourceSha256": "ab5be7cdebbb8e94992be0d5250b5a5e19aa5f669cfbb2bf629a1f1c1b743bf2",
+  "sceneSha256": "3cd0205c5a0c79fbdcc72cd7ec41862705502fa96d1cca83773ee63bb8593440",
+  "sourceBytes": 11210100,
+  "sceneBytes": 4228060,
+  "optimization": {
+    "geometry": "unchanged source mesh (approximately 30000 triangles)",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "visualReview": {
+    "views": [
+      "preview-front.png",
+      "preview-side.png",
+      "preview-rear.png"
+    ],
+    "severeDefects": false,
+    "notes": "连续银灰树干和分层光纤冠，侧视较窄；不是真实透明纤维，发光由程序补充。"
+  }
+}

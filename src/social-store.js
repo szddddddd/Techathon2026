@@ -1,3 +1,4 @@
+import {SCENE_THEMES} from './scene-theme.js';
 import {inWorld} from './world-surface.js';
 import {groupStoreMethods} from './group-store.js';
 import {getContent,getAccount,getCreator,validContentRef} from './discovery-catalog.js';
@@ -23,7 +24,7 @@ const clone=value=>structuredClone(value);
 const uid=()=>globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const assets=['forest','river','camp','sky'].map(name=>`assets/social/${name}.svg`);
 const discoveryDefaults=()=>({accountFollows:['hyper3d'],accountFeedVersion:1,creatorFollows:[],likes:[],collections:[],comments:{},progress:{},history:[],fontSize:18});
-const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],pinnedGroups:[],residentGroups:[],conversationAttachments:{},messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
+const fresh=()=>({version:1,profile:{id:'me',name:'林间旅人',signature:'在这里，遇见生活的小小回声。',emoji:'🌿'},friends:[],pinnedFriends:[],messages:[],groups:[],pinnedGroups:[],groupBuildingSlots:Object.fromEntries(Object.keys(SCENE_THEMES).map(id=>[id,{}])),residentGroups:[],conversationAttachments:{},messagesByGroup:{},statuses:{},posts:[],drafts:{},scrolls:{},settings:{demoPaused:false,demoCursor:0,petReminders:true},seenPosts:{},events:[],discovery:discoveryDefaults()});
 const requestValue=request=>new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
 function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('本地保存失败'));tx.onabort=()=>reject(tx.error||new Error('本地保存已中断'));});}
 function storageError(error){const wrapped=new Error(error?.name==='QuotaExceededError'?'本地空间不足，请释放浏览器存储空间后重试。':'无法保存到此浏览器，请检查存储权限后重试。');wrapped.cause=error;return wrapped;}
@@ -68,6 +69,7 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
   const store={
     ...groupStoreMethods({mutate,person:friendOf,payload:messagePayload}),
     get state(){return state;},
+    flush(){return queue;},
     getFriend(id){return friendOf(state,id);},
     addAvatarContact(profile){return mutate('friend-added',next=>{
       const account=String(profile.account||'').trim(),name=String(profile.name||'').trim();
@@ -144,6 +146,12 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
   };
   // One-time switch to the requested Hyper3D subscription; keep saved content and shares.
   if(initial?.discovery?.accountFeedVersion!==1)await mutate('discovery-subscriptions',next=>{next.discovery.accountFollows=['hyper3d'];next.discovery.accountFeedVersion=1;});
+  await mutate('group-building-migration',next=>{
+    const valid=new Set(next.groups.filter(g=>!g.leftAt).map(g=>g.id));
+    next.pinnedGroups=[...new Set(next.pinnedGroups||[])].filter(id=>valid.has(id)).slice(0,9);
+    next.groupBuildingSlots=Object.fromEntries(Object.keys(SCENE_THEMES).map(theme=>{const used=new Set();return[theme,Object.fromEntries(next.pinnedGroups.flatMap(id=>{const slot=next.groupBuildingSlots?.[theme]?.[id];if(!Number.isInteger(slot)||slot<0||slot>=9||used.has(slot))return[];used.add(slot);return[[id,slot]];}))];}));
+    if(initial&&JSON.stringify([initial.pinnedGroups,initial.groupBuildingSlots])===JSON.stringify([next.pinnedGroups,next.groupBuildingSlots]))return false;
+  });
   for(const [id,status] of Object.entries(state.statuses))if(status.expiresAt<=Date.now())await store.clearStatus(id);
   return store;
 }
@@ -156,21 +164,14 @@ const CHATTY_FRIENDS={
   shanshan:{interval:[24000,40000],texts:['篝火照看好了，等你有空来坐坐。','刚收集到一束很好看的光，想分享给你。','今天有什么值得记下的小事吗？','我在广场附近，随时可以找我。','走累了就停一会儿吧，我陪你。','森林里的天气很好，希望你那里也是。']},
 };
 
-export function startDemo(store,{random=Math.random}={}){
-  let disposed=false,busy=false,last=performance.now(),ambientRemaining=60000;
-  const groupTimers=new Map(),groupReplies=new Map();let groupCooldown=0;
-  const groupInterval=()=>18000+random()*20000;
-  const groupTopics={club:'这周的社团活动，大家有什么想法？',classroom:'今天课上的那个问题，大家弄明白了吗？',sport:'晚点一起活动一下？记得带水。',lab:'刚把实验的新进展记下来了，想和大家讨论。',library:'刚读到一段很喜欢的话，想分享给大家。',music:'发现一首很好听的歌，等你们来听。',art:'今天画了一张小速写，大家最近在创作什么？',cafe:'下午想泡一杯咖啡，来聊聊天吧。',observatory:'今晚想看看星星，有人一起吗？'};
-  const pending=new Map(),chatter=new Map();let chatterCooldown=0;
-  const chatterFor=id=>CHATTY_FRIENDS[id]||CHATTY_FRIENDS.shanshan;
-  const interval=id=>{const [min,max]=chatterFor(id).interval;return min+random()*(max-min);};
-  function addChatter(id){if(!chatter.has(id))chatter.set(id,{remaining:10000+Math.max(0,FRIENDS.findIndex(f=>f.id===id))*4500+random()*7000,index:Math.floor(random()*chatterFor(id).texts.length)});}
-  function schedule(key,friendId,payload,delay){if(!store.state.events.includes(key)&&!pending.has(key))pending.set(key,{key,friendId,payload,remaining:delay});}
-  function greeting(id){schedule(`greeting-${id}`,id,{type:'text',text:`你好呀，我是${friendOf(store.state,id)?.name||'你的朋友'}。很高兴在这片森林遇见你 🌿`},2000);}
-  function scheduleReply(message){const index=Math.max(0,FRIENDS.findIndex(friend=>friend.id===message.friendId));const texts=['收到你的来信啦！今天的阳光也分你一半。','记下了！下次一起去溪边走走吧。','嗯嗯，我在认真听。慢慢说，不着急。','看见你的消息，今天又多了一点温暖。'];const payload=message.type==='sticker'?{type:'sticker',text:['🌻','🦊','🐰','🐻'][index]}:message.type==='image'?{type:'text',text:'这张照片真好看，谢谢你把这一刻分享给我。'}:message.type==='moment'?{type:'text',text:'你也喜欢这段回忆呀！看到它，我又想起那天了。'}:{type:'text',text:texts[index]};schedule(`reply-${message.id}`,message.friendId,payload,1000+(message.createdAt%2001));}
-  for(const id of store.state.friends){greeting(id);addChatter(id);}
-  for(const message of store.state.messages)if(message.senderId==='me')scheduleReply(message);
-  const unsubscribe=store.subscribe((state,event)=>{if(event.type==='group-message-sent')groupReplies.set(event.groupId,1800+random()*2200);if(event.type==='friend-added'){greeting(event.friendId);addChatter(event.friendId);}if(event.type==='message-sent'){const message=state.messages[state.messages.length-1];scheduleReply(message);}if(event.type==='demo-restart'){ambientRemaining=2000;chatter.clear();chatterCooldown=0;groupTimers.clear();groupReplies.clear();groupCooldown=0;for(const id of state.friends){greeting(id);addChatter(id);}}});
+export function startDemo(store,{random=Math.random,getSceneParticipants=()=>({friends:[],groups:[]})}={}){
+  let disposed=false,busy=false,last=performance.now(),remaining=10000;
+  const cursors=new Map(),replies=[];
+  const pick=items=>items[Math.min(items.length-1,Math.floor(Math.max(0,random())*items.length))];
+  const unsubscribe=store.subscribe((state,event)=>{
+    if(event.type==='demo-restart'){remaining=10000;last=performance.now();replies.length=0;}
+    if(event.type==='message-sent')replies.push({friendId:event.friendId,remaining:1000+Math.max(0,Math.min(1,random()))*2000,at:performance.now()});
+  });
   async function tick(){
     const now=performance.now(),delta=Math.min(500,Math.max(0,now-last));last=now;
     if(disposed||busy)return;
@@ -178,29 +179,33 @@ export function startDemo(store,{random=Math.random}={}){
     try{
       for(const [id,status] of Object.entries(store.state.statuses))if(status.expiresAt<=Date.now())await store.clearStatus(id);
       if(globalThis.document?.hidden||store.state.settings.demoPaused)return;
-      groupCooldown=Math.max(0,groupCooldown-delta);
-      const activeGroups=store.state.groups.filter(g=>!g.leftAt);
-      for(const [index,g] of activeGroups.entries()){
-        let timer=groupTimers.get(g.id);if(!timer){timer={remaining:8000+(index%10)*900+random()*4000,index:0};groupTimers.set(g.id,timer);}timer.remaining-=delta;
-        if(groupReplies.has(g.id))groupReplies.set(g.id,groupReplies.get(g.id)-delta);
+      for(const reply of [...replies]){
+        reply.remaining-=Math.min(delta,Math.max(0,now-reply.at));reply.at=now;
+        if(reply.remaining>0)continue;
+        replies.splice(replies.indexOf(reply),1);
+        if(store.state.friends.includes(reply.friendId))await store.receiveMessage(reply.friendId,{type:'text',text:pick(['收到啦，很高兴听你说这些。','嗯嗯，我在听，接着聊吧。','好呀，等会儿一起去森林里走走？','看到你的消息，心情都变好了 🌿','我也这么想，慢慢说，我陪着你。','刚刚在发呆，现在来陪你聊天。'])});
       }
-      for(const id of groupTimers.keys())if(!activeGroups.some(g=>g.id===id)){groupTimers.delete(id);groupReplies.delete(id);}
-      const dueGroups=activeGroups.filter(g=>g.memberIds.some(id=>id!=='me')).map(g=>({g,timer:groupTimers.get(g.id),reply:groupReplies.has(g.id)&&groupReplies.get(g.id)<=0})).filter(({timer,reply})=>reply||(!groupCooldown&&timer.remaining<=0)).sort((a,b)=>Number(b.reply)-Number(a.reply)||a.timer.remaining-b.timer.remaining);
-      if(dueGroups.length){
-        const {g,timer,reply}=dueGroups[0],members=g.memberIds.filter(id=>id!=='me'),sender=members[timer.index%members.length];
-        const texts=[groupTopics[g.type]||'大家最近在忙什么？有空来聊聊吧。','刚有个新想法，想听听大家的意见。','把小小的进展分享给大家 🌿','不着急回复，等大家有空时再聊。'];
-        await store.receiveGroupMessage(g.id,sender,{text:reply?'收到啦，一起商量！':texts[timer.index%texts.length]});timer.index++;timer.remaining=groupInterval();groupReplies.delete(g.id);groupCooldown=3000;
+      remaining-=delta;if(remaining>0)return;
+      // One global slot, never a per-friend/group timer or catch-up burst.
+      remaining=10000;
+      const state=store.state;
+      // A group already on stage must not starve friends whose unread message would summon them.
+      const friends=state.friends.filter(id=>friendOf(state,id)?.modelUrl);
+      const groups=state.groups.filter(g=>!g.leftAt&&g.memberIds.some(id=>id!=='me'));
+      const candidates=[...friends.map(id=>({kind:'friend',id})),...groups.map(g=>({kind:'group',id:g.id,group:g}))];
+      if(!candidates.length)return;
+      const selected=candidates[Math.min(candidates.length-1,Math.floor(Math.max(0,random())*candidates.length))];
+      const key=selected.kind+':'+selected.id,index=cursors.get(key)||0;
+      if(selected.kind==='friend'){
+        const texts=(CHATTY_FRIENDS[selected.id]||CHATTY_FRIENDS.shanshan).texts;
+        await store.receiveMessage(selected.id,{type:'text',text:texts[index%texts.length]},`proactive-${uid()}`);
+      }else{
+        const members=selected.group.memberIds.filter(id=>id!=='me'),sender=members[Math.min(members.length-1,Math.floor(Math.max(0,random())*members.length))];
+        await store.receiveGroupMessage(selected.id,sender,{text:['大家有空时来聊聊今天的安排。','刚有个新想法，想听听大家的意见。','把小小的进展分享给大家 🌿'][index%3]});
       }
-      for(const item of pending.values()){item.remaining-=delta;if(item.remaining<=0){await store.receiveMessage(item.friendId,item.payload,item.key);pending.delete(item.key);break;}}
-      chatterCooldown=Math.max(0,chatterCooldown-delta);
-      for(const item of chatter.values())item.remaining-=delta;
-      if(!chatterCooldown){
-        const due=[...chatter].filter(([id,item])=>store.state.friends.includes(id)&&item.remaining<=0).sort((a,b)=>a[1].remaining-b[1].remaining)[0];
-        if(due){const [id,item]=due,texts=chatterFor(id).texts;await store.receiveMessage(id,{type:'text',text:texts[item.index%texts.length]},`proactive-${uid()}`);item.index++;item.remaining=interval(id);chatterCooldown=3000;}
-      }
-      if(store.state.friends.length){ambientRemaining-=delta;if(ambientRemaining<=0){const cursor=store.state.settings.demoCursor||0,id=store.state.friends[cursor%store.state.friends.length];await store.demoEvent(id,cursor);ambientRemaining=45000+((cursor*7919+15317)%30001);}}
-    }catch(error){console.warn('Local demo paused after a storage failure',error);ambientRemaining=60000;}finally{busy=false;}
+      cursors.set(key,index+1);
+    }catch(error){console.warn('Local demo paused after a storage failure',error);remaining=10000;}finally{busy=false;}
   }
   const timer=setInterval(tick,250);
-  return {dispose(){disposed=true;clearInterval(timer);unsubscribe();pending.clear();chatter.clear();groupTimers.clear();groupReplies.clear();}};
+  return {dispose(){disposed=true;clearInterval(timer);unsubscribe();cursors.clear();replies.length=0;}};
 }

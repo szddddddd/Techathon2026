@@ -1,0 +1,89 @@
+{
+  "id": "library",
+  "name": "町立书屋",
+  "kind": "building",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "e1dc433f-8bd2-42b3-877e-530e471063ee",
+  "phase": "downloaded",
+  "parameters": {
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "prompt": "A traditional small Japanese library with a taller central tiled gable, low front entrance canopy, book-filled front windows and a tiny open-book crest. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Follow the two reference views for proportions, enrich the architecture. Footprint about 4 by 3.5 units, height under 4.2."
+  },
+  "targetSize": {
+    "width": 4,
+    "depth": 3.5,
+    "height": 3.9
+  },
+  "front": "+Z",
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "9da5cda9b96c0ad3dd8bd7759a53e71c9afd3e0dd453f76769c66e45d39c0e4d",
+  "bytes": 8120576,
+  "references": [
+    "reference-front.png",
+    "reference-rear.png"
+  ],
+  "referenceHashes": [
+    "d756803b67ce0dc61c879babc05c4b6cbbd84b539b717900ea97a50f41e34e02",
+    "1641284d725fefe5c4e876545d0c0686582a1d0798494f166d4f65bb1d1801e0"
+  ],
+  "adoption": "accepted after front, rear and side visual review; scene integration remains separate",
+  "downloadedAt": "2026-10-16T09:41:23.728Z",
+  "sourceSha256": "9da5cda9b96c0ad3dd8bd7759a53e71c9afd3e0dd453f76769c66e45d39c0e4d",
+  "sceneSha256": "33ba16bf23f1a6c8fff31f0630ec8ae780b7913971d24f44f2a03760458d3b2e",
+  "sourceBytes": 8120576,
+  "sceneBytes": 2190120,
+  "rotationY": 0,
+  "optimization": {
+    "geometry": "unchanged 30000 triangle source mesh",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "inspection": {
+    "views": [
+      "preview-front.png",
+      "preview-rear.png",
+      "preview-side.png"
+    ],
+    "severeDefects": [],
+    "notes": "Complete miniature exterior, no visible major holes or detached parts."
+  }
+}

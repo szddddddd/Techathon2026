@@ -8,7 +8,7 @@ html[data-pet-mode=minimal] :is(.friend-tag,.letter,.notice){display:none!import
 .notice-role[data-phase=leaving]{pointer-events:none}
 .notice-role:focus-visible{outline:1px solid #e9d394;outline-offset:3px}
 .role{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;line-height:1;pointer-events:none}
-.friend-tag{position:absolute;top:100%;left:50%;transform:translateX(-50%);max-width:145%;padding:2px 5px;box-sizing:border-box;border:1px solid #d2dfc8;border-radius:5px;background:#f1f6eced;font-size:10px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 4px #233e3015;transition:background .2s,opacity .2s}
+.friend-tag{position:absolute;top:100%;left:50%;transform:translateX(-50%);width:max-content;max-width:90vw;padding:2px 5px;box-sizing:border-box;border:1px solid #d2dfc8;border-radius:5px;background:#f1f6eced;font-size:10px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 4px #233e3015;transition:background .2s,opacity .2s}
 .notice-role[data-slot="0"] .friend-tag{border-color:#c4cea9;background:#f3f6e4f5}
 .notice-role[data-hovered=true] .friend-tag{background:#fff9dc}
 .letter{position:absolute;bottom:calc(100% + 5px);left:50%;width:112px;max-width:68vw;box-sizing:border-box;padding:6px 8px;border:1px solid #d7dfc8;border-left:3px solid #c6ac65;border-radius:6px;background:#f5f8eff7;box-shadow:0 3px 8px #233e3020;text-align:left;opacity:0;transform:translate(-50%,5px) scale(.96);transform-origin:50% 100%;transition:opacity .22s ease,transform .35s cubic-bezier(.2,.75,.2,1);pointer-events:none}

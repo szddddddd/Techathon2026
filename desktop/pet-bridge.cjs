@@ -2,9 +2,13 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { webPort, validState } = require('./runtime-config.cjs');
+const {pathToFileURL}=require('node:url');
 
 // Loopback only. Only this project's web origin can exchange social state.
 function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}, isVisible = () => false }) {
+  let avatarApi;
+  let avatarReady;
+  const getAvatarApi=()=>avatarReady??=import(pathToFileURL(path.join(root,'server/avatar-api.mjs')).href).then(({createAvatarApi})=>{avatarApi=createAvatarApi({root,port:server.address().port,allowFileAssets:true});return avatarApi;});
   let server, currentClient = null, pendingOpen = null, lastSeen = 0, sequence = 0;
   const configuredPort = webPort(root);
   const origins = new Set([`http://localhost:${configuredPort}`, `http://127.0.0.1:${configuredPort}`]);
@@ -20,6 +24,10 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
   return new Promise((resolve, reject) => {
     server = http.createServer(async (req, res) => {
       const url = new URL(req.url, 'http://127.0.0.1');
+      if(url.pathname.startsWith('/api/avatar/')){
+        // Native file pages may read generated assets, never issue credentialed API mutations.
+        if(req.method==='GET'&&/^\/api\/avatar\/assets\/[a-f0-9-]{36}\/(avatar\.img|reference\.img|scene\.glb)$/.test(url.pathname)&&req.headers.origin==='null')res.setHeader('Access-Control-Allow-Origin','null');
+        try{await (await getAvatarApi()).handle(req,res);}catch{reply(res,503,{error:'形象服务暂不可用。'});}return;}
       if (url.pathname.startsWith('/api/')) {
         if (!origins.has(req.headers.origin)) return reply(res, 403, {error:'origin denied'});
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
@@ -57,7 +65,7 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
       let requested;
       try { requested=decodeURIComponent(url.pathname); } catch { res.writeHead(400);res.end();return; }
       if(requested==='/')requested='/index.html';
-      if(!/^\/(assets\/|dist\/|(?:index|pet)\.html$|[a-z0-9-]+\.css$)/i.test(requested)||requested.includes('..')||requested.includes('\\')){res.writeHead(404);res.end();return;}
+      if(!/^\/(assets\/|dist\/|(?:index|pet|asset-review)\.html$|[a-z0-9-]+\.css$)/i.test(requested)||requested.includes('..')||requested.includes('\\')){res.writeHead(404);res.end();return;}
       const file=path.resolve(root,'.'+requested);
       if(!file.startsWith(path.resolve(root)+path.sep)){res.writeHead(404);res.end();return;}
       try { const stat=await fs.promises.stat(file);if(!stat.isFile())throw new Error();res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Content-Length':stat.size});fs.createReadStream(file).pipe(res); }
@@ -68,7 +76,7 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
       origin:`http://127.0.0.1:${server.address().port}`,
       openFriend(friendId){if(Date.now()-lastSeen>8000||!currentClient)return false;pendingOpen={friendId:friendId||null,sequence:++sequence};return true;},
       visibilityChanged,
-      close(){for(const response of listeners)response.end();listeners.clear();server.close();},
+      close(){avatarApi?.close();for(const response of listeners)response.end();listeners.clear();server.close();},
     }));
   });
 }

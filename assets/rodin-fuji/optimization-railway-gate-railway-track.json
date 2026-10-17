@@ -1,0 +1,16 @@
+{
+  "assets": [
+    {
+      "id": "railway-gate",
+      "sourceBytes": 10715648,
+      "sceneBytes": 3212588
+    },
+    {
+      "id": "railway-track",
+      "sourceBytes": 11616012,
+      "sceneBytes": 3656872
+    }
+  ],
+  "sourceBytes": 22331660,
+  "sceneBytes": 6869460
+}

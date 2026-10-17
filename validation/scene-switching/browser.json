@@ -1,0 +1,713 @@
+{
+  "checks": [
+    "Forest → Fuji swaps without reload, preserving store/UI/canvas identity, open chat, history scroll, unread, attachment, draft and nine building types",
+    "Japanese building canvas click opens the matching group and highlights its building",
+    "Train advances with motion enabled; its position and animation time freeze in reduced-motion mode",
+    "Station badge and train-body click enter tracking; Esc restores camera, right-drag exits, reduced mode keeps a fixed station view",
+    "Nine friends gather and return in Fuji; railway rejects placement; account, video and record-player entrances open and return",
+    "391px viewport keeps scene choices within safe bounds and 44px targets; group labels still open chat",
+    "Fuji → Forest restores original world and keeps friend draft, group history and all conversations",
+    "Five live scene changes preserve session identity and conversation data without duplicate roots/labels/hints or growing forest geometry/texture counts"
+  ],
+  "errors": [],
+  "switches": [
+    {
+      "scene": "fuji",
+      "details": {
+        "switches": 3,
+        "geometries": 256,
+        "textures": 141,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji"
+          ],
+          "sharedResources": 215
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "ali": {
+              "x": -0.4055203122540276,
+              "z": -4.029101886109415
+            },
+            "scene-guest-0": {
+              "x": -5.48758990861166,
+              "z": -0.3942064945901774
+            },
+            "scene-guest-1": {
+              "x": 18.250002048773776,
+              "z": -0.2548333659596471
+            },
+            "scene-guest-2": {
+              "x": 12.845739843797595,
+              "z": 0.04500939013592615
+            },
+            "scene-guest-3": {
+              "x": -9.904260156202412,
+              "z": -1.2549906098640875
+            },
+            "scene-guest-4": {
+              "x": 2.550000000000005,
+              "z": 2.097525000000015
+            },
+            "shanshan": {
+              "x": 15.544872159467605,
+              "z": -3.100000039349888
+            },
+            "xiaomian": {
+              "x": 5.800000000000006,
+              "z": -9.392950000000068
+            },
+            "tuantuan": {
+              "x": 15.710128000000008,
+              "z": 0.6500000000000042
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 9,
+          "contextObstacles": 58
+        },
+        "calls": 266,
+        "triangles": 1408867
+      },
+      "socialRoots": 1,
+      "groupLabels": 1,
+      "dragHints": 1,
+      "canvases": 1
+    },
+    {
+      "scene": "forest",
+      "details": {
+        "switches": 4,
+        "geometries": 260,
+        "textures": 142,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji"
+          ],
+          "sharedResources": 215
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "ali": {
+              "x": 17.500000000000007,
+              "z": -1.2999999999999958
+            },
+            "scene-guest-0": {
+              "x": 20.1,
+              "z": 6.500000000000005
+            },
+            "scene-guest-1": {
+              "x": 21.4,
+              "z": -3.2499999999999956
+            },
+            "scene-guest-2": {
+              "x": 9.050000000000008,
+              "z": -1.9499999999999957
+            },
+            "scene-guest-3": {
+              "x": 9.700000000000008,
+              "z": -6.4999999999999964
+            },
+            "scene-guest-4": {
+              "x": -5.899999999999995,
+              "z": -13
+            },
+            "shanshan": {
+              "x": 18.150000000000006,
+              "z": 3.250000000000004
+            },
+            "xiaomian": {
+              "x": -12.399999999999999,
+              "z": -1.9499999999999957
+            },
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": 1.9500000000000042
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 9,
+          "contextObstacles": 65
+        },
+        "calls": 378,
+        "triangles": 1053799
+      },
+      "socialRoots": 1,
+      "groupLabels": 1,
+      "dragHints": 1,
+      "canvases": 1
+    },
+    {
+      "scene": "fuji",
+      "details": {
+        "switches": 5,
+        "geometries": 256,
+        "textures": 141,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji"
+          ],
+          "sharedResources": 215
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "ali": {
+              "x": -0.4055203122540276,
+              "z": -4.029101886109415
+            },
+            "scene-guest-0": {
+              "x": -5.48758990861166,
+              "z": -0.3942064945901774
+            },
+            "scene-guest-1": {
+              "x": 18.250002048773776,
+              "z": -0.2548333659596471
+            },
+            "scene-guest-2": {
+              "x": 12.845739843797595,
+              "z": 0.04500939013592615
+            },
+            "scene-guest-3": {
+              "x": -9.904260156202412,
+              "z": -1.2549906098640875
+            },
+            "scene-guest-4": {
+              "x": 2.550000000000005,
+              "z": 2.097525000000015
+            },
+            "shanshan": {
+              "x": 15.544872159467605,
+              "z": -3.100000039349888
+            },
+            "xiaomian": {
+              "x": 5.800000000000006,
+              "z": -9.392950000000068
+            },
+            "tuantuan": {
+              "x": 15.710128000000008,
+              "z": 0.6500000000000042
+            }
+          },
+          "cachedThemes": [
+            "forest",
+            "fuji"
+          ],
+          "cachedCharacters": 9,
+          "contextObstacles": 58
+        },
+        "calls": 266,
+        "triangles": 1408867
+      },
+      "socialRoots": 1,
+      "groupLabels": 1,
+      "dragHints": 1,
+      "canvases": 1
+    }
+  ],
+  "audit": {
+    "river": false,
+    "terrace": false,
+    "theme": "fuji",
+    "independentLayout": true,
+    "sakuraTrees": 24,
+    "gardens": 4,
+    "staticJapaneseBuildings": 4,
+    "railLength": 52,
+    "trainCarriages": 2,
+    "obstacleGroups": 55,
+    "adoptedAssets": [
+      "fuji",
+      "carriage",
+      "locomotive",
+      "sakura_a",
+      "sakura_b",
+      "station",
+      "club",
+      "classroom",
+      "sport",
+      "library",
+      "lab",
+      "music",
+      "art",
+      "cafe",
+      "observatory"
+    ],
+    "assetFailures": []
+  },
+  "performanceSamples": {
+    "forest": {
+      "frameCount": 180,
+      "meanMs": 16.68,
+      "p95Ms": 16.799999999999272,
+      "resources": {
+        "switches": 0,
+        "geometries": 243,
+        "textures": 97,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest"
+          ],
+          "sharedResources": 140
+        },
+        "characters": {
+          "theme": "forest",
+          "suspended": false,
+          "positions": {
+            "ali": {
+              "x": 17.500000000000007,
+              "z": -1.2999999999999958
+            },
+            "scene-guest-0": {
+              "x": 20.1,
+              "z": 6.500000000000005
+            },
+            "scene-guest-1": {
+              "x": 21.4,
+              "z": -3.2499999999999956
+            },
+            "scene-guest-2": {
+              "x": 9.050000000000008,
+              "z": -1.9499999999999957
+            },
+            "scene-guest-3": {
+              "x": 9.700000000000008,
+              "z": -6.4999999999999964
+            },
+            "scene-guest-4": {
+              "x": -5.899999999999995,
+              "z": -13
+            },
+            "shanshan": {
+              "x": 18.150000000000006,
+              "z": 3.250000000000004
+            },
+            "xiaomian": {
+              "x": -12.399999999999999,
+              "z": -1.9499999999999957
+            },
+            "tuantuan": {
+              "x": 7.750000000000007,
+              "z": 1.9500000000000042
+            }
+          },
+          "cachedThemes": [],
+          "cachedCharacters": 9,
+          "contextObstacles": 65
+        },
+        "calls": 377,
+        "triangles": 1054614
+      }
+    },
+    "fuji": {
+      "frameCount": 180,
+      "meanMs": 16.680555555555557,
+      "p95Ms": 16.799999999999272,
+      "resources": {
+        "switches": 1,
+        "geometries": 255,
+        "textures": 141,
+        "worldRoots": 1,
+        "assetCache": {
+          "themes": [
+            "forest",
+            "fuji"
+          ],
+          "sharedResources": 215
+        },
+        "characters": {
+          "theme": "fuji",
+          "suspended": false,
+          "positions": {
+            "ali": {
+              "x": -1.9999999999999947,
+              "z": -4.549999999999995
+            },
+            "scene-guest-0": {
+              "x": -7.199999999999996,
+              "z": 4.218847493575595e-15
+            },
+            "scene-guest-1": {
+              "x": 19.450000000000003,
+              "z": 0.6500000000000042
+            },
+            "scene-guest-2": {
+              "x": 12.95000000000001,
+              "z": -1.9499999999999957
+            },
+            "scene-guest-3": {
+              "x": -9.799999999999997,
+              "z": -3.2499999999999956
+            },
+            "scene-guest-4": {
+              "x": 2.550000000000005,
+              "z": 4.218847493575595e-15
+            },
+            "shanshan": {
+              "x": 16.85000000000001,
+              "z": -3.8999999999999955
+            },
+            "xiaomian": {
+              "x": 5.800000000000006,
+              "z": -7.799999999999997
+            },
+            "tuantuan": {
+              "x": 15.550000000000011,
+              "z": 0.6500000000000042
+            }
+          },
+          "cachedThemes": [
+            "forest"
+          ],
+          "cachedCharacters": 9,
+          "contextObstacles": 58
+        },
+        "calls": 266,
+        "triangles": 1408867
+      }
+    }
+  },
+  "railChecks": [
+    {
+      "x": -20,
+      "z": 9.2,
+      "result": {
+        "ok": false,
+        "reason": "no meadow support",
+        "region": "railway"
+      }
+    },
+    {
+      "x": -10,
+      "z": 8.7,
+      "result": {
+        "ok": false,
+        "reason": "no meadow support",
+        "region": "railway"
+      }
+    },
+    {
+      "x": 0,
+      "z": 8.2,
+      "result": {
+        "ok": false,
+        "reason": "no meadow support",
+        "region": "railway"
+      }
+    },
+    {
+      "x": 11,
+      "z": 8.2,
+      "result": {
+        "ok": false,
+        "reason": "no meadow support",
+        "region": "railway"
+      }
+    },
+    {
+      "x": 21,
+      "z": 8.6,
+      "result": {
+        "ok": false,
+        "reason": "no meadow support",
+        "region": "railway"
+      }
+    }
+  ],
+  "reduced": {
+    "before": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 52,
+      "trainCarriages": 2,
+      "obstacleGroups": 55,
+      "adoptedAssets": [
+        "fuji",
+        "carriage",
+        "locomotive",
+        "sakura_a",
+        "sakura_b",
+        "station",
+        "club",
+        "classroom",
+        "sport",
+        "library",
+        "lab",
+        "music",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "trainX": 14.257576812433898,
+      "trainZ": 8.294677501806715,
+      "animationTime": 0,
+      "distance": 51.44180070876795,
+      "stopped": true,
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 41.948,
+      "carriagePositions": [
+        [
+          14.257576812433898,
+          2.5,
+          8.294677501806715
+        ],
+        [
+          10.909009203461908,
+          2.5,
+          8.198193631005706
+        ],
+        [
+          7.559371695544712,
+          2.5,
+          8.150076494181047
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true
+      }
+    },
+    "after": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 52,
+      "trainCarriages": 2,
+      "obstacleGroups": 55,
+      "adoptedAssets": [
+        "fuji",
+        "carriage",
+        "locomotive",
+        "sakura_a",
+        "sakura_b",
+        "station",
+        "club",
+        "classroom",
+        "sport",
+        "library",
+        "lab",
+        "music",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "trainX": 14.257576812433898,
+      "trainZ": 8.294677501806715,
+      "animationTime": 0,
+      "distance": 51.44180070876795,
+      "stopped": true,
+      "steamVisible": false,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 41.948,
+      "carriagePositions": [
+        [
+          14.257576812433898,
+          2.5,
+          8.294677501806715
+        ],
+        [
+          10.909009203461908,
+          2.5,
+          8.198193631005706
+        ],
+        [
+          7.559371695544712,
+          2.5,
+          8.150076494181047
+        ]
+      ],
+      "reduced": true,
+      "assets": {
+        "locomotive": true,
+        "carriage": true
+      }
+    }
+  },
+  "motion": {
+    "before": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 52,
+      "trainCarriages": 2,
+      "obstacleGroups": 55,
+      "adoptedAssets": [
+        "fuji",
+        "carriage",
+        "locomotive",
+        "sakura_a",
+        "sakura_b",
+        "station",
+        "club",
+        "classroom",
+        "sport",
+        "library",
+        "lab",
+        "music",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "trainX": 14.257890502894258,
+      "trainZ": 8.294689039475857,
+      "animationTime": 25.064700000000002,
+      "distance": 51.442114628812305,
+      "stopped": false,
+      "steamVisible": true,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 41.948,
+      "carriagePositions": [
+        [
+          14.257890502894258,
+          2.5,
+          8.294689039475857
+        ],
+        [
+          10.90932296261106,
+          2.5,
+          8.198199816075633
+        ],
+        [
+          7.559685603833658,
+          2.5,
+          8.15007925270308
+        ]
+      ],
+      "reduced": false,
+      "assets": {
+        "locomotive": true,
+        "carriage": true
+      }
+    },
+    "after": {
+      "theme": "fuji",
+      "river": false,
+      "terrace": false,
+      "independentLayout": true,
+      "sakuraTrees": 24,
+      "gardens": 4,
+      "staticJapaneseBuildings": 4,
+      "railLength": 52,
+      "trainCarriages": 2,
+      "obstacleGroups": 55,
+      "adoptedAssets": [
+        "fuji",
+        "carriage",
+        "locomotive",
+        "sakura_a",
+        "sakura_b",
+        "station",
+        "club",
+        "classroom",
+        "sport",
+        "library",
+        "lab",
+        "music",
+        "art",
+        "cafe",
+        "observatory"
+      ],
+      "trainX": 14.434840963686465,
+      "trainZ": 8.301259002827095,
+      "animationTime": 25.982099999999996,
+      "distance": 51.619187977605684,
+      "stopped": false,
+      "steamVisible": true,
+      "cycleSeconds": 70,
+      "stationSeconds": 8,
+      "easingSeconds": 2.5,
+      "arrivalSeconds": 41.948,
+      "carriagePositions": [
+        [
+          14.434840963686465,
+          2.5,
+          8.301259002827095
+        ],
+        [
+          11.086358191661425,
+          2.5,
+          8.201750549735179
+        ],
+        [
+          7.736751804501885,
+          2.5,
+          8.151689922585794
+        ]
+      ],
+      "reduced": false,
+      "assets": {
+        "locomotive": true,
+        "carriage": true
+      }
+    }
+  },
+  "mobile": {
+    "toggle": {
+      "x": 134.6171875,
+      "y": 12,
+      "width": 121.765625,
+      "height": 44
+    },
+    "cards": [
+      {
+        "x": 33.4921875,
+        "y": 111,
+        "width": 157,
+        "height": 133.203125
+      },
+      {
+        "x": 200.4921875,
+        "y": 111,
+        "width": 157,
+        "height": 133.203125
+      }
+    ]
+  },
+  "counts": {
+    "friends": 9,
+    "buildings": 9
+  },
+  "limits": [
+    "Desktop Edge and mobile viewport simulation; no physical phone test",
+    "Frame samples use the same desktop browser, viewport, camera, reduced motion, nine buildings and nine characters; not a device-independent performance benchmark"
+  ]
+}

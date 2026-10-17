@@ -1,0 +1,65 @@
+{
+  "order": "原图前两排，从左到右、从上到下",
+  "adopted": [
+    3,
+    5
+  ],
+  "rejected": [
+    1,
+    2,
+    4,
+    6
+  ],
+  "originalSpreadingModel": "sakura-yoshino-v3",
+  "originalWeepingModel": "sakura-weeping-v3r1",
+  "items": [
+    {
+      "order": 1,
+      "id": "sakura-reference-01",
+      "generationId": "bf4159e4-629b-4c8d-a17d-18f9e99e1090",
+      "selected": false,
+      "reason": "花冠有明显的大片折纸状面片，细节不足。",
+      "runtimeScope": "not loaded"
+    },
+    {
+      "order": 2,
+      "id": "sakura-reference-02",
+      "generationId": "e1ffd988-8120-41ad-8346-4f1c9345aa06",
+      "selected": false,
+      "reason": "树冠过于封闭和团块化，枝叶层次不清。",
+      "runtimeScope": "not loaded"
+    },
+    {
+      "order": 3,
+      "id": "sakura-reference-03",
+      "generationId": "a0779654-2056-4a7d-8f9b-92da22b3c950",
+      "selected": true,
+      "reason": "枝干结构和花冠层次相对完整，用于替换原垂枝樱位置。",
+      "runtimeScope": "former weeping trees only"
+    },
+    {
+      "order": 4,
+      "id": "sakura-reference-04",
+      "generationId": "3aabef0a-9978-4ff4-92ec-42f9b5540ada",
+      "selected": false,
+      "reason": "花冠呈粗糙白色片块，内部枝条层次弱。",
+      "runtimeScope": "not loaded"
+    },
+    {
+      "order": 5,
+      "id": "sakura-reference-05",
+      "generationId": "c7f572d4-cb99-49f3-b589-93a5df66c0af",
+      "selected": true,
+      "reason": "枝干结构和花冠层次相对完整，用于替换原垂枝樱位置。",
+      "runtimeScope": "former weeping trees only"
+    },
+    {
+      "order": 6,
+      "id": "sakura-reference-06",
+      "generationId": "0740ec23-eb30-4a15-85c4-8fd17fc19b8d",
+      "selected": false,
+      "reason": "花簇尖锐面片过明显，树冠质感不协调。",
+      "runtimeScope": "not loaded"
+    }
+  ]
+}

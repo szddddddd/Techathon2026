@@ -1,0 +1,170 @@
+[
+  {
+    "id": "railway-club",
+    "name": "町内会馆",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.6
+    ],
+    "prompt": "An asymmetric traditional neighbourhood clubhouse with two connected gables, sheltered veranda, carved timber brackets and a small red lantern. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "club"
+  },
+  {
+    "id": "railway-classroom",
+    "name": "木造学舍",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.6
+    ],
+    "prompt": "A small historic wooden school classroom, orderly generous windows, broad tiled gable, offset entrance and a small round clock under the front gable. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "classroom"
+  },
+  {
+    "id": "railway-sport",
+    "name": "樱町道场",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.5
+    ],
+    "prompt": "A broad compact Japanese sports dojo with a high sweeping tiled gable, deep roof eaves, substantial timber brackets and a wide central double entrance. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "sport"
+  },
+  {
+    "id": "railway-lab",
+    "name": "山麓研究所",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.6
+    ],
+    "prompt": "A contemporary Japanese hillside laboratory combining two stepped timber-and-plaster volumes, a teal glass clerestory, tiled roofs and a subtle flask crest. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "lab"
+  },
+  {
+    "id": "railway-library",
+    "name": "町立书屋",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.9
+    ],
+    "prompt": "A traditional small Japanese library with a taller central tiled gable, low front entrance canopy, book-filled front windows and a tiny open-book crest. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "library"
+  },
+  {
+    "id": "railway-music",
+    "name": "木音堂",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.6
+    ],
+    "prompt": "A miniature Japanese concert hall with a broad closed tiled roof, veranda columns, tall acoustic timber lattice facade and two paper lanterns flanking its entrance. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "music"
+  },
+  {
+    "id": "railway-art",
+    "name": "陶艺工坊",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.6
+    ],
+    "prompt": "An asymmetric Japanese artists and pottery atelier with twin offset gables, north-light glass strips, generous studio windows and peach plaster details. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "art"
+  },
+  {
+    "id": "railway-cafe",
+    "name": "樱花喫茶",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      3.5
+    ],
+    "prompt": "A traditional Japanese kissaten tea cafe with a blue-grey tiled roof, cream-and-sage striped canvas awning, red noren, round paper lantern and timber storefront. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "cafe"
+  },
+  {
+    "id": "railway-observatory",
+    "name": "星见观测所",
+    "kind": "building",
+    "size": [
+      4,
+      3.5,
+      4.1
+    ],
+    "prompt": "A small Japanese astronomical observatory with a large muted pale teal hemispherical dome on a cream cylindrical drum, a brass meridian and a low timber entrance annex with kawara tiled gable. Japanese small-town miniature, readable front entrance facing +Z. Warm timber frames, cream plaster, blue-grey kawara tiles, shoji lattice windows, subtle red or sage noren. Rich handmade details, softly faceted low-poly forms, light matte materials. One complete exterior, flat grounded base, no interior, landscape, people, text, floating parts or baked shadows. Faithfully match the supplied generated image. Footprint about 4 by 3.5 units, height under 4.2.",
+    "key": "observatory"
+  },
+  {
+    "id": "railway-locomotive",
+    "name": "樱町蒸汽机车",
+    "kind": "train",
+    "size": [
+      5.1,
+      1.85,
+      2.7
+    ],
+    "prompt": "A complete body-only vintage Japanese miniature steam locomotive, facing +X as in the image. Long horizontal dark sage boiler, rounded smokebox front with brass headlamp, short smokestack, brass dome, cream-windowed enclosed rear cab, thin red buffer beam and small rear coal bunker. Charming richly detailed handmade low-poly toy train, matte sage, charcoal green, cream and restrained brass. Width 1.85 length 5.1 height 2.7. IMPORTANT: body only, ABSOLUTELY NO wheels, axles, bogies, connecting rods, rails, ground, smoke or people; all wheel hardware is added separately by runtime. Keep bottom flat, complete exterior on all sides, no text or baked shadows.",
+    "key": "locomotive"
+  },
+  {
+    "id": "railway-carriage",
+    "name": "木窗客车",
+    "kind": "train",
+    "size": [
+      4.7,
+      1.85,
+      2.4
+    ],
+    "prompt": "One complete body-only vintage Japanese steam railway passenger carriage. Long rectangular sage-green lower body, warm cream upper window band, repeated tall timber framed windows, gently rounded dark blue-grey roof, enclosed ends and small end vestibule doors. Handmade low-poly miniature toy train matching a sage and brass steam locomotive. Width 1.85 length 4.7 height 2.4, long direction X. IMPORTANT body only, NO wheels, bogies, axles, tracks, ground, people or smoke; running gear is added separately in runtime. Flat underside, complete visible front rear and sides, light matte materials, no readable text or baked shadows.",
+    "key": "carriage"
+  },
+  {
+    "id": "railway-station",
+    "name": "樱町小站",
+    "kind": "station",
+    "size": [
+      6.5,
+      3.5,
+      3.7
+    ],
+    "prompt": "One complete small historic Japanese countryside railway station building. Broad single-storey timber and cream plaster body, blue-grey kawara tiled gable roof, deep platform-side canopy with slender timber columns, ticket window, central open doorway, small clock and blank wooden station-name board. Nostalgic miniature station beside cherry blossoms, but BUILDING ONLY without trees, platform slab, ground, rails, trains, people or background. Front faces +Z, width 6.5 depth 3.5 height 3.7. Rich handmade soft low-poly detail, light matte warm wood and cream, complete rear and sides, no readable text or baked shadows.",
+    "key": "station"
+  },
+  {
+    "id": "railway-track",
+    "key": "track",
+    "name": "木枕铁道模块",
+    "kind": "railway",
+    "size": [
+      3.48,
+      1.65,
+      0.2
+    ],
+    "prompt": "One straight miniature Japanese railway track module, longitudinal direction X, two precisely parallel steel rails on six warm weathered timber sleepers and a shallow pale grey gravel bed. Complete 3.48 long by 1.65 wide module with flat grounded underside. Bright softly faceted handmade miniature, detailed matte wood and light silver grey steel. Railway only, no train, plants, landscape, people, text, ground plane or shadows. No curves, junctions or gaps. Match supplied image."
+  },
+  {
+    "id": "railway-gate",
+    "key": "gate",
+    "name": "昭和道口信号机",
+    "kind": "railway",
+    "size": [
+      0.65,
+      0.6,
+      2.5
+    ],
+    "prompt": "One complete Japanese railway crossing signal and barrier motor pedestal assembly, yellow and charcoal striped upright post, black X crossing sign, two round red signal lenses, cream weathered square motor cabinet at bottom. A small round hinge axle at waist height but NO barrier arm: animated arm is added separately. Richly detailed bright Showa miniature, soft facets and matte surfaces. Flat grounded base, no floor, rails, road, people, text or background. Match supplied image; single compact upright object."
+  }
+]

@@ -1,0 +1,74 @@
+{
+  "id": "mid_data",
+  "name": "工业数据楼",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "7d12321c-2f15-4893-abc8-0e3dec21852a",
+  "parameters": {
+    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A tall narrow industrial data center tower, height eight times width, graphite metal cladding, cooling fins, large machinery waist, sparse cyan status lights, no giant billboard.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "9ce10d6ce52b188dbb25af9e6a1d050a20d05dc30f1dcf82e62ffca4b4e8baca",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber-city-v2/mid_data-prompt.txt",
+  "targetSize": [
+    3.8,
+    32,
+    3.6
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "94b00ec2885afed712a757ecb9070c7f90e58efb686989f7276303bec050e1e3",
+  "bytes": 11598552,
+  "rotationY": 0,
+  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
+  "sourceSha256": "94b00ec2885afed712a757ecb9070c7f90e58efb686989f7276303bec050e1e3",
+  "sceneSha256": "b463afc10ca82981cb0ada38dd3a3a1d45b725fa837649074a00dfaed23fd7eb",
+  "sourceBytes": 11598552,
+  "sceneBytes": 3509472,
+  "optimization": {
+    "geometry": "gltf-transform 4.5.1 meshoptimizer simplify ratio 0.45 error 0.002; original and pre-simplification scene-detail.glb retained",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+}

@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "Scene-origin Hyper3D article keeps the same UI instance, route and reading position during live theme change",
+    "Esc closes detached article cleanly after scene change; right-button camera pan works"
+  ],
+  "before": {
+    "route": {
+      "type": "article",
+      "id": "hyper3d-rodin-workflow",
+      "scroll": 700
+    },
+    "scroll": 700
+  },
+  "after": {
+    "sameUI": true,
+    "route": {
+      "type": "article",
+      "id": "hyper3d-rodin-workflow",
+      "scroll": 700,
+      "context": {
+        "search": "",
+        "articleTab": "following",
+        "videoTab": "recommend",
+        "personalTab": "article",
+        "commentsOpen": false
+      }
+    },
+    "scroll": 700,
+    "controls": {
+      "enabled": true,
+      "enableDamping": true,
+      "minDistance": 6
+    }
+  },
+  "errors": []
+}

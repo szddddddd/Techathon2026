@@ -1,0 +1,17 @@
+{
+  "theme": "cyber",
+  "visualTheme": "neon-cloud-harbor",
+  "islandArea": 2447.5,
+  "groupSlots": 9,
+  "streetTrees": 12,
+  "gardens": 4,
+  "benches": 6,
+  "cars": 2,
+  "staticBuildings": 3,
+  "towers": 3,
+  "river": false,
+  "railway": false,
+  "adoptedAssets": [],
+  "fallbackAssets": [],
+  "renderableAssets": []
+}
