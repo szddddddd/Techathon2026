@@ -1,3 +1,5 @@
+import {createEnvironmentSampler} from './day-night-environment.js';
+import {timePhase} from './day-night-clock.js';
 import {createIdealPet} from './pet-ideal.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -40,11 +42,20 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-4, 4, 4, -4, .1, 100);
 camera.position.set(0, 3.5, 8); camera.lookAt(0, 1.3, 0);
-scene.add(new THREE.HemisphereLight(0xd8ead0, 0x34513e, 2.4));
+const hemi=new THREE.HemisphereLight(0xd8ead0, 0x34513e, 2.4);scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffe3a1, 3); sun.position.set(-3, 6, 4); scene.add(sun);
 const root = new THREE.Group(); scene.add(root);
 const foreground = new THREE.Scene();
-foreground.add(new THREE.HemisphereLight(0xd8ead0, 0x34513e, 2.4));
+const roleHemi=new THREE.HemisphereLight(0xd8ead0, 0x34513e, 2.4);foreground.add(roleHemi);
+const sampleTime=createEnvironmentSampler();let syncedTime=null,petNight=0;
+function applyPetTime(){
+  if(minimalMode||!syncedTime)return;
+  const e=sampleTime(currentTheme||'forest',syncedTime.seconds);petNight=e.night;
+  for(const light of [hemi,roleHemi]){light.color.copy(e.hemi);light.groundColor.copy(e.ground);light.intensity=e.hemiIntensity;}
+  for(const light of [sun,roleLight]){light.color.copy(e.sun);light.intensity=e.sunIntensity;light.position.set(Math.sin(e.angle)*7,Math.cos(e.angle)*7,4);}
+  document.documentElement.dataset.timePhase=timePhase(syncedTime.seconds);
+}
+window.__petTime={snapshot:()=>({enabled:!minimalMode,time:syncedTime,night:petNight,sunIntensity:sun.intensity})};
 const roleLight = new THREE.DirectionalLight(0xffe3a1, 3); roleLight.position.copy(sun.position); foreground.add(roleLight);
 renderer.autoClear = false;
 const animated = [];
@@ -284,7 +295,7 @@ function renderNotifications(items) {
   });
 }
 function messageItems(payload) { return notificationItems(payload?.state); }
-if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; setTheme(payload.state?.sceneId); renderNotifications(messageItems(payload)); });
+if (bridge) bridge.onState(payload => { settings = { ...settings, ...(payload.settings || {}) };friendDetails=payload.state?.friendDetails||{}; const time=payload.state?.dayNight;if(time&&Number.isFinite(time.seconds)&&time.seconds>=0&&time.seconds<720)syncedTime={...time}; setTheme(payload.state?.sceneId); renderNotifications(messageItems(payload)); });
 const roleRaycaster=new THREE.Raycaster();
 function friendAt(event){
   const domId=event.target.closest('[data-friend]')?.dataset.friend;if(domId)return domId;
@@ -343,6 +354,7 @@ function frame(now) {
   const reduced = reducedMotion.matches, t = reduced ? 0 : (now - start) / 1000;
   const dt = Math.min((now - lastFrame) / 1000, .05); lastFrame = now;
   fujiPet?.update(t,reduced);
+  applyPetTime();
   const blend = reduced ? 1 : 1 - Math.exp(-dt * 9);
   presence += ((nearby || hoveredFriend ? 1 : 0) - presence) * blend;
   const signal = !reduced && now < signalUntil ? Math.sin((1 - (signalUntil - now) / 1000) * Math.PI) : 0;

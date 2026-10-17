@@ -19,13 +19,13 @@ export function petNickname(name) {
   return chars.length>5?chars.slice(0,5).join('')+'...':chars.join('');
 }
 
-export function petPayload(state, sceneId = 'forest') {
+export function petPayload(state, sceneId = 'forest', dayNight = null) {
   const allowed = new Set(state.friends), messages = state.messages;
   const selected = new Map(messages.slice(-300).map(message => [message.id, message]));
   // Keep every unread source even when its latest unread predates bounded history.
   for (const message of notificationItems(state)) selected.set(message.id, message);
   return {
-    state: { sceneId: ['forest','fuji','ideal'].includes(sceneId) ? sceneId : 'forest', friends: state.friends, friendDetails: Object.fromEntries(state.friends.flatMap(id=>{
+    state: { dayNight, sceneId: ['forest','fuji','ideal'].includes(sceneId) ? sceneId : 'forest', friends: state.friends, friendDetails: Object.fromEntries(state.friends.flatMap(id=>{
       const f=state.customFriends?.[id];if(!f)return [];
       const expected=`/api/avatar/assets/${f.jobId}/scene.glb`;
       return [[id,{name:String(f.name||'朋友').slice(0,80),modelUrl:f.modelUrl===expected&&/^[a-f0-9-]{36}$/.test(f.jobId||'')?expected:null}]];

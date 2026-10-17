@@ -19,7 +19,9 @@ export function createRecordArm(model){
     if(!moving.length)continue;
     const armGeometry=geometry.clone();armGeometry.setIndex(moving);armGeometry.translate(-pivot.position.x,-pivot.position.y,-pivot.position.z);armGeometry.computeBoundingSphere();
     const arm=new THREE.Mesh(armGeometry,mesh.material);arm.castShadow=true;arm.receiveShadow=true;arm.userData.generatedProp=true;pivot.add(arm);
-    geometry.setIndex(fixed);geometry.computeBoundingSphere();triangles+=moving.length/3;
+    // Object3D.clone shares geometry with the cached model and other scenes.
+    // Split only this instance so later scene entries retain the original arm.
+    const fixedGeometry=geometry.clone();fixedGeometry.setIndex(fixed);fixedGeometry.computeBoundingSphere();mesh.geometry=fixedGeometry;triangles+=moving.length/3;
   }
   model.add(pivot);
   const axis=new THREE.Vector3(-.43,0,-.34).normalize();

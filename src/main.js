@@ -101,8 +101,12 @@ async function boot(){
  const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
  window.__socialStore=store;window.__socialUI=socialUI;window.__groupBuildings=groupBuildings;window.__characterPlacement=characters.placement;window.__discoveryUI=contentUI;window.__contentPlayer=player;
  window.__openSceneDiscovery=async kind=>{if(roam?.busy)await roam.exit();return boards.open(kind);};window.__openDiscovery=(route,options)=>contentUI?.open(route,options);
- function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id));void window.__webPet?.sync();}}
-  if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
+ function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
+  if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
+ // Publish the authoritative clock through both native IPC and the web bridge.
+ const petTimeTimer=setInterval(publishPetScene,250);
+ document.addEventListener('visibilitychange',publishPetScene);
+ window.addEventListener('pagehide',()=>clearInterval(petTimeTimer),{once:true});
  if(captureIndex)characters.sync(FRIENDS);if(stress)characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);
  const demo=stress||!store?null:startDemo(store,{getSceneParticipants:()=>({friends:characters.placement.snapshot().characters.filter(c=>!['leaving','waiting'].includes(c.presentation?.phase)).map(c=>c.id),groups:(groupBuildings?.snapshot().entries||[]).filter(g=>!['leaving','waiting'].includes(g.phase)).map(g=>g.id)})});
  roam=store?createFreeRoam({camera,controls,canvas:renderer.domElement,ui}):null;window.__freeRoam=roam;
