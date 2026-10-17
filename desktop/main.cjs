@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage, screen } = require('electron');
 const path = require('node:path');
-const zlib = require('node:zlib');
+const {ICON_PATH, createTrayIcons} = require('./tray-icons.cjs');
 const { startPetBridge } = require('./pet-bridge.cjs');
 const { validState } = require('./runtime-config.cjs');
 const fs = require('node:fs');
@@ -37,30 +37,10 @@ let unreadCount = 0;
 let trayFlashTimer = null;
 let trayFlashOn = false;
 
-function createIcon(active = false) {
-  const size = 32, fill = active ? [209, 175, 115, 255] : [83, 114, 91, 255], rows = [];
-  for (let y = 0; y < size; y++) {
-    const row = Buffer.alloc(size * 4 + 1); row[0] = 0;
-    for (let x = 0; x < size; x++) {
-      const dx = x - 16, dy = y - 16, rounded = Math.max(Math.abs(dx), Math.abs(dy)) < 14 && Math.hypot(Math.max(Math.abs(dx) - 10, 0), Math.max(Math.abs(dy) - 10, 0)) < 4;
-      const leaf = Math.abs(dx) < 9 && dy > -8 && dy < 9 && Math.abs(dx) < (dy + 10) * .62;
-      const trunk = Math.abs(dx) < 2 && dy >= 6;
-      const pixel = row.subarray(1 + x * 4, 1 + x * 4 + 4);
-      if (!rounded) pixel.set([0, 0, 0, 0]); else if (trunk) pixel.set([48, 76, 64, 255]); else if (leaf) pixel.set([230, 240, 207, 255]); else pixel.set(fill);
-    }
-    rows.push(row);
-  }
-  const raw = Buffer.concat(rows), header = Buffer.alloc(13);
-  header.writeUInt32BE(size, 0); header.writeUInt32BE(size, 4); header[8] = 8; header[9] = 6; header[10] = 0; header[11] = 0; header[12] = 0;
-  // Use a tiny valid PNG assembled from scanlines; nativeImage accepts this RGBA buffer on Windows.
-  const crc32 = data => { let crc = 0xffffffff; for (const value of data) { crc ^= value; for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1)); } return (crc ^ 0xffffffff) >>> 0; };
-  const pngChunk = (type, data) => { const body = Buffer.concat([Buffer.from(type), data]), out = Buffer.alloc(data.length + 12); out.writeUInt32BE(data.length, 0); body.copy(out, 4); out.writeUInt32BE(crc32(body), body.length + 4); return out; };
-  const png = Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), pngChunk('IHDR', header), pngChunk('IDAT', zlib.deflateSync(raw)), pngChunk('IEND', Buffer.alloc(0))]);
-  const image = nativeImage.createFromBuffer(png);
-  if (image.isEmpty()) throw new Error('Unable to decode the desktop tray PNG.');
-  const icon = image.resize({ width: 16, height: 16 });
-  if (icon.isEmpty()) throw new Error('Unable to resize the desktop tray icon.');
-  return icon;
+let trayIcons;
+function createIcon(blank = false) {
+  trayIcons ||= createTrayIcons(nativeImage);
+  return blank ? trayIcons.blank : trayIcons.normal;
 }
 function updateTrayFlash() {
   if (!tray) return;
@@ -111,7 +91,7 @@ function focusMain(friendId) {
 }
 function createMainWindow() {
   mainReady = false;
-  mainWindow = new BrowserWindow({ width: 1440, height: 920, minWidth: 900, minHeight: 650, show: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
+  mainWindow = new BrowserWindow({ icon: ICON_PATH, width: 1440, height: 920, minWidth: 900, minHeight: 650, show: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
   secureWindow(mainWindow);
   // Scene switches update history in place; only a new document invalidates IPC readiness.
   mainWindow.webContents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => { if(isMainFrame&&!isInPlace)mainReady = false; });
@@ -127,7 +107,7 @@ function createPetWindow() {
   const size = petSize;
   const display = screen.getPrimaryDisplay();
   const area = display.workArea;
-  petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
+  petWindow = new BrowserWindow({ icon: ICON_PATH, width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
   secureWindow(petWindow);
   petWindow.webContents.on('did-finish-load', broadcast);
   petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(settings.petMode) + '&scene=' + (['forest','fuji','ideal'].includes(latestState.sceneId) ? latestState.sceneId : 'forest'));

@@ -1,11 +1,11 @@
 export const DAY_NIGHT_KEY='forest-letters-day-night-v1';
 export const DAY_LENGTH=720;
 export const TIME_MODES=['auto','day','dusk','night'];
-const targets={day:150,dusk:360,night:540};
+const targets={day:150,dusk:345,night:540};
 const wrap=t=>((t%DAY_LENGTH)+DAY_LENGTH)%DAY_LENGTH;
 export function timePhase(seconds){
  const t=wrap(seconds);
- return t<300?'day':t<420?'dusk':t<660?'night':'dawn';
+ return t<30||t>=690?'dawn':t<330?'day':t<390?'dusk':'night';
 }
 export function createDayNightClock({storage,reduced=()=>false,hidden=()=>false}={}){
  let mode='auto',seconds=150,transition=null,disposed=false,saveElapsed=0;

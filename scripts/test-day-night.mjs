@@ -7,20 +7,20 @@ import {freezeStaticTransforms} from '../src/static-transforms.js';
 let memory=null,reduced=false,hidden=false;
 const storage={getItem:()=>memory,setItem:(key,value)=>{assert.equal(key,DAY_NIGHT_KEY);memory=value;}};
 const clock=createDayNightClock({storage,reduced:()=>reduced,hidden:()=>hidden});
-assert.equal(clock.snapshot().seconds,150);clock.update(150);assert.equal(clock.snapshot().phase,'dusk');clock.update(120);assert.equal(clock.snapshot().phase,'night');clock.update(240);assert.equal(clock.snapshot().phase,'dawn');clock.update(60);assert.equal(clock.snapshot().seconds,0);
+assert.equal(clock.snapshot().seconds,150);clock.update(195);assert.equal(clock.snapshot().phase,'dusk');clock.update(45);assert.equal(clock.snapshot().phase,'night');clock.update(300);assert.equal(clock.snapshot().phase,'dawn');clock.update(30);assert.equal(clock.snapshot().seconds,0);
 clock.update(720);assert.equal(clock.snapshot().seconds,0);assert.equal(timePhase(-1),'dawn');
 clock.setMode('night');clock.update(1);assert.equal(clock.snapshot().transitioning,true);const mid=clock.snapshot().seconds;assert.ok(mid>0&&mid<540);clock.setMode('auto');clock.update(1);assert.equal(clock.snapshot().seconds,mid+1);
 clock.setMode('night');clock.update(2);assert.equal(clock.snapshot().seconds,540);clock.update(40);assert.equal(clock.snapshot().seconds,540);
 clock.setMode('day');hidden=true;clock.update(20);assert.equal(clock.snapshot().seconds,540);hidden=false;reduced=true;clock.update(.01);assert.equal(clock.snapshot().seconds,150);clock.setMode('night');assert.equal(clock.snapshot().seconds,540);
 clock.setMode('auto');clock.update(100);assert.equal(clock.snapshot().seconds,540);reduced=false;clock.update(1);clock.save();assert.equal(createDayNightClock({storage}).snapshot().seconds,541);
-clock.setMode('dusk');clock.update(.4);clock.save();const restored=createDayNightClock({storage});assert.equal(restored.snapshot().transitioning,true);restored.update(2);assert.equal(restored.snapshot().seconds,360);
+clock.setMode('dusk');clock.update(.4);clock.save();const restored=createDayNightClock({storage});assert.equal(restored.snapshot().transitioning,true);restored.update(2);assert.equal(restored.snapshot().seconds,345);
 assert.equal(clock.setMode('invalid'),false);clock.dispose();const old=clock.snapshot().seconds;clock.update(10);assert.equal(clock.snapshot().seconds,old);
 for(const input of ['broken','null','{"version":1,"mode":"night","seconds":"bad"}']){memory=input;assert.equal(createDayNightClock({storage}).snapshot().mode,'auto');}
 const sampler=createEnvironmentSampler();
-for(const theme of ['forest','fuji','ideal'])for(const t of [0,300,360,420,660,690,720]){
+for(const theme of ['forest','fuji','ideal'])for(const t of [0,30,330,360,390,690,720]){
  const a=sampler(theme,t-.0001),night=a.night,color=a.background.clone(),b=sampler(theme,t+.0001);assert.ok(Math.abs(b.night-night)<.0001);assert.ok(color.distanceTo?color.distanceTo(b.background)<.001:Math.abs(color.r-b.background.r)<.001);
 }
-sampler('forest',10);const dayRevision=sampler.revision;sampler('forest',299);assert.equal(sampler.revision,dayRevision);
+sampler('forest',30);const dayRevision=sampler.revision;sampler('forest',299);assert.equal(sampler.revision,dayRevision);
 sampler('forest',330);assert.ok(sampler.revision>dayRevision);const transitionRevision=sampler.revision;sampler('forest',331);assert.ok(sampler.revision>transitionRevision);
 sampler('forest',450);const nightRevision=sampler.revision;sampler('forest',659);assert.equal(sampler.revision,nightRevision);
 sampler('fuji',659);assert.ok(sampler.revision>nightRevision);assert.equal(sampler('forest',450).night,1);
