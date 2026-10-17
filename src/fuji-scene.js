@@ -9,6 +9,7 @@ import {createSakuraPetals} from './sakura-petals.js';
 import {createFujiTrain} from './fuji-train.js';
 import {createFujiFerrisWheel} from './fuji-ferris-wheel.js';
 import {createBlossomMaterial} from './sakura-appearance.js';
+import {ensureIndexed} from './indexed-geometry.js';
 
 const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.92,flatShading:true,...extra});
 function createMaterials(){return{grass:mat(0xa6b878),rock:mat(V.rock),darkRock:mat(V.darkRock),stone:mat(V.stone),path:mat(V.paving),wood:mat(0x86654d),bark:mat(0x725546),rail:mat(0x727b79,{metalness:.5}),gravel:mat(0xa1a598),red:mat(0xc35d4c),dark:mat(0x394d4c),cream:mat(0xe7d6a7),brass:mat(0xc5aa65,{metalness:.3}),window:mat(0xadc5b6),pink:[0xefbbca,0xf5ced8,0xe4a2ba,0xf7d8df].map(c=>mat(c)),leaf:[0x7a9860,0x91a66c,0x648b64].map(c=>mat(c)),light:mat(0xffe4aa,{emissive:0xffce83,emissiveIntensity:.65})};}
@@ -18,7 +19,7 @@ function batchGroup(group){
   group.updateMatrixWorld(true);const inverse=new T.Matrix4().copy(group.matrixWorld).invert(),buckets=new Map();
   group.traverse(o=>{if(o.isMesh&&!o.userData.keepDynamic&&!o.userData.sharedAssetGeometry){const key=o.material.uuid;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);}});
   for(const objects of buckets.values()){
-    const geometries=objects.map(o=>{let g=o.geometry.clone().applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,o.matrixWorld));for(const key of Object.keys(g.attributes))if(!['position','normal'].includes(key))g.deleteAttribute(key);if(g.index){const flat=g.toNonIndexed();g.dispose();g=flat;}return g;});
+    const geometries=objects.map(o=>{const g=ensureIndexed(o.geometry.clone().applyMatrix4(new T.Matrix4().multiplyMatrices(inverse,o.matrixWorld)));for(const key of Object.keys(g.attributes))if(!['position','normal'].includes(key))g.deleteAttribute(key);return g;});
     const combined=mergeGeometries(geometries);geometries.forEach(g=>g.dispose());objects.forEach(o=>{o.removeFromParent();o.geometry.dispose();});if(combined)mesh(group,'Batched Japanese scene detail',combined,objects[0].material);
   }
 }

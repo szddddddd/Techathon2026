@@ -1,0 +1,14 @@
+/* Native host already subtracts cutouts, system bars and the soft keyboard. */
+html[data-platform=android]{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+html[data-platform=android] body{overscroll-behavior:none}
+html[data-platform=android] #social .contacts-add,
+html[data-platform=android] #social .ui-close,
+html[data-platform=android] #social .conversation-more{min-width:44px;min-height:44px}
+html[data-platform=android] input,
+html[data-platform=android] textarea{scroll-margin-block:70px}
+@media(max-height:520px){
+ html[data-platform=android] #social #directory{max-height:calc(var(--ui-height,100dvh) - 16px);height:calc(var(--ui-height,100dvh) - 16px)}
+ html[data-platform=android] #social .contacts-title{padding-top:12px;padding-bottom:4px}
+ html[data-platform=android] #social #directory>.search{margin-bottom:4px}
+ html[data-platform=android] #social .inbox-toolbar{padding-block:4px}
+}

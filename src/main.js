@@ -23,7 +23,9 @@ import {constrainCameraPan} from './camera-pan-bounds.js';
 import {readSceneTheme,SCENE_STORAGE_KEY} from './scene-theme.js';
 import {createSceneSwitcher,sceneIcon} from './scene-switcher.js';
 import {SCENE_REGISTRY,prepareSceneWorld} from './scene-world.js';
-import {assetCacheSnapshot} from './scene-assets.js';
+import {assetCacheSnapshot,releaseInactiveAssetGPU} from './scene-assets.js';
+import {prepareSceneGPU} from './gpu-prepare.js';
+import {isAndroidApp} from './mobile-platform.js';
 import {createTrainFollow} from './train-follow.js';
 
 const $=id=>document.getElementById(id);
@@ -110,7 +112,7 @@ async function boot(){
  function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
   if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
  // Publish the authoritative clock through both native IPC and the web bridge.
- const petTimeTimer=setInterval(publishPetScene,250);
+ const petTimeTimer=isAndroidApp?null:setInterval(publishPetScene,250);
  document.addEventListener('visibilitychange',publishPetScene);
  window.addEventListener('pagehide',()=>clearInterval(petTimeTimer),{once:true});
  if(captureIndex)characters.sync(FRIENDS);if(stress)characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);
@@ -140,9 +142,9 @@ async function boot(){
    boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();soundCamera.close(true);controllersReleased=true;
    old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();resetCamera();
    characters.suspend(false);groupBuildings.suspend(false);controls.enabled=true;
-   socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);applyTime();renderer.render(scene,camera);
+   socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);applyTime();window.__renderPerformance.warmup=await prepareSceneGPU(renderer,scene,camera);renderer.render(scene,camera);
    try{localStorage.setItem(SCENE_STORAGE_KEY,id);}catch{}const url=new URL(location.href);url.searchParams.set('scene',id);history.replaceState(null,'',url.href);
-   old.dispose();oldReleased=true;renderer.renderLists.dispose();switchCount++;
+   old.dispose();oldReleased=true;renderer.renderLists.dispose();window.__renderPerformance.releasedAssets=releaseInactiveAssetGPU(scene);switchCount++;
    committing=false;socialUI.setSceneTransition(false);
    sceneSwitcher?.setCurrent(id);await fadeCanvas(0,1);return true;
   }catch(error){
@@ -155,13 +157,14 @@ async function boot(){
   }finally{publishPetScene();loading.remove();delete document.documentElement.dataset.sceneTransition;canvasMotion?.cancel();renderer.domElement.style.removeProperty('opacity');committing=false;switching=false;timeMenu?.setBusy(false);sceneSwitcher?.setCurrent(world.id);sceneSwitcher?.setBusy(false);characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
  }
  if(store){sceneSwitcher=createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});sceneControls=createSceneControls({ui,sceneSwitcher,timeMenu});}
- window.__sceneTheme={get id(){return world.id;},ready:true,get switching(){return switching;},get audit(){return{environment:{exposure:renderer.toneMappingExposure,hemi:hemi.intensity,sun:sun.intensity,rim:rim.intensity,fill:fill.intensity},river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures,assetFallbacks:world.assets.fallbacks||[]};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
+ let firstFrameReady=false;
+ window.__sceneTheme={get id(){return world.id;},get ready(){return firstFrameReady;},get switching(){return switching;},get audit(){return{environment:{exposure:renderer.toneMappingExposure,hemi:hemi.intensity,sun:sun.intensity,rim:rim.intensity,fill:fill.intensity},river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures,assetFallbacks:world.assets.fallbacks||[]};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  try{localStorage.setItem(SCENE_STORAGE_KEY,world.id);}catch{}
- window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
+ window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},get instances(){return world.root.userData.staticInstances;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
  let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
  document.addEventListener('resume',()=>{last=performance.now();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
- function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
+ function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;if(committing){last=now;frameId=requestAnimationFrame(frame);return;}const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
   if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
   if(!committing){dayNight.update(timeDelta);applyTime();}
   renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
@@ -171,7 +174,8 @@ async function boot(){
   let wasMobile=innerWidth<700;
  window.addEventListener('resize',()=>{if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
  window.addEventListener('keydown',e=>{if(e.defaultPrevented||e.target.closest('input,textarea,select,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Escape'){if(e.repeat||switching||roam?.busy||trainFollow?.busy||groupCamera.busy||uiState.main||uiState.modal)return;smoothResetCamera();e.preventDefault();return;}if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){cancelReset();const s=new T.Spherical().setFromVector3(camera.position.clone().sub(controls.target));if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(['+','='].includes(e.key))s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=T.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=T.MathUtils.clamp(s.radius,6,controls.maxDistance);camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
- $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);frameId=requestAnimationFrame(frame);
+ window.__renderPerformance.warmup=await prepareSceneGPU(renderer,scene,camera);
+ $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);firstFrameReady=true;frameId=requestAnimationFrame(frame);
  window.addEventListener('webglcontextlost',e=>{e.preventDefault();console.warn('WebGL context lost; reload to restore the scene.');});
  if(captureIndex){
   renderer.setPixelRatio(1);renderer.setSize(540,960,false);camera.aspect=540/960;camera.updateProjectionMatrix();controls.enabled=false;

@@ -357,13 +357,14 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   function prepareFrame(now){const occupant=active||closingFriend,context=occupant+'|'+chatVisible();if(presenceState!==store.state||presenceContext!==context){presenceState=store.state;presenceContext=context;presence.reconcile({state:store.state,activeFriend:occupant,chatVisible:chatVisible(),now});}const entries=presence.update(now,matchMedia('(prefers-reduced-motion: reduce)').matches);characters.setPresence(entries,store.state.friends.map(person));}
   function update(now){
     if(statusOwner&&statusOrigin){const source=typeof statusOrigin==='function'?statusOrigin():statusOrigin;if(!source?.isConnected||source.closest('[hidden]'))closeStatus();}
-    for(const node of anchorNodes.values())node.hidden=true;
     const dt=Math.min(.05,(now-lastAnchorFrame)/1000||1/60);lastAnchorFrame=now;
     const moving=orbiting||now-lastCameraMotion<180,anchors=characters.getAnchors();
+    for(const [id,node]of anchorNodes)if(!anchors.some(a=>a.id===id)&&!node.hidden)node.hidden=true;
     root.classList.toggle('is-orbiting',orbiting);
     for(const a of anchors){
       const node=anchorNodes.get(a.id);if(!node)continue;
-      node.dataset.worldX=a.worldX?.toFixed(3);node.dataset.worldZ=a.worldZ?.toFixed(3);node.dataset.walking=String(!!a.walking);node.hidden=!a.visible;node.style.opacity=String(a.alpha??1);node.dataset.presence=a.phase||'present';
+      for(const [key,value]of [['worldX',a.worldX?.toFixed(3)],['worldZ',a.worldZ?.toFixed(3)],['walking',String(!!a.walking)],['presence',a.phase||'present']])if(node.dataset[key]!==value)node.dataset[key]=value;
+      if(node.hidden===a.visible)node.hidden=!a.visible;const opacity=String(a.alpha??1);if(node.style.opacity!==opacity)node.style.opacity=opacity;
       node.classList.toggle('selected',active===a.id);
       if(node._occluded===undefined)node._occluded=!!a.occluded;
       if(!moving){

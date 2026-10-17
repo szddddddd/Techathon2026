@@ -111,3 +111,12 @@ export async function prepareSceneAssets(id){
  try{return await request;}catch(error){cache.delete(id);throw error;}
 }
 export const assetCacheSnapshot=()=>({themes:[...cache.keys()],sharedResources:shared.size});
+
+// Keep CPU templates for fast revisits, but stop retaining the GPU allocations
+// for every previously visited world on memory-constrained phones. dispose()
+// preserves source buffers/images; Three uploads them again if revisited.
+export function releaseInactiveAssetGPU(activeScene){
+ const active=sceneResources(activeScene);let released=0;
+ for(const resource of shared)if(!active.has(resource)){resource.dispose?.();released++;}
+ return released;
+}

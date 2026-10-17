@@ -133,6 +133,7 @@ export function createUIInteractions() {
   document.addEventListener('pointerdown',down,true);document.addEventListener('click',click);
   window.addEventListener('keydown',key,true);window.addEventListener('resize',resize);visualViewport?.addEventListener('resize',resize);
   return {register,open,close,requestClose,dismissPopovers,transition,rect,source:()=>lastSource,
+    back(){const layer=top();if(!layer)return false;requestClose(layer.id);return true;},
     setNav(id,nav){const l=layers.get(id);if(l)l.nav=nav;sync();},
     get activeMain(){return visible().find(l=>l.kind==='main')?.id;},
     state:id=>layers.get(id)?.state,

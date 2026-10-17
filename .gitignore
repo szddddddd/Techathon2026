@@ -6,6 +6,12 @@ __pycache__/
 .forest-runtime.json
 .forest-avatar-data/
 .test-results/
+.android-signing/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+/downloads/
 # Generated checks, concepts and generation task records are not runtime assets.
 /validation/
 /output/

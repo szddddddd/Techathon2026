@@ -5,6 +5,8 @@ import {buildIdealScene,idealFacility} from './ideal-scene.js';
 import {SCENE_THEMES} from './scene-theme.js';
 import {FUJI_VISUALS} from './fuji-visuals.js';
 import {freezeStaticTransforms} from './static-transforms.js';
+import {instanceStaticScenery} from './static-instances.js';
+import {ensureIndexed} from './indexed-geometry.js';
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {buildTerrain} from './terrain.js';
@@ -32,7 +34,7 @@ function batchForest(root,architecture,nature){
  const buckets=new Map();root.updateMatrixWorld(true);
  root.traverse(o=>{if(!o.isMesh||o.userData.riverOwned||o.userData.generatedProp||animated.has(o)||Array.isArray(o.material)||o.material.vertexColors||o.material.transparent||o.material.isShaderMaterial||o.name.includes('foam')||o.name.includes('filament'))return;const key=o.material.uuid+o.castShadow+o.receiveShadow;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);});
  for(const objects of buckets.values()){
-  if(objects.length<8)continue;const geometries=objects.map(o=>{let g=o.geometry.clone();if(g.index){const flat=g.toNonIndexed();g.dispose();g=flat;}g.applyMatrix4(o.matrixWorld);for(const key of Object.keys(g.attributes))if(!['position','normal','uv'].includes(key))g.deleteAttribute(key);if(!g.attributes.uv)g.setAttribute('uv',new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});
+  if(objects.length<8)continue;const geometries=objects.map(o=>{const g=ensureIndexed(o.geometry.clone());g.applyMatrix4(o.matrixWorld);for(const key of Object.keys(g.attributes))if(!['position','normal','uv'].includes(key))g.deleteAttribute(key);if(!g.attributes.uv)g.setAttribute('uv',new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});
   const combined=mergeGeometries(geometries);if(combined){const mesh=new T.Mesh(combined,objects[0].material);mesh.name='Batched scenery';mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;root.add(mesh);objects.forEach(o=>o.removeFromParent());}geometries.forEach(g=>g.dispose());
  }
 }
@@ -82,7 +84,7 @@ export async function prepareSceneWorld(id,{reduced}={}){
   nightSnapshot:()=>nightEffects?.snapshot(),
   activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
   suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[nightEffects?.root,...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
+  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);const dynamic=[nightEffects?.root,...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)];instanceStaticScenery(root,dynamic);frozenTransforms=freezeStaticTransforms(root,dynamic);},
   update(now,dt,time){
    if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}

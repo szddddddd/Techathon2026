@@ -2,6 +2,8 @@ import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
 import {avatarURL} from './avatar-url.js';
 import {loadRiggedCharacter,cloneRigModel,setRigStatus,disposeRigTemplate} from './character-rig.js';
 import {createCharacterActions} from './character-actions.js';
+import {createPlacementTriangles} from './placement-triangles.js';
+import {accelerateStaticRaycast} from './static-raycast.js';
 import * as THREE from 'three';
 import {buildWalkingGraph,walkingRoute,canWalkStep} from './companion-walk.js';
 import {WALKWAYS,distanceToSegment} from './layout.js';
@@ -11,15 +13,6 @@ const ANIMALS=['kangaroo','fox','rabbit','bear'];
 const PREFERRED={kangaroo:[-5.9,-3],fox:[-9.5,5.4],rabbit:[-6,7.5],bear:[8,4.4]};
 const down=new THREE.Vector3(0,-1,0);
 export const characterBodyRadius=radius=>Math.max(.3,Math.min(.65,radius*.65));
-const segmentDistance=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],d=dx*dx+dz*dz,t=d?THREE.MathUtils.clamp(((x-a[0])*dx+(z-a[1])*dz)/d,0,1):0;return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);};
-function triangleDistance(x,z,t){
-  const cross=(a,b)=>(b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0]);
-  // Filled projection, except vertical/degenerate faces which are line segments.
-  const area=(t[1][0]-t[0][0])*(t[2][1]-t[0][1])-(t[1][1]-t[0][1])*(t[2][0]-t[0][0]);
-  const signs=[cross(t[0],t[1]),cross(t[1],t[2]),cross(t[2],t[0])];
-  if(Math.abs(area)>1e-8&&(signs.every(v=>v>=0)||signs.every(v=>v<=0)))return 0;
-  return Math.min(segmentDistance(x,z,t[0],t[1]),segmentDistance(x,z,t[1],t[2]),segmentDistance(x,z,t[2],t[0]));
-}
 
 /** Capture support and obstacle geometry before static scene batching detaches meshes. */
 export function createPlacementContext({scene,terrain,generated,obstacleCache}){
@@ -36,23 +29,16 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
     const signature=obstacleCache&&[owner.userData.layoutId||owner.name,owner.userData.kind,...meshes.map(m=>[m.id,m.geometry.id,m.geometry.attributes.position.id,m.geometry.attributes.position.version,m.geometry.index?.id,m.geometry.index?.version,...m.matrixWorld.elements].join(','))].join('|');
     const cached=obstacleCache?.get(owner);
     if(cached&&cached.signature===signature){occluders.push(...meshes);obstacles.push(cached.obstacle);continue;}
-    const triangles=[],bounds=new THREE.Box2(),solidMeshes=[];
+    const bounds=new THREE.Box2(),solidMeshes=[];
     for(const mesh of meshes){
+      accelerateStaticRaycast(mesh);
       occluders.push(mesh);
       // Double-sided geometry views support parity rays without changing the
       // visible material. They remain valid after render batching.
       const solid=new THREE.Mesh(mesh.geometry,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
-      solid.matrixAutoUpdate=false;solid.matrixWorld.copy(mesh.matrixWorld);solidMeshes.push(solid);
-      const pos=mesh.geometry.attributes.position,index=mesh.geometry.index;
-      const count=index?index.count:pos.count;
-      for(let i=0;i<count;i+=3){
-        const points=[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(pos,index?index.getX(i+k):i+k).applyMatrix4(mesh.matrixWorld));
-        const minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
-        if(maxY<2.25)continue;
-        const t=points.map(p=>[p.x,p.z]),box=new THREE.Box2().setFromPoints(t.map(p=>new THREE.Vector2(...p)));
-        bounds.union(box);triangles.push({points:t,world:points,minY,maxY,box});
-      }
+      solid.matrixAutoUpdate=false;solid.matrixWorld.copy(mesh.matrixWorld);accelerateStaticRaycast(solid);solidMeshes.push(solid);
     }
+    const triangles=createPlacementTriangles(meshes);triangles.getBounds(bounds);
     const obstacle={id:owner.userData.layoutId||owner.name,kind:owner.userData.kind,bounds,triangles,solidMeshes};
     obstacles.push(obstacle);obstacleCache?.set(owner,{signature,obstacle});
   }
@@ -73,12 +59,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
     for(const obstacle of obstacles){
       if(manual&&['grass','fern_large'].includes(obstacle.kind))continue;
       if(obstacle.bounds.distanceToPoint(point)>=clearance)continue;
-      for(const triangle of obstacle.triangles){
-        if(triangle.box.distanceToPoint(point)>=clearance||triangle.maxY<groundY+.06||triangle.minY>groundY+2.23)continue;
-        let clipped=triangle.world;for(const [height,above] of [[groundY+.06,true],[groundY+2.23,false]]){const input=clipped;clipped=[];for(let j=0;j<input.length;j++){const a=input[j],b=input[(j+1)%input.length],ain=above?a.y>=height:a.y<=height,bin=above?b.y>=height:b.y<=height;if(ain)clipped.push(a);if(ain!==bin)clipped.push(a.clone().lerp(b,(height-a.y)/(b.y-a.y)));}}
-        let intersects=false;for(let j=1;j+1<clipped.length;j++)if(triangleDistance(x,z,[clipped[0],clipped[j],clipped[j+1]].map(p=>[p.x,p.z]))<clearance)intersects=true;
-        if(intersects)return {ok:false,reason:'obstacle',id:obstacle.id};
-      }
+      if(obstacle.triangles.intersects(x,z,clearance,groundY+.06,groundY+2.23))return {ok:false,reason:'obstacle',id:obstacle.id};
       // A point deep inside a closed building can be far from every wall;
       // reject that case using horizontal parity, without reserving tree shade.
       if(obstacle.bounds.containsPoint(point)){
@@ -90,6 +71,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
     }
     return {ok:true,y:groundY,region:center?.region,normal:center?.normal};
   }
+  meadows.forEach(accelerateStaticRaycast);
   return {meadows,occluders:[...occluders,...meadows],obstacles,inspect,dispose(){for(const obstacle of obstacles)for(const mesh of obstacle.solidMeshes)mesh.material.dispose();}};
 }
 

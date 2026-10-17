@@ -1,7 +1,11 @@
+import {isAndroidApp} from './mobile-platform.js';
 const terminal=new Set(['ready','attention','failed','cancelled']);
 
 /** A friend exists before their model. Stable job IDs also deduplicate across tabs/reloads. */
 export function createFriendModels({store,fetcher=fetch,interval=5000,document:doc=globalThis.document}={}){
+  // The offline APK has no trusted generation server or credentials. Keep the
+  // contact locally without polling a nonexistent service or submitting a job.
+  if(isAndroidApp)return{wake(){},async sync(){},async retry(){throw Error('手机演示版暂未连接形象生成服务。');},dispose(){}};
   let timer,disposed=false;const inFlight=new Map();
   const pending=()=>Object.values(store.state.customFriends||{}).filter(f=>store.state.friends.includes(f.id)&&!f.modelUrl&&f.jobId&&!terminal.has(f.modelPhase));
   async function api(route,body){

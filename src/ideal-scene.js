@@ -4,6 +4,8 @@ import {createIdealTrafficSchool,createIdealAirways,idealAirshipPose} from './id
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+import {accelerateStaticRaycast} from './static-raycast.js';
+import {ensureIndexed} from './indexed-geometry.js';
 import {GROUP_TYPES} from './group-catalog.js';
 import {IDEAL_SOURCE,IDEAL_LAYOUT,IDEAL_GROUND,IDEAL_OUTLINE,IDEAL_PROPORTIONS,queryIdealSurface,idealCanPlace,idealCanWalkStep} from './ideal-layout.js';
 
@@ -68,7 +70,7 @@ export async function loadIdealAssets(retain=x=>x){
  return{model,groups:{templates,getForSlot:slot=>slots[slot],failures:[],loading:new Map()},recordModel:retain(idealFacility('music')),failures,fallbacks:failures.map(key=>({key,used:'original Blender scene'}))};
 }
 function batchStatic(source){source.updateMatrixWorld(true);const groups=new Map(),meshes=[];source.traverse(o=>{if(!o.isMesh||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(o);});const inverse=source.matrixWorld.clone().invert();
- for(const items of groups.values()){if(items.length<2)continue;const copies=items.map(m=>{let g=m.geometry.clone();if(g.index){const flat=g.toNonIndexed();g.dispose();g=flat;}g.applyMatrix4(inverse.clone().multiply(m.matrixWorld));for(const a of Object.keys(g.attributes))if(!['position','normal','uv'].includes(a))g.deleteAttribute(a);if(!g.attributes.uv)g.setAttribute('uv',new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});const geometry=mergeGeometries(copies);copies.forEach(g=>g.dispose());if(!geometry)continue;const merged=new T.Mesh(geometry,items[0].material);merged.name='Ideal city static material batch';merged.castShadow=merged.receiveShadow=true;source.add(merged);items.forEach(m=>m.removeFromParent());meshes.push(merged);}
+ for(const items of groups.values()){if(items.length<2)continue;const copies=items.map(m=>{const g=ensureIndexed(m.geometry.clone());g.applyMatrix4(inverse.clone().multiply(m.matrixWorld));for(const a of Object.keys(g.attributes))if(!['position','normal','uv'].includes(a))g.deleteAttribute(a);if(!g.attributes.uv)g.setAttribute('uv',new T.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));return g;});const geometry=mergeGeometries(copies);copies.forEach(g=>g.dispose());if(!geometry)continue;const merged=new T.Mesh(geometry,items[0].material);merged.name='Ideal city static material batch';merged.castShadow=merged.receiveShadow=true;source.add(merged);items.forEach(m=>m.removeFromParent());meshes.push(merged);}
  return meshes;
 }
 export function buildIdealScene(parent,{assets,reduced=false}={}){
@@ -95,6 +97,7 @@ export function buildIdealScene(parent,{assets,reduced=false}={}){
  const area=Math.abs(IDEAL_OUTLINE.reduce((a,p,i)=>{const q=IDEAL_OUTLINE[(i+1)%IDEAL_OUTLINE.length];return a+p[0]*q[1]-q[0]*p[1];},0)/2);root.userData.landArea={total:area,west:area/2,east:area/2,ratio:1};
  // Group ownership is only on the exported parent, so exclude distant scenery by ancestry.
  const staticHits=[];collisionRoot.traverse(o=>{if(o.isMesh)staticHits.push(o);});scenery.traverse(o=>{if(!o.isMesh)return;let p=o,environment=false;while(p&&p!==scenery){if(p.userData.idealCollection==='07_Environment')environment=true;p=p.parent;}if(!environment)staticHits.push(o);});
+ staticHits.forEach(accelerateStaticRaycast);
  const ray=new T.Raycaster();function isOccluded(camera,point){const direction=point.clone().sub(camera.position),distance=direction.length();ray.set(camera.position,direction.normalize());ray.far=distance-.25;return ray.intersectObjects(staticHits,false).some(h=>h.distance>.2);}
  // Shared cached GLB resources stay alive; the new combined buffers belong to this scene.
  batchStatic(scenery);

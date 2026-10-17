@@ -1,5 +1,6 @@
 import {appIcon} from './inbox/icons.js';
 import {bindNightMaterial} from './day-night-effects.js';
+import {accelerateStaticRaycast} from './static-raycast.js';
 import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupMessageBoard} from './group-message-board.js';
 import {unreadTier} from './social-presence.js';
@@ -58,7 +59,7 @@ export async function createGroupScene({scene,camera,canvas,controls,reduced,sto
   const height=new T.Box3().setFromObject(body).getSize(new T.Vector3()).y;return{group,body,materials,outline,letters,glow,identity,node,type,height,source,slot:entry.slot,doorPulse,messageAt:0,appearanceStart:performance.now()};
  }
  function project(x,y,z){const p=new T.Vector3(x,y,z).project(camera);return{x:(p.x*.5+.5)*innerWidth,y:(.5-p.y*.5)*innerHeight,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1};}
- function hit(x,y){if(suspended||disposed)return;ray.setFromCamera(new T.Vector2(x/innerWidth*2-1,1-y/innerHeight*2),camera);const h=ray.intersectObjects([...actors.values()].map(a=>a.body).concat([...idleBuildings.values()].filter(a=>a.body.visible).map(a=>a.body)),true)[0];return h&&!isOccluded(h.point)?h:undefined;}
+ function hit(x,y){if(suspended||disposed)return;const bodies=[...actors.values()].map(a=>a.body).concat([...idleBuildings.values()].filter(a=>a.body.visible).map(a=>a.body));for(const body of bodies)if(!body.userData.pickAccelerated){body.traverse(accelerateStaticRaycast);body.userData.pickAccelerated=true;}ray.firstHitOnly=true;ray.setFromCamera(new T.Vector2(x/innerWidth*2-1,1-y/innerHeight*2),camera);const h=ray.intersectObjects(bodies,true)[0];return h&&!isOccluded(h.point)?h:undefined;}
  function pick(x,y){return hit(x,y)?.object.userData.groupId;}
  const hover=createSceneLabelHover({canvas,selector:'.group-building-anchor',dataKey:'group',pick});
  const pointerDown=e=>{down=null;if(!suspended&&!disposed&&e.button===0&&controls.enabled&&!document.querySelector('dialog[open]'))down={x:e.clientX,y:e.clientY,id:e.pointerId};};
@@ -78,7 +79,9 @@ export async function createGroupScene({scene,camera,canvas,controls,reduced,sto
     const copy=document.createElement('span');copy.className='group-sign-copy';const name=document.createElement('strong');name.textContent=title;name.insertAdjacentHTML('afterbegin',appIcon(g.sourcePlatform||'wechat'));copy.append(name);a.node.append(copy);
     if(entry.unread>(previousUnread.get(g.id)||0)&&!reduced.matches)a.node.animate([{scale:1},{scale:1.08},{scale:1}],{duration:260,easing:'ease-out'});previousUnread.set(g.id,entry.unread);
    }
-   const p=project(a.group.position.x,a.group.position.y+a.height+.4,a.group.position.z);a.node.hidden=!p.visible||entry.alpha<=.001||isOccluded(new T.Vector3(a.group.position.x,a.group.position.y+a.height+.4,a.group.position.z));a.node.style.opacity=entry.alpha;a.node.style.transform=`translate(${p.x}px,${p.y}px) translate(-50%,-100%)`;
+   const point=new T.Vector3(a.group.position.x,a.group.position.y+a.height+.4,a.group.position.z),p=project(point.x,point.y,point.z);
+   if(p.visible&&entry.alpha>.001&&(!a.occlusionCamera?.equals(camera.position)||!a.occlusionPoint?.equals(point))){a.occluded=isOccluded(point);(a.occlusionCamera??=new T.Vector3()).copy(camera.position);(a.occlusionPoint??=new T.Vector3()).copy(point);}
+   a.node.hidden=!p.visible||entry.alpha<=.001||!!a.occluded;a.node.style.opacity=entry.alpha;a.node.style.transform=`translate(${p.x}px,${p.y}px) translate(-50%,-100%)`;
 
   }
   for(const building of data.buildings){

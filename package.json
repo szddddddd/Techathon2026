@@ -4,6 +4,13 @@
   "description": "林间来信：三维森林社交与 Windows 桌宠",
   "main": "desktop/main.cjs",
   "scripts": {
+    "android:web": "node scripts/build-android-web.mjs",
+    "android:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+    "android:download": "node scripts/serve-android-download.mjs",
+    "test:android": "node scripts/test-android-web.mjs",
+    "test:mobile:performance": "node scripts/test-mobile-performance.mjs",
+    "test:mobile:rendering": "node scripts/test-mobile-rendering.mjs",
+    "benchmark:mobile": "node scripts/benchmark-mobile.mjs",
     "build": "node scripts/build.mjs",
     "start": "node scripts/serve.mjs",
     "desktop": "electron .",
@@ -52,13 +59,16 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "three-mesh-bvh": "0.9.16"
   },
   "devDependencies": {
     "electron": "^36.3.2",
     "esbuild": "^0.25.10",
     "fake-indexeddb": "^6.2.5",
-    "playwright": "^1.64.1"
+    "playwright": "^1.64.1",
+    "pngjs": "5.0.0",
+    "qrcode": "^1.5.4"
   },
   "engines": {
     "node": ">=22"

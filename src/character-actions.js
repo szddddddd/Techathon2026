@@ -12,7 +12,7 @@ export function createCharacterActions({body,poseRoot,holder,animal,height,id=an
  const rest={},limits={};for(const j of profile?.joints||[]){rest[j.name]=new THREE.Vector3().fromArray(j.position);limits[j.name]=j.limit;}
  const seed=[...id].reduce((s,c)=>(s*31+c.charCodeAt(0))>>>0,7),offset=(seed%1000)/137;
  let kind=null,started=0,sit=0,lie=0,frame=0,holdBlend=0,wantsWalk=false,lastPose,disposed=false;
- const ready=rig?.status==='ready'&&bones.hips,targets={},q=new THREE.Quaternion(),e=new THREE.Euler(),v=new THREE.Vector3(),inverse=new THREE.Matrix4(),relative=new THREE.Matrix4(),box=new THREE.Box3(),point=new THREE.Vector3();
+ const ready=rig?.status==='ready'&&bones.hips,targets={},targetFrames={},witnesses=new Map(),q=new THREE.Quaternion(),e=new THREE.Euler(),v=new THREE.Vector3(),inverse=new THREE.Matrix4(),relative=new THREE.Matrix4(),box=new THREE.Box3(),point=new THREE.Vector3();let poseFrame=0;
  const skeletons=new Set(meshes.map(m=>m.skeleton));
  const contacts={L:{locked:null,stance:false},R:{locked:null,stance:false}};
  function prop(type){const group=new THREE.Group(),material=new THREE.MeshStandardMaterial({color:type==='book'?0x687b75:0xe8dfc5,roughness:.85});
@@ -20,7 +20,7 @@ export function createCharacterActions({body,poseRoot,holder,animal,height,id=an
   else{const cup=new THREE.Mesh(new THREE.CylinderGeometry(.032,.026,.065,12,1,true),material);cup.position.y=.025;group.add(cup);const handle=new THREE.Mesh(new THREE.TorusGeometry(.022,.006,5,12),material);handle.position.set(.034,.025,0);group.add(handle);const drink=new THREE.Mesh(new THREE.CircleGeometry(.028,12),new THREE.MeshStandardMaterial({color:0x7a5741,side:THREE.DoubleSide}));drink.rotation.x=-Math.PI/2;drink.position.y=.051;group.add(drink);}
   group.position.set(type==='book'?-.07:0,.005,.025);group.visible=false;bones['hand'+(type==='book'?'L':'R')]?.add(group);props.push(group);return group;}
  const book=ready?prop('book'):null,cup=ready?prop('cup'):null;
- function rotate(name,x=0,y=0,z=0){if(!bones[name])return;const l=limits[name];if(profile.config.tPose&&name.startsWith('upperArm'))z+=(name.endsWith('L')?-1:1)*1.2;targets[name]=q.setFromEuler(e.set(clamp(x,-l[0],l[0]),clamp(y,-l[1],l[1]),clamp(z,-l[2],l[2]))).clone();}
+ function rotate(name,x=0,y=0,z=0){if(!bones[name])return;const l=limits[name];if(profile.config.tPose&&name.startsWith('upperArm'))z+=(name.endsWith('L')?-1:1)*1.2;(targets[name]??=new THREE.Quaternion()).setFromEuler(e.set(clamp(x,-l[0],l[0]),clamp(y,-l[1],l[1]),clamp(z,-l[2],l[2])));targetFrames[name]=poseFrame;}
  // Solve a two-link leg in normalized model space, bending the knee forward.
  function solveLeg(side,target,blend=1){const upper=bones['thigh'+side],lower=bones['calf'+side],foot=bones['foot'+side];if(!upper)return;
   body.updateWorldMatrix(true,false);body.updateMatrixWorld(true);inverse.copy(body.matrixWorld).invert();const hip=upper.getWorldPosition(new THREE.Vector3()).applyMatrix4(inverse),a=rest['calf'+side].distanceTo(rest['thigh'+side]),b=rest['foot'+side].distanceTo(rest['calf'+side]),direction=target.clone().sub(hip),distance=clamp(direction.length(),Math.abs(a-b)+.0001,a+b-.0001);direction.normalize();
@@ -41,8 +41,10 @@ export function createCharacterActions({body,poseRoot,holder,animal,height,id=an
   if(!meshes.length){box.setFromObject(body,true).applyMatrix4(inverse);}
   for(const mesh of meshes){relative.multiplyMatrices(inverse,mesh.matrixWorld);const positions=mesh.geometry.attributes.position,indices=exact?null:mesh.geometry.userData.rigWitnesses;
    const skinIndex=mesh.geometry.attributes.skinIndex.array,skinWeight=mesh.geometry.attributes.skinWeight.array,matrices=mesh.skeleton.boneMatrices,skinToHolder=new THREE.Matrix4().multiplyMatrices(relative,mesh.bindMatrixInverse);
-   for(let k=0,n=indices?.length??positions.count;k<n;k++){const i=indices?indices[k]:k;point.fromBufferAttribute(positions,i);
-    if(exact){mesh.applyBoneTransform(i,point);point.applyMatrix4(relative);}else{point.applyMatrix4(mesh.bindMatrix);const x=point.x,y=point.y,z=point.z;let sx=0,sy=0,sz=0;for(let j=0;j<4;j++){const w=skinWeight[i*4+j];if(!w)continue;const b=skinIndex[i*4+j]*16;sx+=(matrices[b]*x+matrices[b+4]*y+matrices[b+8]*z+matrices[b+12])*w;sy+=(matrices[b+1]*x+matrices[b+5]*y+matrices[b+9]*z+matrices[b+13])*w;sz+=(matrices[b+2]*x+matrices[b+6]*y+matrices[b+10]*z+matrices[b+14])*w;}point.set(sx,sy,sz).applyMatrix4(skinToHolder);}box.expandByPoint(point);
+   let samples;
+   if(!exact){let cached=witnesses.get(mesh);if(!cached||cached.positions!==positions||cached.version!==positions.version||cached.indices!==indices){const n=indices?.length??positions.count,values=new Float64Array(n*3),joints=new Uint32Array(n*4),weights=new Float32Array(n*4);for(let k=0;k<n;k++){const i=indices?indices[k]:k;point.fromBufferAttribute(positions,i).applyMatrix4(mesh.bindMatrix);values.set(point.toArray(),k*3);for(let j=0;j<4;j++){joints[k*4+j]=skinIndex[i*4+j]*16;weights[k*4+j]=skinWeight[i*4+j];}}cached={positions,version:positions.version,indices,values,joints,weights};witnesses.set(mesh,cached);}samples=cached;}
+   for(let k=0,n=indices?.length??positions.count;k<n;k++){const i=indices?indices[k]:k;
+    if(exact){point.fromBufferAttribute(positions,i);mesh.applyBoneTransform(i,point);point.applyMatrix4(relative);}else{const x=samples.values[k*3],y=samples.values[k*3+1],z=samples.values[k*3+2];let sx=0,sy=0,sz=0;for(let j=0;j<4;j++){const w=samples.weights[k*4+j];if(!w)continue;const b=samples.joints[k*4+j];sx+=(matrices[b]*x+matrices[b+4]*y+matrices[b+8]*z+matrices[b+12])*w;sy+=(matrices[b+1]*x+matrices[b+5]*y+matrices[b+9]*z+matrices[b+13])*w;sz+=(matrices[b+2]*x+matrices[b+6]*y+matrices[b+10]*z+matrices[b+14])*w;}point.set(sx,sy,sz).applyMatrix4(skinToHolder);}box.expandByPoint(point);
    }
    // A conservative broad phase prevents stale rest-pose raycast rejection.
    mesh.boundingSphere??=new THREE.Sphere(new THREE.Vector3(0,.5,0),2);mesh.boundingBox=null;
@@ -55,7 +57,7 @@ export function createCharacterActions({body,poseRoot,holder,animal,height,id=an
   sit+=(sitTarget-sit)*(reduced?1:1-Math.exp(-dt/(override?.12:.32)));lie+=(lieTarget-lie)*(reduced?1:1-Math.exp(-dt/(override?.10:.48)));let jump=0;
   holder.scale.set(1,1,1);poseRoot.rotation.set(0,0,0);poseRoot.position.set(0,0,0);holder.position.y=0;
   if(ready){
-   for(const name of Object.keys(targets))delete targets[name];
+   poseFrame++;
    const wave=reduced?0:Math.sin(t*1.7),breath=reduced?0:Math.sin(t*1.4)*.012;
    for(let i=0;i<3;i++)rotate('tail'+i,0,reduced?0:Math.sin(t*.65-i*.3)*.04,0);
    rotate('spine',breath+(kind==='emo'?.14:0));rotate('neck',kind==='emo'?.22:kind==='busy'?.18:kind==='relax'?.08:0,reduced?0:Math.sin(t*.43)*.07);
@@ -69,12 +71,12 @@ export function createCharacterActions({body,poseRoot,holder,animal,height,id=an
    if(kind==='exercise'&&!override&&!moving){rotate('upperArmL',-.15,0,reduced?.6:.55+wave*.2);rotate('upperArmR',-.15,0,reduced?-.6:-.55-wave*.2);rotate('forearmL',-.3);rotate('forearmR',-.3);}
    if(kind==='travel'&&resting&&!override){rotate('neck',0,reduced?.15:Math.sin(t*.6)*.24);if(t%9>6||reduced){rotate('upperArmL',-.9,0,.15);rotate('forearmL',-.25);}}
    if(moving&&!reduced&&!override)for(const [s,sign]of[['L',1],['R',-1]]){rotate('upperArm'+s,Math.sin(phase)*.16*sign);rotate('forearm'+s,-.15);}
-   if(override)for(const name of Object.keys(targets)){targets[name].identity();if(profile.config.tPose&&name.startsWith('upperArm'))targets[name].setFromEuler(e.set(0,0,(name.endsWith('L')?-1:1)*1.2));}
-   for(const [name,bone]of Object.entries(bones))bone.quaternion.slerp(targets[name]||q.identity(),alpha);
+   if(override)for(const name of Object.keys(targets)){if(targetFrames[name]!==poseFrame)continue;targets[name].identity();if(profile.config.tPose&&name.startsWith('upperArm'))targets[name].setFromEuler(e.set(0,0,(name.endsWith('L')?-1:1)*1.2));}
+   for(const [name,bone]of Object.entries(bones))bone.quaternion.slerp(targetFrames[name]===poseFrame?targets[name]:q.identity(),alpha);
    const hopCycle=t%7,landing=kind==='happy'&&!moving&&!override&&!reduced&&['kangaroo','rabbit'].includes(animal)&&hopCycle<.95?.025*Math.max(0,1-Math.abs(hopCycle-.72)/.23):0;
    const crouch=landing+(kind==='exercise'&&!moving&&!override?(reduced?.025:(wave+1)*.015):0);
    bones.root.position.x=-.32*lie;
-   bones.hips.position.copy(rest.hips).add(new THREE.Vector3(0,-(profile.config.hips-profile.config.ankle)*.62*sit-crouch-(moving?.015:0),0));
+   bones.hips.position.copy(rest.hips);bones.hips.position.y-=(profile.config.hips-profile.config.ankle)*.62*sit+crouch+(moving?.015:0);
    const cycleLength=2*Math.PI/(17*height);
    for(const [s,shift]of[['L',0],['R',Math.PI]]){
     const p=((phase+shift)%(Math.PI*2)+Math.PI*2)%(Math.PI*2),stance=p<Math.PI||!moving||reduced,target=rest['foot'+s].clone();

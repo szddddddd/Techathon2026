@@ -1,0 +1,43 @@
+plugins { id 'com.android.application' }
+
+def signingFile = rootProject.file('../.android-signing/signing.properties')
+def signingValues = new Properties()
+if (signingFile.exists()) signingFile.withInputStream { signingValues.load(it) }
+
+android {
+    namespace 'app.weroam.mobile'
+    compileSdk 36
+    testBuildType 'release'
+    defaultConfig {
+        applicationId 'app.weroam.mobile'
+        minSdk 26
+        targetSdk 36
+        versionCode 1030102
+        versionName '1.3.1-demo.2'
+        testInstrumentationRunner 'app.weroam.mobile.SmokeInstrumentation'
+    }
+    signingConfigs {
+        demo {
+            if (signingFile.exists()) {
+                storeFile rootProject.file('../.android-signing/weroam-demo.p12')
+                storePassword signingValues.getProperty('storePassword')
+                keyAlias 'weroam-demo'
+                keyPassword signingValues.getProperty('storePassword')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.demo
+            minifyEnabled false
+        }
+    }
+    sourceSets.main.assets.srcDirs = ['../../.cache/android-web']
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    androidResources { noCompress += ['glb', 'bin', 'mp3', 'mp4', 'webm'] }
+}
+
+dependencies { implementation 'androidx.webkit:webkit:1.14.0' }

@@ -22,6 +22,14 @@
 
 [架构、演示步骤与验证说明](docs/UNIVERSAL-INBOX.md) · `npm run test:inbox` · `npm run test:inbox:browser`
 
+## 安卓安装版
+
+`npm run android:build` 生成可直接安装的 `downloads/WeRoam-1.3.1-android.apk`；`npm run android:download` 提供局域网扫码下载页。完整保留三场景资源，消息与草稿保存在手机；手机版暂不连接新头像的三维生成服务或 Windows 桌宠。
+
+[安装、构建与验证范围](docs/ANDROID.md) · `npm run test:android`
+
+[手机性能优化与测量说明](docs/MOBILE-PERFORMANCE.md) · `npm run test:mobile:performance`
+
 ## 好友就在身边，聊天就在风景里
 
 | 遇见好友 | 走进群聊 | 分享日常 |
