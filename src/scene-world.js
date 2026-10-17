@@ -1,3 +1,8 @@
+import {cityCamera} from './cyber-city.js';
+import {SCENE_THEMES} from './scene-theme.js';
+import {CYBER_LAYOUT} from './cyber-layout.js';
+import {CYBER_VISUALS} from './cyber-visuals.js';
+import {buildCyberScene} from './cyber-scene.js';
 import {FUJI_VISUALS} from './fuji-visuals.js';
 import {freezeStaticTransforms} from './static-transforms.js';
 import * as T from 'three';
@@ -17,8 +22,9 @@ import {createRecordPlayer} from './record-player.js';
 import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-assets.js';
 
 export const SCENE_REGISTRY={
- forest:{id:'forest',name:'林间来信',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[40,36,66],target:[0,0,-5],mobile:[60,106,152],mobileTarget:[0,0,-7]}},
- fuji:{id:'fuji',name:'富士樱町',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[33,33,64],target:[0,2,-5],mobile:[24,100,172],mobileTarget:[0,4,-7]}},
+ forest:{...SCENE_THEMES.forest,prepareAssets:()=>prepareSceneAssets('forest'),buildTerrain:buildForestWorld,batchForest:true,backdropGround:true,groupFocus:true,fogDensity:.0065,mobileFogDensity:.003,ariaLabel:'可拖动旋转、滚轮缩放的三维森林溪谷',background:0x203a32,hemi:0xc7e3d2,ground:0x3e5233,sun:0xffe3a1,sunIntensity:3.7,layout:{slots:GROUP_SLOTS,queue:GROUP_QUEUE,facilities:COMMUNITY_FACILITIES},camera:{position:[40,36,66],target:[0,0,-5],mobile:[60,106,152],mobileTarget:[0,0,-7]}},
+ fuji:{...SCENE_THEMES.fuji,prepareAssets:()=>prepareSceneAssets('fuji'),buildTerrain:(root,options)=>{const terrain=buildFujiScene(root,{reduced:options.reduced,assets:options.assets.models});return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:false,fogDensity:.003,ariaLabel:'可拖动旋转、滚轮缩放的富士樱町与蒸汽列车',...FUJI_VISUALS.environment,layout:FUJI_LAYOUT,camera:{position:[33,33,64],target:[0,2,-5],mobile:[24,100,172],mobileTarget:[0,4,-7]}},
+ cyber:{...SCENE_THEMES.cyber,...CYBER_VISUALS.environment,prepareAssets:()=>prepareSceneAssets('cyber'),buildTerrain:(root,options)=>{const terrain=buildCyberScene(root,{reduced:options.reduced,assets:options.assets.models});return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:false,fogDensity:.0012,mobileFogDensity:.0007,cameraFor:cityCamera,ariaLabel:'可拖动旋转、滚轮缩放的霓虹云港与巡航飞艇',layout:CYBER_LAYOUT,camera:{position:[40,35,62],target:[0,4,0],mobile:[48,93,145],mobileTarget:[0,5,0]}},
 };
 function batchForest(root,architecture,nature){
  const animated=new Set(architecture.flames||[]);for(const b of nature.butterflies||[])b.group.traverse(o=>animated.add(o));
@@ -34,16 +40,8 @@ function gatedUI(ui){let enabled=false,last={},callbacks=new Set();const off=ui.
  facade:{subscribe(fn){callbacks.add(fn);fn(enabled?last:{...last,main:'scene-loading'});return()=>callbacks.delete(fn);}},
  activate(value){enabled=value;for(const fn of callbacks)fn(enabled?last:{...last,main:'scene-loading'});},dispose(){off();callbacks.clear();},
 };}
-export async function prepareSceneWorld(id,{reduced}={}){
- const config=SCENE_REGISTRY[id];if(!config)throw Error('未知场景');
- const assets=await prepareSceneAssets(id),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
- const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
- if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
-
- let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies;
- try{
-  if(id==='fuji'){terrain=buildFujiScene(root,{reduced,assets:assets.models});landmarks=terrain.landmarks;}
-  else{
+function buildForestWorld(root,{assets,reduced}){
+ let terrain,generated,architecture,nature,landmarks,flies;
    terrain=buildTerrain(root,{rodinBridge:!!assets.props?.bridge,riverAssets:assets.props,valleyAssets:assets.valley,reduced});
    generated=placeRodinProps(root,assets.props,terrain);architecture=buildArchitecture(root,{rodin:true,expanded:true});
    nature=buildNature(root,{rodin:true,expanded:true,terrain,fallbackTrees:!assets.props.tree});
@@ -53,8 +51,18 @@ export async function prepareSceneWorld(id,{reduced}={}){
    }
    createCommunityGround(root);landmarks=buildValleyLandmarks({scene:root,terrain,generated,assets:assets.props,valleyAssets:assets.valley});
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(42*3),3));flies=new T.Points(g,new T.PointsMaterial({color:0xe6f5a3,size:.075,transparent:true,opacity:.75,depthWrite:false}));flies.name='Floating firefly lights';flies.frustumCulled=false;root.add(flies);
-  }
-  terrain.theme=id;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
+ return{terrain,generated,architecture,nature,landmarks,flies};
+}
+export async function prepareSceneWorld(id,{reduced}={}){
+ const config=SCENE_REGISTRY[id];if(!config)throw Error('未知场景');
+ const assets=await config.prepareAssets(),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
+ const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
+ if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
+
+ let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies;
+ try{
+  ({terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,flies}=config.buildTerrain(root,{assets,reduced}));
+  terrain.theme=id;terrain.layout??=config.layout;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
  }catch(error){background?.dispose();disposeSceneResources(sceneResources(root));throw error;}
  return{
   id,config,background,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
@@ -62,16 +70,16 @@ export async function prepareSceneWorld(id,{reduced}={}){
   async mount({camera,controls,renderer,ui,sound,onDiscovery,onRecord}){
    gate=gatedUI(ui);
    try{
-    discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,obstacleCache});
+    discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,templates:config.facilityTemplates,obstacleCache});
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
-    record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,externalDisposal:true});
+    record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,presentation:config.recordPresentation,externalDisposal:true});
     terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);
    }catch(error){this.dispose();throw error;}
    return this;
   },
   activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
   suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(id==='forest')batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[terrain.river?.root,terrain.train?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
+  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);frozenTransforms=freezeStaticTransforms(root,[...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)]);},
   update(now,dt,time){
    if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}

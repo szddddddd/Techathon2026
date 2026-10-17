@@ -60,7 +60,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
     const walkway=(terrain.walkways??WALKWAYS).find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
     if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
-    if(terrain.theme!=='fuji'&&Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
+    if((!terrain.theme||terrain.theme==='forest')&&Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
     if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+(manual?.15:.6)))return {ok:false,reason:'friend clearance'};
     const center=terrain.sample?.(x,z);let groundY=center?.height??2.22;
     for(let i=0;i<13;i++){
@@ -92,13 +92,14 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   return {meadows,occluders:[...occluders,...meadows],obstacles,inspect,dispose(){for(const obstacle of obstacles)for(const mesh of obstacle.solidMeshes)mesh.material.dispose();}};
 }
 
-export function pickCharacterSlots(context,friends,{random=false}={}){
+export function pickCharacterSlots(context,friends,{random=false,spawnAreas}={}){
   const result=[];
   for(const [index,friend] of friends.slice(0,FRIEND_SCENE_CAPACITY).entries()){
     const preferred=PREFERRED[friend.animal]||[-5,5],radius=friend.radius??.55;
     const candidates=[];
-    for(let z=random?-13:-9.5;z<=(random?12:9.5);z+=.65)for(let x=-15;x<=(random?29:15.5);x+=.65){
-      if(!random&&(preferred[0]<0)!==(x<0))continue;
+    const areas=spawnAreas?.length?spawnAreas:[{minX:-15,maxX:random?29:15.5,minZ:random?-13:-9.5,maxZ:random?12:9.5}];
+    for(const area of areas)for(let z=area.minZ;z<=area.maxZ;z+=.65)for(let x=area.minX;x<=area.maxX;x+=.65){
+      if(!spawnAreas?.length&&!random&&(preferred[0]<0)!==(x<0))continue;
       candidates.push({x,z,score:random?Math.random():Math.hypot(x-preferred[0],z-preferred[1])});
     }
     candidates.sort((a,b)=>a.score-b.score||a.z-b.z||a.x-b.x);
@@ -199,14 +200,14 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       let r=records.get(friend.id);if(r?.group.visible&&r.slot&&!r.slot.unplaced)continue;
       if(!r){r=create(friend);records.set(friend.id,r);}
       let slot;const custom=sceneRestoring?.get(friend.id)||(!transient&&savedPlacements[friend.id]);
-      if(custom){const candidates=[custom];if(terrain.theme==='fuji')for(let distance=.4;distance<=4.4;distance+=.4)for(let i=0;i<16;i++)candidates.push({x:custom.x+Math.cos(i*Math.PI/8)*distance,z:custom.z+Math.sin(i*Math.PI/8)*distance});for(const p of candidates){const check=inspectPlacement(r,p.x,p.z);if(check.ok){slot={id:friend.id,animal:friend.animal,...p,y:check.y,radius:r.radius,height:r.height,manualPlacement:true,placementRadius:r.bodyRadius};break;}}}
+      if(custom){const candidates=[custom];if(terrain.theme!=='forest')for(let distance=.4;distance<=4.4;distance+=.4)for(let i=0;i<16;i++)candidates.push({x:custom.x+Math.cos(i*Math.PI/8)*distance,z:custom.z+Math.sin(i*Math.PI/8)*distance});for(const p of candidates){const check=inspectPlacement(r,p.x,p.z);if(check.ok){slot={id:friend.id,animal:friend.animal,...p,y:check.y,radius:r.radius,height:r.height,manualPlacement:true,placementRadius:r.bodyRadius};break;}}}
       if(!slot){
         const reserved={inspect:(x,z,radius,others,options)=>{
           const result=context.inspect(x,z,radius,[...used,...others],options);if(!result.ok)return result;
           if(transient){if((result.normal?.y??1)<.995)return {ok:false};for(let i=0;i<8;i++){const a=i*Math.PI/4;if(Math.abs((terrain.sample?.(x+Math.cos(a)*radius*.9,z+Math.sin(a)*radius*.9).height??result.y)-result.y)>.10)return {ok:false};}const p=new THREE.Vector3(x,result.y+r.height*.6,z).project(camera);if(Math.abs(p.x)>.88||Math.abs(p.y)>.78||p.z>1||blocked(camera.position,new THREE.Vector3(x,result.y+r.height*.65,z)))return {ok:false};}
           return result;
         }};
-        slot=pickCharacterSlots(reserved,[{...friend,radius:transient?Math.max(r.radius,r.height*.65):r.radius}],{random:transient})[0];
+        slot=pickCharacterSlots(reserved,[{...friend,radius:transient?Math.max(r.radius,r.height*.65):r.radius}],{random:transient,spawnAreas:terrain.layout?.spawnAreas})[0];
       }
       r.group.visible=!slot.unplaced;r.group.scale.setScalar(1);r.slot=slot;r.transient=transient;r.pose=null;r.spawn=performance.now();
       if(!slot.unplaced){r.group.position.set(slot.x,slot.y,slot.z);resetWalk(r,slot);used.push({x:slot.x,z:slot.z,radius:slot.radius+.12});
@@ -219,7 +220,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     const ids=entries.map(e=>e.id).join('|');if(ids!==audit.rosterKey||((audit.unplaced.length||entries.some(e=>!records.has(e.id)))&&performance.now()>(audit.retryAt||0))){audit.retryAt=performance.now()+2000;audit.rosterKey=ids;sync(entries.map(e=>({...friends.find(f=>f.id===e.id),id:e.id})),{transient:true});}
     for(const e of entries){const r=records.get(e.id);if(r)r.presentation=e;}
   }
-  function blocked(from,to){const delta=to.clone().sub(from),distance=delta.length();ray.set(from,delta.normalize());ray.far=Math.max(0,distance-.12);return ray.intersectObjects(context.occluders,false).length>0;}
+  function blocked(from,to){if(terrain.isOccluded?.({position:from},to))return true;const delta=to.clone().sub(from),distance=delta.length();ray.set(from,delta.normalize());ray.far=Math.max(0,distance-.12);return ray.intersectObjects(context.occluders,false).length>0;}
   function animateCamera(position,target,done){transition={start:performance.now(),fromPosition:camera.position.clone(),fromTarget:controls.target.clone(),position,target,done};controls.enabled=false;}
   function focus(id){
     const r=records.get(id);if(!r?.group.visible||r.slot?.unplaced)return false;
@@ -241,7 +242,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     const rect=renderer.domElement.getBoundingClientRect();camera.updateMatrixWorld(true);
     ray.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,1-(y-rect.top)/rect.height*2),camera);ray.far=Infinity;
     const hit=ray.intersectObjects([...records.values()].filter(r=>r.group.visible).map(r=>r.bodyHolder),true).find(h=>h.object.isMesh);
-    if(!hit||hit.distance>(pickOccluder?.(x,y)??Infinity))return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
+    if(!hit||hit.distance>(pickOccluder?.(x,y)??Infinity)||terrain.isOccluded?.(camera,hit.point))return null;ray.far=Math.max(0,hit.distance-.02);if(ray.intersectObjects(context.occluders,false).length)return null;
     return records.get(hit.object.userData.friendId)||null;
   }
   function inspectPlacement(record,x,z){return context.inspect(x,z,characterBodyRadius(record.radius),[...records.values()].filter(r=>r!==record&&r.group.visible&&!r.slot?.unplaced&&r.slot).map(r=>({x:r.group.position.x,z:r.group.position.z,radius:Math.max(characterBodyRadius(r.radius),(r.pose?.lie||0)>.05?r.height*.65:0)})),{manual:true});}
@@ -312,7 +313,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     }
   }
   function findGatherSlot(r,used){
-    const center=terrain.layout?.gatheringCenter||{x:21,z:2};for(let i=0;i<(terrain.theme==='fuji'?192:128);i++){const a=i*2.399,radius=(terrain.theme==='fuji'?2.4:3.5)+Math.floor(i/32)*.6,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;const check=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(check.ok)return {...r.slot,x,y:check.y,z,gathering:true,manualPlacement:true,placementRadius:r.bodyRadius};}
+    const center=terrain.layout?.gatheringCenter||{x:21,z:2};for(let i=0;i<(terrain.theme==='fuji'?192:128);i++){const a=i*2.399,radius=(terrain.layout?.gatheringRadius??(terrain.theme==='fuji'?2.4:3.5))+Math.floor(i/32)*.6,x=center.x+Math.cos(a)*radius,z=center.z+Math.sin(a)*radius;const check=context.inspect(x,z,r.bodyRadius,used,{manual:true});if(check.ok)return {...r.slot,x,y:check.y,z,gathering:true,manualPlacement:true,placementRadius:r.bodyRadius};}
     return null;
   }
   function beginGather(){

@@ -1,0 +1,82 @@
+{
+  "id": "classroom",
+  "name": "未来学习中心",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "636cf538-69e3-450c-abba-dea46acabc74",
+  "parameters": {
+    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. A compact futuristic learning center: orderly rectangular window grid, cream-gray wall panels, broad ground entrance, electronic course-board housing with blank screen, small stepped roof and cyan trim. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "0a771407e1148b18aff5213042d6c8fd6e055e8379e60d53856b1bb9b8e84e9b",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber/classroom-prompt.txt",
+  "targetSize": [
+    4.4,
+    4.4,
+    3.8
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "3ed92621871d077a28f9ffd302ef4fa5f9934f7c885f273e621e49ab13d48317",
+  "bytes": 10195344,
+  "rotationY": 0,
+  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
+  "sourceSha256": "3ed92621871d077a28f9ffd302ef4fa5f9934f7c885f273e621e49ab13d48317",
+  "sceneSha256": "ee9125f2eb8c38c06dfd82a69ba654f2e1eb664ca7a423b7bcb21093893bfd48",
+  "sourceBytes": 10195344,
+  "sceneBytes": 3232948,
+  "optimization": {
+    "geometry": "unchanged source mesh (approximately 30000 triangles)",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "visualReview": {
+    "views": [
+      "preview-front.png",
+      "preview-side.png",
+      "preview-rear.png"
+    ],
+    "severeDefects": false,
+    "notes": "窗格与课程牌结构完整；侧后墙较简洁，符合小尺度街区。"
+  }
+}

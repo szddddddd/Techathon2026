@@ -40,3 +40,5 @@ Desktop.ini
 
 # Temporary capture fragments (keep named final recordings)
 validation/**/.capture-recordings/
+
+validation/**/.recordings/

@@ -1,0 +1,41 @@
+{
+  "assets": [
+    {
+      "id": "mid_commerce",
+      "sourceBytes": 9164308,
+      "sceneBytes": 3117044
+    },
+    {
+      "id": "mid_data",
+      "sourceBytes": 11598552,
+      "sceneBytes": 3742948
+    },
+    {
+      "id": "mid_housing",
+      "sourceBytes": 12038520,
+      "sceneBytes": 3834652
+    },
+    {
+      "id": "mid_office",
+      "sourceBytes": 13596068,
+      "sceneBytes": 4186848
+    },
+    {
+      "id": "spire_a",
+      "sourceBytes": 10799684,
+      "sceneBytes": 3385188
+    },
+    {
+      "id": "spire_b",
+      "sourceBytes": 11435704,
+      "sceneBytes": 3467520
+    },
+    {
+      "id": "spire_c",
+      "sourceBytes": 14799640,
+      "sceneBytes": 4603288
+    }
+  ],
+  "sourceBytes": 83432476,
+  "sceneBytes": 26337488
+}

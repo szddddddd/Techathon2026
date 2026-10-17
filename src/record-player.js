@@ -1,16 +1,18 @@
+import {createNeonFacility} from './public-facility-models.js';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {PLACEMENTS,setReservedFootprints} from './layout.js';
 import {createRecordMotion} from './record-motion.js';
 import {createRecordArm} from './record-arm.js';
 
-export async function createRecordPlayer({scene,camera,canvas,terrain,generated,ui,sound,onOpen,reduced,position,modelTemplate,externalDisposal=false}){
-  const root=new THREE.Group();root.name='Rodin woodland record player';
+export async function createRecordPlayer({scene,camera,canvas,terrain,generated,ui,sound,onOpen,reduced,position,modelTemplate,externalDisposal=false,presentation={}}){
+  const neon=terrain.theme==='cyber',title=presentation.title||(neon?'夜航音乐台':'唱片机');
+  const root=new THREE.Group();root.name=neon?'Neon listening console':'Rodin woodland record player';
   const tent=PLACEMENTS.find(p=>p.id==='tent');
   root.position.set(position?.x??(generated?tent.x+2.45:-.7),0,position?.z??(generated?tent.z+1.15:-1.2));
   root.position.y=terrain.sample(root.position.x,root.position.z).height;
   root.rotation.y=.15;
-  const model=modelTemplate?modelTemplate.clone(true):(await new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb')).scene;
+  const model=neon&&!presentation.useModel?createNeonFacility('music'):modelTemplate?modelTemplate.clone(true):(await new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb')).scene;
   if(modelTemplate)model.traverse(o=>{if(o.isMesh)o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();});
   const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
   if(!Number.isFinite(size.y)||size.y<=0)throw new Error('唱片机模型尺寸无效');
@@ -22,15 +24,15 @@ export async function createRecordPlayer({scene,camera,canvas,terrain,generated,
     if(!object.isMesh)return;
     object.castShadow=true;object.receiveShadow=true;object.userData.generatedProp=true;
     for(const material of [].concat(object.material)){
-      if(material.isMeshStandardMaterial){material.roughness=Math.max(.7,material.roughness);material.metalness=Math.min(.25,material.metalness);material.envMapIntensity=.25;material.color.multiply(new THREE.Color(0xe0d1ae));}
-      if(material.normalScale)material.normalScale.multiplyScalar(.4);
+      if(!neon&&material.isMeshStandardMaterial){material.roughness=Math.max(.7,material.roughness);material.metalness=Math.min(.25,material.metalness);material.envMapIntensity=.25;material.color.multiply(new THREE.Color(0xe0d1ae));}
+      if(!neon&&material.normalScale)material.normalScale.multiplyScalar(.4);
       if(material.map){material.map.colorSpace=THREE.SRGBColorSpace;material.map.anisotropy=4;}
     }
   });
-  const arm=createRecordArm(model);arm.update(0,false,true);
+  const arm=neon?{update(){},snapshot:()=>({lift:0,velocity:0,triangles:0})}:createRecordArm(model);arm.update(0,false,true);
   // Rodin's single mesh has no separate platter. Fit a thin rotating surface below
   // the stationary cartridge/spindle, using measured coordinates in the source GLB.
-  const disc=new THREE.Group();disc.name='Animated vinyl surface';disc.position.set(-.02,-.091,.04);model.add(disc);
+  const disc=new THREE.Group();disc.visible=!neon;disc.name='Animated vinyl surface';disc.position.set(-.02,-.091,.04);model.add(disc);
   const artwork=document.createElement('canvas');artwork.width=artwork.height=1024;
   const ctx=artwork.getContext('2d');ctx.fillStyle='#171b19';ctx.fillRect(0,0,1024,1024);
   // Quiet concentric grooves; the center logo provides the rotation cue.
@@ -58,7 +60,7 @@ export async function createRecordPlayer({scene,camera,canvas,terrain,generated,
   const motion=createRecordMotion();
   scene.add(root);root.updateMatrixWorld(true);
   if(generated){const box=new THREE.Box3().setFromObject(root);setReservedFootprints([...generated.userData.inventory.map(p=>({minX:p.bounds.min[0],maxX:p.bounds.max[0],minZ:p.bounds.min[2],maxZ:p.bounds.max[2]})),{minX:box.min.x,maxX:box.max.x,minZ:box.min.z,maxZ:box.max.z}]);}
-  const button=document.createElement('button');button.id='record-player-control';button.type='button';button.setAttribute('aria-label','唱片机：声音设置');button.className='scene-entry-icon';button.innerHTML='<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="7"/><circle cx="10" cy="12" r="2"/><path d="M20 5v10l-4 3M18 5h4"/></svg></span><span class="scene-content-copy"><strong>唱片机</strong><small>音乐与声音设置</small></span>';document.body.append(button);
+  const button=document.createElement('button');button.id='record-player-control';button.type='button';button.setAttribute('aria-label','唱片机：声音设置');button.className='scene-entry-icon';button.innerHTML='<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="7"/><circle cx="10" cy="12" r="2"/><path d="M20 5v10l-4 3M18 5h4"/></svg></span><span class="scene-content-copy"><strong>唱片机</strong><small>音乐与声音设置</small></span>';button.setAttribute('aria-label',title+'：声音设置');button.querySelector('strong').textContent=title;document.body.append(button);
   let locked=false,down=null,labelAnchor=null;const ray=new THREE.Raycaster(),pointer=new THREE.Vector2(),point=new THREE.Vector3();
   const off=ui.subscribe(s=>{locked=!!s.main||!!s.modal;button.hidden=locked;});
   const open=()=>onOpen(button);button.addEventListener('click',open);

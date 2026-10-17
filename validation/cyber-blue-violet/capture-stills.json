@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-10-17T03:10:08.484Z",
+  "fixture": "Isolated database: nine friends, twelve local groups, demo paused, all group messages read, two groups pinned",
+  "errors": [],
+  "files": [
+    "desktop.png",
+    "overhead.png",
+    "street.png",
+    "airship-follow.png",
+    "mobile.png"
+  ],
+  "audit": {
+    "environment": {
+      "exposure": 1.22,
+      "hemi": 2.4,
+      "sun": 2.5,
+      "rim": 1.2,
+      "fill": 1.15
+    },
+    "river": false,
+    "terrace": false,
+    "theme": "cyber",
+    "visualTheme": "neon-cloud-harbor",
+    "islandArea": 2447.5,
+    "groupSlots": 9,
+    "streetTrees": 12,
+    "gardens": 4,
+    "benches": 6,
+    "cars": 2,
+    "staticBuildings": 3,
+    "towers": 11,
+    "railway": false,
+    "adoptedAssets": [
+      "lab",
+      "sport",
+      "club",
+      "music",
+      "classroom",
+      "library",
+      "art",
+      "cafe",
+      "airship",
+      "observatory",
+      "dock",
+      "light_tree",
+      "drone",
+      "spire_a",
+      "spire_b",
+      "street_tree_a",
+      "street_tree_b",
+      "mid_office",
+      "mid_housing",
+      "mid_data",
+      "mid_commerce",
+      "podium_market",
+      "spire_c",
+      "hover_car",
+      "podium_arcade",
+      "cargo_ship",
+      "hover_taxi"
+    ],
+    "fallbackAssets": [],
+    "renderableAssets": [
+      "lab",
+      "sport",
+      "club",
+      "music",
+      "classroom",
+      "library",
+      "art",
+      "cafe",
+      "airship",
+      "observatory",
+      "dock",
+      "light_tree",
+      "drone",
+      "spire_a",
+      "spire_b",
+      "street_tree_a",
+      "street_tree_b",
+      "mid_office",
+      "mid_housing",
+      "mid_data",
+      "mid_commerce",
+      "podium_market",
+      "spire_c",
+      "hover_car",
+      "podium_arcade",
+      "cargo_ship",
+      "hover_taxi"
+    ],
+    "assetFailures": [],
+    "assetFallbacks": []
+  },
+  "mobile": {
+    "viewport": {
+      "width": 391,
+      "height": 844
+    },
+    "horizontalOverflow": false,
+    "sceneButton": {
+      "x": 12,
+      "y": 12,
+      "width": 48,
+      "height": 48
+    }
+  },
+  "performance": {
+    "meanMs": 16.679166666666667,
+    "p95Ms": 16.799999999999272,
+    "resources": {
+      "switches": 0,
+      "controls": {
+        "enabled": true,
+        "enableDamping": true,
+        "minDistance": 6
+      },
+      "geometries": 162,
+      "textures": 120,
+      "worldRoots": 1,
+      "assetCache": {
+        "themes": [
+          "cyber"
+        ],
+        "sharedResources": 225
+      },
+      "characters": {
+        "theme": "cyber",
+        "suspended": false,
+        "positions": {
+          "ali": {
+            "x": -17.400000000000006,
+            "z": 18.599999999999994
+          },
+          "cyber-capture-guest-0": {
+            "x": -24.050000000000004,
+            "z": -1.4999999999999982
+          },
+          "cyber-capture-guest-1": {
+            "x": 13.800000000000002,
+            "z": 17.949999999999996
+          },
+          "cyber-capture-guest-2": {
+            "x": 14.950000000000001,
+            "z": 5.8500000000000005
+          },
+          "cyber-capture-guest-3": {
+            "x": -24.700000000000003,
+            "z": 6.950000000000003
+          },
+          "cyber-capture-guest-4": {
+            "x": 16.9,
+            "z": 2.6
+          },
+          "shanshan": {
+            "x": 18.999999999999996,
+            "z": 17.299999999999997
+          },
+          "tuantuan": {
+            "x": -24.700000000000003,
+            "z": -7.35
+          },
+          "xiaomian": {
+            "x": 13.65,
+            "z": 1.3
+          }
+        },
+        "cachedThemes": [],
+        "cachedCharacters": 9,
+        "contextObstacles": 52
+      },
+      "calls": 211,
+      "triangles": 1889169
+    },
+    "characters": 9,
+    "buildings": 9
+  },
+  "limits": [
+    "391px browser emulation only; no physical mobile device test",
+    "Concept images are separate from actual app screenshots",
+    "No accelerated scene clock in the airship recording"
+  ]
+}

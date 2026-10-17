@@ -1,3 +1,4 @@
+import {createNeonFacility} from './public-facility-models.js';
 import * as THREE from 'three';
 import {createPlacementContext} from './social-characters.js';
 import {createDiscoveryPreview} from './discovery-previews.js';
@@ -5,7 +6,7 @@ import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
 import {COMMUNITY_FACILITIES} from './community-layout.js';
 
 /** Authored timber props: every board remains individually editable. */
-export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,facilities=COMMUNITY_FACILITIES,obstacleCache}){
+export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,facilities=COMMUNITY_FACILITIES,obstacleCache,templates={}}){
   const placement=createPlacementContext({scene,terrain,generated,obstacleCache});
   const holder=generated||new THREE.Group();if(!generated){holder.name='Interactive woodland facilities';scene.add(holder);}
   const mats={wood:new THREE.MeshStandardMaterial({color:0x806044,roughness:1}),edge:new THREE.MeshStandardMaterial({color:0xb99b6f,roughness:1}),cream:new THREE.MeshStandardMaterial({color:0xf0e8ca,roughness:1}),green:new THREE.MeshStandardMaterial({color:0x6a8668,roughness:1}),orange:new THREE.MeshStandardMaterial({color:0xc58f54,roughness:1}),dark:new THREE.MeshStandardMaterial({color:0x37473e,roughness:1})};
@@ -17,7 +18,7 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   }
   // Keep both facilities on the front (+Z) side of the cottage; never search behind it.
   function find(preferred,radius,used,footprint){
-    const choices=[];if(terrain.theme==='fuji'){choices.push({x:preferred[0],z:preferred[1],d:0});for(let dz=-3;dz<=3;dz+=.3)for(let dx=-3;dx<=3;dx+=.3)choices.push({x:preferred[0]+dx,z:preferred[1]+dz,d:Math.hypot(dx,dz)});}else for(let z=-9;z<=9;z+=.3)for(let x=-27;x<=-4;x+=.3){if(x>0||z < -1.5)continue;choices.push({x,z,d:Math.hypot(x-preferred[0],z-preferred[1])});}choices.sort((a,b)=>a.d-b.d);
+    const choices=[];if(terrain.theme&&terrain.theme!=='forest'){choices.push({x:preferred[0],z:preferred[1],d:0});for(let dz=-3;dz<=3;dz+=.3)for(let dx=-3;dx<=3;dx+=.3)choices.push({x:preferred[0]+dx,z:preferred[1]+dz,d:Math.hypot(dx,dz)});}else for(let z=-9;z<=9;z+=.3)for(let x=-27;x<=-4;x+=.3){if(x>0||z < -1.5)continue;choices.push({x,z,d:Math.hypot(x-preferred[0],z-preferred[1])});}choices.sort((a,b)=>a.d-b.d);
     for(const p of choices){
       if(terrain.facilitySpaceClear&&!terrain.facilitySpaceClear(p.x,p.z))continue;
       if(used.some(u=>Math.hypot(p.x-u.x,p.z-u.z)<radius+u.radius+.35))continue;
@@ -56,6 +57,14 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   const lens=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.16,12),mats.dark);lens.rotation.x=Math.PI/2;lens.position.set(.62,.55,.87);cinema.add(lens);
   for(const [x,z,c] of [[-.65,1.02,mats.orange],[-.06,1.38,mats.green]])box(cinema,'Hand stitched seat cushion',x,.1,z,.48,.18,.48,c);
   cinema.scale.setScalar(.82);
+  function replaceShell(group,kind,surface){
+    const source=templates[kind]||(terrain.theme==='cyber'?()=>createNeonFacility(kind):null);if(!source)return;
+    const old=group.children.filter(child=>child!==surface),geometries=new Set(),materials=new Set();
+    for(const child of old){child.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const m of [].concat(o.material||[]))materials.add(m);});group.remove(child);}
+    geometries.forEach(g=>g.dispose());materials.forEach(m=>{if(m.map)m.map.dispose();m.dispose();});
+    const model=typeof source==='function'?source():source.clone(true);group.add(model);
+  }
+  replaceShell(kiosk,'accounts',journalSurface);replaceShell(cinema,'scene-video',screen);
   const cinemaSpot=facilities.cinema;register(cinema,'scene-video',[cinemaSpot.x,cinemaSpot.z],1.3,[2.0,1.65,.48]);
   // Reserve the larger screen first, then stagger the journal beside the front path.
   const kioskSpot=facilities.kiosk;register(kiosk,'accounts',[kioskSpot.x,kioskSpot.z],1.1,[1.9,.9,.05]);

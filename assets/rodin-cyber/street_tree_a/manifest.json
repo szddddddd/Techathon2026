@@ -1,0 +1,82 @@
+{
+  "id": "street_tree_a",
+  "name": "舒展光纤街树",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "15bfddd0-d051-481b-aa71-cd27015ba269",
+  "parameters": {
+    "prompt": "One complete stylized miniature cyberpunk object, faithfully reconstruct the supplied image. One four-unit tall cyberpunk street tree sculpture: narrow dark silver organic branching trunk, gently spreading asymmetrical crown of connected thick blue-cyan fiber sprays with occasional soft rose tips, open lower trunk, airy legible silhouette, subtly translucent surfaces but solid geometry. Preserve silhouette, complete front/back/sides, connected solid shapes, clean textured metal, warm windows, colored trim. No background, ground plate, text, smoke, bloom halo, floating lights or baked shadows. Render-time lights will be added separately.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "782ad05b33bf5e6afe4d15ee36b42c0fb2aa2e8fad91dcf12c3022c6570c65b6",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber/street_tree_a-prompt.txt",
+  "targetSize": [
+    2.4,
+    4,
+    2.4
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "0f6171ba42b6ce7a71599c851eada34797f5e434169b15b3ab045e22c610e74a",
+  "bytes": 11889980,
+  "rotationY": 0,
+  "adoption": "adopted after front/side/rear inspection; scene integration validated separately",
+  "sourceSha256": "0f6171ba42b6ce7a71599c851eada34797f5e434169b15b3ab045e22c610e74a",
+  "sceneSha256": "c6d41395476cdbd7c9d6b5eb730d33ca580a5cebb66207817c7cf0b9b2021f62",
+  "sourceBytes": 11889980,
+  "sceneBytes": 4454976,
+  "optimization": {
+    "geometry": "unchanged source mesh (approximately 30000 triangles)",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "visualReview": {
+    "views": [
+      "preview-front.png",
+      "preview-side.png",
+      "preview-rear.png"
+    ],
+    "severeDefects": false,
+    "notes": "分层冠与连接枝干完整，纤维喷束被简化为密集冠簇。"
+  }
+}

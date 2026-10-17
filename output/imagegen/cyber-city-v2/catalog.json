@@ -1,0 +1,122 @@
+[
+  {
+    "id": "spire_a",
+    "name": "云脊企业总部",
+    "size": [
+      6,
+      62,
+      5
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. An extremely tall slender corporate megatower, height ten times base width, dark concrete and graphite metal, five stepped setbacks, offset exposed elevator core, equipment spine, split double-blade crown, distinct six-story retail base."
+  },
+  {
+    "id": "spire_b",
+    "name": "棱镜金融塔",
+    "size": [
+      5,
+      54,
+      4.5
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. An extremely tall slender financial megatower, height eleven times width, blue-black glass, asymmetrical suspended office boxes, clear structural frame, stepped rooftop crown, recessed machinery floors, restrained cyan strips."
+  },
+  {
+    "id": "spire_c",
+    "name": "垂直居住巨构",
+    "size": [
+      5,
+      46,
+      4
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A slender immense residential megabuilding, height nine times width, stacked apartment blocks, irregular inset balconies, exposed service pipes, orange apartment windows, central open mechanical belt, rooftop antenna cluster."
+  },
+  {
+    "id": "mid_office",
+    "name": "设备办公楼",
+    "size": [
+      3.4,
+      22,
+      3.4
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A slender tall equipment office tower, height six times width, concrete frame, setback roof terraces, external cooling equipment and vertical narrow glazing."
+  },
+  {
+    "id": "mid_housing",
+    "name": "堆叠住宅楼",
+    "size": [
+      3.6,
+      28,
+      3.4
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A tall slender stacked residential tower, height eight times width, alternating apartment modules and recessed service balconies, warm inhabited windows."
+  },
+  {
+    "id": "mid_data",
+    "name": "工业数据楼",
+    "size": [
+      3.8,
+      32,
+      3.6
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A tall narrow industrial data center tower, height eight times width, graphite metal cladding, cooling fins, large machinery waist, sparse cyan status lights, no giant billboard."
+  },
+  {
+    "id": "mid_commerce",
+    "name": "垂直商业楼",
+    "size": [
+      3.6,
+      26,
+      3.2
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. A slender tall vertical commercial tower, height seven times width, layered retail floors with restrained neon sign strips and staggered terraces."
+  },
+  {
+    "id": "podium_market",
+    "name": "商业街裙楼",
+    "size": [
+      4.7,
+      3.5,
+      1.4
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One narrow-depth multi-story cyberpunk street shop block, width 4.7 height 3.5 depth 1.4, warm restaurant windows, rain canopy, modular flat back wall for attachment to tower, metal service boxes and small unlettered signs."
+  },
+  {
+    "id": "podium_arcade",
+    "name": "骑楼商业裙楼",
+    "size": [
+      4.5,
+      3.4,
+      1.3
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One narrow-depth commercial arcade block, width 4.5 height 3.4 depth 1.3, concrete columns, warm shop windows, recessed entrances, layered awnings, modular flat back wall."
+  },
+  {
+    "id": "hover_taxi",
+    "name": "悬浮出租车",
+    "size": [
+      2.8,
+      1.05,
+      1.3
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One compact futuristic hovering taxi with no wheels, warm amber graphite body, small blue propulsion pods, glazed canopy, nose pointing toward right, readable solid body."
+  },
+  {
+    "id": "hover_car",
+    "name": "悬浮通勤车",
+    "size": [
+      3.1,
+      0.95,
+      1.4
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One sleek compact futuristic hovering commuter car, no wheels, graphite silver body, cyan headlights, magenta rear running lights, two side thruster pods, nose pointing right."
+  },
+  {
+    "id": "cargo_ship",
+    "name": "小型货运飞船",
+    "size": [
+      4.8,
+      1.8,
+      2.3
+    ],
+    "rodinPrompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. One small industrial cargo spacecraft, compact wide hull, visible cargo container bay, four angular propulsion units, orange industrial markings, pilot cockpit at right-facing nose, no wings wider than body."
+  }
+]

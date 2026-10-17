@@ -1,3 +1,9 @@
+import {applyCyberFacadePalette} from './cyber-facade-palette.js';
+import {extendCityFloors} from './cyber-city-geometry.js';
+import {CITY_ASSETS} from './cyber-city-layout.js';
+import {createCityModel} from './cyber-city-models.js';
+import {applyCyberWindowLights} from './cyber-window-lights.js';
+import {createCyberBuilding,createCyberProp,CYBER_ASSET_DIMENSIONS} from './cyber-building-models.js';
 import {FUJI_VISUALS} from './fuji-visuals.js';
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -34,9 +40,31 @@ export function normalizeSceneAsset(model,key,{rotation=0,sourceFolder=key}={}){
      for(const m of [].concat(o.material)){m.roughness=.94;m.metalness=0;if(m.map){m.map.colorSpace=T.SRGBColorSpace;m.map.anisotropy=4;}}
     });return holder;
 }
+export const CYBER_ASSET_SIZES={...CYBER_ASSET_DIMENSIONS,...CITY_ASSETS};
+export function normalizeCyberAsset(model,key,manifest={}){
+ model.rotation.y=manifest.rotationY??manifest.normalization?.rotationY??0;model.updateMatrixWorld(true);
+ const box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),limits=CYBER_ASSET_SIZES[key];
+ if(!limits||Math.min(size.x,size.y,size.z)<1e-6)throw Error('Invalid cyber model: '+key);
+ if(CITY_ASSETS[key]&&!/hover|cargo/.test(key)){model=extendCityFloors(model,limits);model.updateMatrixWorld(true);box.setFromObject(model);box.getSize(size);box.getCenter(center);}
+ model.position.sub(new T.Vector3(center.x,box.min.y,center.z));
+ const root=new T.Group();root.name='Rodin Cyber · '+key;root.add(model);root.scale.setScalar(Math.min(...limits.map((n,i)=>n/[size.x,size.y,size.z][i])));root.userData.assetKey=key;root.userData.provider='rodin';
+ model.traverse(o=>{if(!o.isMesh)return;o.castShadow=o.receiveShadow=true;o.userData.generatedProp=true;o.material=[].concat(o.material).map(m=>{const c=m.clone();c.roughness=.55;c.metalness=.18;if(c.map){c.map.colorSpace=T.SRGBColorSpace;c.map.anisotropy=4;}return c;});if(o.material.length===1)o.material=o.material[0];});
+ applyCyberWindowLights(root,key);applyCyberFacadePalette(root,key);return root;
+}
+async function loadCyberAssets(){
+ const loader=new GLTFLoader(),models={},failures=[],fallbacks=[];
+ await Promise.all(Object.keys(CYBER_ASSET_SIZES).map(async key=>{
+  try{const folder=`assets/${CITY_ASSETS[key]?'rodin-cyber-city-v2':'rodin-cyber'}/${key}`,manifest=await fetch(folder+'/manifest.json').then(r=>r.ok?r.json():{});if(manifest.adoption?.startsWith?.('rejected'))throw Error('Rejected asset');const gltf=await loader.loadAsync(folder+'/scene.glb');models[key]=retain(normalizeCyberAsset(gltf.scene,key,manifest));}
+  catch{failures.push(key);fallbacks.push({key,used:'procedural'});models[key]=retain(CITY_ASSETS[key]?createCityModel(key):['club','classroom','sport','lab','library','music','art','cafe','observatory'].includes(key)?createCyberBuilding(key):createCyberProp(key));}
+ }));
+ const groups=await loadGroupTemplates({theme:'cyber',createTemplate:key=>models[key],onLoad:retain});groups.failures=failures.filter(key=>['club','classroom','sport','lab','library','music','art','cafe','observatory'].includes(key));
+ return{models,groups,recordModel:null,failures,fallbacks};
+}
 export async function prepareSceneAssets(id){
  if(cache.has(id))return cache.get(id);
  const request=(async()=>{
+  if(id==='cyber')return loadCyberAssets();
+  if(!['forest','fuji'].includes(id))throw Error('Unknown scene assets: '+id);
   recordCache||=new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb').then(g=>retain(g.scene)).catch(error=>{recordCache=null;throw error;});
   const recordModel=await recordCache;
   if(id==='forest'){

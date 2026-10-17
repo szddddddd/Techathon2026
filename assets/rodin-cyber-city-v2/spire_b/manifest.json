@@ -1,0 +1,74 @@
+{
+  "id": "spire_b",
+  "name": "棱镜金融塔",
+  "provider": "Hyper3D MCP OAuth",
+  "generationId": "03b281b3-0535-4dfd-9ec9-20be03064e73",
+  "parameters": {
+    "prompt": "Create the complete isolated object from the reference. Preserve the proportions and architectural silhouette, complete front sides and back, watertight solid forms, flat attachment base. No ground, background, characters, baked lighting or floating effects. An extremely tall slender financial megatower, height eleven times width, blue-black glass, asymmetrical suspended office boxes, clear structural frame, stepped rooftop crown, recessed machinery floors, restrained cyan strips.",
+    "tier": "Gen-2.5-Medium",
+    "mesh_mode": "Raw",
+    "quality_override": 30000,
+    "geometry_file_format": "glb",
+    "texture_delight": true
+  },
+  "reference": "reference.png",
+  "referenceSha256": "9c79f3ce41c763ebb404e92aa9a7b2739674616952eac7b8f5a55343771f1578",
+  "imageProvider": "project configured OpenAI-compatible gpt-image-2 via bundled imagegen CLI",
+  "imagePrompt": "../../../output/imagegen/cyber-city-v2/spire_b-prompt.txt",
+  "targetSize": [
+    5,
+    54,
+    4.5
+  ],
+  "original": "source.glb",
+  "scene": "scene.glb",
+  "sha256": "9e02fbecf2c30e1764876afeb42056962a35b897dcfdd9bbb0dcacddf749eabd",
+  "bytes": 11435704,
+  "rotationY": 0,
+  "adoption": "adopted after front, side and rear inspection; runtime architecture floor assembly preserves window proportions",
+  "sourceSha256": "9e02fbecf2c30e1764876afeb42056962a35b897dcfdd9bbb0dcacddf749eabd",
+  "sceneSha256": "79a59fe0d194ba7ca22421aa385d4b72a7d9fd2224f41d98efcde3167afff55d",
+  "sourceBytes": 11435704,
+  "sceneBytes": 3008292,
+  "optimization": {
+    "geometry": "gltf-transform 4.5.1 meshoptimizer simplify ratio 0.45 error 0.002; original and pre-simplification scene-detail.glb retained",
+    "textures": [
+      {
+        "name": "texture_normal",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_diffuse",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "name": "texture_metallic-texture_roughness",
+        "source": [
+          2048,
+          2048
+        ],
+        "scene": [
+          1024,
+          1024
+        ]
+      }
+    ],
+    "diffuse": "JPEG quality 93, no chroma subsampling",
+    "normalAndMetalRough": "PNG"
+  },
+  "runtimeAssembly": "Architectural core floor bands clipped and repeated to design height without stretching windows; vehicle meshes remain single models"
+}

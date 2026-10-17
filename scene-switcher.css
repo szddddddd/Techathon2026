@@ -29,3 +29,5 @@
 #scene-switcher[data-expanded=false] .scene-switcher-track{background:radial-gradient(ellipse at 28% 18%,#ffffffa0,transparent 55%),linear-gradient(145deg,#ffffff52,#e8ede725);box-shadow:0 8px 22px #223b3030,inset 0 1px 2px #fff,inset 0 -2px 4px #ffffff55}
 #scene-switcher[data-reduced=true],#scene-switcher[data-reduced=true] :is(.scene-switcher-name,.scene-switcher-caption){transition:none}
 @media(prefers-reduced-motion:reduce){#scene-switcher,.scene-switcher-name,.scene-switcher-caption{transition:none}}
+
+.scene-switcher-atmosphere-cyber{left:-12%;opacity:0}#scene-switcher[data-shown=cyber] .scene-switcher-atmosphere-cyber{opacity:1}#scene-switcher[data-shown=cyber] .scene-switcher-icon{color:#566e94}

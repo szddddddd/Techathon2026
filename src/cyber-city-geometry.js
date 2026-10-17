@@ -1,0 +1,13 @@
+import * as T from 'three';
+// Extend architectural floor bands, not window aspect ratios. Original GLBs remain untouched.
+function clipGeometry(source,lo,hi){const attrs=Object.entries(source.attributes).filter(([k])=>['position','normal','uv','color'].includes(k)),output=Object.fromEntries(attrs.map(([k])=>[k,[]])),index=source.index,count=index?.count||source.attributes.position.count;
+ const vertex=i=>Object.fromEntries(attrs.map(([k,a])=>[k,Array.from({length:a.itemSize},(_,j)=>a.getComponent(i,j))]));
+ const cut=(poly,y,above)=>{const out=[];for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ai=above?a.position[1]>=y:a.position[1]<=y,bi=above?b.position[1]>=y:b.position[1]<=y;if(ai)out.push(a);if(ai!==bi){const t=(y-a.position[1])/(b.position[1]-a.position[1]);out.push(Object.fromEntries(attrs.map(([k])=>[k,a[k].map((v,j)=>v+(b[k][j]-v)*t)])));}}return out;};
+ for(let i=0;i<count;i+=3){let poly=[0,1,2].map(j=>vertex(index?index.getX(i+j):i+j));poly=cut(cut(poly,lo,true),hi,false);for(let j=1;j+1<poly.length;j++)for(const v of[poly[0],poly[j],poly[j+1]])for(const[k]of attrs)output[k].push(...v[k]);}
+ const g=new T.BufferGeometry();for(const[k,a]of attrs)g.setAttribute(k,new T.Float32BufferAttribute(output[k],a.itemSize));return g;}
+export function extendCityFloors(model,limits){model.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(model),size=bounds.getSize(new T.Vector3()),center=bounds.getCenter(new T.Vector3()),scale=Math.min(limits[0]/size.x,limits[2]/size.z),height=size.y*scale,target=limits[1],root=new T.Group();
+ const lo=height*.18,hi=height*.78,core=hi-lo,upper=height-hi;let intervals;
+ if(target<=height*1.12){intervals=[{lo:0,hi:height,y:0}];}
+ else{intervals=[{lo:0,hi:lo,y:0}];let y=lo;while(y<target-upper-.001){const length=Math.min(core,target-upper-y);intervals.push({lo,hi:lo+length,y:y-lo});y+=length;}intervals.push({lo:hi,hi:height,y:target-upper-hi});}
+ model.traverse(o=>{if(!o.isMesh)return;const raw=o.geometry.clone().applyMatrix4(o.matrixWorld),p=raw.attributes.position;for(let i=0;i<p.count;i++)p.setXYZ(i,(p.getX(i)-center.x)*scale,(p.getY(i)-bounds.min.y)*scale,(p.getZ(i)-center.z)*scale);raw.computeBoundingBox();raw.computeBoundingSphere();for(const band of intervals){const g=intervals.length===1?raw.clone():clipGeometry(raw,band.lo,band.hi),mesh=new T.Mesh(g,o.material);mesh.position.y=band.y;mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);}raw.dispose();});
+ if(intervals.length===1)root.scale.setScalar(Math.min(1,target/height));root.userData.floorAssembly={sourceHeight:height,targetHeight:target,bands:intervals.length,method:'repeat clipped floor bands; preserve window proportions'};return root;}

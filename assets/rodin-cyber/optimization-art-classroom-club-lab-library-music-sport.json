@@ -1,0 +1,41 @@
+{
+  "assets": [
+    {
+      "id": "art",
+      "sourceBytes": 9587340,
+      "sceneBytes": 3326044
+    },
+    {
+      "id": "classroom",
+      "sourceBytes": 10195344,
+      "sceneBytes": 3232948
+    },
+    {
+      "id": "club",
+      "sourceBytes": 10285492,
+      "sceneBytes": 3364232
+    },
+    {
+      "id": "lab",
+      "sourceBytes": 9341312,
+      "sceneBytes": 3176924
+    },
+    {
+      "id": "library",
+      "sourceBytes": 8611612,
+      "sceneBytes": 2869456
+    },
+    {
+      "id": "music",
+      "sourceBytes": 7692176,
+      "sceneBytes": 2569296
+    },
+    {
+      "id": "sport",
+      "sourceBytes": 9224396,
+      "sceneBytes": 3021720
+    }
+  ],
+  "sourceBytes": 64937672,
+  "sceneBytes": 21560620
+}
