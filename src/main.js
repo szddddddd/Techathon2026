@@ -34,7 +34,10 @@ async function boot(){
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(37,innerWidth/innerHeight,.1,500);
  const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!captureIndex});
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;$('viewport').append(renderer.domElement);
- const controls=new OrbitControls(camera,renderer.domElement);Object.assign(controls,{enableDamping:true,dampingFactor:.065,minDistance:6,maxDistance:240,maxPolarAngle:Math.PI*.485,minPolarAngle:.15,autoRotateSpeed:.35,enablePan:true});
+ // Register before any async loading so startup resizes cannot leave a stale canvas.
+  function resizeViewport(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);}
+  window.addEventListener('resize',resizeViewport);
+  const controls=new OrbitControls(camera,renderer.domElement);Object.assign(controls,{enableDamping:true,dampingFactor:.065,minDistance:6,maxDistance:240,maxPolarAngle:Math.PI*.485,minPolarAngle:.15,autoRotateSpeed:.35,enablePan:true});
  const hemi=new T.HemisphereLight(0xc7e3d2,0x3e5233,2.2),sun=new T.DirectionalLight(0xffe3a1,3.7),rim=new T.DirectionalLight(0x9acbc5,1.2),fill=new T.DirectionalLight(0x9bb6ad,.8);
  sun.position.set(-18,36,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-42,right:42,top:42,bottom:-42,near:1,far:110});sun.shadow.bias=-.0004;sun.shadow.normalBias=.045;sun.shadow.radius=3;rim.position.set(12,8,-15);fill.position.set(-12,-10,22);scene.add(hemi,sun,rim,fill);
  const ground=new T.Mesh(new T.PlaneGeometry(1000,1000),new T.MeshStandardMaterial({color:0x263f33,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-25;ground.name='Distant ground beneath floating island';scene.add(ground);
@@ -60,15 +63,16 @@ async function boot(){
   camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(orbit));camera.lookAt(controls.target);
   if(t===1){camera.position.copy(a.toPosition);controls.target.copy(a.toTarget);cancelReset();}
  }
- function smoothResetCamera(){
+ function defaultCamera(config=world.config){return config.cameraFor?.(innerWidth,innerHeight)||config.camera;}
+  function smoothResetCamera(){
   if(reduced.matches){resetCamera();return;}
-  const c=world.config.cameraFor?.(innerWidth,innerHeight)||world.config.camera,mobile=innerWidth<700,toPosition=new T.Vector3().fromArray(mobile?c.mobile:c.position),toTarget=new T.Vector3().fromArray(mobile?c.mobileTarget:c.target);
+  const c=defaultCamera(),mobile=innerWidth<700,toPosition=new T.Vector3().fromArray(mobile?c.mobile:c.position),toTarget=new T.Vector3().fromArray(mobile?c.mobileTarget:c.target);
   const position=camera.position.clone(),target=controls.target.clone(),damping=controls.enableDamping;
   controls.enableDamping=false;controls.update();camera.position.copy(position);controls.target.copy(target);controls.update();controls.enableDamping=damping;
   const from=new T.Spherical().setFromVector3(position.clone().sub(target)),to=new T.Spherical().setFromVector3(toPosition.clone().sub(toTarget));
   resetTween={start:performance.now(),target,toTarget,toPosition,from,to,angle:Math.atan2(Math.sin(to.theta-from.theta),Math.cos(to.theta-from.theta))};
  }
- const resetCamera=()=>{cancelReset();const c=world.config.cameraFor?.(innerWidth,innerHeight)||world.config.camera,mobile=innerWidth<700,damping=controls.enableDamping;controls.enableDamping=false;controls.update();camera.position.fromArray(mobile?c.mobile:c.position);controls.target.fromArray(mobile?c.mobileTarget:c.target);controls.enabled=true;controls.update();controls.enableDamping=damping;};
+ const resetCamera=()=>{cancelReset();const c=defaultCamera(),mobile=innerWidth<700,damping=controls.enableDamping;controls.enableDamping=false;controls.update();camera.position.fromArray(mobile?c.mobile:c.position);controls.target.fromArray(mobile?c.mobileTarget:c.target);controls.enabled=true;controls.update();controls.enableDamping=damping;};
  applyEnvironment();resetCamera();window.__cameraPanBounds=constrainCameraPan(controls,camera,{getBounds:()=>world.terrain.bounds});
  characters=await createCharacters({scene,camera,controls,renderer,terrain:world.terrain,generated:world.generated,obstacleCache:world.obstacleCache,reduced,pickOccluder:(x,y)=>groupBuildings?.hit(x,y)?.distance,onSelect:id=>socialUI?.openFriend(id),onPlace:(id,position)=>store?.setCharacterPosition(id,position),onPlacementError:message=>socialUI?.toast(message)});
  socialUI=captureIndex?{update(){},activeFriend:null}:createSocialUI({store,characters,controls,ui,onGroupSceneClose:immediate=>groupCamera.close(immediate),getAnchorObstacles:()=>[],onOpenSound:origin=>soundSettings.open(origin),onMountPet:container=>window.__webPet?.mount(container)});
@@ -108,12 +112,12 @@ async function boot(){
    await fadeCanvas(1,0);
    if(boards?.kind){contentUI.detachScene();boards.dismiss();old.discovery.update(performance.now()+10);}
    committing=true;characters.suspend(true);groupBuildings.suspend(true);controls.enabled=false;
-   cameraPoses.set(old.id,snapshotPose());const nextPose=cameraPoses.get(id);
-   if(nextPose){camera.position.copy(nextPose.position);controls.target.copy(nextPose.target);}else{const c=candidate.config.camera;camera.position.fromArray(innerWidth<700?c.mobile:c.position);controls.target.fromArray(innerWidth<700?c.mobileTarget:c.target);}camera.lookAt(controls.target);camera.updateMatrixWorld(true);
+   cameraPoses.set(old.id,snapshotPose());
+   {const c=defaultCamera(candidate.config);camera.position.fromArray(innerWidth<700?c.mobile:c.position);controls.target.fromArray(innerWidth<700?c.mobileTarget:c.target);}camera.lookAt(controls.target);camera.updateMatrixWorld(true);
    characters.setScene({scene,terrain:candidate.terrain,generated:candidate.generated,obstacleCache:candidate.obstacleCache});rebound=true;
    groupBuildings.setScene({scene,slots:candidate.layout.slots,queue:candidate.layout.queue,templates:candidate.assets.groups,theme:id});
    boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();soundCamera.close(true);controllersReleased=true;
-   old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();
+   old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();resetCamera();
    characters.suspend(false);groupBuildings.suspend(false);controls.enabled=true;
    socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);renderer.render(scene,camera);
    try{localStorage.setItem(SCENE_STORAGE_KEY,id);}catch{}const url=new URL(location.href);url.searchParams.set('scene',id);history.replaceState(null,'',url.href);
@@ -139,8 +143,10 @@ async function boot(){
   if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
   renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
  }
- let wasMobile=innerWidth<700;
- window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
+ // Reconcile the initial pose after the final awaited model loads as well.
+  resizeViewport();resetCamera();
+  let wasMobile=innerWidth<700;
+ window.addEventListener('resize',()=>{if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
  window.addEventListener('keydown',e=>{if(e.defaultPrevented||e.target.closest('input,textarea,select,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Escape'){if(e.repeat||switching||roam?.busy||trainFollow?.busy||groupCamera.busy||uiState.main||uiState.modal)return;smoothResetCamera();e.preventDefault();return;}if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){cancelReset();const s=new T.Spherical().setFromVector3(camera.position.clone().sub(controls.target));if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(['+','='].includes(e.key))s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=T.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=T.MathUtils.clamp(s.radius,6,controls.maxDistance);camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
  $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);frameId=requestAnimationFrame(frame);
  window.addEventListener('webglcontextlost',e=>{e.preventDefault();console.warn('WebGL context lost; reload to restore the scene.');});
@@ -151,4 +157,4 @@ async function boot(){
   window.__capture={ready:true,audit:world.discovery.audit,async record(index=captureIndex,duration=12000){view(index);await new Promise(r=>setTimeout(r,1000));const poster=renderer.domElement.toDataURL('image/jpeg',.88).split(',')[1],stream=renderer.domElement.captureStream(24),mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(t=>MediaRecorder.isTypeSupported(t)),recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2200000}),chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const done=new Promise(resolve=>recorder.onstop=resolve);recorder.start(1000);await new Promise(r=>setTimeout(r,duration));recorder.stop();await done;stream.getTracks().forEach(t=>t.stop());return{video:await base64(new Blob(chunks,{type:mime})),poster,mime,duration};}};$('viewport').dataset.captureReady='true';
  }
 }
-boot().catch(error=>{console.error(error);const notice=curtain('这处风景暂时没能加载');notice.dataset.failed='true';notice.querySelector('span:last-of-type').textContent='请重试，或先返回林间来信。';for(const[label,action]of[['重新加载',()=>location.reload()],['返回林间来信',()=>{try{localStorage.setItem(SCENE_STORAGE_KEY,'forest');}catch{}const url=new URL(location.href);url.searchParams.set('scene','forest');location.assign(url.href);}]]){const b=document.createElement('button');b.textContent=label;b.onclick=action;notice.append(b);}});
+boot().then(()=>requestAnimationFrame(()=>document.getElementById('startup-loading')?.remove())).catch(error=>{document.getElementById('startup-loading')?.remove();console.error(error);const notice=curtain('这处风景暂时没能加载');notice.dataset.failed='true';notice.querySelector('span:last-of-type').textContent='请重试，或先返回林间来信。';for(const[label,action]of[['重新加载',()=>location.reload()],['返回林间来信',()=>{try{localStorage.setItem(SCENE_STORAGE_KEY,'forest');}catch{}const url=new URL(location.href);url.searchParams.set('scene','forest');location.assign(url.href);}]]){const b=document.createElement('button');b.textContent=label;b.onclick=action;notice.append(b);}});

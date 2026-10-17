@@ -1,0 +1,14 @@
+/* Match the scene-travel typography, icon tile and quiet progress indicator. */
+#startup-loading{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;background:#203a32;color:#f1f4e7;font-family:var(--ui-font,-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif)}
+#startup-loading .scene-travel-content{max-width:calc(100vw - 56px)}
+#startup-loading i{width:60px;height:60px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:22px;background:#ffffff16;box-shadow:0 10px 40px #112c3220}
+#startup-loading i svg{width:36px;height:36px}
+#startup-loading strong{font-family:inherit;font-size:26px;font-weight:550;letter-spacing:.12em;line-height:1.5}
+#startup-loading p{margin:0;font-family:inherit;line-height:1.6}
+#startup-loading .scene-travel-progress{background:#ffffff30}
+#startup-loading[data-theme=fuji] i{background:#ffffff40;border-color:#ffffff90}
+#startup-loading[data-theme=fuji] .scene-travel-progress{background:#ffffff30}
+/* Shared with scene travel: match the island backdrop, including its 60% stop. */
+#startup-loading,.scene-travel[data-destination=forest]{background:linear-gradient(180deg,#203a32 0%,#203a32 60%,#263f33 100%);color:#f1f4e7}
+#startup-loading[data-theme=fuji],.scene-travel[data-destination=fuji]{background:linear-gradient(180deg,#9c89aa 0%,#b797ac 60%,#c5a2b2 100%);color:#fff9f7}
+#startup-loading[data-theme=cyber],.scene-travel[data-destination=cyber]{background:linear-gradient(180deg,#1c2439 0%,#343650 60%,#71627e 100%);color:#edf3ff}

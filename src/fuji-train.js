@@ -52,6 +52,18 @@ export function createFujiTrain(parent,{reduced=false,assets={}}={}){
   }
 
 
+  // Query the live gate transforms: raised and lowering arms cannot use the static terrain cache.
+  const gateBounds=new T.Box3(),gatePoint=new T.Vector2();
+  function canPlace(x,z,radius=.65){
+    gateRoot.updateWorldMatrix(true,true);let clear=true;
+    for(const post of gateRoot.children.filter(o=>o.isGroup))post.traverse(o=>{
+      if(!clear||!o.isMesh)return;
+      gateBounds.setFromObject(o);
+      if(gateBounds.max.y<2.28||gateBounds.min.y>4.45)return;
+      gatePoint.set(Math.max(gateBounds.min.x,Math.min(x,gateBounds.max.x)),Math.max(gateBounds.min.z,Math.min(z,gateBounds.max.z)));
+      if(Math.hypot(x-gatePoint.x,z-gatePoint.y)<radius+.06)clear=false;
+    });return clear;
+  }
   const wheels=[],vehicles=[],pickables=[],rods=[];let chimneyHeight=1.95;
   function wheel(parent,x,r=.3){for(const z of[-FUJI_CARRIAGE.wheelOffset,FUJI_CARRIAGE.wheelOffset]){const w=new T.Group();w.position.set(x,r,z);parent.add(w);addMesh(w,'Locomotive wheel',new T.CylinderGeometry(r,r,.13,12),M.dark).rotation.x=Math.PI/2;addMesh(w,'Polished wheel hub',new T.CylinderGeometry(.075,.075,.16,8),M.brass).rotation.x=Math.PI/2;for(let i=0;i<6;i++){const s=box(w,'Wheel spoke',0,0,z>0?.083:-.083,r*1.65,.025,.025,M.brass);s.rotation.z=i*Math.PI/3;}batch(w);wheels.push({node:w,radius:r});}}
   function makeVehicle(key,index){
@@ -117,7 +129,7 @@ export function createFujiTrain(parent,{reduced=false,assets={}}={}){
   }
   update(0,0);
   const target=()=>vehicles[0].position.clone().add(new T.Vector3(0,1.05,0));
-  return{root,pickables,containsVisiblePoint:p=>p.clone().sub(portalA).dot(ta)>=0&&p.clone().sub(portalB).dot(tb)<=0,followTarget:target,getTarget:target,stationTarget:new T.Vector3(FUJI_LAYOUT.station.x,3.7,FUJI_LAYOUT.station.z),update,curve,crossing,
+  return{root,pickables,canPlace,containsVisiblePoint:p=>p.clone().sub(portalA).dot(ta)>=0&&p.clone().sub(portalB).dot(tb)<=0,followTarget:target,getTarget:target,stationTarget:new T.Vector3(FUJI_LAYOUT.station.x,3.7,FUJI_LAYOUT.station.z),update,curve,crossing,
     snapshot:()=>({fences:{sections:fenceSections.length,panels:fenceSections.reduce((n,s)=>n+s.points.length-1,0),openingWidth:RAIL_FENCE.opening*2,height:RAIL_FENCE.height},trainX:vehicles[0].position.x,trainZ:vehicles[0].position.z,animationTime:elapsed,distance,stopped,holding,crossing:crossing.snapshot(),steamVisible:steam.visible,cycleSeconds:duration,stationSeconds:stopSeconds,easingSeconds:ramp,arrivalSeconds:arrival,carriageDimensions:{...FUJI_CARRIAGE},carriagePositions:vehicles.map(g=>g.position.toArray()),reduced:isReduced(),assets:{locomotive:!!assets.locomotive,carriage:!!assets.carriage,track:!!assets.track,gate:!!assets.gate}}),
     dispose(){if(disposed)return;disposed=true;root.removeFromParent();},
   };

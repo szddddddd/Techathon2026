@@ -62,6 +62,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
     if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
     if((!terrain.theme||terrain.theme==='forest')&&Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
     if(used.some(p=>Math.hypot(p.x-x,p.z-z)<p.radius+radius+(manual?.15:.6)))return {ok:false,reason:'friend clearance'};
+    if(terrain.canPlace&&!terrain.canPlace(x,z,radius))return {ok:false,reason:'crossing barrier'};
     const center=terrain.sample?.(x,z);let groundY=center?.height??2.22;
     for(let i=0;i<13;i++){
       const r=i?radius+(manual?.02:.12):0,a=(i-1)/12*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
@@ -309,7 +310,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       r.group.updateMatrixWorld(true);
       const anchor=r.pose.anchor;const world=r.group.position.clone().add(new THREE.Vector3(anchor.x,anchor.y,anchor.z));
       if(checkOcclusion)r.occluded=blocked(camera.position,r.group.position.clone().add(new THREE.Vector3(0,r.height*.7,0)));
-      const p=world.project(camera);anchors.push({id,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder,alpha:displayAlpha,phase:r.presentation.phase,pose:r.pose.kind});
+      const bounds=r.pose.bounds;let headY=Infinity;for(const x of [bounds.minX,bounds.maxX])for(const y of [bounds.minY,bounds.maxY])for(const z of [bounds.minZ,bounds.maxZ]){const corner=r.group.localToWorld(new THREE.Vector3(x,y+bounds.groundOffset,z)).project(camera);headY=Math.min(headY,(-.5*corner.y+.5)*rect.height);}const p=world.project(camera);anchors.push({id,headY:headY-6,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder,alpha:displayAlpha,phase:r.presentation.phase,pose:r.pose.kind});
     }
   }
   function findGatherSlot(r,used){

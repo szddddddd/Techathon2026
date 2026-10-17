@@ -130,7 +130,7 @@ function createPetWindow() {
   petWindow = new BrowserWindow({ width: size, height: size, useContentSize: true, x: area.x + area.width - size - 28, y: area.y + area.height - size - 28, frame: false, transparent: true, backgroundColor: '#00000000', resizable: false, movable: true, skipTaskbar: true, alwaysOnTop: settings.alwaysOnTop, hasShadow: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false } });
   secureWindow(petWindow);
   petWindow.webContents.on('did-finish-load', broadcast);
-  petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(settings.petMode) + '&scene=' + (latestState.sceneId === 'fuji' ? 'fuji' : 'forest'));
+  petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(settings.petMode) + '&scene=' + (['forest','fuji','cyber'].includes(latestState.sceneId) ? latestState.sceneId : 'forest'));
   petWindow.setAlwaysOnTop(!!settings.alwaysOnTop, 'floating');
   petWindow.on('will-resize', event => {
     if (!petSizeChangeInProgress) event.preventDefault();
@@ -160,7 +160,7 @@ function setPetMode(mode) {
   if (petWindow && !petWindow.isDestroyed()) {
     petSizeChangeInProgress = true;
     petWindow.setContentSize(settings.size, settings.size);
-    petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(mode) + '&scene=' + (latestState.sceneId === 'fuji' ? 'fuji' : 'forest'));
+    petWindow.loadURL(webBridge.origin + '/pet.html?mode=' + encodeURIComponent(mode) + '&scene=' + (['forest','fuji','cyber'].includes(latestState.sceneId) ? latestState.sceneId : 'forest'));
     setImmediate(() => { petSizeChangeInProgress = false; });
   }
   setPetSize(settings.size, settings.sizeLevel);
@@ -192,7 +192,7 @@ function buildMenu() {
     { type: 'separator' },
     { label: '桌宠样式', submenu: [
       { label: '完整桌宠', type: 'radio', checked: settings.petMode !== 'minimal', click: () => setPetMode('full') },
-      { label: latestState.sceneId === 'fuji' ? '极简桌宠 · 樱花与风铃' : '极简桌宠 · 一棵树与风铃', type: 'radio', checked: settings.petMode === 'minimal', click: () => setPetMode('minimal') }
+      { label: latestState.sceneId === 'cyber' ? '极简桌宠 · 霓虹塔与飞艇' : latestState.sceneId === 'fuji' ? '极简桌宠 · 樱花与风铃' : '极简桌宠 · 一棵树与风铃', type: 'radio', checked: settings.petMode === 'minimal', click: () => setPetMode('minimal') }
     ] },
     { label: '桌宠大小', submenu: Object.entries(settings.petMode === 'minimal' ? MINIMAL_SIZE_PRESETS : SIZE_PRESETS).map(([key, value]) => ({ label: `${key === 'small' ? '小' : key === 'medium' ? '中' : '大'} ${value} × ${value}`, type: 'radio', checked: settings.sizeLevel === key || (!settings.sizeLevel && settings.size === value), click: () => setPetSize(value, key) })) },
     { label: '收到消息时提醒', type: 'checkbox', checked: settings.reminders, click: item => { settings.reminders = item.checked; persistSettings(); broadcast(); } },

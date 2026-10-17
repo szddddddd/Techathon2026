@@ -1,7 +1,7 @@
 html[data-scene="fuji"],html[data-scene="fuji"] body{background:#b797ac}
 /* Stable footprints: revealing identity never moves the envelope or its hit target. */
 #social .friend-anchor,#group-building-labels .group-building-anchor{width:76px;height:40px;min-height:40px;max-width:none;gap:0;overflow:visible;pointer-events:none;backdrop-filter:none;background:transparent;box-shadow:none}
-#social .friend-anchor .anchor-identity{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);padding-bottom:4px;visibility:hidden;pointer-events:none}
+#social .friend-anchor .anchor-identity{position:absolute;bottom:100%;left:50%;transform:translate(-50%,var(--identity-offset,0px));padding-bottom:0;visibility:hidden;pointer-events:none}
 #social .friend-anchor .anchor-identity button{pointer-events:none}
 #social .friend-anchor:is(.is-hovered,:focus-within) .anchor-identity{visibility:visible;pointer-events:auto}
 #social .friend-anchor:is(.is-hovered,:focus-within) .anchor-identity button{pointer-events:auto}

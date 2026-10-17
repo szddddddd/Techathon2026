@@ -33,7 +33,7 @@ export async function serveStatic(req,res,root){
  try{relative=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);res.end();return;}
  if(relative==='/')relative='/index.html';
  const file=path.resolve(root,'.'+relative);
- if(!file.startsWith(root+path.sep)||relative.includes('\\')||!(/^\/(assets|dist|src)\//.test(relative)||/^\/[a-z0-9-]+\.(html|css|jpg|png)$/i.test(relative))){res.writeHead(404);res.end();return;}
+ if(!file.startsWith(root+path.sep)||relative.includes('\\')||!(relative==='/startup.js'||/^\/(assets|dist|src)\//.test(relative)||/^\/[a-z0-9-]+\.(html|css|jpg|png)$/i.test(relative))){res.writeHead(404);res.end();return;}
  if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'});res.end();return;}
  try{
   const stat=await fs.promises.stat(file);if(!stat.isFile())throw new Error('Not a file');

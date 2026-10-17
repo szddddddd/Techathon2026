@@ -12,72 +12,21 @@ const ICONS={
 ICONS.cyber='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21V9h5v12m1 0V3h6v18m1 0V12h5v9M1 21h22M11 6h2m-2 4h2m-2 4h2M5 12h1m12 3h1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 export const sceneIcon=id=>ICONS[id]||ICONS.forest;
 
-/** One glass button; activating it slides its caption to the next scene. */
+/** Direct scene selection with hover, click and keyboard access. */
 export function createSceneSwitcher({current='forest',onSwitch,ui,reduced=false}={}){
- const root=document.createElement('nav');root.id='scene-switcher';root.setAttribute('aria-label','场景切换');
- root.innerHTML=`<div class="scene-switcher-track"><div class="scene-switcher-scenery" aria-hidden="true">${SCENES.map(s=>`<svg class="scene-switcher-atmosphere scene-switcher-atmosphere-${s.id}" viewBox="0 0 240 118" preserveAspectRatio="xMidYMid slice">${s.art}</svg>`).join('')}</div><button class="scene-switcher-option" type="button" title="点击切换场景"><span class="scene-switcher-caption"><span class="scene-switcher-icon" aria-hidden="true"></span><span class="scene-switcher-name"></span></span></button></div><span class="scene-switcher-announcement" role="status" aria-live="polite" aria-atomic="true"></span>`;
- document.body.append(root);
- const track=root.querySelector('.scene-switcher-track'),button=root.querySelector('button'),caption=root.querySelector('.scene-switcher-caption'),name=root.querySelector('.scene-switcher-name'),icon=root.querySelector('.scene-switcher-icon'),status=root.querySelector('[role=status]'),events=new AbortController();
- let scene=SCENES.some(s=>s.id===current)?current:'forest',pending=null,busy=false,blocked=false,disposed=false,errorTimer,displayTarget=null,motion=null,motionVersion=0,press=null,expanded=true,near=false,keyboardFocus=false,foldTimer,bounds,lastInput='keyboard';
- const index=id=>SCENES.findIndex(s=>s.id===id);
- const listen=(el,event,fn,options={})=>el.addEventListener(event,fn,{...options,signal:events.signal});
- const reducedMotion=()=>typeof reduced==='boolean'?reduced:!!reduced?.matches;
- function measure(){bounds=root.getBoundingClientRect();}
- function label(){const shown=SCENES.find(s=>s.id===(pending||scene)),next=SCENES[(index(shown.id)+1)%SCENES.length];button.setAttribute('aria-label',expanded?`${shown.name}，点击切换到${next.name}`:`${shown.name}，展开场景切换`);button.title=expanded?'点击切换场景':'展开场景切换';}
- function expand(value){if(disposed)return;expanded=value;root.dataset.expanded=String(value);label();if(reducedMotion())measure();}
- function scheduleFold(delay=900){clearTimeout(foldTimer);if(!busy&&!near&&!keyboardFocus)foldTimer=setTimeout(()=>{if(!busy&&!near&&!keyboardFocus)expand(false);},delay);}
- function wake(){clearTimeout(foldTimer);expand(true);}
- listen(window,'pointermove',e=>{if(e.pointerType==='touch'||e.buttons||!bounds)return;const next=e.clientX>=bounds.left-28&&e.clientX<=bounds.right+28&&e.clientY>=bounds.top-24&&e.clientY<=bounds.bottom+28;if(next===near)return;near=next;if(near)wake();else scheduleFold();},{passive:true});
- listen(window,'pointerdown',()=>{lastInput='pointer';keyboardFocus=false;},{capture:true,passive:true});
- listen(window,'keydown',e=>{if(e.key==='Tab')lastInput='keyboard';});
- listen(root,'focusin',()=>{if(lastInput==='keyboard'){keyboardFocus=true;wake();}});
- listen(root,'focusout',e=>{if(!root.contains(e.relatedTarget)){keyboardFocus=false;scheduleFold();}});
- listen(root,'transitionend',e=>{if(e.target===root&&e.propertyName==='width')measure();});
- listen(window,'resize',()=>{near=false;measure();scheduleFold();});
- listen(root,'pointerenter',e=>{if(e.pointerType!=='touch'&&!e.buttons){near=true;wake();}});
- listen(window,'pointerout',e=>{if(!e.relatedTarget&&e.pointerType!=='touch'){near=false;scheduleFold();}});
- function paint(id){name.textContent=SCENES.find(s=>s.id===id).name;icon.innerHTML=sceneIcon(id);}
- async function show(id){
-  if(displayTarget===id)return;
-  const prior=displayTarget,version=++motionVersion;displayTarget=id;root.dataset.shown=id;motion?.cancel();
-  if(!prior){paint(id);return;}
-  const distance=reducedMotion()?0:(index(id)>index(prior)?-28:28);
-  try{
-   motion=caption.animate([{transform:'translateX(0)',opacity:1},{transform:`translateX(${distance}px)`,opacity:0}],{duration:reducedMotion()?60:120,easing:'ease-in',fill:'forwards'});await motion.finished;
-   if(disposed||version!==motionVersion)return;
-   paint(id);motion.cancel();
-   motion=caption.animate([{transform:`translateX(${-distance}px)`,opacity:0},{transform:'translateX(0)',opacity:1}],{duration:reducedMotion()?60:200,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});await motion.finished;
-   if(version===motionVersion){motion.cancel();motion=null;}
-  }catch{/* Replaced by a newer scene, reduced-motion change, or disposal. */}
- }
- function render(){
-  root.dataset.current=scene;root.dataset.busy=String(busy);root.dataset.disabled=String(blocked);track.setAttribute('aria-busy',String(busy));
-  const shown=SCENES.find(s=>s.id===(pending||scene));void show(shown.id);button.dataset.scene=shown.id;label();button.disabled=busy||blocked;
- }
- function setCurrent(id){if(!SCENES.some(s=>s.id===id)||disposed)return;scene=id;if(!busy)pending=null;render();}
- function setBusy(value,target){
-  if(disposed)return;busy=!!value;if(busy&&SCENES.some(s=>s.id===target))pending=target;if(!busy)pending=null;if(busy)wake();else scheduleFold();
-  render();status.textContent=busy?`正在前往${SCENES.find(s=>s.id===(pending||scene)).name}`:`当前场景：${SCENES.find(s=>s.id===scene).name}`;
- }
- async function choose(id){
-  if(disposed||busy||blocked||id===scene)return;
-  const restoreFocus=root.contains(document.activeElement);clearTimeout(errorTimer);delete root.dataset.error;setBusy(true,id);
-  try{const result=await onSwitch?.(id);if(disposed)return;if(result!==false)setCurrent(id);}
-  catch{if(disposed)return;root.dataset.error=id;status.textContent='场景切换失败，保留原场景。可再次点击重试。';errorTimer=setTimeout(()=>{delete root.dataset.error;},2000);}
-  finally{if(!disposed){const failed=!!root.dataset.error,message=status.textContent;setBusy(false);if(failed)status.textContent=message;if(restoreFocus)button.focus({preventScroll:true});}}
- }
- listen(button,'pointerdown',e=>{e.stopPropagation();press={x:e.clientX,y:e.clientY,moved:false,collapsed:!expanded};});
- listen(button,'pointermove',e=>{e.stopPropagation();if(press&&Math.hypot(e.clientX-press.x,e.clientY-press.y)>6)press.moved=true;});
- listen(button,'pointerup',e=>e.stopPropagation());
- listen(button,'pointercancel',()=>{press={moved:true};});
- listen(button,'click',e=>{e.stopPropagation();const moved=press?.moved,collapsed=press?.collapsed;press=null;if(e.detail>0&&moved)return;if(collapsed||!expanded){wake();scheduleFold(2500);return;}void choose(SCENES[(index(scene)+1)%SCENES.length].id);});
- listen(root,'keydown',e=>{
-  if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();if(busy||blocked)return;keyboardFocus=true;lastInput='keyboard';wake();void choose(SCENES[e.key==='Home'?0:e.key==='End'?SCENES.length-1:(index(scene)+(e.key==='ArrowLeft'?-1:1)+SCENES.length)%SCENES.length].id);
- });
- listen(window,'blur',()=>{press={moved:true};near=false;keyboardFocus=false;scheduleFold();});
- const unsubscribe=ui?.subscribe(state=>{blocked=!!state.modal;render();});
- function syncMotion(){root.dataset.reduced=String(reducedMotion());if(motion&&reducedMotion()){motionVersion++;motion.cancel();motion=null;paint(displayTarget);}}
- if(typeof reduced!=='boolean'&&reduced?.addEventListener)listen(reduced,'change',syncMotion);
- syncMotion();expand(true);render();measure();scheduleFold(1500);
- return{setCurrent,setBusy,dispose(){if(disposed)return;disposed=true;motionVersion++;motion?.cancel();clearTimeout(errorTimer);clearTimeout(foldTimer);unsubscribe?.();events.abort();root.remove();}};
+ const root=document.createElement('nav');root.id='scene-switcher';root.setAttribute('aria-label','场景切换');root.dataset.expanded='true';
+ root.innerHTML='<div class="scene-switcher-track"><button class="scene-switcher-option" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="scene-theme-menu"><span class="scene-switcher-caption"></span></button></div><div id="scene-theme-menu" role="menu" aria-label="选择主题" hidden>'+SCENES.map(s=>'<button type="button" role="menuitemradio" data-scene="'+s.id+'"><span class="scene-switcher-icon">'+sceneIcon(s.id)+'</span>'+s.name+'</button>').join('')+'</div><span class="scene-switcher-announcement" role="status"></span>';
+ document.body.append(root);const button=root.querySelector('.scene-switcher-option'),menu=root.querySelector('[role=menu]'),items=[...menu.querySelectorAll('button')],status=root.querySelector('[role=status]'),events=new AbortController();let scene=current,busy=false,blocked=false,disposed=false,timer;
+ const listen=(el,event,fn)=>el.addEventListener(event,fn,{signal:events.signal});
+ function open(value){clearTimeout(timer);menu.hidden=!value||busy||blocked;button.setAttribute('aria-expanded',String(!menu.hidden));}
+ function render(){root.dataset.shown=scene;root.dataset.current=scene;root.dataset.busy=String(busy);button.disabled=busy||blocked;button.querySelector('span').innerHTML='<span class="scene-switcher-icon">'+sceneIcon(scene)+'</span><span>'+SCENE_THEMES[scene].name+'</span><small aria-hidden="true">⌄</small>';button.setAttribute('aria-label',SCENE_THEMES[scene].name+'，选择主题');for(const item of items){item.setAttribute('aria-checked',String(item.dataset.scene===scene));item.disabled=busy||blocked;}if(busy||blocked)open(false);}
+ function setCurrent(id){if(SCENE_THEMES[id]&&!disposed){scene=id;render();}}
+ function setBusy(value){busy=!!value;render();}
+ async function choose(id){if(busy||blocked||disposed)return;open(false);if(id===scene)return;setBusy(true);status.textContent='正在前往'+SCENE_THEMES[id].name;try{if(await onSwitch?.(id)!==false)setCurrent(id);status.textContent='当前场景：'+SCENE_THEMES[scene].name;}catch{status.textContent='切换失败，请重试。';}finally{if(!disposed){setBusy(false);button.focus({preventScroll:true});}}}
+ listen(root,'pointerenter',e=>{if(e.pointerType!=='touch')open(true);});listen(root,'pointerleave',()=>{timer=setTimeout(()=>open(false),180);});
+ listen(button,'click',()=>open(true));for(const item of items)listen(item,'click',()=>choose(item.dataset.scene));
+ listen(document,'pointerdown',e=>{if(!root.contains(e.target))open(false);});listen(root,'focusout',e=>{if(!root.contains(e.relatedTarget))open(false);});
+ listen(root,'keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();open(false);button.focus();return;}if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key)||busy||blocked)return;e.preventDefault();e.stopPropagation();open(true);const i=items.indexOf(document.activeElement),n=e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowUp'?-1:1)+items.length)%items.length;items[n].focus();});
+ const unsubscribe=ui?.subscribe(state=>{blocked=!!state.modal;render();});render();
+ return{setCurrent,setBusy,dispose(){disposed=true;clearTimeout(timer);unsubscribe?.();events.abort();root.remove();}};
 }
