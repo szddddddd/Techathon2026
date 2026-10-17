@@ -3,7 +3,7 @@ const terminal=new Set(['ready','attention','failed','cancelled']);
 /** A friend exists before their model. Stable job IDs also deduplicate across tabs/reloads. */
 export function createFriendModels({store,fetcher=fetch,interval=5000,document:doc=globalThis.document}={}){
   let timer,disposed=false;const inFlight=new Map();
-  const pending=()=>Object.values(store.state.customFriends||{}).filter(f=>!f.modelUrl&&f.jobId&&!terminal.has(f.modelPhase));
+  const pending=()=>Object.values(store.state.customFriends||{}).filter(f=>store.state.friends.includes(f.id)&&!f.modelUrl&&f.jobId&&!terminal.has(f.modelPhase));
   async function api(route,body){
     const native=globalThis.location?.protocol==='file:'&&globalThis.desktopMain?.avatarRequest;
     const result=native?await globalThis.desktopMain.avatarRequest(route,body):null;
@@ -21,9 +21,9 @@ export function createFriendModels({store,fetcher=fetch,interval=5000,document:d
         job=await api('jobs',{requestId:friend.jobId,name:friend.name,avatarBase64:match[1],pinned:false,autoContinue:true});
         if(!job)throw new Error('形象服务暂不可用。');
       }
-      if(!disposed)await store.updateFriendModel(friend.id,job);
+      if(!disposed&&store.state.friends.includes(friend.id))await store.updateFriendModel(friend.id,job);
     }catch{
-      if(!disposed)await store.updateFriendModel(friend.id,{id:friend.jobId,phase:'waiting_connection',error:'形象稍后会继续准备，聊天不受影响。'});
+      if(!disposed&&store.state.friends.includes(friend.id))await store.updateFriendModel(friend.id,{id:friend.jobId,phase:'waiting_connection',error:'形象稍后会继续准备，聊天不受影响。'});
     }
   }
   function update(id){

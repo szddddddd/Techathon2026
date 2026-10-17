@@ -15,6 +15,7 @@ export function unreadTier(n){return n>=20?4:n>=6?3:n>=2?2:n?1:0;}
 export const FRIEND_SCENE_CAPACITY=9;
 export function recentFriendIds(state){
   const last=new Map();for(const m of state.messages)last.set(m.friendId,Math.max(last.get(m.friendId)??-Infinity,m.createdAt));
+  for(const id of state.friends){const f=state.customFriends?.[id];if(f?.externalContactId&&f.modelUrl)last.set(id,Math.max(last.get(id)||0,f.createdAt||0));}
   return state.friends.filter(id=>last.has(id)).sort((a,b)=>last.get(b)-last.get(a)||a.localeCompare(b));
 }
 

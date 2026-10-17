@@ -1,3 +1,4 @@
+import {appIcon} from './inbox/icons.js';
 import {bindNightMaterial} from './day-night-effects.js';
 import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupMessageBoard} from './group-message-board.js';
@@ -71,10 +72,10 @@ export async function createGroupScene({scene,camera,canvas,controls,reduced,sto
   for(const entry of data.entries){const g=groupOf(store.state,entry.id);if(!g)continue;let a=actors.get(g.id);if(a&&(a.type!==g.type||a.source!==template(g.type,entry.slot))){releaseActor(a);actors.delete(g.id);a=null;}if(!a){a=make(entry,g.type);actors.set(g.id,a);}const idle=idleBuildings.get(entry.slot),appearance=idle&&idle.type!==g.type?Math.max(0,Math.min(1,(now-a.appearanceStart)/(reduced.matches?80:320))):1;for(const m of a.materials)m.opacity=entry.alpha;a.body.traverse(o=>{if(o.isMesh)for(const m of [].concat(o.material))m.opacity=appearance;});a.group.visible=true;a.outline.visible=entry.selected;a.glow.material.emissiveIntensity=entry.unread?.7:.06;a.letters.children.forEach((m,i)=>m.visible=i<(entry.unread>=20?4:entry.unread>=6?3:entry.unread>=2?2:entry.unread?1:0));
    if(a.doorPulse){if(entry.unread>(previousUnread.get(g.id)||0))a.messageAt=now;const pulse=Math.max(0,1-(now-a.messageAt)/1800);a.doorPulse.material.emissiveIntensity=.25+(reduced.matches?0:1.5*Math.sin(pulse*Math.PI));}
    const title=g.name;a.node.classList.toggle('is-hovered',!uiHidden&&controls.enabled&&hover.get(now)===g.id);a.node.setAttribute('aria-label',title+'，'+entry.unread+'条未读来信');a.node.classList.toggle('selected',entry.selected);a.node.dataset.unreadTier=unreadTier(entry.unread);
-   const key=title+'|'+entry.unread;if(a.key!==key){
+   const key=title+'|'+entry.unread+'|'+(g.sourcePlatform||'wechat');if(a.key!==key){
     a.key=key;a.node.replaceChildren();
     if(entry.unread){const stack=document.createElement('span');stack.className='letter-stack';stack.setAttribute('aria-hidden','true');for(let i=0;i<unreadTier(entry.unread);i++){const letter=document.createElement('i');letter.style.setProperty('--letter',i);stack.append(letter);}const count=document.createElement('b');count.className='group-unread-count';count.textContent=entry.unread>99?'99+':entry.unread;a.node.append(stack,count);}
-    const copy=document.createElement('span');copy.className='group-sign-copy';const name=document.createElement('strong');name.textContent=title;copy.append(name);a.node.append(copy);
+    const copy=document.createElement('span');copy.className='group-sign-copy';const name=document.createElement('strong');name.textContent=title;name.insertAdjacentHTML('afterbegin',appIcon(g.sourcePlatform||'wechat'));copy.append(name);a.node.append(copy);
     if(entry.unread>(previousUnread.get(g.id)||0)&&!reduced.matches)a.node.animate([{scale:1},{scale:1.08},{scale:1}],{duration:260,easing:'ease-out'});previousUnread.set(g.id,entry.unread);
    }
    const p=project(a.group.position.x,a.group.position.y+a.height+.4,a.group.position.z);a.node.hidden=!p.visible||entry.alpha<=.001||isOccluded(new T.Vector3(a.group.position.x,a.group.position.y+a.height+.4,a.group.position.z));a.node.style.opacity=entry.alpha;a.node.style.transform=`translate(${p.x}px,${p.y}px) translate(-50%,-100%)`;

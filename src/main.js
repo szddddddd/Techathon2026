@@ -104,6 +104,8 @@ async function boot(){
  connectSceneControllers();world.finishBatch();world.activate();
  const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
  window.__socialStore=store;window.__socialUI=socialUI;window.__groupBuildings=groupBuildings;window.__characterPlacement=characters.placement;window.__discoveryUI=contentUI;window.__contentPlayer=player;
+ // Open the inbox for a shareable local demo URL; loading samples still requires consent.
+ if(store&&new URLSearchParams(location.search).get('inbox')==='1')document.querySelector('.social-dock [data-action="directory"]')?.click();
  window.__openSceneDiscovery=async kind=>{if(roam?.busy)await roam.exit();return boards.open(kind);};window.__openDiscovery=(route,options)=>contentUI?.open(route,options);
  function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
   if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}

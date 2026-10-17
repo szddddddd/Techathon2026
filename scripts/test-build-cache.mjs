@@ -11,6 +11,8 @@ await fs.writeFile(path.join(root,'package-lock.json'),'{}');
 for(const name of ['index','pet'])await fs.writeFile(path.join(root,name+'.html'),'<head><title>Fixture</title></head>');
 await fs.writeFile(path.join(root,'src/value.js'),'export const value=1;');
 for(const name of ['main','asset-review','pet','rig-review','character-rig-worker'])await fs.writeFile(path.join(root,'src',name+'.js'),"import {value} from './value.js';globalThis.fixture=value;");
+await fs.mkdir(path.join(root,'src/inbox'));
+await fs.writeFile(path.join(root,'src/inbox/ui.js'),"import {value} from '../value.js';export const fixture=value;");
 async function build(...args){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[path.join(root,'scripts/build.mjs'),...args],{windowsHide:true});let log='';child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);child.once('error',reject);child.once('exit',code=>code?reject(new Error(log)):resolve(log));});}
 assert.match(await build(),/Built Forest/);assert.match(await build(),/Reused unchanged/);
 const source=path.join(root,'src/value.js'),old=await fs.stat(source);
@@ -18,6 +20,8 @@ await fs.writeFile(source,'export const value=2;');await fs.utimes(source,old.at
 assert.match(await build(),/Built Forest/);assert.match(await fs.readFile(path.join(root,'dist/world.js'),'utf8'),/=2/);
 await fs.writeFile(path.join(root,'dist/world.js'),'tampered');assert.match(await build(),/Built Forest/);
 await fs.unlink(path.join(root,'dist/pet.js'));assert.match(await build(),/Built Forest/);
+await fs.unlink(path.join(root,'dist/inbox.js'));assert.match(await build(),/Built Forest/);
+await fs.writeFile(path.join(root,'src/inbox/ui.js'),"export const fixture=42;");assert.match(await build(),/Built Forest/);
 await fs.writeFile(path.join(root,'package-lock.json'),'{"fixture":true}');assert.match(await build(),/Built Forest/);
 await fs.writeFile(path.join(root,'src/extra.js'),'export const extra=3;');
 await fs.writeFile(source,"import {extra} from './extra.js';export const value=extra;");assert.match(await build(),/Built Forest/);

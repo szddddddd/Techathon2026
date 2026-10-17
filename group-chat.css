@@ -33,3 +33,16 @@
 #group-building-labels .group-sign-copy strong{display:block;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #group-building-labels .group-unread-count{position:absolute;top:0;left:calc(50% + 12px)}
 @media(max-width:760px){#group-building-labels .group-building-anchor{max-width:110px}#group-building-labels .group-sign-copy strong{font-size:10px}}
+
+#social .conversation-top strong>.inbox-app-icon,#social #meeting-name>.inbox-app-icon{display:inline-block;width:18px;height:18px;margin-left:8px;vertical-align:middle}
+#social .group-platform-picker>div{display:flex;gap:12px}
+#social .group-platform-picker label{position:relative;display:grid;place-items:center;min-width:48px;height:48px;border-radius:10px;cursor:pointer}
+#social .group-platform-picker input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+#social .group-platform-picker label:has(:checked){background:#eef2f6}
+#social .group-platform-picker label:has(:focus-visible){outline:3px solid #0066cc;outline-offset:2px}
+#social .group-platform-picker .inbox-app-icon{width:28px;height:28px;object-fit:contain}
+#social .group-profile h3,#social .group-queue-row strong{display:flex;align-items:center;gap:8px}
+#social .group-profile h3{justify-content:center}
+#social .group-profile h3>.inbox-app-icon,#social .group-queue-row strong>.inbox-app-icon{width:20px;height:20px;object-fit:contain}
+
+#social .anchor-name>.inbox-app-icon,.group-sign-copy strong>.inbox-app-icon{display:inline-block;width:16px;height:16px;vertical-align:middle;object-fit:contain;margin-right:6px}

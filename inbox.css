@@ -1,0 +1,249 @@
+@charset "UTF-8";
+/* Universal Inbox is an isolated product surface; scene materials remain intact. */
+#social:has(#inbox-thread:not([hidden])),#social:has(#directory.universal-directory:not([hidden])){z-index:70}
+#social .inbox-panel{position:fixed;inset:0;transform:none;height:fit-content;width:min(720px,calc(100vw - 32px));max-height:calc(var(--ui-height,100dvh) - 32px);margin:auto;padding:0;border:1px solid #d9d9de;border-radius:14px;background:#fff!important;background-image:none!important;color:#1d1d1f;box-shadow:0 20px 70px #0b152a30;overflow:hidden;pointer-events:auto;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;z-index:80;box-sizing:border-box}
+#social dialog.inbox-panel[open]{display:flex;flex-direction:column}
+#social section.inbox-panel:not([hidden]){display:flex;flex-direction:column}
+#social .inbox-panel[hidden],#social .inbox-panel[data-ui-state=closed]{display:none!important}
+#social .inbox-panel::backdrop{background:#14203845;backdrop-filter:blur(3px)}
+#social .inbox-panel *{box-sizing:border-box}
+#social .inbox-panel :is(h2,h3,p,ul,ol,blockquote,dl){color:inherit}
+#social .inbox-panel h2{font-size:21px;letter-spacing:-.5px;line-height:1.25;margin:3px 0 0;font-weight:650}
+#social .inbox-panel h3{font-size:15px;margin:0 0 8px;font-weight:650}
+#social .inbox-panel p{margin:8px 0;line-height:1.6}
+#social .inbox-panel button,#social .inbox-panel .inbox-button,#social .inbox-toolbar button{min-height:44px;min-width:44px;border:1px solid #d9d9de;border-radius:8px;background:#fff;color:#1d1d1f;padding:9px 13px;font:inherit;font-weight:500;cursor:pointer;box-shadow:0 1px 2px #00000005;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;white-space:normal;text-align:center;transition:background .12s ease,border-color .12s ease}
+#social .inbox-panel button:hover,#social .inbox-panel .inbox-button:hover,#social .inbox-toolbar button:hover{background:#f5f5f7;border-color:#aaaab3}
+#social .inbox-panel button:disabled,#social .inbox-panel button[aria-busy=true]{opacity:.5;cursor:default}
+#social .inbox-panel .inbox-primary{background:#0066cc;color:#fff;border-color:#0066cc;box-shadow:none}
+#social .inbox-panel .inbox-primary:hover{background:#0059b3;border-color:#0059b3}
+#social .inbox-panel .inbox-danger{color:#b3261e}
+#social .inbox-panel :is(button,a,input,textarea,select,summary):focus-visible,#social :is(.inbox-platform-filter,.inbox-state-filter):focus-visible{outline:3px solid #0066cc;outline-offset:3px}
+#social .inbox-titlebar{display:flex;justify-content:space-between;align-items:flex-start;flex:0 0 auto;padding:22px 24px 18px;gap:12px;border-bottom:1px solid #e9e9ed;background:#fff}
+#social .inbox-titlebar small{display:block;text-transform:none;letter-spacing:.15px;font-size:11px;font-weight:600;color:#64646c}
+#social .inbox-titlebar p{font-size:13px;color:#64646c;margin:7px 0 0;max-width:510px}
+#social .inbox-titlebar .inbox-close{border:0;background:#f5f5f7;border-radius:50%;font-size:25px;font-weight:300;padding:0;width:44px;height:44px;flex:0 0 auto}
+#social .inbox-scroll{overflow:auto;overscroll-behavior:contain;padding:22px 24px;min-height:0;flex:1;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+#social .inbox-caption{font-size:12px!important;color:#64646c!important;overflow-wrap:anywhere}
+#social .inbox-source{display:inline-flex;max-width:100%;font-size:11px;line-height:1.6;color:#53535c;background:#f0f1f4;border:1px solid #e4e5e9;border-radius:5px;padding:2px 6px;vertical-align:middle;overflow-wrap:anywhere}
+#social .inbox-banner{background:#f5f5f7;border:1px solid #e8e8ed;border-radius:10px;padding:15px 16px;margin-bottom:20px}
+#social .inbox-banner strong{display:block;font-size:14px}
+#social .inbox-banner p{font-size:13px;color:#64646c;margin:5px 0 12px}
+#social .inbox-banner button+button{margin-left:6px}
+#social .inbox-panel input:not([type=checkbox]):not([type=file]),#social .inbox-panel textarea,#social .inbox-panel select{display:block;width:100%;border:1px solid #d9d9de;border-radius:8px;background:#fff;color:#1d1d1f;font:inherit;min-height:44px;padding:10px 11px;box-shadow:none;resize:vertical}
+#social .inbox-panel textarea{line-height:1.6;max-height:30vh}
+#social .inbox-panel input::placeholder,#social .inbox-panel textarea::placeholder{color:#7c7c85}
+#social .inbox-panel label:has(> :is(input:not([type=checkbox]),textarea,select)){display:block;margin:0 0 14px;font-size:13px;font-weight:500}
+#social .inbox-panel label> :is(input:not([type=checkbox]),textarea,select){margin-top:6px}
+#social .inbox-panel input[type=checkbox]{width:20px;height:20px;flex:0 0 20px;accent-color:#0066cc;margin:0;cursor:pointer}
+#social .inbox-option{display:flex;gap:10px;align-items:center;min-height:48px;padding:9px 0;font-size:13px;line-height:1.5}
+#social .inbox-panel details>summary{min-height:44px;display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600;list-style:none}
+#social .inbox-panel details>summary::before{content:'›';display:inline-block;font-size:18px;transition:transform .12s}
+#social .inbox-panel details[open]>summary::before{transform:rotate(90deg)}
+#social .inbox-panel hr{border:0;border-top:1px solid #e8e8ed;margin:24px 0}
+#social .inbox-platform-grid{display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+#social .inbox-platform-card{border:0;border-bottom:1px solid #eeeef1;border-radius:0;padding:0;min-width:0;background:#fff}
+#social .inbox-platform-card>header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#social .inbox-platform-card header h3{margin:0 0 3px;font-size:16px}
+#social .inbox-platform-icon{height:40px;width:40px;display:grid;place-items:center;flex:0 0 40px;color:#1d1d1f;background:#f5f5f7;border:1px solid #e8e8ed;border-radius:10px;font-size:18px;font-weight:600}
+#social .inbox-platform-card>p{font-size:13px}
+#social .inbox-capability{border-top:1px solid #eeeef1;padding-top:10px;line-height:1.9!important;font-size:12px!important}
+#social .inbox-permissions label{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #eeeef1;min-height:56px}
+#social .inbox-permissions label strong{font-weight:500;font-size:13px;display:block}
+#social .inbox-permissions label small{font-size:11px;color:#64646c;display:block;margin-top:3px}
+#social .inbox-connection-status{font-size:11px;color:#64646c;margin:8px 0;overflow-wrap:anywhere}
+#social .inbox-card-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+#social .inbox-card-actions button{font-size:12px;padding:7px 9px}
+#social .inbox-future{padding:12px 0;margin:10px 0}
+#social .inbox-future p{font-size:12px;color:#64646c}
+#social #inbox-thread{height:min(800px,calc(var(--ui-height,100dvh) - 40px));width:min(760px,calc(100vw - 32px))}
+#social .inbox-thread-tools{display:flex;gap:8px;align-items:center;padding:10px 20px 0;flex-wrap:wrap;flex:0 0 auto}
+#social .inbox-thread-tools button{border:0;font-size:12px;background:#f5f5f7;padding:7px 10px}
+#social .inbox-thread-status{font-size:11px;color:#64646c!important;padding:0 22px;margin:8px 0!important}
+#social .inbox-message-list{flex:1;min-height:80px;overflow:auto;background:#fff;border-top:1px solid #eeeef1;border-bottom:1px solid #eeeef1;padding:20px 26px;overscroll-behavior:contain;scrollbar-width:thin}
+#social .inbox-message{padding:16px 0 24px;border-radius:0;background:transparent;border:0;border-bottom:1px solid #eeeef1;margin-bottom:12px}
+#social .inbox-message.is-outgoing{margin-left:24px}
+#social .inbox-origin-link{display:inline-flex;align-items:center;min-height:44px;color:#0066cc;font-size:12px;text-decoration:none}
+#social .inbox-message>header{display:flex;gap:10px;justify-content:space-between;margin-bottom:7px;align-items:baseline;flex-wrap:wrap}
+#social .inbox-message>header strong{font-size:13px}
+#social .inbox-message time{font-size:11px;color:#64646c;white-space:nowrap}
+#social .inbox-message>p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.75}
+#social .inbox-attachment{font-size:11px;display:block;color:#64646c;padding:7px 0}
+#social .inbox-reply{flex:0 0 auto;padding:14px 22px 12px;overflow:auto;max-height:44vh;background:#fff}
+#social .inbox-reply label{margin-bottom:8px!important}
+#social .inbox-reply textarea{min-height:76px;max-height:22vh}
+#social .inbox-reply input{min-height:44px!important;padding:7px 10px!important;font-size:12px!important}
+#social .inbox-compose-actions,#social .inbox-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+#social .inbox-compose-actions button,#social .inbox-compose-actions .inbox-button{font-size:12px;padding:8px 11px}
+#social .inbox-reply .inbox-caption{margin-bottom:0}
+#social .inbox-approval-fields{margin:16px 0}
+#social .inbox-approval-fields dt{font-size:12px;color:#64646c;margin-top:14px}
+#social .inbox-approval-fields dd{margin:4px 0 0;font-size:14px;overflow-wrap:anywhere}
+#social .inbox-approval-text{white-space:pre-wrap;background:#f5f5f7;border:1px solid #e8e8ed;border-radius:8px;padding:12px;max-height:30vh;overflow:auto}
+#social .inbox-agent-sources{padding:0 0 12px;border:0;margin:0}
+#social .inbox-agent-sources legend{font-size:13px;font-weight:600;margin-bottom:8px}
+#social .inbox-agent-sources label{display:flex;gap:10px;align-items:center;min-height:60px;border-bottom:1px solid #e8e8ed;padding:10px 0}
+#social .inbox-agent-sources strong,#social .inbox-agent-sources small{display:block}
+#social .inbox-agent-sources strong{font-size:13px;font-weight:500}
+#social .inbox-agent-sources small{font-size:11px;color:#64646c;margin-top:3px}
+#social .inbox-agent-result{border:0;border-top:1px solid #eeeef1;border-radius:0;padding:24px 0 0;margin:24px 0}
+#social .inbox-agent-result>p{font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+#social .inbox-agent-result ul{list-style:none;margin:12px 0;padding:0}
+#social .inbox-agent-result .inbox-citation{font-size:12px;text-align:left;justify-content:flex-start;line-height:1.6;width:100%;padding:9px 11px;margin:4px 0;background:#f5f5f7;color:#0066cc;overflow-wrap:anywhere}
+#social .inbox-agent-result blockquote{padding:12px;border:0;background:#f5f5f7;border-radius:10px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+#social .inbox-import-preview img,#social .inbox-imported-image{display:block;max-width:100%;max-height:240px;border-radius:8px;object-fit:contain;margin:10px 0}
+#social .inbox-feedback{font-size:13px;color:#34536c!important}
+#social .inbox-feedback:empty{display:none}
+#social .inbox-reset-confirm{background:#fff4f3;border:1px solid #f0d7d4;border-radius:8px;padding:14px;margin-top:12px}
+#social .inbox-reset-confirm[hidden]{display:none}
+#social .inbox-demo-steps{padding-left:21px;font-size:14px;line-height:1.9;margin:12px 0}
+#social .inbox-audit-item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:13px 0;border-bottom:1px solid #e8e8ed;font-size:12px;overflow-wrap:anywhere}
+#social .inbox-audit-item strong{font-size:13px;font-weight:600}
+#social .inbox-audit-item small{grid-column:1/-1;color:#64646c;font-size:11px}
+#social .inbox-audit-item p{grid-column:1/-1}
+#social .inbox-empty{padding:24px 10px;text-align:center;color:#64646c!important;font-size:13px}
+#social .inbox-toast{position:fixed;z-index:1000;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:13px 18px;border-radius:10px;border:1px solid #d9d9de;background:#fff;color:#1d1d1f;box-shadow:0 8px 30px #0002;max-width:calc(100vw - 32px);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;pointer-events:none}
+#social .inbox-toast[hidden]{display:none}
+#social .inbox-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px}
+#social .inbox-toolbar button{padding:7px 10px;font-size:12px;flex:1 1 auto}
+#social .inbox-filters{display:flex;gap:8px;padding:0 18px 12px;background:#fff}
+#social .inbox-filters label{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px;font-size:11px;color:#64646c}
+#social .inbox-list-notice{padding:0 18px;margin:0 0 10px;font-size:11px;color:#64646c;line-height:1.6}
+#social .inbox-source-avatar svg{width:30px;height:30px}
+#social .inbox-source-avatar{display:grid;place-items:center}
+#social .inbox-external-row .inbox-source{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:3px 0;font-size:10px}
+#social .inbox-filters select{min-height:44px;min-width:0;flex:1;border:1px solid #d9d9de;border-radius:8px;background:#f5f5f7;color:#1d1d1f;padding:8px;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#social .inbox-row-source{display:inline-block;color:#64646c;font-size:10px;border:1px solid #e4e5e9;border-radius:4px;padding:1px 4px;line-height:1.5}
+@media(max-width:600px){#social .inbox-panel,#social #inbox-thread{inset:12px 12px auto;margin:0;width:calc(100vw - 24px);transform:none;max-height:calc(var(--ui-height,100dvh) - 24px);border-radius:14px}#social #inbox-thread{height:calc(var(--ui-height,100dvh) - 24px)}#social .inbox-titlebar{padding:17px 16px 14px}#social .inbox-titlebar h2{font-size:20px}#social .inbox-scroll{padding:17px 16px}#social .inbox-platform-grid{grid-template-columns:1fr}#social .inbox-thread-tools{padding:8px 14px 0;gap:6px}#social .inbox-message-list{padding:14px}#social .inbox-message{padding:12px}#social .inbox-reply{padding:12px 14px;max-height:47vh}#social .inbox-compose-actions{gap:6px}#social .inbox-compose-actions button,#social .inbox-compose-actions .inbox-button{flex:1 1 40%;padding:8px;font-size:12px}#social .inbox-thread-status{padding:0 15px}#social .inbox-toolbar{padding:8px 12px}#social .inbox-filters{padding:0 12px 10px}#social .inbox-audit-item{grid-template-columns:1fr}#social .inbox-audit-item small{grid-column:auto}}
+@media(max-height:600px){#social .inbox-titlebar{padding-top:10px;padding-bottom:10px}#social .inbox-titlebar p{display:none}#social .inbox-reply{max-height:48vh}#social .inbox-reply textarea{min-height:50px}#social .inbox-thread-tools button{min-height:36px}#social .inbox-thread-status{margin:4px 0!important}}
+@media(prefers-reduced-motion:reduce){#social .inbox-panel *,#social .inbox-toolbar button{transition:none!important;scroll-behavior:auto!important}}
+
+#social .inbox-panel{outline:none}
+#social .inbox-sync-scenario{flex:1 1 100%;font-size:11px!important;margin-bottom:0!important}
+#social .inbox-sync-scenario select{margin-top:4px!important}
+
+/* Quiet presentation: app artwork and progressive disclosure. */
+#social .inbox-app-icon{display:block;width:28px;height:28px;object-fit:contain;flex:0 0 28px;border-radius:6px}
+#social .inbox-sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+#social #directory.universal-directory{width:min(560px,calc(100vw - 28px));background:#fff!important;background-image:none!important;color:#1d1d1f;--ink:#1d1d1f;--muted:#797982;--line:#eeeef1;--green:#0066cc;border:1px solid #e7e7ec;border-radius:20px;box-shadow:0 20px 70px #13231e24;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}
+#social #directory.universal-directory .contacts-title{padding:24px 24px 12px}
+#social #directory.universal-directory .contacts-title small{font-size:11px!important;letter-spacing:0!important;color:#7b7b84}
+#social #directory.universal-directory .contacts-title h2{font:600 24px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.6px;margin:4px 0!important}
+#social #directory.universal-directory .contacts-add,#social #directory.universal-directory .ui-close{width:44px;height:44px;background:transparent;color:#7b7b84}
+#social #directory.universal-directory>.search{margin:0 24px 10px;background:#f5f5f7;min-height:44px;color:#92929a}
+#social #directory.universal-directory>.directory-tabs{padding:0 24px;border:0}
+#social #directory.universal-directory .directory-tabs button{min-height:44px;color:#7b7b84!important}
+#social #directory.universal-directory .directory-tabs .active{color:#1d1d1f!important;border-color:#1d1d1f!important}
+#social #directory.universal-directory .contacts-footnote{display:none}
+#social #directory.universal-directory #friend-list{padding:0 14px 14px}
+#social #directory.universal-directory .conversation-row{border-radius:10px;margin:2px 0}
+#social #directory.universal-directory .conversation-row:hover,#social #directory.universal-directory .conversation-row.is-pinned{background:#f5f5f7}
+#social #directory.universal-directory .conversation-open{padding:16px 10px;gap:14px}
+#social #directory.universal-directory .conversation-copy{gap:5px}
+#social #directory.universal-directory .conversation-top strong{font-size:14px;font-weight:550}
+#social #directory.universal-directory .conversation-preview{font-size:12px;color:#777781}
+#social #directory.universal-directory .inbox-source{padding:0;background:transparent;border:0;color:#96969e;font-size:10px;margin:0}
+#social #directory.universal-directory .conversation-avatar.inbox-source-avatar{width:40px;height:40px;background:transparent;border-radius:0}
+#social #directory.universal-directory .inbox-source-avatar .inbox-app-icon{width:36px;height:36px;border-radius:8px}
+#social .inbox-toolbar{position:relative;display:flex;align-items:center;flex-wrap:nowrap;gap:8px;padding:12px 24px 8px}
+#social .inbox-toolbar>button{flex:0 0 auto;border:0;background:transparent;padding:8px 14px}
+#social .inbox-toolbar>button.inbox-primary{background:#0066cc;color:#fff;border:0;box-shadow:none;margin-right:auto}
+#social .inbox-more{position:relative;flex:0 0 44px}
+#social .inbox-more>summary{display:grid;place-items:center;list-style:none;min-width:44px;height:44px;font-size:22px;cursor:pointer;border-radius:8px;color:#777781}
+#social .inbox-more>summary::-webkit-details-marker{display:none}
+#social .inbox-more[open]>summary,#social .inbox-more>summary:hover{background:#f5f5f7}
+#social .inbox-more-menu{position:absolute;right:0;top:48px;width:220px;z-index:60;padding:6px;background:#fff;border:1px solid #e7e7ec;border-radius:12px;box-shadow:0 12px 38px #0002}
+#social .inbox-more-menu>button{display:flex;justify-content:flex-start;width:100%;border:0;box-shadow:none;background:transparent;font-size:13px}
+#social .inbox-more-menu .inbox-filters{display:flex;flex-direction:column;padding:8px;border-top:1px solid #eeeef1;gap:10px}
+#social .inbox-platforms{display:flex;align-items:center;gap:6px;flex:0 0 auto;padding:0 24px 10px;border-bottom:1px solid #eeeef1}
+#social .inbox-platforms button{display:grid;place-items:center;width:44px;min-width:44px;height:44px;padding:8px;border-radius:10px;background:transparent;font-size:12px;color:#777781}
+#social .inbox-platforms button[aria-pressed=true]{background:#f0f1f4;color:#1d1d1f}
+#social .inbox-platforms img{width:26px;height:26px;object-fit:contain;border-radius:6px}
+#social .inbox-list-notice{padding:8px 24px 4px;margin:0;font-size:10px;color:#9999a1}
+#social .inbox-connection-row{display:flex!important;align-items:center;gap:16px!important;padding:16px 0;min-height:76px!important}
+#social .inbox-connection-row::before{display:none!important}
+#social .inbox-connection-row>.inbox-app-icon{width:36px;height:36px;flex-basis:36px;border-radius:8px}
+#social .inbox-connection-row>span:nth-child(2){flex:1;min-width:0}
+#social .inbox-connection-row strong,#social .inbox-connection-row small{display:block}
+#social .inbox-connection-row strong{font-size:14px;font-weight:500}
+#social .inbox-connection-row small{font-size:11px;color:#92929a;margin-top:3px;letter-spacing:0}
+#social .inbox-chevron{font-size:22px;color:#b0b0b8;font-weight:400}
+#social details[open]>.inbox-connection-row .inbox-chevron{rotate:90deg}
+#social .inbox-connection-detail{padding:0 0 18px 52px}
+#social .inbox-permissions label{min-height:44px;padding:8px 0;border:0;font-size:13px}
+#social .inbox-advanced{margin-top:10px}
+#social .inbox-center-footer{display:flex;justify-content:space-between;gap:4px;margin-top:20px}
+#social .inbox-center-footer button,#social .inbox-thread-tools button{border:0;background:transparent;box-shadow:none;color:#777781;font-size:12px}
+#social .inbox-demo-hero{padding:14px 0 22px}
+#social .inbox-demo-apps{display:flex;gap:12px;margin:0 0 26px}
+#social .inbox-demo-apps .inbox-app-icon{width:36px;height:36px;flex-basis:36px}
+#social .inbox-demo-hero h3{font-size:25px;font-weight:600;letter-spacing:-.6px}
+#social .inbox-demo-hero p{font-size:13px;color:#92929a}
+#social .inbox-demo-options{margin-top:24px;border-top:1px solid #eeeef1;padding-top:10px}
+#social .inbox-start{margin-top:16px;width:100%}
+#social .inbox-thread-tools{padding-top:8px}
+#social .inbox-thread-tools>.inbox-app-icon{width:24px;height:24px;flex-basis:24px;margin-right:auto}
+#social .inbox-thread-tools button{padding:6px 8px;background:transparent}
+#social .inbox-message .inbox-source{padding:0;border:0;background:transparent;font-size:10px;color:#9999a1}
+#social .inbox-message-list .inbox-message:last-child{border:0;margin-bottom:0}
+#social .inbox-origin-link{font-size:11px}
+#social .inbox-compose-actions{justify-content:flex-end}
+#social .inbox-compose-actions>button:not(.inbox-primary),#social .inbox-compose-actions>.inbox-button{border:0;box-shadow:none;background:transparent;color:#777781}
+#social .inbox-agent-sources label{gap:12px;padding:12px 0;min-height:70px}
+#social .inbox-agent-sources small{color:#9999a1;font-size:10px;letter-spacing:0}
+#social .inbox-citations>summary{font-size:12px!important;font-weight:400!important;color:#92929a}
+#social .inbox-citations ul{margin:0!important}
+#social .inbox-agent-result .inbox-citation{border:0;background:transparent;padding:0;box-shadow:none;color:#0066cc}
+#social .inbox-import-platforms{display:flex;gap:12px;margin:0 0 20px;padding:0;border:0}
+#social .inbox-import-platforms>label{position:relative;display:grid;place-items:center;width:48px;height:48px;margin:0!important;border-radius:12px;cursor:pointer}
+#social .inbox-import-platforms input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer}
+#social .inbox-import-platforms label:has(:checked){background:#f0f1f4}
+#social .inbox-import-platforms label:has(:focus-visible){outline:3px solid #0066cc;outline-offset:2px}
+#social .inbox-welcome{text-align:center;padding:30px 12px 42px}
+#social .inbox-welcome>span{font-size:32px;color:#b9b9c1}
+#social .inbox-welcome h3{margin:14px 0 8px;font-size:18px;font-weight:500}
+#social .inbox-welcome p{font-size:12px;color:#9999a1;margin-bottom:16px}
+#social .inbox-welcome button{min-height:44px;border-radius:8px;background:#0066cc;color:#fff;padding:10px 20px}
+#social .inbox-platforms :focus-visible,#social .inbox-more summary:focus-visible{outline:3px solid #0066cc;outline-offset:2px}
+@media(max-width:600px){#social #directory.universal-directory{width:calc(100vw - 24px)}#social .inbox-toolbar{padding:10px 16px 6px}#social .inbox-platforms{padding:0 12px 8px;justify-content:space-between;gap:0;overflow-x:auto}#social .inbox-platforms button{width:44px;min-width:44px}#social .inbox-list-notice{padding:6px 24px 0}#social .inbox-connection-detail{padding-left:0}#social .inbox-center-footer{flex-wrap:wrap}#social .inbox-compose-actions button,#social .inbox-compose-actions .inbox-button{flex:0 1 auto}#social .inbox-more-menu{right:0;width:210px}}
+
+#social .inbox-agent-selection{margin:0 0 16px}
+#social .inbox-agent-selection>summary{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;cursor:pointer;list-style:none}
+#social .inbox-agent-selection>summary::-webkit-details-marker{display:none}
+#social .inbox-agent-selection>summary::before{content:'›';font-size:20px;color:#9999a1}
+#social .inbox-agent-selection[open]>summary::before{rotate:90deg}
+#social .inbox-agent-selection [data-agent-count]{margin-left:auto;color:#92929a;font-size:12px;font-weight:400}
+#social .inbox-agent-selection>summary:focus-visible{outline:3px solid #0066cc;outline-offset:2px;border-radius:8px}
+#social .inbox-agent-result:first-child{margin-top:16px}
+
+#social .inbox-contact-row .conversation-copy strong{font-size:14px;font-weight:550}
+#social .inbox-contact-row .conversation-copy small{font-size:12px;color:#92929a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#social .inbox-person-avatar{display:grid;place-items:center;background:#f0f1f4;font-size:18px;color:#777781}
+#social .inbox-contact-photo{display:flex!important;align-items:center;gap:16px;margin-bottom:20px}
+#social .inbox-contact-photo>span{display:grid;place-items:center;flex:0 0 64px;height:64px;background:#f5f5f7;border-radius:16px;font-size:14px}
+#social .inbox-contact-photo img{width:64px;height:64px;object-fit:cover;border-radius:16px}
+#social .inbox-contact-photo input{min-width:0;width:auto}
+#social .inbox-contact-delete{padding-top:16px;border-top:1px solid #eeeef1;margin-top:16px}
+#social .inbox-contact-delete[hidden]{display:none}
+
+#social .inbox-contact-tabs{display:flex;gap:8px;padding:10px 8px}
+#social .inbox-contact-tabs button{min-height:44px;padding:8px 16px;font-size:13px;border-radius:8px;background:transparent;color:#92929a}
+#social .inbox-contact-tabs button[aria-pressed=true]{background:#f5f5f7;color:#1d1d1f}
+
+#social .inbox-message-avatar{position:relative;overflow:visible!important;background:#f0f1f4!important}
+#social .inbox-message-avatar>img{width:100%;height:100%;border-radius:10px;object-fit:cover}
+#social .inbox-person-initial{display:grid;place-items:center;width:100%;height:100%;color:#777781;font-size:20px}
+#social .inbox-contact-photo{position:relative;cursor:pointer}
+#social .inbox-contact-photo input:not([hidden]){position:absolute;inset:0;opacity:0;width:100%!important;height:100%;cursor:pointer}
+#social .inbox-contact-photo:has(:focus-visible){outline:3px solid #0066cc;outline-offset:2px;border-radius:16px}
+#social .inbox-contact-photo small{font-size:13px;color:#92929a}
+
+#social #directory.universal-directory{max-height:calc(var(--ui-height,100dvh) - 24px)}
+#social .directory-resize-grip{position:absolute;left:calc(50% - 32px);width:64px;height:16px;z-index:4;cursor:ns-resize;touch-action:none;user-select:none;display:grid;place-items:center;border-radius:8px}
+#social .directory-resize-grip[data-resize-edge=top]{top:2px}
+#social .directory-resize-grip[data-resize-edge=bottom]{bottom:2px}
+#social .directory-resize-grip::after{content:'';width:32px;height:4px;border-radius:4px;background:#d9d9de;transition:background .15s}
+#social .directory-resize-grip:hover::after,#social .directory-resize-grip:focus-visible::after{background:#92929a}
+#social .directory-resize-grip:focus-visible{outline:2px solid #0066cc}
+#social #directory.is-resizing{user-select:none}
+
+#social .inbox-contact-row .conversation-copy strong>.inbox-app-icon{display:inline-block;width:18px;height:18px;vertical-align:middle;margin-left:8px}

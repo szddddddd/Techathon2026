@@ -8,6 +8,8 @@
     "start": "node scripts/serve.mjs",
     "desktop": "electron .",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
+    "test:inbox": "node scripts/test-inbox-core.mjs && node scripts/test-platform-contacts.mjs",
+    "test:inbox:browser": "node scripts/test-inbox-browser.mjs && node scripts/test-platform-contacts-browser.mjs",
     "test:performance": "node scripts/test-build-cache.mjs && node scripts/test-static-files.mjs && node scripts/test-static-transforms.mjs && node scripts/test-placement-cache.mjs && node scripts/test-scene-asset-loading.mjs",
     "test:forest": "node scripts/test-vertical-surface.mjs && node scripts/test-forest-layout.mjs",
     "test:forest:browser": "node scripts/test-forest-browser.mjs",

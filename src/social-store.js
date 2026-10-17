@@ -4,10 +4,10 @@ import {groupStoreMethods} from './group-store.js';
 import {getContent,getAccount,getCreator,validContentRef} from './discovery-catalog.js';
 // All visible social data is local. A mutation becomes visible only after IDB commits.
 export const FRIENDS = [
-  {id:'tuantuan',name:'团团',animal:'kangaroo',emoji:'🦘',color:'#eaba43',signature:'把小事过成好日子。',height:2.1},
-  {id:'ali',name:'阿栗',animal:'fox',emoji:'🦊',color:'#c8794e',signature:'今天也想走远一点。',height:1.9},
-  {id:'xiaomian',name:'小眠',animal:'rabbit',emoji:'🐰',color:'#b5c2a5',signature:'慢一点，也会抵达。',height:1.85},
-  {id:'shanshan',name:'山山',animal:'bear',emoji:'🐻',color:'#aa8265',signature:'收集森林里的好天气。',height:2},
+  {id:'tuantuan',name:'团团',sourcePlatform:'wechat',account:'tuantuan',animal:'kangaroo',emoji:'🦘',color:'#eaba43',signature:'把小事过成好日子。',height:2.1},
+  {id:'ali',name:'阿栗',sourcePlatform:'qq',account:'ali',animal:'fox',emoji:'🦊',color:'#c8794e',signature:'今天也想走远一点。',height:1.9},
+  {id:'xiaomian',name:'小眠',sourcePlatform:'douyin',account:'xiaomian',animal:'rabbit',emoji:'🐰',color:'#b5c2a5',signature:'慢一点，也会抵达。',height:1.85},
+  {id:'shanshan',name:'山山',sourcePlatform:'xiaohongshu',account:'shanshan',animal:'bear',emoji:'🐻',color:'#aa8265',signature:'收集森林里的好天气。',height:2},
 ].map(friend=>({...friend,modelUrl:`assets/rodin-friends/${friend.animal}/scene.glb`}));
 export const friendOf=(state,id)=>FRIENDS.find(f=>f.id===id)||state.customFriends?.[id]||null;
 export const allFriends=state=>[...FRIENDS,...Object.values(state.customFriends||{})];
@@ -72,14 +72,16 @@ export async function createSocialStore({dbName='forest-letters-social-v1',index
     flush(){return queue;},
     getFriend(id){return friendOf(state,id);},
     addAvatarContact(profile){return mutate('friend-added',next=>{
+      if(profile.externalContactId){const existing=Object.values(next.customFriends||{}).find(f=>f.externalContactId===profile.externalContactId);if(existing){existing.name=String(profile.name||existing.name).trim().slice(0,40);existing.sourcePlatform=String(profile.sourcePlatform||existing.sourcePlatform).slice(0,24);existing.sourceAccount=String(profile.sourceAccount||'').slice(0,160);existing.signature=String(profile.signature||'').slice(0,100);if(!next.friends.includes(existing.id))next.friends.push(existing.id);return existing.id;}}
       const account=String(profile.account||'').trim(),name=String(profile.name||'').trim();
       if(!/^[\p{L}\p{N}_.-]{3,64}$/u.test(account)||!name||! /^[a-f0-9-]{36}$/.test(profile.jobId||''))throw new Error('请填写昵称和有效账号（3–64 位中文、字母、数字、点、下划线或短横线）。');
       if(allFriends(next).some(f=>(f.account||f.id).toLowerCase()===account.toLowerCase()))throw new Error('这个账号已经在联系人中。');
       const avatarUrl=String(profile.avatarUrl||'');if(!/^data:image\/(png|jpeg|webp);base64,[a-zA-Z0-9+/]+=*$/.test(avatarUrl)||avatarUrl.length>8*1024*1024)throw new Error('请选择有效的好友头像。');
       const id=`avatar-${profile.jobId}`;
-      (next.customFriends??={})[id]={id,account,name:name.slice(0,40),signature:String(profile.signature||'').trim().slice(0,100),animal:'custom',emoji:'🌱',color:'#a7b98d',height:1.85,avatarUrl,jobId:profile.jobId,modelUrl:null,modelPhase:'queued',modelError:''};
+      (next.customFriends??={})[id]={id,account,name:name.slice(0,40),signature:String(profile.signature||'').trim().slice(0,100),animal:'custom',emoji:'🌱',color:'#a7b98d',height:1.85,avatarUrl,jobId:profile.jobId,modelUrl:null,modelPhase:'queued',modelError:'',...(profile.externalContactId?{createdAt:Date.now(),externalContactId:String(profile.externalContactId).slice(0,160),sourcePlatform:String(profile.sourcePlatform).slice(0,24),sourceAccount:String(profile.sourceAccount||'').slice(0,160)}:{})};
       next.friends.push(id);return id;
     },{friendId:`avatar-${profile.jobId}`});},
+    removeExternalContact(contactId){return mutate('friend-removed',next=>{const f=Object.values(next.customFriends||{}).find(f=>f.externalContactId===contactId);if(!f)return false;next.friends=next.friends.filter(id=>id!==f.id);next.pinnedFriends=next.pinnedFriends.filter(id=>id!==f.id);},{contactId});},
     updateFriendModel(id,job){return mutate('friend-model',next=>{
       requireFriend(next,id);const friend=next.customFriends?.[id];if(!friend||job.id!==friend.jobId)throw new Error('形象任务与好友不匹配。');
       if(friend.modelPhase==='ready'&&job.phase!=='ready')return false;

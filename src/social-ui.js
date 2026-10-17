@@ -1,3 +1,4 @@
+import {appIcon} from './inbox/icons.js';
 import {createSceneLabelHover} from './scene-label-hover.js';
 import {createGroupUI,groupAvatar} from './group-ui.js';
 import {groupOf,groupUnread,mixedConversations,conversationKey,conversationRef} from './group-catalog.js';
@@ -41,7 +42,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   const friendModels=createFriendModels({store});
   const avatarFriends=createAvatarFriendUI({store,ui,models:friendModels,onComplete:name=>toast('已添加 '+name+'，现在可以发消息了。'),onChat:id=>{ui.close('add-friends',{immediate:true,restoreFocus:false});openFriend(id);}});
   let groups;
-  const conversations=createConversations({root,store,friends:FRIENDS,ui,onViewProfile:(friend,origin)=>avatarFriends.open(friend,{origin}),onNewContact:options=>avatarFriends.open(null,options),onError:error=>toast(error.message),onCreateGroup:origin=>groups.openCreate(origin),onGroups:origin=>groups.openQueue(null,origin),onGroupInfo:id=>openConversation({kind:'group',id}).then(()=>groups.showInfo(id,$('moments-toggle')))});
+  const conversations=createConversations({root,store,friends:FRIENDS,ui,onInboxChange:()=>renderInboxSummary(),onViewProfile:(friend,origin)=>avatarFriends.open(friend,{origin}),onNewContact:options=>avatarFriends.open(null,options),onError:error=>toast(error?.message||String(error)),onCreateGroup:origin=>groups.openCreate(origin),onGroups:origin=>groups.openQueue(null,origin),onGroupInfo:id=>openConversation({kind:'group',id}).then(()=>groups.showInfo(id,$('moments-toggle')))});
   groups=createGroupUI({root,store,ui,onOpen:openConversation,onCloseChat:closeMeeting,onError:toast,onMember:(friend,origin)=>avatarFriends.open(friend,{origin})});
   let actionSource=null,statusOwner=null,statusOrigin=null;
   const formDrafts=new Map(),publishDrafts=new Map(),viewScrolls=new Map();
@@ -76,7 +77,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     const top=mobile?oy+h-height-82:Math.max(16,Math.min(h-height-24,above>=16?above:below));
     d.style.left=left+'px';d.style.top=top+'px';
   }
-  function showDirectory(){renderDirectory();ui.open('directory',{origin:actionSource});}
+  function showDirectory(){renderDirectory();ui.open('directory',{origin:actionSource});conversations.loadInbox();}
   const anchorNodes=new Map();const messageWindows=new Map();const draftValues=new Map();const unreadArrival=new Map();
   const hover=createSceneLabelHover({canvas:document.querySelector('#viewport canvas'),selector:'.friend-anchor',dataKey:'friend',pick:(x,y)=>characters.placement.pick(x,y)});
   const anchorLayout=createAnchorLayout();let orbiting=false,lastCameraMotion=-Infinity,lastAnchorFrame=0;
@@ -105,21 +106,25 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   function photo(mediaId,cls=''){return `<button type="button" class="photo-button ${cls}" data-action="photo" data-media="${esc(mediaId)}"><img data-media="${esc(mediaId)}" alt="动态图片" loading="lazy"></button>`;}
   function profileLine(id){return `${avatar(id)}<div><strong>${esc(person(id).name)}</strong><p>${esc(person(id).signature)}</p></div>`;}
   function renderDirectory(){conversations.render();}
-  function renderSummary(){
-    $('first-invitation').hidden=store.state.friends.length>0||store.state.groups.some(g=>!g.leftAt);
-    const count=store.state.friends.reduce((n,id)=>n+unread(id),0)+store.state.groups.filter(g=>!g.leftAt).reduce((n,g)=>n+groupUnread(store.state,g.id).length,0);$('total-unread').textContent=count;$('total-unread').hidden=!count;
+  function renderInboxSummary(){
+    $('first-invitation').hidden=store.state.friends.length>0||store.state.groups.some(g=>!g.leftAt)||!!conversations.inbox?.gateway.list().length;
+    const count=store.state.friends.reduce((n,id)=>n+unread(id),0)+store.state.groups.filter(g=>!g.leftAt).reduce((n,g)=>n+groupUnread(store.state,g.id).length,0)+conversations.externalUnread();$('total-unread').textContent=count;$('total-unread').hidden=!count;
     const newPosts=getNewPublicPosts(store.state).length;$('public-feed-unread').hidden=!newPosts;$('public-feed-unread').textContent=newPosts;$('public-feed-unread').setAttribute('aria-label',`${newPosts}条新动态`);dock.unread(count+newPosts);
+  }
+  function renderSummary(){
+    renderInboxSummary();
     const signature=store.state.friends.join(',');if(signature!==lastFriendSignature){lastFriendSignature=signature;renderDirectory();}
     for(const id of store.state.friends){const latest=store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me').at(-1);if(latest&&unreadArrival.get(id)?.id!==latest.id){if(unreadArrival.has(id))characters.pulse?.(id);unreadArrival.set(id,{id:latest.id,at:performance.now()-Math.max(0,Date.now()-latest.createdAt)});}}
     characters.setSocialState(store.state);renderDirectory();renderAnchors();renderMeetingFriends();
   }
   function renderAnchors(){
+    const currentFriends=new Set(store.state.friends);for(const [id,node] of anchorNodes)if(!currentFriends.has(id)){anchorSizes.unobserve(node);node.remove();anchorNodes.delete(id);unreadArrival.delete(id);messageWindows.delete(id);draftValues.delete(id);}
     for(const id of store.state.friends){let node=anchorNodes.get(id);if(!node){node=document.createElement('div');node.className='friend-anchor';node.hidden=true;node.dataset.friend=id;$('friend-anchors').append(node);anchorNodes.set(id,node);anchorSizes.observe(node);}
       const st=statusOf(id),info=st&&stateInfo(st.kind),messages=store.state.messages.filter(m=>m.friendId===id&&m.senderId!=='me'),last=messages.at(-1),n=unread(id);
       node.classList.toggle('has-unread',n>0);
       const fresh=postsOf(id).some(p=>p.createdAt>(store.state.seenPosts[id]||0));
       const tier=unreadTier(n);node.dataset.unreadTier=tier;
-      const html=`<div class="anchor-identity"><button class="anchor-name" data-action="open-friend" data-id="${id}">${esc(person(id).name)} ${fresh?'<i class="memory-spark"></i>':''}${(store.state.pinnedFriends||[]).includes(id)?'<i class="anchor-pin" aria-label="置顶好友">⌃</i>':''}</button>${st?`<button class="status-badge" data-action="status" data-id="${id}" aria-label="查看${esc(person(id).name)}的${esc(info.label)}状态">${esc(info.icon)} <span>${esc(info.label)}</span></button>`:''}</div><div class="unread-visual" ${n?'':'hidden'}><button class="letter-stack" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读来信">${Array.from({length:tier},(_,i)=>`<i style="--letter:${i}"></i>`).join('')}</button><button class="unread-dot" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读">${n>99?'99+':n}</button></div>${last&&n?`<button class="head-message" data-action="open-friend" data-id="${id}">${esc(last.type==='image'?'[图片]':last.type==='sticker'?'[表情]':last.text||'分享了一段回忆')}</button>`:''}`;
+      const html=`<div class="anchor-identity"><button class="anchor-name" data-action="open-friend" data-id="${id}">${person(id).sourcePlatform?appIcon(person(id).sourcePlatform):''}${esc(person(id).name)} ${fresh?'<i class="memory-spark"></i>':''}${(store.state.pinnedFriends||[]).includes(id)?'<i class="anchor-pin" aria-label="置顶好友">⌃</i>':''}</button>${st?`<button class="status-badge" data-action="status" data-id="${id}" aria-label="查看${esc(person(id).name)}的${esc(info.label)}状态">${esc(info.icon)} <span>${esc(info.label)}</span></button>`:''}</div><div class="unread-visual" ${n?'':'hidden'}><button class="letter-stack" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读来信">${Array.from({length:tier},(_,i)=>`<i style="--letter:${i}"></i>`).join('')}</button><button class="unread-dot" data-action="open-friend" data-id="${id}" aria-label="${esc(person(id).name)}有${n}条未读">${n>99?'99+':n}</button></div>${last&&n?`<button class="head-message" data-action="open-friend" data-id="${id}">${esc(last.type==='image'?'[图片]':last.type==='sticker'?'[表情]':last.text||'分享了一段回忆')}</button>`:''}`;
 
       if(node._html!==html){const arrival=n>(node._unreadCount||0),oldVisual=!n&&(node._unreadCount||0)>0?node.querySelector('.unread-visual'):null,oldTop=oldVisual?.offsetTop,clearing=oldVisual?.cloneNode(true);node._html=html;node.innerHTML=html;hydrate(node);if(clearing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){clearing.style.cssText='position:absolute;left:50%;translate:-50% 0;pointer-events:none;top:'+oldTop+'px';clearing.classList.add('is-clearing');node.append(clearing);clearing.animate([{opacity:1},{opacity:0,transform:'translateY(-4px) scale(.88)'}],{duration:220,easing:'ease-out'}).finished.then(()=>clearing.remove());}if(arrival&&!matchMedia('(prefers-reduced-motion: reduce)').matches)node.querySelector('.unread-visual')?.animate([{transform:'scale(1)'},{transform:'translateY(-3px) scale(1.08)'},{transform:'scale(1)'}],{duration:260,easing:'ease-out'});node._unreadCount=n;}
     }
@@ -140,6 +145,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   }
   function captureDraft(){if(!active||(active.startsWith('group:')&&!groupOf(store.state,active.slice(6))))return;draftValues.set(active,$('chat-input').value);const id=active,value=$('chat-input').value;attempt(()=>store.setConversationDraft(conversationRef(id),value));attempt(()=>store.setScroll(id,$('chat-messages').scrollTop));attempt(()=>store.setConversationAttachment(conversationRef(id),attachment));}
   async function saveSessionDraft(){
+    await conversations.flush();
     clearTimeout(draftTimer);
     if(active&&(!active.startsWith('group:')||groupOf(store.state,active.slice(6)))){
       const id=active,ref=conversationRef(id),value=$('chat-input').value;
@@ -150,10 +156,10 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     }
     await store.flush();
   }
-  async function openFriend(id,options={}){return openConversation(conversationRef(id),options);}
+  async function openFriend(id,options={}){const friend=store.getFriend(id),contact=friend?.externalContactId&&conversations.inbox?.gateway.snapshot.contacts?.find(c=>c.id===friend.externalContactId);if(contact?.threadId)return conversations.inbox.openThread(contact.threadId,options.origin);return openConversation(conversationRef(id),options);}
   function renderChatTitle(){if(!active)return;const group=active.startsWith('group:')?groupOf(store.state,active.slice(6)):null;
     $('meeting-avatar').innerHTML=group?groupAvatar(store.state,group):person(active).avatarUrl?`<img src="${esc(friendAvatar(person(active)))}" alt="">`:esc(person(active).emoji);
-    $('meeting-name').textContent=group?`${group.name}（${group.memberIds.length}）`:person(active).name;$('meeting-signature').textContent=group?(group.notice||'朋友们在这里相聚'):person(active).signature;
+    $('meeting-name').textContent=group?`${group.name}（${group.memberIds.length}）`:person(active).name;$('meeting-signature').textContent=group?(group.notice||'朋友们在这里相聚'):person(active).signature;if(group)$('meeting-name').insertAdjacentHTML('beforeend',appIcon(group.sourcePlatform||'wechat'));else if(person(active).sourcePlatform)$('meeting-name').insertAdjacentHTML('beforeend',appIcon(person(active).sourcePlatform));
     $('moments-toggle').textContent=group?'群资料 ···':'朋友圈 ↗';$('mention-button').hidden=!group;
   }
   function renderAttachment(){const box=$('chat-attachment');box.hidden=!attachment;if(attachment){box.innerHTML=`<img data-media="${esc(attachment)}" alt="待发送图片"><span>图片准备好了</span><button class="icon-button" data-action="remove-attachment" aria-label="移除图片">移除</button>`;hydrate(box);}}
@@ -340,7 +346,7 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
   let expiryTimer=setInterval(()=>{renderAnchors();if(statusOwner&&!statusOf(statusOwner)){closeStatus();toast('这个状态已结束。');}},30000);
   const unsubscribe=store.subscribe((state,event)=>{
     if(event?.type==='attachment')return;if(event?.type==='draft'){renderDirectory();renderMeetingFriends();return;}if(event?.type==='scroll')return;
-    renderSummary();if(active?.startsWith('group:')&&!groupOf(state,active.slice(6))){closeMeeting();return;}if(active){if(event?.type==='group-updated')renderChatTitle();renderMessages();const signature=JSON.stringify(postsOf(active));if(signature!==lastPostSignature){lastPostSignature=signature;renderMemories();}markVisibleRead();if(memoriesVisible()&&postsOf(active).some(p=>p.createdAt>(store.state.seenPosts[active]||0)))attempt(()=>store.markPostsSeen(active));}
+    renderSummary();if(active&&!active.startsWith('group:')&&!state.friends.includes(active)){closeMeeting();return;}if(active?.startsWith('group:')&&!groupOf(state,active.slice(6))){closeMeeting();return;}if(active){if(event?.type==='group-updated')renderChatTitle();renderMessages();const signature=JSON.stringify(postsOf(active));if(signature!==lastPostSignature){lastPostSignature=signature;renderMemories();}markVisibleRead();if(memoriesVisible()&&postsOf(active).some(p=>p.createdAt>(store.state.seenPosts[active]||0)))attempt(()=>store.markPostsSeen(active));}
     if(dialogKind==='my-memories'&&['post','like','comment','profile'].includes(event?.type)){const d=$('social-dialog'),top=d.scrollTop;d.innerHTML=chrome('我的朋友圈','social')+`<div class="own-moments">${timelineHTML('me')}</div>`;d.scrollTop=top;hydrate(d);}
     if(dialogKind==='public-moments'){refreshPublicFeed();markPublicSeen();}
     if(statusOwner&&statusOf(statusOwner))showStatus(statusOwner,null,true);
@@ -373,5 +379,5 @@ export function createSocialUI({store,characters,controls,ui,onOpenSound=()=>{},
     for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;const a=anchors.find(a=>a.id===p.id);node.style.setProperty('--identity-offset',`${((a?.headY??p.y)-p.y+40).toFixed(2)}px`);node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;}
   }
 
-  return {openFriend,update,prepareFrame,saveSessionDraft,setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){hover.dispose();groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
+  return {openFriend,update,prepareFrame,saveSessionDraft,loadInbox:()=>conversations.loadInbox(),get inbox(){return conversations.inbox;},setSceneTransition:value=>{sceneTransition=!!value;if(value)closeStatus({immediate:true,restoreFocus:false});},get presence(){return presence.snapshot();},closeMeeting,toast,shareContent,get activeFriend(){return active&&!active.startsWith('group:')?active:null;},get activeConversation(){return active||closingFriend?conversationRef(active||closingFriend):null;},get chatVisible(){return chatVisible();},openConversation,openGroupQueue:(ids,origin)=>groups.openQueue(ids,origin),refreshGroupQueue:()=>groups.refreshQueue(),openCreateGroup:origin=>groups.openCreate(origin),dispose(){hover.dispose();groups.dispose();presence.clear();friendModels.dispose();avatarFriends.dispose();conversations.dispose();dock.dispose();controls?.removeEventListener('start',orbitStart);controls?.removeEventListener('end',orbitEnd);controls?.removeEventListener('change',orbitChange);anchorSizes.disconnect();anchorLayout.clear();unsubscribe();clearInterval(expiryTimer);clearTimeout(draftTimer);clearTimeout(scrollTimer);root.remove();}};
 }
