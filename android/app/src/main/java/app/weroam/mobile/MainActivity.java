@@ -27,7 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-/** Local HTTPS assets, no JavaScript-to-native bridge, no embedded server key. */
+/** Local HTTPS assets and a route-limited avatar demo bridge; no embedded server key. */
 public final class MainActivity extends Activity {
     private static final String ORIGIN = "https://appassets.androidplatform.net";
     private static final int PICK_IMAGE = 104;
@@ -37,6 +37,23 @@ public final class MainActivity extends Activity {
     private WebChromeClient.CustomViewCallback videoCallback;
     private ValueCallback<Uri[]> fileCallback;
     private boolean backPending;
+    private final java.util.concurrent.ExecutorService avatarWorker = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private volatile AvatarService avatars;
+    private synchronized AvatarService avatarService() throws Exception {if(avatars==null)avatars=new AvatarService(this);return avatars;}
+    private final class AvatarBridge {
+        @android.webkit.JavascriptInterface public void request(String id, String route, String body) {
+            if (!id.matches("[0-9]{1,10}") || !route.matches("jobs(?:/[a-f0-9-]{36}(?:/retry)?)?")) return;
+            avatarWorker.execute(() -> {
+                String result;
+                try {
+                    if(body.length()>12000000)throw new java.io.IOException("Upload too large");
+                    org.json.JSONObject job=avatarService().request(route,body);
+                    result="{\"status\":"+(job==null?404:200)+",\"data\":"+(job==null?"{}":job.toString())+"}";
+                } catch(Exception error) { result="{\"status\":503,\"data\":{\"error\":\"形象服务暂不可用，请检查网络与演示配置\"}}"; }
+                final String payload=result;runOnUiThread(()->{if(web!=null)web.evaluateJavascript("window.__androidAvatarResult("+org.json.JSONObject.quote(id)+","+payload+")",null);});
+            });
+        }
+    }
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +82,7 @@ public final class MainActivity extends Activity {
         root.addView(web, new FrameLayout.LayoutParams(-1, -1));
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
+        web.addJavascriptInterface(new AvatarBridge(), "AndroidAvatar");
         s.setDomStorageEnabled(true);
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(false);
@@ -83,8 +101,15 @@ public final class MainActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 if (isLocal(uri)) {
+                    if (uri.getPath()!=null && uri.getPath().matches("/api/avatar/assets/[a-f0-9-]{36}/(avatar\\.img|reference\\.img|scene\\.glb)")) {
+                        try {
+                            java.io.File asset=avatarService().asset(uri.getPath().substring("/api/avatar/".length()));
+                            return new WebResourceResponse(uri.getPath().endsWith(".glb")?"model/gltf-binary":"application/octet-stream",null,new java.io.FileInputStream(asset));
+                        }catch(Exception error){return response(503,"Service Unavailable","text/plain","Demo service unavailable");}
+                    }
                     if (uri.getPath() != null && uri.getPath().startsWith("/api/"))
                         return response(503, "Service Unavailable", "application/json", "{\"error\":\"手机版暂未连接形象生成服务\"}");
+                    if("/avatar-demo-config.json".equals(uri.getPath()))return response(403,"Forbidden","text/plain","Native only");
                     WebResourceResponse result = loader.shouldInterceptRequest(uri);
                     if (result != null) return result;
                     return response(404, "Not Found", "text/plain", "Not found");
@@ -179,6 +204,7 @@ public final class MainActivity extends Activity {
     @Override protected void onResume() { super.onResume(); if (web != null) { web.onResume(); web.resumeTimers(); } }
     @Override protected void onDestroy() {
         if (fileCallback != null) { fileCallback.onReceiveValue(null); fileCallback = null; }
+        avatarWorker.shutdownNow();
         if (web != null) { root.removeView(web); web.destroy(); web = null; } super.onDestroy();
     }
 }

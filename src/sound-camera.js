@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 
-export function createSoundCamera({camera,controls,getRoot,reduced}){
+export function createSoundCamera({camera,controls,getRoot,reduced,framing=null}){
   let saved=null,tween=null,active=false,held=null;
   const pose=()=>({position:camera.position.clone(),target:controls.target.clone()});
   function destination(){
-    const root=getRoot(),focus=root.position.clone().add(new THREE.Vector3(0,.75,0));
+    const root=getRoot(),focus=root.position.clone().add(new THREE.Vector3(0,framing?.height??.75,0));
     // Orbit the viewing direction 60 degrees to reveal the opposite front corner.
-    const direction=new THREE.Vector3(2.4,1.8,3.5).applyAxisAngle(new THREE.Vector3(0,1,0),-Math.PI/3).normalize();
-    const distance=innerWidth<700?4.6:3.9;
+    const direction=framing?new THREE.Vector3(...framing.direction).normalize():new THREE.Vector3(2.4,1.8,3.5).applyAxisAngle(new THREE.Vector3(0,1,0),-Math.PI/3).normalize();
+    const distance=framing?(innerWidth<700?8:7):(innerWidth<700?4.6:3.9);
     const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),direction).normalize();
     const shift=innerWidth<700?new THREE.Vector3(0,-.65,0):right.multiplyScalar(distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect*.38);
     const target=focus.clone().add(shift);return{position:target.clone().addScaledVector(direction,distance),target};

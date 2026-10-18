@@ -3,14 +3,14 @@ const terminal=new Set(['ready','attention','failed','cancelled']);
 
 /** A friend exists before their model. Stable job IDs also deduplicate across tabs/reloads. */
 export function createFriendModels({store,fetcher=fetch,interval=5000,document:doc=globalThis.document}={}){
-  // The offline APK has no trusted generation server or credentials. Keep the
-  // contact locally without polling a nonexistent service or submitting a job.
-  if(isAndroidApp)return{wake(){},async sync(){},async retry(){throw Error('手机演示版暂未连接形象生成服务。');},dispose(){}};
+  // Older offline APKs have no native transport. New demo packages reuse the
+  // PC pipeline through a route-limited bridge without embedding credentials.
+  if(isAndroidApp&&!globalThis.androidAvatarRequest)return{wake(){},async sync(){},async retry(){throw Error('请使用支持形象生成的新版手机演示包。');},dispose(){}};
   let timer,disposed=false;const inFlight=new Map();
   const pending=()=>Object.values(store.state.customFriends||{}).filter(f=>store.state.friends.includes(f.id)&&!f.modelUrl&&f.jobId&&!terminal.has(f.modelPhase));
   async function api(route,body){
     const native=globalThis.location?.protocol==='file:'&&globalThis.desktopMain?.avatarRequest;
-    const result=native?await globalThis.desktopMain.avatarRequest(route,body):null;
+    const result=isAndroidApp?await globalThis.androidAvatarRequest(route,body):native?await globalThis.desktopMain.avatarRequest(route,body):null;
     const response=result?{status:result.status,ok:result.status>=200&&result.status<300,json:async()=>result.data}:await fetcher('/api/avatar/'+route,body?{method:'POST',headers:{'Content-Type':'application/json','X-Forest-Avatar':'1'},body:JSON.stringify(body)}:{});
     if(response.status===404)return null;
     if(!response.ok)throw new Error('形象暂时无法准备，稍后会继续。');

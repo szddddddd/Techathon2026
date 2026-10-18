@@ -123,14 +123,38 @@ export function createFujiTrain(parent,{reduced=false,assets={}}={}){
     signal.emissiveIntensity=gate.state==='open'?0:(.4+.6*(Math.sin(time*7)>0));
     vehicles.forEach((g,i)=>{const d=distance-i*FUJI_CARRIAGE.spacing,p=sample(d),t=tangent(d);g.position.copy(p);g.rotation.y=-Math.atan2(t.z,t.x);g.visible=d>0;g.updateMatrixWorld(true);});
     wheels.forEach(w=>w.node.rotation.z=-distance/w.radius);for(const rod of rods){rod.position.x=.11*Math.cos(distance/.33);rod.position.y=.33+.11*Math.sin(distance/.33);}
-    const head=vehicles[0],visible=distance>start+3&&distance<end-3;steam.visible=!frozen&&visible;
+    const head=vehicles[0],visible=distance>start+3&&distance<end-3;steam.visible=!frozen&&visible;setNightFactor(nightFactor);
     const source=head.localToWorld(new T.Vector3(1.25,chimneyHeight,0));
     if(steam.visible)for(let i=0;i<18;i++){const age=(elapsed*.25+i/18)%1,s=(.16+age*.65)*(1-age*.43);const dir=tangent(distance);dummy.position.set(source.x-dir.x*age*(stopped||holding?.4:2.5),source.y+age*3.1,source.z-dir.z*age*(stopped||holding?.4:2.5)+Math.sin(i*1.3+age*3)*age*.5);dummy.scale.setScalar(s);dummy.rotation.set(i*.19,age,0);dummy.updateMatrix();steam.setMatrixAt(i,dummy.matrix);steamAlpha.setX(i,Math.pow(Math.sin(Math.PI*age),.8));}steam.instanceMatrix.needsUpdate=true;steamAlpha.needsUpdate=true;
   }
-  update(0,0);
+  const headlightRoot=new T.Group();headlightRoot.name='Night locomotive headlight';vehicles[0].add(headlightRoot);
+  const headlight=new T.SpotLight(0xffe3a3,0,20,Math.PI/8,.65,1.3);headlight.position.set(1.805,1.27,-.025);headlight.target.position.set(13,.05,0);headlight.castShadow=true;headlight.shadow.mapSize.set(512,512);headlight.shadow.bias=-.0005;headlight.shadow.normalBias=.03;headlightRoot.add(headlight,headlight.target);
+  // Illuminate the existing Rodin lamp face; do not add a second lamp mesh.
+  const lampNight={value:0};vehicles[0].updateWorldMatrix(true,true);
+  const lampInverse=vehicles[0].matrixWorld.clone().invert();
+  vehicles[0].children[0].traverse(mesh=>{
+    if(!mesh.isMesh)return;
+    mesh.geometry=mesh.geometry.clone();const positions=mesh.geometry.attributes.position,local=new Float32Array(positions.count*3),point=new T.Vector3();
+    for(let i=0;i<positions.count;i++){point.fromBufferAttribute(positions,i).applyMatrix4(mesh.matrixWorld).applyMatrix4(lampInverse);point.toArray(local,i*3);}
+    mesh.geometry.setAttribute('aLampLocal',new T.BufferAttribute(local,3));
+    const adapt=source=>{const m=source.clone(),previous=source.onBeforeCompile;
+      m.onBeforeCompile=(shader,renderer)=>{previous.call(m,shader,renderer);shader.uniforms.uLampNight=lampNight;
+        shader.vertexShader='attribute vec3 aLampLocal;varying vec3 vLampLocal;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvLampLocal=aLampLocal;');
+        shader.fragmentShader='uniform float uLampNight;varying vec3 vLampLocal;\n'+shader.fragmentShader;
+        shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+          float lampFace=(1.0-smoothstep(.085,.098,length(vLampLocal.yz-vec2(1.27,-.025))))*smoothstep(1.69,1.72,vLampLocal.x);
+          totalEmissiveRadiance+=vec3(1.0,.72,.32)*lampFace*uLampNight*2.5;`);
+      };m.customProgramCacheKey=()=> 'fuji-original-lamp-v1';return m;};
+    mesh.material=Array.isArray(mesh.material)?mesh.material.map(adapt):adapt(mesh.material);
+  });
+  const beamGeometry=new T.ConeGeometry(1.65,8,24,1,true);beamGeometry.translate(0,-4,0);beamGeometry.rotateZ(Math.PI/2);
+  const beam=new T.Mesh(beamGeometry,new T.MeshBasicMaterial({color:0xffe3a3,transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false}));beam.position.copy(headlight.position);beam.rotation.z=-.10;beam.raycast=()=>{};headlightRoot.add(beam);
+  let nightFactor=0;
+  function setNightFactor(value){nightFactor=T.MathUtils.clamp(value,0,1);lampNight.value=nightFactor;headlight.intensity=32*nightFactor;beam.material.opacity=.025*nightFactor;headlightRoot.visible=nightFactor>.01&&distance>start+3&&distance<end-3;}
+  update(0,0);setNightFactor(0);
   const target=()=>vehicles[0].position.clone().add(new T.Vector3(0,1.05,0));
-  return{root,pickables,canPlace,containsVisiblePoint:p=>p.clone().sub(portalA).dot(ta)>=0&&p.clone().sub(portalB).dot(tb)<=0,followTarget:target,getTarget:target,stationTarget:new T.Vector3(FUJI_LAYOUT.station.x,3.7,FUJI_LAYOUT.station.z),update,curve,crossing,
-    snapshot:()=>({fences:{sections:fenceSections.length,panels:fenceSections.reduce((n,s)=>n+s.points.length-1,0),openingWidth:RAIL_FENCE.opening*2,height:RAIL_FENCE.height},trainX:vehicles[0].position.x,trainZ:vehicles[0].position.z,animationTime:elapsed,distance,stopped,holding,crossing:crossing.snapshot(),steamVisible:steam.visible,cycleSeconds:duration,stationSeconds:stopSeconds,easingSeconds:ramp,arrivalSeconds:arrival,carriageDimensions:{...FUJI_CARRIAGE},carriagePositions:vehicles.map(g=>g.position.toArray()),reduced:isReduced(),assets:{locomotive:!!assets.locomotive,carriage:!!assets.carriage,track:!!assets.track,gate:!!assets.gate}}),
+  return{root,pickables,canPlace,setNightFactor,containsVisiblePoint:p=>p.clone().sub(portalA).dot(ta)>=0&&p.clone().sub(portalB).dot(tb)<=0,followTarget:target,getTarget:target,stationTarget:new T.Vector3(FUJI_LAYOUT.station.x,3.7,FUJI_LAYOUT.station.z),update,curve,crossing,
+    snapshot:()=>({headlight:{nightFactor,intensity:headlight.intensity,visible:headlightRoot.visible,shadows:headlight.castShadow},fences:{sections:fenceSections.length,panels:fenceSections.reduce((n,s)=>n+s.points.length-1,0),openingWidth:RAIL_FENCE.opening*2,height:RAIL_FENCE.height},trainX:vehicles[0].position.x,trainZ:vehicles[0].position.z,animationTime:elapsed,distance,stopped,holding,crossing:crossing.snapshot(),steamVisible:steam.visible,cycleSeconds:duration,stationSeconds:stopSeconds,easingSeconds:ramp,arrivalSeconds:arrival,carriageDimensions:{...FUJI_CARRIAGE},carriagePositions:vehicles.map(g=>g.position.toArray()),reduced:isReduced(),assets:{locomotive:!!assets.locomotive,carriage:!!assets.carriage,track:!!assets.track,gate:!!assets.gate}}),
     dispose(){if(disposed)return;disposed=true;root.removeFromParent();},
   };
 }

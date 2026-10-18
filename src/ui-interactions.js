@@ -2,7 +2,7 @@ import {modIcon} from './mods/catalog.js';
 
 /** Shared surface lifecycle. Scene camera timelines remain owned by their modules. */
 export function createUIInteractions() {
-  const layers = new Map(), listeners = new Set();
+  const layers = new Map(), listeners = new Set(), escapeHandlers = new Set();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let order = 0, pointer = null, lastSource = null;
   const scrim = document.createElement('div');
@@ -128,7 +128,9 @@ export function createUIInteractions() {
     requestClose(layer.id);
   };
   const key = e => {
-    if (e.key!=='Escape' || !top()) return;
+    if(e.key!=='Escape')return;
+    for(const handler of escapeHandlers)if(handler()){e.preventDefault();e.stopImmediatePropagation();return;}
+    if(!top())return;
     e.preventDefault(); e.stopImmediatePropagation(); requestClose(top().id);
   };
   const resize = () => {document.documentElement.style.setProperty('--ui-height',(visualViewport?.height||innerHeight)+'px');for(const l of visible()) {l.position?.();if(l.animation){l.token++;l.animation.cancel();l.animation=null;l.contentAnimations?.forEach(a=>a.cancel());if(l.state==='closing')close(l.id,{immediate:true});else {l.state='open';l.el.dataset.uiState='open';}}}};
@@ -140,6 +142,7 @@ export function createUIInteractions() {
     get activeMain(){return visible().find(l=>l.kind==='main')?.id;},
     state:id=>layers.get(id)?.state,
     subscribe(fn){listeners.add(fn);sync();return()=>listeners.delete(fn);},
+    onEscape(handler){escapeHandlers.add(handler);return()=>escapeHandlers.delete(handler);},
     dispose(){for(const l of layers.values()){l.token++;l.animation?.cancel();l.contentAnimations?.forEach(a=>a.cancel());}document.removeEventListener('pointerdown',down,true);document.removeEventListener('click',click);window.removeEventListener('keydown',key,true);window.removeEventListener('resize',resize);visualViewport?.removeEventListener('resize',resize);scrim.remove();listeners.clear();}
   };
 }

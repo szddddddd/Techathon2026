@@ -20,7 +20,7 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
   const current=()=>selected&&(store.getFriend(selected.id)||selected);
   function modelHTML(f){
     if(!store.state.friends.includes(f.id))return '';
-    if(isAndroidApp&&!f.modelUrl)return '<p class="contact-model-note">头像已保存在手机。三维形象生成服务暂未接入手机版。</p>';
+    if(isAndroidApp&&!globalThis.androidAvatarRequest&&!f.modelUrl)return '<p class="contact-model-note">请更新手机演示包以连接形象服务。</p>';
     const ready=!!f.modelUrl,phase=ready?'ready':f.modelPhase||'queued';
     const progress=phaseProgress[phase];
      return `${rigStatus(f.id)?.status==='attention'?'<p class="contact-rig-note" role="status">骨骼待校正 · 当前形象静态显示，聊天和拖放不受影响。</p>':''}<div class="contact-model-line" data-model-phase="${esc(phase)}"><span class="contact-model-dot ${ready?'is-ready':''}"></span><span>${esc(phaseText[phase]||'正在准备森林形象')}</span>${ready&&f.jobId?'<button type="button" data-profile-action="preview">查看形象 ›</button>':['failed','waiting_connection'].includes(phase)?'<button type="button" data-profile-action="retry">重试</button>':''}</div>${progress!==undefined&&activePhases.has(phase)?`<div class="contact-model-progress" role="progressbar" aria-label="虚拟形象生成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span><small>${progress}%</small></div>`:''}${!ready?'<p class="contact-model-note">形象准备不影响聊天，就绪后会自动用于森林场景。</p>':''}${preview&&ready&&f.jobId?`<iframe class="contact-model-preview" title="好友森林形象" src="${esc(avatarURL('/asset-review.html?avatar-job='+f.jobId+'&embed=1'))}"></iframe>`:''}`;
@@ -33,7 +33,7 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
       const added=store.state.friends.includes(f.id);
       body.innerHTML=`<div class="contact-identity"><img src="${esc(friendAvatar(f))}" alt="${esc(f.name)}的头像"><div><h2>${esc(f.name)}</h2><p>账号：${esc(f.account||f.id)}</p></div></div><div class="contact-details"><span>个性签名</span><p>${esc(f.signature||'这位朋友还没有填写签名。')}</p></div><div class="contact-model-status">${modelHTML(f)}</div><p class="contact-feedback" role="status"></p><button class="contact-primary" data-profile-action="${added?'chat':'add'}">${added?'发消息':'添加到通讯录'}</button>${!added&&!f.modelUrl?'<p class="contact-privacy">添加后会根据头像自动准备森林形象。</p>':''}`;
     }
-    if(isAndroidApp){const note=body.querySelector('.contact-privacy');if(note)note.textContent='头像仅保存在手机；手机版暂未接入三维形象生成服务。';}
+    if(isAndroidApp){const note=body.querySelector('.contact-privacy');if(note)note.textContent='添加后通过演示服务根据头像准备三维形象，使用服务额度。生成期间可以继续聊天。';}
   }
   function feedback(text){const el=body.querySelector('.contact-feedback');if(el)el.textContent=text;}
   async function addExisting(){

@@ -64,7 +64,11 @@ export function buildValleyLandmarks({scene,terrain,generated,assets,valleyAsset
   }
   // Thin seams make the continuous support surface read as timber decking.
   for(let x=12;x<22;x+=.27){const cuts=[];for(let i=0;i<TERRACE_EXTENSION.length;i++){const a=TERRACE_EXTENSION[i],b=TERRACE_EXTENSION[(i+1)%TERRACE_EXTENSION.length];if((a[0]>x)!==(b[0]>x))cuts.push(a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]));}cuts.sort((a,b)=>a-b);for(let i=0;i+1<cuts.length;i+=2)box(root,'Mountain deck plank seam',x,terraceHeight(x)+.006,(cuts[i]+cuts[i+1])/2,.018,.008,cuts[i+1]-cuts[i],wood).castShadow=false;}
-  for(let x=18.8;x<22.8;x+=.5)for(let z=-14.3;z<-13.1;z+=.42)box(root,'Terrace stone paving',x,5.51,z,.46,.025,.38,stone[(Math.round(x*2)+Math.round(-z*2))%3]);
+  for(let x=18.8;x<22.8;x+=.5)for(let z=-14.3;z<-13.1;z+=.42){
+    const geometry=new THREE.BoxGeometry(.46,.07,.38),positions=geometry.attributes.position;
+    for(let i=0;i<positions.count;i++){const px=x+positions.getX(i),pz=z+positions.getZ(i),py=positions.getY(i);positions.setXYZ(i,px,terrain.sample(px,pz).height+.012+(py+.035),pz);}
+    geometry.computeVertexNormals();make(root,'Terrace stone paving',geometry,stone[(Math.round(x*2)+Math.round(-z*2))%3],0,0,0);
+  }
   if(valleyAssets.notice_board){
     const notice=obstacle('Forest plaza notice board');notice.add(valleyInstance(valleyAssets,'notice_board',{width:1.3,height:2,depth:.42}));notice.position.set(25.7,2.22,3);notice.rotation.y=-.3;notice.userData.landmark='plaza';pickables.push(notice);
     if(typeof document!=='undefined'){const c=document.createElement('canvas');c.width=512;c.height=320;const ctx=c.getContext('2d');ctx.fillStyle='#f1e8cb';ctx.fillRect(0,0,512,320);ctx.strokeStyle='#b0b68b';ctx.lineWidth=4;ctx.strokeRect(18,18,476,284);ctx.fillStyle='#4c674b';ctx.textAlign='center';ctx.font='bold 56px sans-serif';ctx.fillText('年轮广场',256,107);ctx.font='29px sans-serif';ctx.fillText('在树荫下，见一面',256,182);ctx.font='24px sans-serif';ctx.fillText('来广场坐坐',256,253);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;make(notice,'Readable plaza invitation',new THREE.PlaneGeometry(.91,.65),new THREE.MeshStandardMaterial({map:tex,roughness:1}),0,1.14,.228);}

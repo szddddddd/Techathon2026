@@ -5,13 +5,15 @@ const uniforms=Object.fromEntries(['forest','fuji','ideal'].map(id=>[id,{value:0
 // shader so unread indicators can continue to write their own emissiveIntensity.
 export function bindNightMaterial(material,theme,{mappedWindows=false}={}){
  if(!material.isMeshStandardMaterial||!uniforms[theme]||material.userData.dayNightBound)return material;
- const road=/ring-road|straight-road/.test(material.name);
+ const road=/ring-road|straight-road/.test(material.name),core=/colony-core/.test(material.name),tower=/office-tower|bridge-tower/.test(material.name);
  const mask=theme==='ideal'&&!!material.map&&mappedWindows,emits=material.emissive?.getHex()>0;
  if(!mask&&!emits)return material;
  const previous=material.onBeforeCompile,key=material.customProgramCacheKey.bind(material),baseKey=key();
  material.onBeforeCompile=function(shader,renderer){
   previous.call(this,shader,renderer);shader.uniforms.uSceneNight=uniforms[theme];
-  shader.fragmentShader='uniform float uSceneNight;\n'+shader.fragmentShader;
+  shader.vertexShader='varying vec3 vNightWorld;\n'+shader.vertexShader;
+   shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\nvNightWorld=(modelMatrix*vec4(transformed,1.0)).xyz;');
+   shader.fragmentShader='varying vec3 vNightWorld;uniform float uSceneNight;\n'+shader.fragmentShader;
   shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
    totalEmissiveRadiance *= ${material.userData.nightWindowMask?'uSceneNight * 1.65':'mix(0.55, 1.65, uSceneNight)'};
    ${mask?`
@@ -22,11 +24,15 @@ export function bindNightMaterial(material,theme,{mappedWindows=false}={}){
    float glass = smoothstep(0.035, 0.12, min(texel.g, texel.b) - texel.r * 1.35);
    glass *= smoothstep(0.06, 0.18, min(texel.g,texel.b));
    glass *= 1.0 - smoothstep(0.65, 0.9, max(texel.r, max(texel.g, texel.b)));
-   totalEmissiveRadiance += vec3(${theme==='ideal'?'0.12,0.72,1.0':'1.0,0.52,0.18'}) * glass * wall * uSceneNight * ${theme==='ideal'?'1.05':'0.85'};
+   ${tower?`vec3 cell=floor(vNightWorld*vec3(1.35,1.1,1.35));
+   float occupied=step(.38,fract(sin(dot(cell,vec3(12.9898,78.233,37.719)))*43758.5453));
+   glass*=mix(.025,1.0,occupied);
+   totalEmissiveRadiance*=mix(.015,1.0,occupied);`:''}
+   totalEmissiveRadiance += vec3(${core?'0.035,0.22,1.0':theme==='ideal'?'0.12,0.58,1.0':'1.0,0.52,0.18'}) * glass * wall * uSceneNight * ${core?'3.2':tower?'2.1':'1.05'};
    `:''}
   `);
  };
- material.customProgramCacheKey=()=>baseKey+'|day-night-v1|'+theme+'|'+mask+'|'+road+'|'+!!material.userData.nightWindowMask;
+ material.customProgramCacheKey=()=>baseKey+'|day-night-v2|'+theme+'|'+mask+'|'+road+'|'+!!material.userData.nightWindowMask;
  material.userData.dayNightBound=true;material.needsUpdate=true;return material;
 }
 

@@ -20,6 +20,7 @@ import {GROUP_SLOTS,GROUP_QUEUE,COMMUNITY_FACILITIES} from './community-layout.j
 import {buildFujiScene} from './fuji-scene.js';
 import {FUJI_LAYOUT} from './fuji-layout.js';
 import {createDiscoveryScene} from './discovery-scene.js';
+import {createMailbox} from './mailbox.js';
 import {createRecordPlayer} from './record-player.js';
 import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-assets.js';
 
@@ -62,37 +63,39 @@ export async function prepareSceneWorld(id,{reduced}={}){
  const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
  if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
 
- let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,gate,active=false,disposed=false,unbatched,flies,nightEffects;
+ let terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,discovery,record,mailbox,gate,active=false,disposed=false,unbatched,flies,nightEffects;
  try{
   ({terrain,generated=null,architecture={flames:[],lights:[]},nature={butterflies:[]},landmarks,flies}=config.buildTerrain(root,{assets,reduced}));
   terrain.theme=id;terrain.layout??=config.layout;terrain.placementRoot=root;root.updateMatrixWorld(true);unbatched=sceneResources(root);
  }catch(error){background?.dispose();disposeSceneResources(sceneResources(root));throw error;}
  return{
   id,config,background,root,terrain,generated,obstacleCache,get frozenTransforms(){return frozenTransforms;},architecture,nature,landmarks,assets,layout:config.layout,
-  get discovery(){return discovery;},get record(){return record;},
-  async mount({camera,controls,renderer,ui,sound,mods,onDiscovery,onRecord}){
+  get discovery(){return discovery;},get record(){return record;},get mailbox(){return mailbox;},
+  async mount({camera,controls,renderer,ui,sound,mods,onDiscovery,onRecord,onMailbox}){
    gate=gatedUI(ui);
    try{
     discovery=createDiscoveryScene({scene:root,camera,controls,renderer,terrain,generated,onOpen:onDiscovery,ui:gate.facade,facilities:config.layout.facilities,templates:config.facilityTemplates,obstacleCache});
     discovery.setModuleEnabled('accounts',mods?.enabled('accounts')??true);discovery.setModuleEnabled('scene-video',mods?.enabled('videos')??true);
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
     record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,presentation:config.recordPresentation,externalDisposal:true});
-    terrain.landmarkObstacles.push(record.root);root.updateMatrixWorld(true);nightEffects=createNightEffects(root,id,{flies});nightEffects.setNightFactor(0);
+    terrain.landmarkObstacles.push(record.root);
+     mailbox=await createMailbox({scene:root,terrain,camera,canvas:renderer.domElement,ui:gate.facade,onFocus:onMailbox});terrain.landmarkObstacles.push(mailbox.root);
+     root.updateMatrixWorld(true);nightEffects=createNightEffects(root,id,{flies});nightEffects.setNightFactor(0);
    }catch(error){this.dispose();throw error;}
    return this;
   },
-  setNightFactor(value,camera){nightEffects?.setNightFactor(value,camera);if(architecture.lights[1])architecture.lights[1].intensity=value*1.6;},
+  setNightFactor(value,camera){terrain.train?.setNightFactor?.(value);nightEffects?.setNightFactor(value,camera);if(architecture.lights[1])architecture.lights[1].intensity=value*1.6;},
   nightSnapshot:()=>nightEffects?.snapshot(),
-  activate(){active=true;root.visible=true;terrain.activate?.();gate?.activate(true);},
-  suspend(){active=false;root.visible=false;terrain.suspend?.();gate?.activate(false);},
-  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);const dynamic=[nightEffects?.root,...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)];instanceStaticScenery(root,dynamic);frozenTransforms=freezeStaticTransforms(root,dynamic);},
+  activate(){active=true;root.visible=true;mailbox?.setActive(true);terrain.activate?.();gate?.activate(true);},
+  suspend(){active=false;root.visible=false;mailbox?.setActive(false);terrain.suspend?.();gate?.activate(false);},
+  finishBatch(){if(config.batchForest)batchForest(root,architecture,nature);const dynamic=[nightEffects?.root,...(terrain.dynamicRoots||[]),terrain.river?.root,terrain.train?.root,terrain.airship?.root,terrain.ferrisWheel?.root,terrain.petals?.root,record?.root,mailbox?.root,discovery?.kiosk,discovery?.cinema,...architecture.flames,...nature.butterflies.map(b=>b.group)];instanceStaticScenery(root,dynamic);frozenTransforms=freezeStaticTransforms(root,dynamic);},
   update(now,dt,time){
-   if(!active||disposed)return;record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
+   if(!active||disposed)return;mailbox?.update();record?.update(now,dt);discovery?.update(now);terrain.river?.update(time,dt);terrain.update?.(time,dt);
    for(const [i,f] of architecture.flames.entries()){f.scale.y=.85+Math.sin(time*7+i*1.6)*.16;f.rotation.y=time*.3+i;}
    if(architecture.lights[0])architecture.lights[0].intensity=2.5+Math.sin(time*9)*.5;
    for(const b of nature.butterflies||[]){b.group.position.copy(b.origin);b.group.position.y+=Math.sin(time*1.3+b.phase)*.25;b.group.position.x+=Math.sin(time*.5+b.phase)*.35;b.wings.forEach((w,i)=>w.rotation.y=(i?1:-1)*Math.sin(time*9+b.phase)*.85);}
    if(flies){const p=flies.geometry.attributes.position;for(let i=0;i<42;i++){const a=i*2.399,r=3+i%9*.8;p.setXYZ(i,Math.cos(a)*r+Math.sin(time*.4+i)*.3,2.6+i%5*.45+Math.sin(time*.6+i)*.25,Math.sin(a)*r+Math.cos(time*.3+i)*.2);}p.needsUpdate=true;}
   },
-  dispose(){if(disposed)return;disposed=true;active=false;background?.dispose();const resources=new Set([...unbatched||[],...sceneResources(root)]);discovery?.dispose();record?.dispose();gate?.dispose();terrain.dispose?.();root.removeFromParent();disposeSceneResources(resources);},
+  dispose(){if(disposed)return;disposed=true;active=false;background?.dispose();const resources=new Set([...unbatched||[],...sceneResources(root)]);discovery?.dispose();record?.dispose();mailbox?.dispose();gate?.dispose();terrain.dispose?.();root.removeFromParent();disposeSceneResources(resources);},
  };
 }

@@ -43,29 +43,44 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
     const source=new THREE.ShapeGeometry(shape),vertices=[],colors=[];
     const pos=source.attributes.position,idx=source.index;
     const shift=bankRoot.position.x;
+    // Paint meadow variation into the ground itself: no floating, coplanar grass disks.
+    const patches=[];
+    for(let i=0;i<70;i++){
+      const x=(name==='West'?-11:3.4)+rnd()*7.4,z=-10.5+rnd()*21;
+      if(name==='West'&&x>riverCenter(z)-2.3||name==='East'&&x<riverCenter(z)+2.4||Math.abs(z)>9.2||Math.abs(x)>9.8)continue;
+      const radius=.3+rnd()*.9,color=grassMats[Math.floor(rnd()*5)].color.clone();rnd();const angle=rnd()*6,stretch=.5+rnd()*.6;
+      if(containsDisk(points,x,z,radius*Math.max(1,stretch)))patches.push({x,z,radius,color,angle,stretch});
+    }
     function triangle(a,b,c){
       const edges=[[a,b,c],[b,c,a],[c,a,b]].sort((u,v)=>v[0].distanceToSquared(v[1])-u[0].distanceToSquared(u[1]));
       const [u,v,w]=edges[0];
       if(u.distanceToSquared(v)>.55*.55){const m=u.clone().lerp(v,.5);triangle(u,m,w);triangle(m,v,w);return;}
       const center=a.clone().add(b).add(c).multiplyScalar(1/3),q=querySurface(center.x+shift,-center.y),stone=visualHeight(center.x+shift,-center.y)>6;
       const color=new THREE.Color(stone?0x819080:0x839c46).multiplyScalar(.94+.08*Math.sin(center.x*2.3+center.y*1.7));
+      if(!stone)for(const p of patches){const dx=center.x-p.x,dz=-center.y-p.z,c=Math.cos(p.angle),s=Math.sin(p.angle);if(Math.hypot(dx*c-dz*s,(dx*s+dz*c)/p.stretch)<p.radius)color.copy(p.color);}
       for(const p of [a,b,c]){vertices.push(p.x,visualHeight(p.x+shift,-p.y)-2.22,-p.y);colors.push(color.r,color.g,color.b);}
     }
     for(let i=0;i<idx.count;i+=3)triangle(...[0,1,2].map(k=>new THREE.Vector2(pos.getX(idx.getX(i+k)),pos.getY(idx.getX(i+k)))));
     source.dispose();const top=new THREE.BufferGeometry();top.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));top.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));top.computeVertexNormals();
     const surface=mesh(bankRoot,name+' meadow',top,mat(0xffffff,{vertexColors:true}),0,2.22,0);surface.userData.terrainSurface=true;
+    // Seal the meadow edge into the island rock. The rock rim has coarser
+    // sampling than the meadow, so sloping coastlines otherwise leave openings.
+    const closure=[];
+    for(let i=0;i<points.length;i++){
+      const a=points[i],b=points[(i+1)%points.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.25);
+      for(let j=0;j<steps;j++){
+        const x=a[0]+(b[0]-a[0])*j/steps,z=a[1]+(b[1]-a[1])*j/steps,xx=a[0]+(b[0]-a[0])*(j+1)/steps,zz=a[1]+(b[1]-a[1])*(j+1)/steps;
+        const y=visualHeight(x+shift,z),yy=visualHeight(xx+shift,zz);
+        if(Math.abs(Math.abs((x+xx)/2+shift-riverCenter((z+zz)/2))-riverHalfWidth((z+zz)/2))<.1)continue;
+        closure.push(x,y,z,xx,yy,zz,x,-1.9,z,xx,yy,zz,xx,-1.9,zz,x,-1.9,z);
+      }
+    }
+    const closureGeometry=new THREE.BufferGeometry();closureGeometry.setAttribute('position',new THREE.Float32BufferAttribute(closure,3));closureGeometry.computeVertexNormals();
+    mesh(bankRoot,name+' sealed meadow rim',closureGeometry,mat(0x8d9770,{side:THREE.DoubleSide}));
     // Only the river cut needs an interior wall; the outer coast belongs to the shared rock volume.
     const onRiver=p=>Math.abs(Math.abs(p[0]+shift-riverCenter(p[1]))-riverHalfWidth(p[1]))<.02;
     const sides=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];if(!onRiver(a)||!onRiver(b))continue;const steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,xx=a[0]+(b[0]-a[0])*u,zz=a[1]+(b[1]-a[1])*u,y=visualHeight(x+shift,z),yy=visualHeight(xx+shift,zz);sides.push(x,-1.8,z,xx,yy,zz,x,y,z,x,-1.8,z,xx,-1.8,zz,xx,yy,zz);}}
     const skirt=new THREE.BufferGeometry();skirt.setAttribute('position',new THREE.Float32BufferAttribute(sides,3));skirt.computeVertexNormals();mesh(bankRoot,name+' sculpted escarpment',skirt,mat(0x687b6e,{side:THREE.DoubleSide}));
-    // Triangular earth-color variations keep a painted surface without photo textures.
-    for(let i=0;i<70;i++){const x=(name==='West'?-11:3.4)+rnd()*7.4,z=-10.5+rnd()*21;
-      if(name==='West'&&x>riverCenter(z)-2.3)continue;if(name==='East'&&x<riverCenter(z)+2.4)continue;
-      if(Math.abs(z)>9.2||Math.abs(x)>9.8)continue;
-      const radius=.3+rnd()*.9,material=grassMats[Math.floor(rnd()*5)],y=2.232+rnd()*.008,angle=rnd()*6,stretch=.5+rnd()*.6;
-      if(!containsDisk(points,x,z,radius*Math.max(1,stretch)))continue;
-      const patch=mesh(bankRoot,'Meadow color patch',new THREE.CircleGeometry(radius,6),material,x,y,z);patch.rotation.x=-Math.PI/2;patch.rotation.z=angle;patch.scale.y=stretch;patch.castShadow=false;
-    }
   }
   bank(leftOutline,'West');bank(rightOutline,'East');
   const mountain=new THREE.Group();mountain.name='Continuous spring mountain range';mountain.userData.kind='mountain';mountain.userData.layoutId='mountain_range';
@@ -80,7 +95,13 @@ export function buildTerrain(scene,{rodinBridge=false,riverAssets=null,valleyAss
   function clip(points,x,above){const out=[];for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],ain=above?a.x>=x:a.x<=x,bin=above?b.x>=x:b.x<=x;if(ain)out.push(a);if(ain!==bin)out.push(a.clone().lerp(b,(x-a.x)/(b.x-a.x)));}return out;}
   for(let i=0;i<flatDeck.attributes.position.count;i+=3){const tri=[0,1,2].map(j=>new THREE.Vector3().fromBufferAttribute(flatDeck.attributes.position,i+j));for(const [lo,hi] of [[-100,16],[16,20],[20,100]]){const p=clip(clip(tri,lo,true),hi,false);for(let j=1;j+1<p.length;j++)for(const v of [p[0],p[j],p[j+1]])deckVertices.push(v.x,terraceHeight(v.x),-v.y);}}
   flatDeck.dispose();const deckGeometry=new THREE.BufferGeometry();deckGeometry.setAttribute('position',new THREE.Float32BufferAttribute(deckVertices,3));deckGeometry.computeVertexNormals();
-  const deck=mesh(root,'Mountain terrace meadow',deckGeometry,mat(0xbba27c,{side:THREE.DoubleSide}));deck.userData.terraceExtension=true;
+  const deck=mesh(root,'Mountain terrace meadow',deckGeometry,mat(0xbba27c,{side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));deck.userData.terraceExtension=true;
+  const apron=[];
+  for(let i=0;i<TERRACE_EXTENSION.length;i++){
+    const a=TERRACE_EXTENSION[i],b=TERRACE_EXTENSION[(i+1)%TERRACE_EXTENSION.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.2);
+    for(let j=0;j<steps;j++){const x=a[0]+(b[0]-a[0])*j/steps,z=a[1]+(b[1]-a[1])*j/steps,xx=a[0]+(b[0]-a[0])*(j+1)/steps,zz=a[1]+(b[1]-a[1])*(j+1)/steps;const y=terraceHeight(x),yy=terraceHeight(xx),low=Math.min(y-.18,visualHeight(x,z)-.15),low2=Math.min(yy-.18,visualHeight(xx,zz)-.15);apron.push(x,y,z,xx,yy,zz,x,low,z,xx,yy,zz,xx,low2,zz,x,low,z);}
+  }
+  const apronGeometry=new THREE.BufferGeometry();apronGeometry.setAttribute('position',new THREE.Float32BufferAttribute(apron,3));apronGeometry.computeVertexNormals();mesh(root,'Closed terrace foundation',apronGeometry,mat(0x8d9980,{side:THREE.DoubleSide}));
   root.updateMatrixWorld(true);
   const mountainHeightAt=createVerticalSurfaceSampler(mountains),heightCache=new Map();
   function sample(x,z){

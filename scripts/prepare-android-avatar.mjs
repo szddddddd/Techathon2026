@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {readImageConfig} from '../server/image-config.mjs';
+import {RodinRestClient} from '../server/rodin-rest-client.mjs';
+import {avatarPrompt} from '../server/avatar-pipeline.mjs';
+const root=process.cwd();
+const image=await readImageConfig({root}),rodin=await new RodinRestClient({root}).config();
+const dir=path.join(root,'.cache/android-native');await fs.mkdir(dir,{recursive:true});
+await fs.writeFile(path.join(dir,'avatar-demo-config.json'),JSON.stringify({image,rodin:{baseURL:rodin.baseURL,apiKey:rodin.apiKey},prompt:avatarPrompt('')}),{mode:0o600});
+console.log('Android private demo configuration prepared; values omitted.');

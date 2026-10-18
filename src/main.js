@@ -20,6 +20,7 @@ import {createWebPet} from './web-pet.js';
 import {petPayload} from './pet-state.js';
 import {createSound,createSoundSettings} from './sound.js';
 import {createSoundCamera} from './sound-camera.js';
+import {createMailboxInbox} from './mailbox-inbox.js';
 import {createFreeRoam} from './free-roam.js';
 import {constrainCameraPan} from './camera-pan-bounds.js';
 import {readSceneTheme,SCENE_STORAGE_KEY} from './scene-theme.js';
@@ -73,7 +74,9 @@ async function boot(){
  const cameraPoses=new Map();let uiState={};ui.subscribe(s=>uiState=s);
  const soundCamera=createSoundCamera({camera,controls,getRoot:()=>world.record.root,reduced});window.__sound=sound;window.__soundCamera=soundCamera;
  const soundSettings=sound?createSoundSettings({sound,ui,onSceneOpen:async()=>{if(roam?.busy)await roam.exit();if(ui.state('sound')==='closed'||ui.state('sound')==='closing')return;groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();characters.finishCamera();soundCamera.open();},onSceneClose:immediate=>soundCamera.close(immediate)}):null;
- const mountOptions={camera,controls,renderer,ui,sound,mods,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true})};
+ const mailboxCamera=createSoundCamera({camera,controls,getRoot:()=>world.mailbox.root,reduced,framing:{height:1.15,direction:[1.2,2.5,4]}});
+ const mailboxInbox=createMailboxInbox({ui,loadInbox:()=>socialUI.loadInbox(),onOpen:()=>mailboxCamera.open(),onClose:immediate=>mailboxCamera.close(immediate)});window.__mailboxInbox=mailboxInbox;window.__mailboxCamera=mailboxCamera;
+ const mountOptions={camera,controls,renderer,ui,sound,mods,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true}),onMailbox:async()=>{if(switching||uiState.main||uiState.modal)return;if(roam?.busy)await roam.exit();if(switching)return;cancelReset();boards?.dismiss();groupCamera.close(true);trainFollow?.exit({immediate:true});soundCamera.close(true);characters.finishCamera();valley.finishCamera();mailboxInbox.open();}};
  await world.mount(mountOptions);scene.add(world.root);
  let timeStorage;try{timeStorage=localStorage;}catch{}
  const dayNight=createDayNightClock({storage:timeStorage,reduced:()=>reduced.matches,hidden:()=>document.hidden});
@@ -131,11 +134,11 @@ async function boot(){
   valley=createValleySocial({landmarks:world.landmarks,terrain:world.terrain,scene,camera,controls,canvas:renderer.domElement,characters,store,socialUI,reduced,ui});
   trainFollow=(world.terrain.train||world.terrain.airship)?createTrainFollow({train:world.terrain.train||world.terrain.airship,presentation:world.terrain.airship?.presentation,camera,controls,canvas:renderer.domElement,ui,reduced,beforeOpen:async()=>{if(roam?.busy)await roam.exit();valley.finishCamera();characters.finishCamera();}}):null;
   if(store)boards=createDiscoveryBoards({camera,facilities:world.discovery,contentUI,player,beforeFocus:async()=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();if(socialUI.activeFriend){socialUI.closeMeeting();characters.finishCamera();}}});
-  window.__valley=valley;window.__discoveryBoards=boards;window.__discoveryScene=world.discovery;window.__recordPlayer=world.record;window.__trainFollow=trainFollow;window.__vehicleFollow=trainFollow;
+  window.__valley=valley;window.__discoveryBoards=boards;window.__discoveryScene=world.discovery;window.__recordPlayer=world.record;window.__mailbox=world.mailbox;window.__trainFollow=trainFollow;window.__vehicleFollow=trainFollow;
   window.__river={...world.terrain.river,view(position,target){controls.enabled=false;camera.position.set(...position);controls.target.set(...target);camera.lookAt(controls.target);},stats:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  }
  connectSceneControllers();world.finishBatch();world.activate();
- const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
+ const focusFriend=characters.focus;characters.focus=async id=>{if(roam?.busy)await roam.exit();mailboxInbox.close(true);mailboxCamera.close(true);soundCamera.close(true);groupCamera.close(true);trainFollow?.exit({immediate:true});valley.finishCamera();return focusFriend(id);};
  window.__socialStore=store;window.__socialUI=socialUI;window.__groupBuildings=groupBuildings;window.__characterPlacement=characters.placement;window.__discoveryUI=contentUI;window.__contentPlayer=player;
  // Open the inbox for a shareable local demo URL; loading samples still requires consent.
  if(store&&new URLSearchParams(location.search).get('workshop')==='1')void openWorkshop();
@@ -176,7 +179,7 @@ async function boot(){
    {const c=defaultCamera(candidate.config);camera.position.fromArray(innerWidth<700?c.mobile:c.position);controls.target.fromArray(innerWidth<700?c.mobileTarget:c.target);}camera.lookAt(controls.target);camera.updateMatrixWorld(true);
    characters.setScene({scene,terrain:candidate.terrain,generated:candidate.generated,obstacleCache:candidate.obstacleCache});rebound=true;
    groupBuildings.setScene({scene,slots:candidate.layout.slots,queue:candidate.layout.queue,templates:candidate.assets.groups,theme:id});
-   boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();soundCamera.close(true);controllersReleased=true;
+   boards?.dismiss();boards?.dispose();trainFollow?.dispose();ui.close('valley',{immediate:true,restoreFocus:false});valley.dispose();mailboxInbox.close(true);mailboxCamera.close(true);soundCamera.close(true);controllersReleased=true;
    old.suspend();world=candidate;connectSceneControllers();candidate.finishBatch();candidate.activate();applyEnvironment();resetCamera();
    characters.suspend(false);groupBuildings.suspend(false);controls.enabled=true;
    socialUI.prepareFrame?.(performance.now());characters.update(performance.now(),0);groupBuildings.update(performance.now());world.update(performance.now(),0,clockTime);applyTime();window.__renderPerformance.warmup=await prepareSceneGPU(renderer,scene,camera);renderer.render(scene,camera);
@@ -201,8 +204,12 @@ async function boot(){
  let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
  document.addEventListener('resume',()=>{last=performance.now();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
- function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;if(committing){last=now;frameId=requestAnimationFrame(frame);return;}const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
-  if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
+ function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;
+   // Fullscreen Android reading leaves the scene covered. Give scrolling and
+   // input the main thread, while keeping camera transitions alive at 10 Hz.
+   if(isAndroidApp&&ui.activeMain==='discovery'&&now-last<100){frameId=requestAnimationFrame(frame);return;}
+   if(committing){last=now;frameId=requestAnimationFrame(frame);return;}const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
+  if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);mailboxCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
   if(!committing){dayNight.update(timeDelta);applyTime();}
   renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
  }

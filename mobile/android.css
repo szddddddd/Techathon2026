@@ -1,4 +1,18 @@
 /* Native host already subtracts cutouts, system bars and the soft keyboard. */
+html[data-platform=android] button,html[data-platform=android] a{touch-action:manipulation}
+html[data-platform=android] .discovery-shell{backdrop-filter:none}
+@media(orientation:landscape) and (max-height:600px){
+ html[data-platform=android] #discovery-dialog{position:fixed!important;inset:0!important;translate:none!important;transform:none!important;width:100%!important;max-width:none!important;height:100%!important;max-height:100%!important;margin:0!important;border-radius:0!important;display:flex;flex-direction:column}
+ html[data-platform=android] #discovery-dialog:not([open]){display:none}
+ html[data-platform=android] #discovery-dialog .d-reading{max-width:760px;margin-inline:auto;padding:16px 28px}
+ html[data-platform=android] #discovery-dialog .d-reading-cover{max-height:180px;object-fit:cover}
+ html[data-platform=android] #discovery-dialog .d-subscriptions{display:none}
+ html[data-platform=android] #discovery-dialog .d-library{display:block}
+ html[data-platform=android] #discovery-dialog .ui-titlebar{flex-shrink:0;min-height:44px;padding-block:4px}
+ html[data-platform=android] #discovery-dialog .d-reading h1{font-size:26px}
+ html[data-platform=android] #discovery-dialog .d-video-stage{min-height:0;max-height:60dvh}
+}
+
 html[data-platform=android]{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 html[data-platform=android] body{overscroll-behavior:none}
 html[data-platform=android] #social .contacts-add,

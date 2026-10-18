@@ -16,6 +16,8 @@ if (-not $SkipWebBuild) {
     & node scripts/build-android-web.mjs
     if ($LASTEXITCODE -ne 0) { throw 'Android asset build failed' }
 }
+& node scripts/prepare-android-avatar.mjs
+if ($LASTEXITCODE -ne 0) { throw 'Private Android demo configuration missing' }
 $signing=Join-Path $repo '.android-signing'
 New-Item -ItemType Directory -Force $signing | Out-Null
 $signingProps=Join-Path $signing 'signing.properties'
