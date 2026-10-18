@@ -41,6 +41,7 @@ public final class MainActivity extends Activity {
     private volatile AvatarService avatars;
     private synchronized AvatarService avatarService() throws Exception {if(avatars==null)avatars=new AvatarService(this);return avatars;}
     private final class AvatarBridge {
+        @android.webkit.JavascriptInterface public void openSettings() {runOnUiThread(()->AvatarSettings.show(MainActivity.this,()->{avatars=null;}));}
         @android.webkit.JavascriptInterface public void request(String id, String route, String body) {
             if (!id.matches("[0-9]{1,10}") || !route.matches("jobs(?:/[a-f0-9-]{36}(?:/retry)?)?")) return;
             avatarWorker.execute(() -> {
@@ -49,7 +50,7 @@ public final class MainActivity extends Activity {
                     if(body.length()>12000000)throw new java.io.IOException("Upload too large");
                     org.json.JSONObject job=avatarService().request(route,body);
                     result="{\"status\":"+(job==null?404:200)+",\"data\":"+(job==null?"{}":job.toString())+"}";
-                } catch(Exception error) { result="{\"status\":503,\"data\":{\"error\":\"形象服务暂不可用，请检查网络与演示配置\"}}"; }
+                } catch(Exception error) { result="{\"status\":503,\"data\":{\"error\":\"形象服务暂不可用，请在我 → 设置 → 模型服务配置中填写密钥，并检查网络\"}}"; }
                 final String payload=result;runOnUiThread(()->{if(web!=null)web.evaluateJavascript("window.__androidAvatarResult("+org.json.JSONObject.quote(id)+","+payload+")",null);});
             });
         }
@@ -124,9 +125,11 @@ public final class MainActivity extends Activity {
                 return true;
             }
             @Override public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
-                root.removeView(view); view.destroy();
+                if(fileCallback!=null){fileCallback.onReceiveValue(null);fileCallback=null;}
+                if(fullScreenVideo!=null)closeVideo();backPending=false;
+                root.removeView(view); if(web==view)web=null;view.destroy();
                 new AlertDialog.Builder(MainActivity.this).setTitle("重新打开风景")
-                    .setMessage("系统释放了场景内存，你的本地消息仍然保留。")
+                    .setMessage(detail.didCrash()?"场景渲染进程异常退出，可能与系统 WebView 或图形驱动有关。你的本地消息仍然保留。":"系统终止了场景渲染进程，可能是内存压力。你的本地消息仍然保留。")
                     .setPositiveButton("重新打开", (dialog, which) -> createWebView())
                     .setNegativeButton("退出", (dialog, which) -> finish()).setCancelable(false).show();
                 return true;

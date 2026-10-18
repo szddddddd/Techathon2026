@@ -1,3 +1,4 @@
+import {randomUUID} from './browser-id.js';
 import {petPayload} from './pet-state.js';
 import {supportsDesktopPet} from './mobile-platform.js';
 export function createWebPet({store,ui,onOpenFriend,getSceneId=()=> 'forest',getDayNight=()=>null,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
@@ -8,7 +9,7 @@ export function createWebPet({store,ui,onOpenFriend,getSceneId=()=> 'forest',get
   // Keep a single live control mounted inside Settings; never expose a scene shortcut.
   root.hidden=true;document.body.append(root);
   const toggle=root.querySelector('#pet-toggle'),notice=root.querySelector('#pet-launch-status');
-  let client;try{client=sessionStorage.getItem('forest-desktop-client');if(!client){client=crypto.randomUUID();sessionStorage.setItem('forest-desktop-client',client);}}catch{client=crypto.randomUUID();}
+  let client;try{client=sessionStorage.getItem('forest-desktop-client');if(!client){client=randomUUID();sessionStorage.setItem('forest-desktop-client',client);}}catch{client=randomUUID();}
   let online=false,visible=false,instance=null,lastSignature='',launching=false,disposed=false,noticeTimer,syncTimer,polling=false,lastOpen=0;
   async function request(route,data,timeout=800){
     const response=await fetch(bridgeOrigin+'/api/'+route,{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:undefined,body:data?JSON.stringify(data):undefined,signal:AbortSignal.timeout(timeout)});

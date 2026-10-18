@@ -88,7 +88,7 @@ let privateConfig=null;
 try{await fs.access(path.join(root,privateRelative));privateConfig=require(path.join(root,privateRelative));}catch(error){if(error.code!=='ENOENT')throw error;}
 if(privateConfig)assert.equal(typeof privateConfig.apiKey==='string'&&privateConfig.apiKey.length>=16,true,'Private Agent credential is valid');
 // Fresh checkouts can run all mock tests without obtaining a real credential.
-const needle=Buffer.from(privateConfig?.apiKey||'synthetic-private-credential-sentinel');
+const needle=Buffer.from(privateConfig?.apiKey||['synthetic','private','credential','sentinel'].join('-'));
 const tracked=execFileSync('git',['ls-files','-z'],{cwd:root,maxBuffer:16*1024*1024}).toString('utf8').split('\0').filter(Boolean);
 assert.equal(tracked.some(name=>name.startsWith('.weroam-private/')),false,'Private directory is not tracked');
 const ignored=execFileSync('git',['check-ignore','--',privateRelative],{cwd:root}).toString('utf8').trim().replaceAll('\\','/');

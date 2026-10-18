@@ -1,6 +1,7 @@
+import {randomUUID} from './browser-id.js';
 import {SCENE_THEMES} from './scene-theme.js';
 import {GROUP_TYPES,groupOf,conversationKey} from './group-catalog.js';
-const uid=()=>crypto.randomUUID(),text=(v,n=80)=>String(v||'').trim().slice(0,n);
+const uid=()=>randomUUID(),text=(v,n=80)=>String(v||'').trim().slice(0,n);
 export function groupStoreMethods({mutate,person,payload}){
  const requireGroup=(s,id)=>{const g=groupOf(s,id);if(!g)throw new Error('群聊不存在或已退出。');return g;};
  const owner=(s,id)=>{const g=requireGroup(s,id);if(g.ownerId!=='me')throw new Error('只有群主可以修改群资料。');return g;};

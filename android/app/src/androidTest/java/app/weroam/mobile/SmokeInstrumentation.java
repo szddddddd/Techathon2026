@@ -24,12 +24,13 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Executes against the installed signed release APK; no external services. */
 public final class SmokeInstrumentation extends Instrumentation {
     private WebView web;
+    private boolean settings;
     private boolean quick;
     private boolean picker;
     private boolean benchmark;
     private boolean media;
     private final StringBuilder report = new StringBuilder();
-    @Override public void onCreate(Bundle args) { super.onCreate(args); quick="true".equals(args.getString("quick")); picker="true".equals(args.getString("picker")); benchmark="true".equals(args.getString("benchmark")); media="true".equals(args.getString("media")); start(); }
+    @Override public void onCreate(Bundle args) { super.onCreate(args); settings="true".equals(args.getString("settings")); quick="true".equals(args.getString("quick")); picker="true".equals(args.getString("picker")); benchmark="true".equals(args.getString("benchmark")); media="true".equals(args.getString("media")); start(); }
     private WebView find(View node) {
         if (node instanceof WebView) return (WebView) node;
         if (node instanceof ViewGroup) for (int i=0;i<((ViewGroup) node).getChildCount();i++) {
@@ -81,6 +82,7 @@ public final class SmokeInstrumentation extends Instrumentation {
     @Override public void onStart() {
         Bundle result=new Bundle();
         try {
+            if(settings){JSONObject previous=AvatarSettings.load(getTargetContext());try{JSONObject test=new JSONObject().put("image",new JSONObject().put("apiKey","synthetic-image-only")).put("rodin",new JSONObject().put("apiKey","synthetic-rodin-only"));AvatarSettings.save(getTargetContext(),test);check("synthetic-image-only".equals(AvatarSettings.load(getTargetContext()).getJSONObject("image").getString("apiKey")),"Keystore encrypted configuration roundtrip");String encrypted=getTargetContext().getSharedPreferences("weroam-avatar-config-v1",0).getString("value","");check(!encrypted.contains("synthetic"),"stored configuration contains no plaintext test key");getTargetContext().getSharedPreferences("weroam-avatar-config-v1",0).edit().clear().commit();check(AvatarSettings.load(getTargetContext())==null,"clear configuration");boolean blocked=false;try{new AvatarService(getTargetContext()).request("jobs","{}");}catch(Exception e){blocked=true;}check(blocked,"unconfigured generation blocked before network");}finally{if(previous!=null)AvatarSettings.save(getTargetContext(),previous);}result.putString("stream",report.toString());finish(-1,result);return;}
             MainActivity activity=(MainActivity)startActivitySync(new Intent(getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             runOnMainSync(()->web=find(activity.getWindow().getDecorView()));
             await("Boolean(window.__sceneTheme?.ready&&window.__socialUI?.inbox)");

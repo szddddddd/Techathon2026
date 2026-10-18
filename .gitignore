@@ -3,6 +3,7 @@ node_modules/
 __pycache__/
 *.py[cod]
 .cache/
+.agent/
 .forest-runtime.json
 .forest-avatar-data/
 .test-results/

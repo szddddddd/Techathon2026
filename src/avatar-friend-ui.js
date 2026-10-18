@@ -1,3 +1,4 @@
+import {randomUUID} from './browser-id.js';
 import {rigStatus,subscribeRigStatus} from './character-rig.js';
 import {avatarURL} from './avatar-url.js';
 import {friendAvatar} from './social-store.js';
@@ -62,7 +63,7 @@ export function createAvatarFriendUI({store,ui,models,onComplete=()=>{},onChat=(
     if(e.target.id!=='contact-form')return;e.preventDefault();if(adding)return;capture();if(!avatarUrl)return feedback('请选择联系人头像。');
     adding=true;const button=e.target.querySelector('[type=submit]');button.disabled=true;
     try{
-      requestId??=crypto.randomUUID();const id=await store.addAvatarContact({...draft,avatarUrl,jobId:requestId});
+      requestId??=randomUUID();const id=await store.addAvatarContact({...draft,avatarUrl,jobId:requestId});
       selected=store.getFriend(id);preview=false;draw();onComplete(selected.name);avatarUrl='';requestId=null;for(const key of Object.keys(draft))draft[key]='';
     }catch(error){feedback(error.message);onError(error);}finally{adding=false;if(button.isConnected)button.disabled=false;}
   });

@@ -11,7 +11,8 @@ const inventory=JSON.parse(await fs.readFile('.cache/android-assets.json','utf8'
 for(const f of inventory.files){
  assert.ok(!/(?:\.forest-avatar-data|hyper3d-config|\.env|node_modules|weroam-slides|desktop\/|server\/|\.blend$)/.test(f.path));
  assert.equal(createHash('sha256').update(await fs.readFile(path.join(root,f.path))).digest('hex'),f.sha256);
- if(f.path.startsWith('assets/'))assert.deepEqual(await fs.readFile(path.join(root,f.path)),await fs.readFile(f.path));
+ if(f.path.startsWith('assets/')&&!f.path.endsWith('.glb'))assert.deepEqual(await fs.readFile(path.join(root,f.path)),await fs.readFile(f.path));
+ if(f.path.endsWith('.glb')){const original=await fs.readFile(f.path),mobile=await fs.readFile(path.join(root,f.path));const parse=b=>JSON.parse(b.subarray(20,20+b.readUInt32LE(12)));const a=parse(original),b=parse(mobile);assert.deepEqual(b.meshes,a.meshes);assert.deepEqual(b.accessors,a.accessors);assert.deepEqual(b.nodes,a.nodes);const sharp=(await import('sharp')).default;for(const image of b.images||[]){if(image.bufferView===undefined)continue;const v=b.bufferViews[image.bufferView],start=28+mobile.readUInt32LE(12)+(v.byteOffset||0);const m=await sharp(mobile.subarray(start,start+v.byteLength)).metadata();assert.ok(m.width<=512&&m.height<=512,`${f.path}: texture exceeds mobile budget`);}}
 }
 const server=http.createServer(async(req,res)=>{
  // The Android host also serves mobile/*, outside the desktop static allowlist.

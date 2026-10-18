@@ -1,4 +1,4 @@
-param([switch]$SkipWebBuild)
+param([switch]$SkipWebBuild,[switch]$PublicDownload)
 $ErrorActionPreference='Stop'
 $repo=Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $repo
@@ -7,7 +7,7 @@ if (-not $env:JAVA_HOME) { $env:JAVA_HOME=(Get-ChildItem "$portable/java" -Direc
 if (-not $env:ANDROID_HOME) { $env:ANDROID_HOME=Join-Path $portable 'sdk' }
 $gradle=Join-Path $portable 'gradle/gradle-8.13/bin/gradle.bat'
 if (-not (Test-Path "$env:JAVA_HOME/bin/keytool.exe")) { throw 'JDK missing. See docs/ANDROID.md.' }
-if (-not (Test-Path "$env:ANDROID_HOME/platforms/android-36/android.jar")) { throw 'Android SDK 36 missing. See docs/ANDROID.md.' }
+if (-not (Test-Path "$env:ANDROID_HOME")) { throw 'Android SDK missing. Set ANDROID_HOME. Gradle will resolve SDK 36 using accepted SDK licenses.' }
 if (-not (Test-Path $gradle)) { $gradle=Join-Path $repo 'android/gradlew.bat' }
 if (-not (Test-Path $gradle)) { throw 'Gradle wrapper missing.' }
 & node scripts/build-android-icons.mjs
@@ -18,8 +18,8 @@ if (-not $SkipWebBuild) {
     & node scripts/build-android-web.mjs
     if ($LASTEXITCODE -ne 0) { throw 'Android asset build failed' }
 }
-& node scripts/prepare-android-avatar.mjs
-if ($LASTEXITCODE -ne 0) { throw 'Private Android demo configuration missing' }
+# Credentials are entered in native Settings; never embed developer keys.
+$PublicDownload=$true
 $signing=Join-Path $repo '.android-signing'
 New-Item -ItemType Directory -Force $signing | Out-Null
 $signingProps=Join-Path $signing 'signing.properties'
@@ -37,7 +37,7 @@ if (-not (Test-Path $keyfile)) {
     Remove-Item Env:WEROAM_KEY_PASSWORD
 }
 [IO.File]::WriteAllText((Join-Path $repo 'android/local.properties'),('sdk.dir='+$env:ANDROID_HOME.Replace('\','/')+"`n"))
-& $gradle -p android --console=plain --no-daemon assembleRelease
+& $gradle -p android --console=plain --no-daemon -PpublicDownload assembleRelease
 if ($LASTEXITCODE -ne 0) { throw 'APK build failed' }
 $apk=Join-Path $repo 'android/app/build/outputs/apk/release/app-release.apk'
 & "$env:ANDROID_HOME/build-tools/35.0.0/apksigner.bat" verify --verbose $apk

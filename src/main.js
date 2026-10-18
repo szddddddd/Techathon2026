@@ -45,11 +45,11 @@ async function boot(){
  // The scene itself stays at identity. Rebuilding its matrix would force every
  // static descendant's world matrix to be multiplied again on every frame.
  scene.matrixAutoUpdate=false;
- const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!captureIndex});
- renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;$('viewport').append(renderer.domElement);
+ const renderer=new T.WebGLRenderer({antialias:!isAndroidApp,powerPreference:isAndroidApp?'low-power':'high-performance',preserveDrawingBuffer:!!captureIndex});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,isAndroidApp?1:1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=!isAndroidApp;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;$('viewport').append(renderer.domElement);
  // Register before any async loading so startup resizes cannot leave a stale canvas.
-  let viewportWidth=innerWidth,viewportHeight=innerHeight,viewportRatio=Math.min(devicePixelRatio,1.65);
-  function resizeViewport(){if(renderer.xr.isPresenting)return;const width=innerWidth,height=innerHeight,ratio=Math.min(devicePixelRatio,1.65);if(width===viewportWidth&&height===viewportHeight&&ratio===viewportRatio)return;viewportWidth=width;viewportHeight=height;camera.aspect=width/height;camera.updateProjectionMatrix();if(ratio!==viewportRatio){viewportRatio=ratio;renderer.setPixelRatio(ratio);}renderer.setSize(width,height);}
+  let viewportWidth=innerWidth,viewportHeight=innerHeight,viewportRatio=Math.min(devicePixelRatio,isAndroidApp?1:1.65);
+  function resizeViewport(){if(renderer.xr.isPresenting)return;const width=innerWidth,height=innerHeight,ratio=Math.min(devicePixelRatio,isAndroidApp?1:1.65);if(width===viewportWidth&&height===viewportHeight&&ratio===viewportRatio)return;viewportWidth=width;viewportHeight=height;camera.aspect=width/height;camera.updateProjectionMatrix();if(ratio!==viewportRatio){viewportRatio=ratio;renderer.setPixelRatio(ratio);}renderer.setSize(width,height);}
   window.addEventListener('resize',resizeViewport);
   const controls=new OrbitControls(camera,renderer.domElement);Object.assign(controls,{enableDamping:true,dampingFactor:.065,minDistance:6,maxDistance:240,maxPolarAngle:Math.PI*.485,minPolarAngle:.15,autoRotateSpeed:.35,enablePan:true});
  const hemi=new T.HemisphereLight(0xc7e3d2,0x3e5233,2.2),sun=new T.DirectionalLight(0xffe3a1,3.7),rim=new T.DirectionalLight(0x9acbc5,1.2),fill=new T.DirectionalLight(0x9bb6ad,.8);
@@ -164,7 +164,8 @@ async function boot(){
  async function switchScene(id){
   if(vr?.busy)throw Error('请先退出 VR，再切换场景');
   if(switching)return false;if(id===world.id)return true;if(!SCENE_REGISTRY[id])throw Error('未知场景');if(uiState.modal)throw Error('请先完成当前窗口操作。');
-  cancelReset();switching=true;timeMenu?.setBusy(true);document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name,{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
+  if(isAndroidApp){if(!characters.cancelPlacement())throw Error('请等待人物安放完成。');switching=true;try{await socialUI.saveSessionDraft();await workshop?.flush();dayNight.save();const url=new URL(location.href);url.searchParams.set('scene',id);location.replace(url.href);return true;}catch(error){switching=false;throw error;}}
+   cancelReset();switching=true;timeMenu?.setBusy(true);document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name,{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
   async function fadeCanvas(from,to){
    canvasMotion?.cancel();canvasMotion=renderer.domElement.animate([{opacity:from},{opacity:to}],{duration:reduced.matches?50:110,easing:'ease-in-out',fill:'forwards'});
    await canvasMotion.finished;renderer.domElement.style.opacity=String(to);canvasMotion.cancel();canvasMotion=null;

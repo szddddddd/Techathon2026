@@ -12,7 +12,7 @@ android {
         applicationId 'app.weroam.mobile'
         minSdk 26
         targetSdk 36
-        versionCode 1030103
+        versionCode 1030105
         versionName 'v0.1 beta'
         testInstrumentationRunner 'app.weroam.mobile.SmokeInstrumentation'
     }
@@ -32,7 +32,7 @@ android {
             minifyEnabled false
         }
     }
-    sourceSets.main.assets.srcDirs = ['../../.cache/android-web', '../../.cache/android-native']
+    sourceSets.main.assets.srcDirs = ['../../.cache/android-web']
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17

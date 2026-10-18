@@ -1,3 +1,4 @@
+import {randomUUID} from '../browser-id.js';
 import {openInboxStore,clone,emptyState} from './store.js';
 import {PERMISSIONS,platformOf} from './catalog.js';
 import {makeConnection,fixtureContact} from './fixtures.js';
@@ -152,7 +153,7 @@ export async function createInboxGateway({dbName='weroam-inbox-demo-v1',indexedD
       const avatarUrl=input.avatarUrl===undefined?(existing?.avatarUrl||''):String(input.avatarUrl);
       if(avatarUrl&&(!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(avatarUrl)||avatarUrl.length>8*1024*1024))throw fail('INVALID_INPUT','请选择有效头像');
       if(existing?.avatarUrl&&avatarUrl!==existing.avatarUrl)throw fail('INVALID_INPUT','已生成的好友请保留原头像');
-      const characterJobId=existing?.characterJobId||(avatarUrl?crypto.randomUUID():null);
+      const characterJobId=existing?.characterJobId||(avatarUrl?randomUUID():null);
       const contact={id:existing?.id||uid('contact'),platform:input.platform,name,account,note,avatarUrl,characterJobId,provenance:existing?.provenance||'manual',updatedAt:now()};
       if(existing&&existing.platform===input.platform)Object.assign(contact,{connectionId:existing.connectionId,threadId:existing.threadId});
       if(existing)s.contacts[s.contacts.indexOf(existing)]=contact;else s.contacts.push(contact);

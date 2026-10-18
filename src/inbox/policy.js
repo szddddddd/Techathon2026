@@ -1,3 +1,4 @@
+import {randomUUID} from '../browser-id.js';
 export const fail=(code,message)=>Object.assign(new Error(message),{code});
 export function requirePermission(connection,permission,{actor='user',taskPermissions=null}={}){
   if(!['user','agent'].includes(actor))throw fail('INVALID_ACTOR','调用主体无效');
@@ -12,10 +13,10 @@ export function canonical(value){
 }
 export async function digest(value){
   const bytes=new TextEncoder().encode(canonical(value));
-  const hash=await globalThis.crypto.subtle.digest('SHA-256',bytes);
+  const hash=globalThis.crypto?.subtle?await globalThis.crypto.subtle.digest('SHA-256',bytes):(await import('@noble/hashes/sha256')).sha256(bytes);
   return Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
 }
-export const uid=prefix=>`${prefix}:${globalThis.crypto.randomUUID()}`;
+export const uid=prefix=>`${prefix}:${randomUUID()}`;
 export function safeExternalURL(value,platformURL){
   if(!value)return '';
   let url;try{url=new URL(value);}catch{throw fail('INVALID_URL','请使用完整 HTTPS 链接');}

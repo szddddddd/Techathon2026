@@ -27,7 +27,7 @@ export function createDiscoveryPreview(kind){
     const w=canvas.width,h=canvas.height;ctx.fillStyle=journal?'#fbf8ec':'#f5f1e4';ctx.fillRect(0,0,w,h);
     ctx.fillStyle='#698264';ctx.font=`500 ${journal?21:18}px sans-serif`;ctx.fillText(journal?'THE FOREST JOURNAL':'MOMENTS IN MOTION',journal?64:44,journal?58:43);
     ctx.fillStyle='#304a38';ctx.font=`600 ${journal?56:42}px sans-serif`;ctx.fillText(journal?'公众号':'视频号',journal?60:42,journal?126:100);
-    ctx.font=`${journal?22:20}px sans-serif`;ctx.fillStyle='#8e9b7d';ctx.textAlign='right';ctx.fillText('林间来信',w-(journal?64:44),journal?120:96);ctx.textAlign='left';
+    ctx.font=`${journal?22:20}px sans-serif`;ctx.fillStyle='#8e9b7d';ctx.textAlign='right';ctx.fillText('WeRoam',w-(journal?64:44),journal?120:96);ctx.textAlign='left';
     ctx.strokeStyle='#dce1d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(journal?64:44,journal?160:130);ctx.lineTo(w-(journal?64:44),journal?160:130);ctx.stroke();
     if(journal){
       coverRect={x:64,y:198,width:1072,height:360};cover(ctx,photo,64,198,1072,360);

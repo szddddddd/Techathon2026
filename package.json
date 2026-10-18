@@ -71,6 +71,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@noble/hashes": "^1.8.0",
     "html-to-text": "^10.0.1",
     "iconv-lite": "^0.7.3",
     "imapflow": "^2.5.2",
@@ -83,7 +84,8 @@
     "fake-indexeddb": "^6.2.5",
     "playwright": "^1.64.1",
     "pngjs": "5.0.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.5"
   },
   "engines": {
     "node": ">=22"

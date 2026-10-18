@@ -10,14 +10,15 @@ import java.nio.charset.StandardCharsets;
 /** Demo-only direct API pipeline. Secrets and job state stay outside WebView. */
 final class AvatarService {
  private final Context context; private final File root; private final JSONObject config;
- AvatarService(Context context) throws Exception {this.context=context;root=new File(context.getFilesDir(),"avatar-jobs");root.mkdirs();try(InputStream in=context.getAssets().open("avatar-demo-config.json")){config=new JSONObject(new String(read(in,100000),StandardCharsets.UTF_8));}}
+ AvatarService(Context context) throws Exception {this.context=context;root=new File(context.getFilesDir(),"avatar-jobs");root.mkdirs();config=AvatarSettings.load(context);}
  static byte[] read(InputStream in,int max)throws Exception{ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1){if(out.size()+n>max)throw new IOException("Response too large");out.write(b,0,n);}return out.toByteArray();}
  File asset(String route){return new File(root,route.substring("assets/".length()));}
  private File file(String id,String name){File dir=new File(root,id);dir.mkdirs();return new File(dir,name);}
  private void save(JSONObject job)throws Exception{File tmp=file(job.getString("id"),"job.tmp"),dest=file(job.getString("id"),"job.json");try(FileOutputStream out=new FileOutputStream(tmp)){out.write(job.toString().getBytes(StandardCharsets.UTF_8));out.getFD().sync();}if(!tmp.renameTo(dest))throw new IOException("Cannot save task");}
  private JSONObject load(String id)throws Exception{try(InputStream in=new FileInputStream(file(id,"job.json"))){return new JSONObject(new String(read(in,2000000),StandardCharsets.UTF_8));}}
  synchronized JSONObject request(String route,String body)throws Exception{
-  String[] parts=route.split("/");JSONObject job;
+  if(config==null)throw new IOException("请先在我 → 设置 → 模型服务配置中填写密钥");
+   String[] parts=route.split("/");JSONObject job;
   if(parts.length==1){JSONObject input=new JSONObject(body);String id=input.getString("requestId");if(!id.matches("[a-f0-9-]{36}"))throw new IOException("Invalid task");if(file(id,"job.json").exists())return publicJob(load(id));byte[] image=Base64.decode(input.getString("avatarBase64"),Base64.DEFAULT);if(image.length>6*1024*1024)throw new IOException("Image too large");write(file(id,"avatar.img"),image);job=new JSONObject().put("id",id).put("name",input.optString("name")).put("phase","queued");save(job);return publicJob(job);}
   if(!file(parts[1],"job.json").exists())return null;
   job=load(parts[1]);String phase=job.getString("phase");
