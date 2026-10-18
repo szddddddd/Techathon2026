@@ -15,7 +15,7 @@ export const PLATFORM_CATALOG=freeze([
     capabilities:{read:'demo',send:'demo',search:'local'},sendReason:''},
   limited('wechat','微信','https://weixin.qq.com/'),limited('qq','QQ','https://im.qq.com/'),
   limited('douyin','抖音','https://www.douyin.com/'),limited('xiaohongshu','小红书','https://www.xiaohongshu.com/'),
-  {id:'netease',name:'网易邮箱',label:'网易邮箱',available:false,status:'planned',authMethod:'IMAP/SMTP',evidence:'待专用账号验证',description:'QQ 邮箱验证后再接入。',limitation:'授权方式和协议限制待验证。',url:'https://mail.163.com/'},
+  {id:'netease',name:'网易 163 邮箱',label:'网易 163 邮箱',available:false,status:'desktop',authMethod:'IMAP authorization code',evidence:'官方授权码及协议路径有据；真实账号需本地验证',description:'桌面端独立的只读邮箱连接。',limitation:'本版仅 @163.com；不发送、不修改远端状态。',url:'https://mail.163.com/'},
   {id:'gmail',name:'Gmail',label:'Gmail',available:false,status:'planned',authMethod:'OAuth',evidence:'官方 API 有据；本项目未获批、未实测',description:'后续独立 OAuth Connector。',limitation:'读取权限审核与数据使用要求待满足。',url:'https://mail.google.com/'},
   {id:'outlook',name:'Outlook',label:'Outlook',available:false,status:'planned',authMethod:'OAuth',evidence:'Graph 文档有据；本项目未授权、未实测',description:'后续委托权限 Connector。',limitation:'需账号授权与租户策略验证。',url:'https://outlook.live.com/'},
 ]);

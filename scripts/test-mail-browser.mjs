@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import {chromium,baseURL,outputPath} from './test-runtime.mjs';
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
+const errors=[];
+try{
+ const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await context.newPage();
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.addInitScript(()=>{
+  const id='mail-qq-real:1:7',connection={id:'mail-qq-real',platform:'qqmail',label:'测试邮箱@qq.com',real:true,status:'connected',revision:1,lastSyncAt:Date.now(),permissions:{'messages.read.metadata':true,'messages.read.body':true,'messages.search.local':true}};
+  const second={...connection,id:'mail-netease-real',platform:'netease',label:'ui-test@163.com'};
+  const mail={connections:[connection],conversations:[{id,connectionId:connection.id,title:'真实邮件界面测试',provenance:'email'}],messages:[{id,threadId:id,connectionId:connection.id,subject:'真实邮件界面测试',sender:{name:'林晓',address:'test@example.invalid'},text:'仅用于界面验收的合成正文 <img src="https://tracker.invalid/pixel">',createdAt:Date.now(),provenance:{kind:'email',synthetic:false},attachments:[{name:'文档.pdf'}]}],local:{},audit:[]};
+  const secondId='mail-netease-real:1:7';mail.connections.push(second);mail.conversations.push({id:secondId,connectionId:second.id,title:'163 邮件界面测试',provenance:'email'});mail.messages.push({...structuredClone(mail.messages[0]),id:secondId,threadId:secondId,connectionId:second.id,subject:'163 邮件界面测试',sender:{name:'网易好友',address:'test@163.com'}});
+  let changed=()=>{};window.__mailCalls=[];
+  window.desktopMain={onOpenFriend(){},onOpenInbox(){},publishState(){},async getPetVisible(){return false;},async setPetVisible(){return false;},onMailChanged(fn){changed=fn;return()=>{};},async mailRequest(request){__mailCalls.push(request);switch(request.operation){case 'snapshot':return {ok:true,value:structuredClone(mail)};case 'connect':return {ok:true,value:{opened:true}};case 'sync':return {ok:true,value:{count:1}};case 'local':mail.local[request.id]={...mail.local[request.id],...request.patch};changed();return {ok:true};case 'disconnect':mail.connections=mail.connections.filter(c=>c.id!==request.id);mail.messages=mail.messages.filter(m=>m.connectionId!==request.id);mail.conversations=mail.conversations.filter(t=>t.connectionId!==request.id);changed();return {ok:true};default:return {ok:false,error:{message:'unsupported'}};}}};
+ });
+ await page.goto(baseURL+'/?scene=fuji&inbox=1');await page.waitForFunction(()=>window.__socialUI?.inbox,null,{timeout:180000});
+ await page.waitForFunction(()=>document.querySelector('[data-inbox-thread="mail-qq-real:1:7"]'));
+ assert.match(await page.locator('.inbox-list-notice').innerText(),/真实只读/);
+ await page.locator('[data-inbox-thread="mail-qq-real:1:7"]').click();
+ await page.waitForFunction(()=>__uiInteractions.state('inbox-thread')==='open');
+ assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),false);
+ assert.match(await page.locator('#inbox-thread .inbox-source').innerText(),/真实邮箱/);
+ assert.equal(await page.locator('#inbox-thread .inbox-message-list img').count(),0);
+ assert.match(await page.locator('#inbox-thread .inbox-message-list').innerText(),/tracker.invalid/,'HTML must appear as inert text');
+ assert.match(await page.locator('#inbox-thread .inbox-attachment').innerText(),/未自动下载/);
+ await page.screenshot({path:outputPath('mail-reader-desktop.png')});
+ await page.evaluate(()=>__socialUI.inbox.openThread('mail-netease-real:1:7'));await page.waitForFunction(()=>document.querySelector('#inbox-thread h2')?.textContent.includes('网易好友'));assert.match(await page.locator('[data-mail-webmail]').innerText(),/网易/);assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),false);
+ await page.evaluate(()=>__socialUI.inbox.openCenter());await page.waitForFunction(()=>__uiInteractions.state('inbox-center')==='open');
+ await page.locator('[data-mail-sync=mail-netease-real]').click();await page.waitForFunction(()=>__mailCalls.some(c=>c.operation==='sync'&&c.id==='mail-netease-real'));
+ assert.equal(await page.locator('[data-real-mail] [data-scope]').count(),0);
+ await page.screenshot({path:outputPath('mail-center-desktop.png')});
+ await page.locator('[data-real-mail=netease] [data-inbox-disconnect]').click();await page.waitForFunction(()=>__uiInteractions.state('inbox-approval')==='open');
+ assert.match(await page.locator('#inbox-approval').innerText(),/撤销授权码/);
+ await page.locator('[data-disconnect-confirm]').click();await page.waitForFunction(()=>!__socialUI.inbox.gateway.snapshot.connections.some(c=>c.id==='mail-netease-real'));
+ assert.equal(await page.evaluate(()=>__socialUI.inbox.gateway.list({platform:'qqmail'}).length),1,'disconnecting 163 must retain QQ mail');
+ await page.keyboard.press('Escape');
+ await page.evaluate(()=>__socialUI.inbox.openAssistant());await page.waitForFunction(()=>__uiInteractions.state('inbox-agent')==='open');
+ assert.equal(await page.locator('[name=agentSource][value^="mail-"]').count(),0);
+ const stores=await page.evaluate(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('weroam-inbox-demo-v1');r.onsuccess=()=>resolve(r.result);r.onerror=reject;});const values=await Promise.all([...db.objectStoreNames].map(name=>new Promise(resolve=>{const r=db.transaction(name).objectStore(name).getAll();r.onsuccess=()=>resolve(r.result);})));db.close();return JSON.stringify(values);});
+ assert.ok(!stores.includes('真实邮件界面测试'),'real content cannot enter demo IndexedDB');
+ await context.close();
+ const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),phone=await mobile.newPage();phone.on('pageerror',e=>errors.push(e.message));
+ await phone.goto(baseURL+'/?scene=forest&inbox=1');await phone.waitForFunction(()=>window.__socialUI?.inbox,null,{timeout:180000});await phone.evaluate(()=>__socialUI.inbox.openCenter());await phone.waitForFunction(()=>__uiInteractions.state('inbox-center')==='open');
+ await phone.locator('[data-mail-connect=qqmail]').click();await phone.waitForFunction(()=>__uiInteractions.state('inbox-mail-guide')==='open');assert.match(await phone.locator('#inbox-mail-guide').innerText(),/桌面端/);assert.equal(await phone.locator('#inbox-mail-guide input[type=password]').count(),0);
+ await phone.screenshot({path:outputPath('mail-mobile-guide.png')});assert.deepEqual(errors,[]);
+ await mobile.close();console.log('PASS: real-source projection, read-only reader, inert HTML, manual refresh, disconnect, Agent/demo isolation, and mobile/browser connection guide. Real account/network not used.');
+}finally{await browser.close();}

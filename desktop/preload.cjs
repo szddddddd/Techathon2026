@@ -10,6 +10,12 @@ contextBridge.exposeInMainWorld('desktopPet', {
   dragEnd() { ipcRenderer.send('pet-drag-end'); }
 });
 contextBridge.exposeInMainWorld('desktopMain', {
+  mailRequest(request) { return ipcRenderer.invoke('mail-request', request); },
+  onOpenInbox(callback) { const listener=()=>callback();ipcRenderer.on('mail-open-inbox',listener);ipcRenderer.send('mail-ui-ready');return ()=>ipcRenderer.removeListener('mail-open-inbox',listener); },
+  onMailChanged(callback) {
+    const listener=()=>callback();ipcRenderer.on('mail-changed',listener);
+    return ()=>ipcRenderer.removeListener('mail-changed',listener);
+  },
   avatarOrigin: ipcRenderer.sendSync('avatar-origin'),
   avatarRequest(route,body) { return ipcRenderer.invoke('avatar-request',{route,body}); },
   showPet() { ipcRenderer.send('show-desktop-pet'); },

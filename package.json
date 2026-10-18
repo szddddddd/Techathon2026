@@ -18,6 +18,8 @@
     "build": "node scripts/build.mjs",
     "start": "node scripts/serve.mjs",
     "desktop": "electron .",
+    "mail:connect": "electron . --mail-connect",
+    "test:mail": "node scripts/test-mail.mjs && node scripts/test-mail-providers.mjs",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
     "test:mods": "node scripts/test-mods.mjs && node scripts/test-mod-facilities.mjs",
     "test:mods:browser": "node scripts/test-workshop-browser.mjs && node scripts/test-mod-scene-switching.mjs",
@@ -65,6 +67,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "html-to-text": "^10.0.1",
+    "iconv-lite": "^0.7.3",
+    "imapflow": "^2.5.2",
     "three": "^0.180.0",
     "three-mesh-bvh": "0.9.16"
   },

@@ -152,7 +152,7 @@ async function boot(){
   return mods?.open(routeMod(route),{...options,route});
  };
  function publishPetScene(){if(store&&supportsDesktopPet){if(window.desktopMain)window.desktopMain.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
-  if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
+  if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));window.desktopMain?.onOpenInbox?.(()=>socialUI.openInbox());publishPetScene();}
  // Publish the authoritative clock through both native IPC and the web bridge.
  const petTimeTimer=supportsDesktopPet?setInterval(publishPetScene,250):null;
  document.addEventListener('visibilitychange',publishPetScene);

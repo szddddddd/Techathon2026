@@ -10,8 +10,9 @@ if(process.env.FOREST_PET_USER_DATA)app.setPath('userData',process.env.FOREST_PE
 const petOnly = process.argv.some(value => value === '--pet-only' || /^forestletters:\/\/pet(?:[/?#]|$)/i.test(value));
 const singleInstance = app.requestSingleInstanceLock();
 if (!singleInstance) app.quit();
-let webBridge, stateSaveTimer;
-app.on('second-instance', () => app.whenReady().then(() => showDesktopPet()));
+let webBridge, stateSaveTimer, mailIntegration;
+const requestedMailProvider=argv=>argv.includes('--mail-provider=netease')?'netease':'qqmail';
+app.on('second-instance', (_event,argv) => app.whenReady().then(() => {if(argv.includes('--mail-connect')){focusMain();mailIntegration?.openConnect(requestedMailProvider(argv));}else showDesktopPet();}));
 const DEFAULT_SIZE = 200;
 const SIZE_PRESETS = { small: 160, medium: 200, large: 280 };
 const MINIMAL_SIZE_PRESETS = { small: 118, medium: 148, large: 188 };
@@ -190,6 +191,8 @@ if(singleInstance)app.whenReady().then(async () => {
   tray.setContextMenu(buildMenu());
   tray.on('click', () => focusMain());
   if(!petOnly)createMainWindow();createPetWindow();
+  mailIntegration=require('./mail-ipc.cjs').setupMailIPC({app,BrowserWindow,ipcMain,safeStorage:require('electron').safeStorage,getMainWindow:()=>mainWindow,focusMain:()=>{if(!mainWindow||mainWindow.isDestroyed())createMainWindow();if(mainWindow.isMinimized())mainWindow.restore();mainWindow.show();mainWindow.focus();}});
+  if(process.argv.includes('--mail-connect'))mailIntegration.openConnect(requestedMailProvider(process.argv));
   ipcMain.on('avatar-origin',event=>{if(event.sender===mainWindow?.webContents)event.returnValue=webBridge.origin;else event.returnValue='';});
   ipcMain.handle('avatar-request',async(event,{route,body}={})=>{
     if(event.sender!==mainWindow?.webContents||!/^jobs(?:\/[a-f0-9-]{36}(?:\/(?:retry|continue|cancel))?)?$/.test(route||''))throw new Error('不支持的形象请求。');
@@ -239,4 +242,4 @@ if(singleInstance)app.whenReady().then(async () => {
   ipcMain.on('pet-read-friend', (event, friendId) => { if (event.sender === petWindow?.webContents && validFriend(friendId)) focusMain(friendId); });
 });
 app.on('window-all-closed', event => event.preventDefault());
-app.on('before-quit', () => { app.isQuitting = true;clearTimeout(stateSaveTimer);if(webBridge){persistSocialSnapshot();webBridge.close();} });
+app.on('before-quit', () => { app.isQuitting = true;mailIntegration?.close();clearTimeout(stateSaveTimer);if(webBridge){persistSocialSnapshot();webBridge.close();} });
