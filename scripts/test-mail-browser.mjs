@@ -6,7 +6,7 @@ try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await context.newPage();
  page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{
-  const id='mail-qq-real:1:7',connection={id:'mail-qq-real',platform:'qqmail',label:'测试邮箱@qq.com',real:true,status:'connected',revision:1,lastSyncAt:Date.now(),permissions:{'messages.read.metadata':true,'messages.read.body':true,'messages.search.local':true}};
+  const id='mail-qq-real:1:7',connection={id:'mail-qq-real',platform:'qqmail',label:'测试邮箱@qq.com',real:true,status:'connected',revision:1,lastSyncAt:Date.now(),permissions:{'messages.read.metadata':true,'messages.read.body':true,'messages.search.local':true,'drafts.write.local':true}};
   const second={...connection,id:'mail-netease-real',platform:'netease',label:'ui-test@163.com'};
   const mail={connections:[connection],conversations:[{id,connectionId:connection.id,title:'真实邮件界面测试',provenance:'email'}],messages:[{id,threadId:id,connectionId:connection.id,subject:'真实邮件界面测试',sender:{name:'林晓',address:'test@example.invalid'},text:'仅用于界面验收的合成正文 <img src="https://tracker.invalid/pixel">',createdAt:Date.now(),provenance:{kind:'email',synthetic:false},attachments:[{name:'文档.pdf'}]}],local:{},audit:[]};
   const secondId='mail-netease-real:1:7';mail.connections.push(second);mail.conversations.push({id:secondId,connectionId:second.id,title:'163 邮件界面测试',provenance:'email'});mail.messages.push({...structuredClone(mail.messages[0]),id:secondId,threadId:secondId,connectionId:second.id,subject:'163 邮件界面测试',sender:{name:'网易好友',address:'test@163.com'}});
@@ -18,13 +18,14 @@ try{
  assert.match(await page.locator('.inbox-list-notice').innerText(),/真实只读/);
  await page.locator('[data-inbox-thread="mail-qq-real:1:7"]').click();
  await page.waitForFunction(()=>__uiInteractions.state('inbox-thread')==='open');
- assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),false);
+ assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),true);
+ assert.equal(await page.locator('#inbox-thread [data-inbox-send]').count(),0,'real mail offers local drafts, never a send button');
  assert.match(await page.locator('#inbox-thread .inbox-source').innerText(),/真实邮箱/);
  assert.equal(await page.locator('#inbox-thread .inbox-message-list img').count(),0);
  assert.match(await page.locator('#inbox-thread .inbox-message-list').innerText(),/tracker.invalid/,'HTML must appear as inert text');
  assert.match(await page.locator('#inbox-thread .inbox-attachment').innerText(),/未自动下载/);
  await page.screenshot({path:outputPath('mail-reader-desktop.png')});
- await page.evaluate(()=>__socialUI.inbox.openThread('mail-netease-real:1:7'));await page.waitForFunction(()=>document.querySelector('#inbox-thread h2')?.textContent.includes('网易好友'));assert.match(await page.locator('[data-mail-webmail]').innerText(),/网易/);assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),false);
+ await page.evaluate(()=>__socialUI.inbox.openThread('mail-netease-real:1:7'));await page.waitForFunction(()=>document.querySelector('#inbox-thread h2')?.textContent.includes('网易好友'));assert.match(await page.locator('[data-mail-webmail]').innerText(),/网易/);assert.equal(await page.locator('#inbox-thread .inbox-reply').isVisible(),true);
  await page.evaluate(()=>__socialUI.inbox.openCenter());await page.waitForFunction(()=>__uiInteractions.state('inbox-center')==='open');
  await page.locator('[data-mail-sync=mail-netease-real]').click();await page.waitForFunction(()=>__mailCalls.some(c=>c.operation==='sync'&&c.id==='mail-netease-real'));
  assert.equal(await page.locator('[data-real-mail] [data-scope]').count(),0);

@@ -23,6 +23,16 @@ export async function withDesktopMail(demo, bridge=globalThis.desktopMain) {
   const gateway=Object.create(demo);
   Object.defineProperty(gateway,'snapshot',{get(){const base=demo.snapshot;return {...base,connections:[...base.connections,...mail.connections],conversations:[...base.conversations,...mail.conversations],messages:[...base.messages,...mail.messages],local:{...base.local,...mail.local},audit:[...base.audit,...mail.audit],mailError:mail.error,mailErrors:mail.errors||{}};}});
   gateway.mail={get error(){return mail.error;},async connect(provider='qqmail'){return request('connect',{provider});},async openWebmail(id){return request('open-webmail',{id});}};
+  if(bridge.agentRequest){
+    const agentRequest=async input=>{
+      if(closed)throw new Error('收件箱已关闭。');
+      if(!input||!['status','run','cancel','clear'].includes(input.operation))throw new Error('Agent 请求无效。');
+      const result=await bridge.agentRequest(input);
+      if(!result?.ok)throw Object.assign(new Error(result?.error?.message||'邮箱 Agent 暂不可用。'),{code:result?.error?.code});
+      return result.value;
+    };
+    gateway.agent={request:agentRequest,status:()=>agentRequest({operation:'status'}),run:args=>agentRequest({...args,operation:'run'}),cancel:runId=>agentRequest({operation:'cancel',runId}),clear:sessionId=>agentRequest({operation:'clear',sessionId})};
+  }
   gateway.subscribe=fn=>{listeners.add(fn);const off=demo.subscribe(fn);return()=>{listeners.delete(fn);off();};};
   gateway.list=(options={})=>{
     const {query='',platform='all',filter='all'}=options,q=String(query).trim().toLocaleLowerCase();
@@ -30,19 +40,21 @@ export async function withDesktopMail(demo, bridge=globalThis.desktopMain) {
       const local=mail.local[m.id]||{},c=mail.connections.find(c=>c.id===m.connectionId);if(!c||platform!=='all'&&platform!==c.platform)return [];
       if(q&&!`${m.subject} ${m.sender.name} ${m.sender.address} ${m.text}`.toLocaleLowerCase().includes(q))return [];
       if(filter==='unread'&&local.read||filter==='todo'&&!local.todo||filter==='pinned'&&!local.pinned)return [];
-      return [{id:m.threadId,title:m.subject,displayName:m.sender.name,senderName:m.sender.name,kind:'direct',synthetic:false,real:true,preview:`${m.subject} · ${m.text}`,updatedAt:m.createdAt,unread:local.read?0:1,pinned:!!local.pinned,todo:!!local.todo,platform:c.platform,accountLabel:c.label,connectionId:c.id,provenanceLabel:'真实邮箱 · 只读'}];
+      return [{id:m.threadId,title:m.subject,displayName:m.sender.name,senderName:m.sender.name,kind:'direct',synthetic:false,real:true,preview:local.draft?.text?'[草稿] '+local.draft.text:`${m.subject} · ${m.text}`,updatedAt:m.createdAt,unread:local.read?0:1,pinned:!!local.pinned,todo:!!local.todo,platform:c.platform,accountLabel:c.label,connectionId:c.id,provenanceLabel:'真实邮箱 · 只读'}];
     });
     return [...demo.list(options),...rows].sort((a,b)=>Number(b.pinned)-Number(a.pinned)||b.updatedAt-a.updatedAt);
   };
   gateway.readThread=id=>{
     if(!real(id))return demo.readThread(id);
     const thread=mail.conversations.find(t=>t.id===id);if(!thread)throw new Error('邮件已移除或连接已断开。');
-    return {thread:structuredClone(thread),connection:structuredClone(mail.connections.find(c=>c.id===thread.connectionId)),messages:structuredClone(mail.messages.filter(m=>m.threadId===id)),draft:null};
+    return {thread:structuredClone(thread),connection:structuredClone(mail.connections.find(c=>c.id===thread.connectionId)),messages:structuredClone(mail.messages.filter(m=>m.threadId===id)),draft:structuredClone(mail.local[id]?.draft||null)};
   };
   gateway.setLocal=async(id,patch)=>{if(!real(id))return demo.setLocal(id,patch);await request('local',{id,patch});await refresh();};
   gateway.sync=async(id,options)=>{if(!real(id))return demo.sync(id,options);const result=await request('sync',{id});await refresh();return result;};
   gateway.disconnect=async id=>{if(!real(id))return demo.disconnect(id);const result=await request('disconnect',{id});await refresh();return result;};
-  for(const key of ['saveDraft','proposeSend','setPermissions'])gateway[key]=(id,...args)=>real(id)?Promise.reject(new Error('真实邮箱目前仅支持只读。')):demo[key](id,...args);
+  gateway.saveDraft=async(id,text,recipient)=>{if(!real(id))return demo.saveDraft(id,text,recipient);const result=await request('draft',{id,text,recipient});await refresh();return result;};
+  gateway.setPermissions=async(id,patch)=>{if(!real(id))return demo.setPermissions(id,patch);const result=await request('agent-permissions',{id,patch});await refresh();return result;};
+  gateway.proposeSend=(id,...args)=>real(id)?Promise.reject(new Error('真实邮箱尚不支持直接发送，请在原邮箱回复。')):demo.proposeSend(id,...args);
   gateway.summarize=ids=>{if(ids.some(real))return Promise.reject(new Error('真实邮件尚未授权给 Agent。'));return demo.summarize(ids);};
   gateway.close=()=>{closed=true;unsubscribe?.();listeners.clear();mail=empty();demo.close();};
   return gateway;

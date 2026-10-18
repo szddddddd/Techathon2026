@@ -60,7 +60,7 @@ function loadSettings() {
 }
 function broadcast() {
   if (petWindow && !petWindow.isDestroyed()) petWindow.webContents.send('social-state', { state: latestState, unreadCount, settings });
-  if (tray) tray.setToolTip(unreadCount ? `林间来信 · ${unreadCount} 条未读` : '林间来信');
+  if (tray) tray.setToolTip(unreadCount ? `WeRoam · ${unreadCount} 条未读` : 'WeRoam');
   updateTrayFlash();
 }
 function syncPetVisibility() {
@@ -168,7 +168,7 @@ function togglePet() {
 function buildMenu() {
   const petVisible = !!petWindow && !petWindow.isDestroyed() && petWindow.isVisible();
   return Menu.buildFromTemplate([
-    { label: '打开林间来信', click: () => focusMain() },
+    { label: '打开 WeRoam', click: () => focusMain() },
     { label: petVisible ? '隐藏桌宠' : '显示桌宠', click: () => togglePet() },
     { type: 'separator' },
     { label: '桌宠样式', submenu: [

@@ -35,7 +35,7 @@ try {
   $webUrl = "http://localhost:$port/"
   if ($response -and $response.Content -match 'name="forest-version"') {
     if (!$NoBrowser) { Start-Process $webUrl -WindowStyle Hidden }
-    Write-Host "The current Forest Letters page is ready: $webUrl"
+    Write-Host "The current WeRoam page is ready: $webUrl"
     exit 0
   }
   if (!$NoBrowser) {

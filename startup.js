@@ -5,5 +5,5 @@
  icons.ideal='<path d="M9 20V8l2-6h3l2 6v12" fill="currentColor"/><path d="M3 18c0-2 4-3 9-3s9 1 9 3-4 3-9 3-9-1-9-3Z" fill="none" stroke="currentColor"/>';
  let id=new URLSearchParams(location.search).get('scene');if(!Object.hasOwn(themes,id)){try{id=localStorage.getItem('forest-letters-scene');}catch{}}if(!Object.hasOwn(themes,id))id='forest';
  const [name]=themes[id],el=document.getElementById('startup-loading');el.dataset.theme=id;
- el.innerHTML='<div class="scene-travel-content"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">'+icons[id]+'</svg></i><span class="scene-travel-eyebrow">正在准备你的风景</span><strong>'+name+'</strong><span class="scene-travel-progress" aria-hidden="true"></span><p class="scene-travel-detail">朋友与风景，即将相见</p></div>';
+ el.innerHTML='<div class="scene-travel-content"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">'+icons[id]+'</svg></i><span class="scene-travel-eyebrow">WeRoam · 正在准备你的风景</span><strong>'+name+'</strong><span class="scene-travel-progress" aria-hidden="true"></span><p class="scene-travel-detail">朋友与风景，即将相见</p></div>';
 })();

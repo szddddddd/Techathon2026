@@ -29,7 +29,7 @@ try{
  await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].hide());await page.locator('#pet-toggle').click();await page.waitForFunction(()=>!document.querySelector('#pet-toggle').disabled);assert.ok(await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isVisible()));assert.equal(await desktop.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().length),1);checks.push('repeat click shows existing hidden pet without duplicate windows');
  await desktop.evaluate(({Menu,BrowserWindow})=>{
     const build=Menu.buildFromTemplate.bind(Menu);
-    Menu.buildFromTemplate=template=>{if(template.some(item=>item.label==='打开林间来信'))globalThis.__petMenuTemplate=template;return build(template);};
+    Menu.buildFromTemplate=template=>{if(template.some(item=>item.label==='打开 WeRoam'))globalThis.__petMenuTemplate=template;return build(template);};
     BrowserWindow.getAllWindows()[0].hide();
   });
   await page.waitForFunction(()=>document.querySelector('#pet-toggle').getAttribute('aria-checked')==='false',null,{timeout:1200});

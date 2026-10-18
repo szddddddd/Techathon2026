@@ -1,8 +1,8 @@
 {
-  "name": "world",
+  "name": "weroam",
   "version": "0.1.0-beta",
   "displayVersion": "v0.1 beta",
-  "description": "林间来信：三维森林社交与 Windows 桌宠",
+  "description": "WeRoam：三维空间社交与 Windows 桌宠",
   "main": "desktop/main.cjs",
   "scripts": {
     "pico:connect": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/connect-pico.ps1",
@@ -20,6 +20,10 @@
     "desktop": "electron .",
     "mail:connect": "electron . --mail-connect",
     "test:mail": "node scripts/test-mail.mjs && node scripts/test-mail-providers.mjs",
+    "test:mail:agent": "node scripts/test-mail-agent.mjs && node scripts/test-mail-agent-storage.mjs && node scripts/test-mail-agent-ipc.mjs && node scripts/test-mail-agent-provider.mjs",
+    "test:mail:agent:browser": "node scripts/test-mail-agent-browser.mjs",
+    "test:mail:agent:desktop": "node scripts/test-mail-agent-desktop.mjs",
+    "agent:probe": "node scripts/probe-mail-agent.mjs",
     "test": "node scripts/test-social-store.mjs && node scripts/test-social-feed.mjs && node scripts/test-discovery-store.mjs && node scripts/test-pet-state.mjs",
     "test:mods": "node scripts/test-mods.mjs && node scripts/test-mod-facilities.mjs",
     "test:mods:browser": "node scripts/test-workshop-browser.mjs && node scripts/test-mod-scene-switching.mjs",

@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('desktopPet', {
 });
 contextBridge.exposeInMainWorld('desktopMain', {
   mailRequest(request) { return ipcRenderer.invoke('mail-request', request); },
+  agentRequest(request) { return ipcRenderer.invoke('agent-request', request); },
   onOpenInbox(callback) { const listener=()=>callback();ipcRenderer.on('mail-open-inbox',listener);ipcRenderer.send('mail-ui-ready');return ()=>ipcRenderer.removeListener('mail-open-inbox',listener); },
   onMailChanged(callback) {
     const listener=()=>callback();ipcRenderer.on('mail-changed',listener);

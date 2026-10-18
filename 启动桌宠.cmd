@@ -11,4 +11,4 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-start "Forest Letters Desktop Pet" "node_modules\electron\dist\electron.exe" "%~dp0." --pet-only
+start "WeRoam Desktop Pet" "node_modules\electron\dist\electron.exe" "%~dp0." --pet-only

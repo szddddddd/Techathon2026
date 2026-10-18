@@ -215,6 +215,32 @@
 #social .inbox-agent-selection>summary:focus-visible{outline:3px solid #0066cc;outline-offset:2px;border-radius:8px}
 #social .inbox-agent-result:first-child{margin-top:16px}
 
+/* The desktop mail Agent shares Inbox chrome and never remounts on draft/read updates. */
+#social #inbox-agent.has-mail-agent{height:min(820px,calc(var(--ui-height,100dvh) - 32px))}
+#social .mail-agent-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}
+#social .mail-agent-scroll{flex:1 1 auto;min-height:0;max-height:none;overscroll-behavior:contain;padding-top:12px;padding-bottom:12px}
+#social .mail-agent-composer{flex:0 0 auto;padding:14px 24px 12px;border-top:1px solid #e8e8ed;background:#fff}
+#social .mail-agent-composer textarea{min-height:66px;max-height:96px}
+#social .mail-agent-composer .inbox-feedback{margin:8px 0 0;min-height:18px;font-size:12px}
+#social [data-mail-agent-sources]{max-height:240px;overflow:auto}
+#social [data-mail-agent-count]{margin-left:auto;font-size:12px;font-weight:400;color:#64646c}
+#social .mail-agent-grant{border:0;border-top:1px solid #e8e8ed;margin:8px 0 0;padding:8px 0}
+#social .mail-agent-grant legend{font-size:12px;color:#64646c;padding:0 4px 0 0}
+#social .mail-agent-grant .inbox-option{margin:0;min-height:44px}
+#social .mail-agent-message{padding:16px 0;border-top:1px solid #e8e8ed}
+#social .mail-agent-message small{font-size:11px;color:#64646c}
+#social .mail-agent-message p,#social .mail-agent-message blockquote{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+#social .mail-agent-message.is-user p{color:#64646c}
+#social .mail-agent-message blockquote{padding:12px;margin:12px 0;border:0;background:#f5f5f7;border-radius:8px}
+#social .mail-agent-citations{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+#social .mail-agent-citations .inbox-citation{font-size:12px;color:#0066cc;text-align:left;justify-content:flex-start}
+#social .mail-agent-tools{display:flex;gap:8px;flex-wrap:wrap}
+#social .mail-agent-tools button{flex:1 1 auto}
+#social .mail-agent-tools [hidden]{display:none!important}
+#social .mail-agent-consent{min-height:44px;font-size:12px;margin:6px 0}
+#social .mail-agent-chat:empty{display:none}
+@media(max-width:600px){#social #inbox-agent.has-mail-agent{height:calc(var(--ui-height,100dvh) - 24px)}#social [data-mail-agent-sources]{max-height:190px}#social .mail-agent-composer{padding:12px 16px}#social .mail-agent-tools{gap:6px}#social .mail-agent-tools button{padding:8px 10px;font-size:12px}}
+
 #social .inbox-contact-row .conversation-copy strong{font-size:14px;font-weight:550}
 #social .inbox-contact-row .conversation-copy small{font-size:12px;color:#92929a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #social .inbox-person-avatar{display:grid;place-items:center;background:#f0f1f4;font-size:18px;color:#777781}

@@ -24,6 +24,7 @@ validation/**/*failure*
 validation/scene-polish/*-map-*.png
 
 # Credentials and local environment
+.weroam-private/
 .env
 .env.*
 !.env.example

@@ -14,4 +14,4 @@ const server=http.createServer(async(req,res)=>{
 server.on('error',error=>{console.error(`Cannot start http://localhost:${port}/: ${error.message}`);process.exitCode=1;});
 server.on('close',()=>avatarApi.close());
 for(const signal of ['SIGINT','SIGTERM'])process.once(signal,()=>server.close(()=>process.exit(0)));
-server.listen(port,'127.0.0.1',()=>console.log(`Forest Letters: http://localhost:${port}/ (Ctrl+C to stop)`));
+server.listen(port,'127.0.0.1',()=>console.log(`WeRoam: http://localhost:${port}/ (Ctrl+C to stop)`));
