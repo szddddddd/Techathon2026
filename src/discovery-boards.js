@@ -5,7 +5,7 @@ const ease=value=>{const t=clamp(value);return t*t*(3-2*t);};
 const mixRect=(a,b,t)=>Object.fromEntries(['left','top','width','height'].map(key=>[key,a[key]+(b[key]-a[key])*t]));
 
 /** One timeline owns the camera, framed surface reveal, and its reverse. */
-export function createDiscoveryBoards({camera,facilities,contentUI,player,beforeFocus}){
+export function createDiscoveryBoards({camera,facilities,contentUI,player,beforeFocus,ui}){
   const frame=document.createElement('div');frame.id='discovery-morph-frame';frame.setAttribute('aria-hidden','true');frame.hidden=true;
   const paper=document.createElement('div');paper.className='morph-paper';const preview=document.createElement('img');preview.alt='';frame.append(paper,preview);contentUI.shell.append(frame);
   const hero=document.createElement('img');hero.id='discovery-morph-cover';hero.alt='';hero.hidden=true;contentUI.shell.append(hero);let previewData=null;
@@ -63,6 +63,7 @@ export function createDiscoveryBoards({camera,facilities,contentUI,player,before
     setStage('closing');start=performance.now();facilities.setEmphasis(kind,0);
   }
   function completeExit(){
+    facilities.restore({duration:0});
     frame.hidden=true;hero.hidden=true;contentUI.stopScene();facilities.setBoardActive(kind,false);kind=null;setStage('closed');document.body.classList.remove('in-scene-board');
   }
   function update(now=performance.now()){
@@ -87,11 +88,13 @@ export function createDiscoveryBoards({camera,facilities,contentUI,player,before
       if(elapsed>=total&&!facilities.transitioning)completeExit();
     }
   }
-  const key=e=>{if(e.key!=='Escape'||!kind||document.querySelector('#content-share-dialog[open],#photo-dialog[open]'))return;e.preventDefault();e.stopImmediatePropagation();exit();};
+  const escape=()=>{if(!kind||document.querySelector('#content-share-dialog[open],#photo-dialog[open]'))return false;exit();return true;};
+   const offEscape=ui?.onEscape?.(escape);
+   const key=e=>{if(e.key!=='Escape'||!escape())return;e.preventDefault();e.stopImmediatePropagation();};
   const outside=e=>{if(stage==='approaching'&&e.target.closest('canvas')&&performance.now()-start>180)exit();};
   window.addEventListener('keydown',key,{capture:true});document.addEventListener('click',outside);
   const resize=()=>{const ticket=++resizeToken;requestAnimationFrame(()=>{if(ticket!==resizeToken||!kind||stage==='closing')return;facilities.focus(kind,{duration:0});});};
   window.addEventListener('resize',resize);
   function dismiss(){if(!kind)return;finish?.(false);finish=null;facilities.setEmphasis(kind,0);facilities.setBoardActive(kind,false);facilities.restore({duration:0});kind=null;frame.hidden=true;hero.hidden=true;setStage('closed');document.body.classList.remove('in-scene-board');}
-  return {open,exit,dismiss,update,audit,get kind(){return kind;},get stage(){return stage;},surfaceRect,dispose(){finish?.(false);player.pause();window.removeEventListener('keydown',key,{capture:true});document.removeEventListener('click',outside);window.removeEventListener('resize',resize);frame.remove();hero.remove();}};
+  return {open,exit,dismiss,update,audit,get kind(){return kind;},get stage(){return stage;},surfaceRect,dispose(){offEscape?.();facilities.restore({duration:0});finish?.(false);player.pause();window.removeEventListener('keydown',key,{capture:true});document.removeEventListener('click',outside);window.removeEventListener('resize',resize);frame.remove();hero.remove();}};
 }

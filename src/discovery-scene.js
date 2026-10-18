@@ -6,11 +6,12 @@ import {createDiscoverySceneIcons} from './discovery-scene-icons.js';
 import {COMMUNITY_FACILITIES} from './community-layout.js';
 
 /** Authored timber props: every board remains individually editable. */
-export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,facilities=COMMUNITY_FACILITIES,obstacleCache,templates={}}){
+export function createDiscoveryScene({scene,camera,controls,renderer,terrain,generated,onOpen,ui,facilities=COMMUNITY_FACILITIES,obstacleCache,templates={},manualPlacement=false}){
   const placement=createPlacementContext({scene,terrain,generated,obstacleCache});
   const holder=generated||new THREE.Group();if(!generated){holder.name='Interactive woodland facilities';scene.add(holder);}
   const mats={wood:new THREE.MeshStandardMaterial({color:0x806044,roughness:1}),edge:new THREE.MeshStandardMaterial({color:0xb99b6f,roughness:1}),cream:new THREE.MeshStandardMaterial({color:0xf0e8ca,roughness:1}),green:new THREE.MeshStandardMaterial({color:0x6a8668,roughness:1}),orange:new THREE.MeshStandardMaterial({color:0xc58f54,roughness:1}),dark:new THREE.MeshStandardMaterial({color:0x37473e,roughness:1})};
-  const moduleEnabled={accounts:true,'scene-video':true};
+  const moduleEnabled={accounts:true,'scene-video':true},placed={accounts:!manualPlacement,'scene-video':!manualPlacement};
+  const available=kind=>moduleEnabled[kind]&&placed[kind];
   const ray=new THREE.Raycaster(),pickables=[],audit={method:'13 support rays and projected body-band obstacle triangles, invariant WALKWAYS; facilities become companion obstacles before graph construction.',facilities:[]};
   function box(parent,name,x,y,z,w,h,d,mat=mats.wood){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.name=name;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
   function label(text,bg='#e8dfbf',fg='#466146'){
@@ -30,7 +31,7 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
     }throw new Error('No supported, clear location for discovery facility');
   }
   const used=[];
-  function register(group,kind,preferred,radius,footprint){const p=find(preferred,radius,used,footprint);used.push(p);group.position.set(p.x,p.y,p.z);group.name=kind==='accounts'?'Forest newspaper kiosk':'Creekside screening field';group.userData.layoutId='discovery-'+kind;group.traverse(o=>{o.userData.generatedProp=true;o.userData.discoveryKind=kind;});holder.add(group);group.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(group);audit.facilities.push({kind,position:group.position.toArray(),radius,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},support:true});pickables.push(group);return group;}
+  function register(group,kind,preferred,radius,footprint){const p=find(preferred,radius,used,footprint);used.push(p);group.position.set(p.x,p.y,p.z);group.name=kind==='accounts'?'Forest newspaper kiosk':'Creekside screening field';group.userData.layoutId='discovery-'+kind;group.userData.manualBuilding=manualPlacement;group.traverse(o=>{o.userData.generatedProp=true;o.userData.discoveryKind=kind;});holder.add(group);group.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(group);audit.facilities.push({kind,position:group.position.toArray(),radius,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},support:true});pickables.push(group);return group;}
   const kiosk=new THREE.Group();
   for(const x of [-.69,.69])box(kiosk,'Timber rack upright',x,1.1,0,.12,2.2,.12);
   box(kiosk,'Newspaper rack back',0,1.13,.02,1.5,1.25,.12,mats.green);
@@ -99,13 +100,14 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   function restore({duration=480}={}){
     focusKind=null;focusedPose=null;
     if(!saved)return Promise.resolve();
+    if(duration===0){const original=saved;transition?.resolve();transition=null;saved=null;camera.position.copy(original.position);controls.target.copy(original.target);controls.enabled=original.enabled;controls.minDistance=original.minDistance;controls.enableDamping=original.enableDamping;camera.lookAt(controls.target);return Promise.resolve();}
     return move(saved.position,saved.target,true,duration);
   }
   function setBoardActive(kind,active){(kind==='accounts'?journalSurface:screen).visible=!active;}
   function setEmphasis(kind,value){const plane=kind==='accounts'?journalSurface:screen;plane.material.color.setHex(plane.userData.baseTint??0xffffff).multiplyScalar(1+Math.max(0,value)*.12);}
   function updatePreview(kind,id){if(!moduleEnabled[kind==='accounts'?'accounts':'scene-video'])return;return (kind==='accounts'?journalPreview:cinemaPreview)?.update(id);}
   function preview(kind){return (kind==='accounts'?journalPreview:cinemaPreview)?.data;}
-  const sceneIcons=typeof document==='undefined'?null:createDiscoverySceneIcons({camera,groups:{accounts:kiosk,'scene-video':cinema},onOpen,preview,ui,isEnabled:kind=>moduleEnabled[kind],interactive:()=>!transition&&!focusKind&&controls.enabled});
+  const sceneIcons=typeof document==='undefined'?null:createDiscoverySceneIcons({camera,groups:{accounts:kiosk,'scene-video':cinema},onOpen,preview,ui,isEnabled:kind=>available(kind),interactive:()=>!transition&&!focusKind&&controls.enabled});
   function pose(){return {position:camera.position.toArray(),target:controls.target.toArray(),enabled:controls.enabled};}
   function update(now){
     sceneIcons?.update();
@@ -118,7 +120,8 @@ export function createDiscoveryScene({scene,camera,controls,renderer,terrain,gen
   const pointer=e=>{if(document.querySelector('dialog[open]'))return;if(e.button===0)down={x:e.clientX,y:e.clientY,id:e.pointerId};};renderer.domElement.addEventListener('pointerdown',pointer);renderer.domElement.addEventListener('pointerup',up);
   function screenPoint(kind){const group=kind==='accounts'?kiosk:cinema,plane=kind==='accounts'?journalSurface:screen;const p=group.localToWorld(plane.position.clone()).project(camera);const rect=renderer.domElement.getBoundingClientRect();return {x:rect.left+(p.x*.5+.5)*rect.width,y:rect.top+(-p.y*.5+.5)*rect.height};}
   function setModuleEnabled(kind,value){
-    if(!(kind in moduleEnabled))return;moduleEnabled[kind]=!!value;const group=kind==='accounts'?kiosk:cinema;group.visible=!!value;group.userData.modDisabled=!value;sceneIcons?.update();
+    if(!(kind in moduleEnabled))return;moduleEnabled[kind]=!!value;const group=kind==='accounts'?kiosk:cinema;group.visible=available(kind);group.userData.modDisabled=!available(kind);sceneIcons?.update();
   }
-  return {setModuleEnabled,isModuleEnabled:kind=>moduleEnabled[kind],get labelAnchors(){return sceneIcons?.anchors||[];},focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){placement.dispose();transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
+  function setPlacement(kind,value){placed[kind]=!!value;const group=kind==='accounts'?kiosk:cinema;if(value){group.position.set(value.x,value.y,value.z);group.rotation.y=value.rotation||0;group.updateMatrixWorld(true);}setModuleEnabled(kind,moduleEnabled[kind]);}
+   return {setPlacement,setModuleEnabled,isModuleEnabled:kind=>moduleEnabled[kind],get labelAnchors(){return sceneIcons?.anchors||[];},focus,restore,update,audit,kiosk,cinema,screenPoint,surface,setBoardActive,setEmphasis,updatePreview,preview,pose,get previewsReady(){return Promise.all([journalPreview?.ready,cinemaPreview?.ready]);},get focusKind(){return focusKind;},get isFocused(){return !!focusKind&&!transition;},get transitioning(){return !!transition;},dispose(){placement.dispose();transition?.resolve();transition=null;renderer.domElement.removeEventListener('pointerdown',pointer);renderer.domElement.removeEventListener('pointerup',up);sceneIcons?.dispose();journalPreview?.dispose();cinemaPreview?.dispose();kiosk.removeFromParent();cinema.removeFromParent();}};
 }
