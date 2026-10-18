@@ -62,10 +62,14 @@ async function loadCyberAssets(){
  const groups=await loadGroupTemplates({theme:'cyber',createTemplate:key=>models[key],onLoad:retain});groups.failures=failures.filter(key=>['club','classroom','sport','lab','library','music','art','cafe','observatory'].includes(key));
  return{models,groups,recordModel:null,failures,fallbacks};
 }
+async function loadBuildingAssets(theme){
+ const loader=new GLTFLoader(),buildings={};
+ await Promise.all(['notes','focus'].map(async mod=>{try{const folder=`assets/buildings/${theme}/${mod}`,g=await loader.loadAsync(folder+'/scene.glb'),model=g.scene;model.updateMatrixWorld(true);const box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());model.position.sub(new T.Vector3(center.x,box.min.y,center.z));const target=mod==='notes'?[2.2,2.8,2.2]:[2.8,3.1,2.8];model.scale.setScalar(Math.min(target[0]/size.x,target[1]/size.y,target[2]/size.z));const holder=new T.Group();holder.name=`${theme} building ${mod}`;holder.add(model);holder.userData.buildingKey=`${theme}:${mod}`;holder.userData.moduleId=mod;holder.userData.theme=theme;holder.userData.footprint=Math.max(target[0],target[2])*.54;model.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;o.userData.generatedProp=true;}});buildings[`${theme}:${mod}`]=retain(holder);}catch(error){console.warn('Building asset unavailable',theme,mod,error.message);}}));return buildings;
+}
 export async function prepareSceneAssets(id){
  if(cache.has(id))return cache.get(id);
  const request=(async()=>{
-  if(id==='ideal')return loadIdealAssets(retain);
+  if(id==='ideal'){const a=await loadIdealAssets(retain);a.buildings=await loadBuildingAssets(id);return a;}
   if(!['forest','fuji'].includes(id))throw Error('Unknown scene assets: '+id);
   recordCache||=new GLTFLoader().loadAsync('assets/rodin/record-player/scene.glb').then(g=>retain(g.scene)).catch(error=>{recordCache=null;throw error;});
   // Start independent asset work before awaiting the shared record player. Attach
@@ -106,7 +110,7 @@ export async function prepareSceneAssets(id){
   return{models,groups,failures,fallbacks};
   })().catch(error=>{sceneryCache.delete(id);throw error;});sceneryCache.set(id,assetsRequest);}
   const [recordModel,assets]=await Promise.all([recordCache,assetsRequest]);
-  return{...assets,recordModel};
+  return{...assets,buildings:await loadBuildingAssets(id),recordModel};
  })();cache.set(id,request);
  try{return await request;}catch(error){cache.delete(id);throw error;}
 }

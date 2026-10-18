@@ -1,3 +1,4 @@
+import {buildingBlocks,buildingBlocksStep} from './building-collisions.js';
 import {FRIEND_SCENE_CAPACITY} from './social-presence.js';
 import {avatarURL} from './avatar-url.js';
 import {loadRiggedCharacter,cloneRigModel,setRigStatus,disposeRigTemplate} from './character-rig.js';
@@ -22,6 +23,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   const owners=[...(generated?.children||[]),...(terrain.landmarkObstacles||[])];
   (terrain.placementRoot||scene).traverse(o=>{if(o.isGroup&&/campfire|stump|stool/i.test(o.name))owners.push(o);});
   for(const owner of owners){
+    if(owner.userData.manualBuilding)continue;
     const meshes=[];owner.traverse(mesh=>{if(mesh.isMesh&&mesh.geometry?.attributes.position&&!mesh.userData.interactionOnly)meshes.push(mesh);});
     // Discovery placement and companion placement inspect the same static props.
     // Reuse their exact triangle snapshots only while all geometry and world
@@ -45,6 +47,7 @@ export function createPlacementContext({scene,terrain,generated,obstacleCache}){
   for(const owner of owners)if(owner.userData.layoutId?.startsWith('discovery-'))owner.traverse(mesh=>{if(!mesh.isMesh||mesh.raycast===mesh.userData.modRaycast)return;const original=mesh.raycast;mesh.raycast=function(ray,hits){if(!owner.userData.modDisabled)return original.call(this,ray,hits);};mesh.userData.modRaycast=mesh.raycast;});
   const ray=new THREE.Raycaster();
   function inspect(x,z,radius,used=[],{walking=false,manual=false}={}){
+    if(buildingBlocks(terrain,x,z,radius))return{ok:false,reason:'obstacle',id:'user-building'};
     const walkway=(terrain.walkways??WALKWAYS).find(w=>distanceToSegment(x,z,w)<w.width/2+radius+.1);
     if(walkway&&!walking&&!manual)return {ok:false,reason:'walkway',id:walkway.id};
     if((!terrain.theme||terrain.theme==='forest')&&Math.hypot(x+8.5,z-1.5)<(manual?.75:1.7)+radius+(manual?.06:.35))return {ok:false,reason:'campfire'};
@@ -294,7 +297,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
           const dest=walk.graph.nodes[walk.route[0]],dx=dest.x-r.group.position.x,dz=dest.z-r.group.position.z,distance=Math.hypot(dx,dz),amount=Math.min(distance,delta*(policy.speed||.20));
           const next={x:r.group.position.x+dx/Math.max(distance,1e-6)*amount,z:r.group.position.z+dz/Math.max(distance,1e-6)*amount};
           const others=[...records.values()].filter(other=>other!==r&&other.group.visible).map(other=>({x:other.group.position.x,z:other.group.position.z,radius:Math.max(r.slot.manualPlacement?characterBodyRadius(other.radius):other.radius+.08,(other.pose?.lie||0)>.05?other.height*.65:0)}));
-          if((terrain.canWalkStep?.(r.group.position,next,r.bodyRadius)??true)&&canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
+          if(!buildingBlocksStep(terrain,r.group.position,next,r.bodyRadius)&&(terrain.canWalkStep?.(r.group.position,next,r.bodyRadius)??true)&&canWalkStep(r.group.position,next,r.slot.manualPlacement?r.slot.placementRadius:r.radius+.08,others,r.slot.manualPlacement?.15:.6)){
             r.group.position.set(next.x,terrain.sample?.(next.x,next.z).height??THREE.MathUtils.lerp(r.group.position.y,dest.y,amount/Math.max(distance,1e-6)),next.z);walk.heading=Math.atan2(dx,dz);moving=amount>0;walk.phase+=amount*17;
             if(distance<.015||amount>=distance){walk.node=walk.route.shift();if(!walk.route.length)walk.wait=policy.wait+(walk.sequence%2);}
           }else walk.wait=.7;

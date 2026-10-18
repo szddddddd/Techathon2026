@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {buildingBlocks,buildingBlocksStep} from '../src/building-collisions.js';
+const terrain={buildingColliders:new Map([['a',{minX:-1,maxX:1,minZ:-1,maxZ:1}]])};
+assert.equal(buildingBlocks(terrain,0,0,.3),true);
+assert.equal(buildingBlocks(terrain,1.2,0,.3),true);
+assert.equal(buildingBlocks(terrain,2,0,.3),false);
+assert.equal(buildingBlocksStep(terrain,{x:-3,z:0},{x:3,z:0},.3),true);
+assert.equal(buildingBlocksStep(terrain,{x:-3,z:2},{x:3,z:2},.3),false);
+assert.equal(buildingBlocksStep(terrain,{x:2,z:0},{x:3,z:0},.3),false);
+terrain.buildingColliders.clear();assert.equal(buildingBlocks(terrain,0,0,.3),false);
+console.log('PASS building footprint, body clearance, swept movement and removal');
