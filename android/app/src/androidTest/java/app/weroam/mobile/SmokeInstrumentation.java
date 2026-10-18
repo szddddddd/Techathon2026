@@ -27,8 +27,9 @@ public final class SmokeInstrumentation extends Instrumentation {
     private boolean quick;
     private boolean picker;
     private boolean benchmark;
+    private boolean media;
     private final StringBuilder report = new StringBuilder();
-    @Override public void onCreate(Bundle args) { super.onCreate(args); quick="true".equals(args.getString("quick")); picker="true".equals(args.getString("picker")); benchmark="true".equals(args.getString("benchmark")); start(); }
+    @Override public void onCreate(Bundle args) { super.onCreate(args); quick="true".equals(args.getString("quick")); picker="true".equals(args.getString("picker")); benchmark="true".equals(args.getString("benchmark")); media="true".equals(args.getString("media")); start(); }
     private WebView find(View node) {
         if (node instanceof WebView) return (WebView) node;
         if (node instanceof ViewGroup) for (int i=0;i<((ViewGroup) node).getChildCount();i++) {
@@ -83,6 +84,18 @@ public final class SmokeInstrumentation extends Instrumentation {
             MainActivity activity=(MainActivity)startActivitySync(new Intent(getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             runOnMainSync(()->web=find(activity.getWindow().getDecorView()));
             await("Boolean(window.__sceneTheme?.ready&&window.__socialUI?.inbox)");
+            if(media){
+                js("__discoveryUI.open({type:'video',id:'video-1'});true");
+                await("__uiInteractions.state('discovery')==='open'&&__contentPlayer.video.readyState>=1");
+                if("true".equals(js("__contentPlayer.video.paused")))tap(".d-video-big-play");
+                await("__contentPlayer.video.readyState>=3&&!__contentPlayer.video.paused");
+                js("__contentPlayer.pause();true");
+                check("true".equals(js("__contentPlayer.video.src.startsWith('blob:')")),"WebView uses one compatible offline media Blob");
+                js("__contentPlayer.video.currentTime=__contentPlayer.video.duration*.7;true");
+                await("!__contentPlayer.video.seeking&&Math.abs(__contentPlayer.video.currentTime-__contentPlayer.video.duration*.7)<.15");
+                check(true,"native WebView plays and seeks the offline video");
+                result.putString("stream",report.toString());finish(-1,result);return;
+            }
             if(benchmark){performanceRun();result.putString("stream",report.toString());finish(-1,result);return;}
             check("true".equals(js("window.isSecureContext && !!crypto.subtle && !!indexedDB && __WEROAM_ANDROID__")),"local HTTPS WebView, secure APIs and Android entry");
             js("window.__nativeErrors=[];addEventListener('error',e=>__nativeErrors.push(e.message));window.__nativeSetup=false;(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){if(__socialStore.getFriend(id)){await __socialStore.addFriend(id);await __socialStore.receiveMessage(id,{text:'手机里的朋友'});}}await __socialUI.inbox.gateway.loadDemo();window.__nativeSetup=true;})().catch(e=>__nativeErrors.push(e.message));true");
@@ -128,6 +141,9 @@ public final class SmokeInstrumentation extends Instrumentation {
             }
             check("true".equals(js("__nativeErrors.length===0")),"no uncaught runtime JavaScript errors");
             result.putString("stream",report.toString());finish(-1,result);
-        }catch(Throwable error){result.putString("stream",report+"FAIL: "+error.toString());finish(0,result);}
+        }catch(Throwable error){
+            if(media&&web!=null)try{report.append("MEDIA: ").append(js("(()=>{const v=__contentPlayer.video;return{ready:v.readyState,network:v.networkState,time:v.currentTime,duration:v.duration,seeking:v.seeking,error:v.error?.code,seekable:Array.from({length:v.seekable.length},(_,i)=>[v.seekable.start(i),v.seekable.end(i)]),buffered:Array.from({length:v.buffered.length},(_,i)=>[v.buffered.start(i),v.buffered.end(i)])};})()"));}catch(Exception ignored){}
+            result.putString("stream",report+"FAIL: "+error.toString());finish(0,result);
+        }
     }
 }

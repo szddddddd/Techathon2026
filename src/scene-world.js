@@ -22,7 +22,7 @@ import {FUJI_LAYOUT} from './fuji-layout.js';
 import {createDiscoveryScene} from './discovery-scene.js';
 import {createMailbox} from './mailbox.js';
 import {createRecordPlayer} from './record-player.js';
-import {prepareSceneAssets,sceneResources,disposeSceneResources} from './scene-assets.js';
+import {prepareSceneAssets,prepareMailboxAsset,sceneResources,disposeSceneResources} from './scene-assets.js';
 
 export const SCENE_REGISTRY={
  ideal:{...SCENE_THEMES.ideal,prepareAssets:()=>prepareSceneAssets('ideal'),buildTerrain:(root,options)=>{const terrain=buildIdealScene(root,options);return{terrain,landmarks:terrain.landmarks};},backdropGround:false,groupFocus:true,fogDensity:.001,mobileFogDensity:.0003,background:0x78b7e4,backgroundTop:0x559bd8,backgroundBottom:0xc7e5f5,hemi:0xd5edff,ground:0x829a7c,hemiIntensity:2.0,sun:0xfff2d5,sunIntensity:2.5,rim:0xb8ddff,rimIntensity:1,fill:0xdcefff,fillIntensity:.8,exposure:1.15,layout:IDEAL_LAYOUT,cameraFor:idealCamera,camera:idealCamera(),facilityTemplates:{accounts:()=>idealFacility('accounts'),'scene-video':()=>idealFacility('scene-video')},recordPresentation:{title:'云端音乐台',useModel:true},ariaLabel:'可拖动旋转、滚轮缩放的理想城浮空岛与殖民舰巨塔'},
@@ -59,7 +59,7 @@ function buildForestWorld(root,{assets,reduced}){
 }
 export async function prepareSceneWorld(id,{reduced}={}){
  const config=SCENE_REGISTRY[id];if(!config)throw Error('未知场景');
- const assets=await config.prepareAssets(),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
+ const [assets,mailboxTemplate]=await Promise.all([config.prepareAssets(),prepareMailboxAsset(id)]),root=new T.Group();root.name='Scene world · '+id;root.userData.sceneWorld=id;
  const obstacleCache=new WeakMap();let frozenTransforms=0,background=null;
  if(config.backgroundTop&&typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=32;canvas.height=512;const context=canvas.getContext('2d'),gradient=context.createLinearGradient(0,0,0,512);gradient.addColorStop(0,'#'+config.backgroundTop.toString(16).padStart(6,'0'));gradient.addColorStop(.6,'#'+config.background.toString(16).padStart(6,'0'));gradient.addColorStop(1,'#'+config.backgroundBottom.toString(16).padStart(6,'0'));context.fillStyle=gradient;context.fillRect(0,0,32,512);background=new T.CanvasTexture(canvas);background.colorSpace=T.SRGBColorSpace;}
 
@@ -79,7 +79,7 @@ export async function prepareSceneWorld(id,{reduced}={}){
     if(!generated)terrain.landmarkObstacles.push(discovery.kiosk,discovery.cinema);
     record=await createRecordPlayer({scene:root,camera,canvas:renderer.domElement,terrain,generated,ui:gate.facade,sound,reduced,onOpen:onRecord,position:config.layout.recordPlayer,modelTemplate:assets.recordModel,presentation:config.recordPresentation,externalDisposal:true});
     terrain.landmarkObstacles.push(record.root);
-     mailbox=await createMailbox({scene:root,terrain,camera,canvas:renderer.domElement,ui:gate.facade,onFocus:onMailbox});terrain.landmarkObstacles.push(mailbox.root);
+     mailbox=await createMailbox({scene:root,terrain,camera,canvas:renderer.domElement,ui:gate.facade,onFocus:onMailbox,modelTemplate:mailboxTemplate});terrain.landmarkObstacles.push(mailbox.root);
      root.updateMatrixWorld(true);nightEffects=createNightEffects(root,id,{flies});nightEffects.setNightFactor(0);
    }catch(error){this.dispose();throw error;}
    return this;

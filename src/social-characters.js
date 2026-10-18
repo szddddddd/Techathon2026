@@ -260,7 +260,9 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
     inspect(id,x,z){const r=records.get(id);return r?inspectPlacement(r,x,z):{ok:false};},
     pick(x,y){return pick(x,y)?.friend.id||null;},
   };
+  const viewerPosition=new THREE.Vector3();
   function update(now,dt){
+    camera.getWorldPosition(viewerPosition);
     if(suspended)return;
     drag.update();
     terrain.setResidents?.(residents().map(r=>({x:r.group.position.x,z:r.group.position.z,radius:r.bodyRadius})));
@@ -300,7 +302,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
           }else walk.wait=.7;
         }
       }
-      const facing=Math.atan2(camera.position.x-r.group.position.x,camera.position.z-r.group.position.z);
+      const facing=Math.atan2(viewerPosition.x-r.group.position.x,viewerPosition.z-r.group.position.z);
       let desired=selected===id||r.placing?facing:(walk?.heading??.35);
       const angle=Math.atan2(Math.sin(desired-r.bodyHolder.rotation.y),Math.cos(desired-r.bodyHolder.rotation.y));r.bodyHolder.rotation.y+=angle*Math.min(1,delta*3);
       let groundPad=0;if(currentStatus?.kind==='tired'&&canRest)for(let i=0;i<8;i++){const a=i*Math.PI/4;groundPad=Math.max(groundPad,(terrain.sample?.(r.group.position.x+Math.cos(a)*poseRadius*.7,r.group.position.z+Math.sin(a)*poseRadius*.7).height??r.group.position.y)-r.group.position.y);}
@@ -310,7 +312,7 @@ export async function createCharacters({scene,camera,controls,renderer,terrain,g
       const normal=terrain.sample?.(r.group.position.x,r.group.position.z).normal;if(normal)r.ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(normal.x,normal.y,normal.z));
       r.group.updateMatrixWorld(true);
       const anchor=r.pose.anchor;const world=r.group.position.clone().add(new THREE.Vector3(anchor.x,anchor.y,anchor.z));
-      if(checkOcclusion)r.occluded=blocked(camera.position,r.group.position.clone().add(new THREE.Vector3(0,r.height*.7,0)));
+      if(checkOcclusion)r.occluded=blocked(viewerPosition,r.group.position.clone().add(new THREE.Vector3(0,r.height*.7,0)));
       const bounds=r.pose.bounds;let headY=Infinity;for(const x of [bounds.minX,bounds.maxX])for(const y of [bounds.minY,bounds.maxY])for(const z of [bounds.minZ,bounds.maxZ]){const corner=r.group.localToWorld(new THREE.Vector3(x,y+bounds.groundOffset,z)).project(camera);headY=Math.min(headY,(-.5*corner.y+.5)*rect.height);}const p=world.project(camera);anchors.push({id,headY:headY-6,worldX:r.group.position.x,worldZ:r.group.position.z,walking:moving,x:(p.x*.5+.5)*rect.width,y:(-.5*p.y+.5)*rect.height,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<1.15&&Math.abs(p.y)<1.15,occluded:r.occluded,placeholder:r.group.userData.placeholder,alpha:displayAlpha,phase:r.presentation.phase,pose:r.pose.kind});
     }
   }

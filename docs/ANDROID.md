@@ -28,6 +28,8 @@
 
 原生工程在 `android/`，使用 AGP 8.13.2、Gradle 8.13、JDK 17+（本机为便携 JDK 21）、Android SDK 36、Build Tools 35.0.0。
 
+桌面图标使用 Android 自适应图标：透明 WeRoam 图案与铺满边缘的浅色背景分层，去除原图外圈白色留白及旧式图标的额外缩放。`scripts/build-android-icons.mjs` 从原始品牌图可重复生成图标，APK 构建时自动执行；不修改网页品牌原图。
+
 本机工具位于被忽略的 `.cache/android-tools/`。其他机器可通过 Android Studio 安装 JDK/SDK，并设置 `JAVA_HOME`、`ANDROID_HOME`；Gradle 可通过工程 wrapper 下载。首次安装 SDK 时需要阅读并接受 Google 的 SDK 许可。
 
 ```powershell

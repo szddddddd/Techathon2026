@@ -5,7 +5,7 @@ import {brotliCompress,gzip,constants} from 'node:zlib';
 import {pipeline} from 'node:stream/promises';
 
 const brotli=promisify(brotliCompress),zip=promisify(gzip);
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.mp3':'audio/mpeg','.webm':'video/webm','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.gif':'image/gif'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.mp3':'audio/mpeg','.webm':'video/webm','.mp4':'video/mp4','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.gif':'image/gif'};
 const text=/\.(?:html|js|css|json|svg)$/i;
 // Bound retained compressed data. Concurrent requests share a compression job.
 const compressed=new Map();let cacheBytes=0;

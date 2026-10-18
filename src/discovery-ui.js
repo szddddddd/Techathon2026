@@ -163,7 +163,8 @@ export function createDiscoveryUI({store,ui,mods,onShare=()=>{},onClose=()=>{},o
     close,
     get isOpen(){return stage!=='closed';},
     get route(){return current;},
-    update(){if(stage!=='closed')syncVideo();},
+    // Playback events already drive controls. No DOM scans during scene frames.
+    update(){},
     dispose(){stopScene();windowNode.remove();unsub?.();unsubscribeMods?.();clearTimeout(toastTimer);clearTimeout(progressTimer);['timeupdate','play','pause','loadedmetadata','canplay','volumechange','waiting'].forEach(name=>video.removeEventListener(name,syncVideo));video.removeEventListener('error',showVideoError);shell.remove();},
   };
 }

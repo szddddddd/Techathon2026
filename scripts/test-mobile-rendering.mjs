@@ -26,7 +26,7 @@ try{
   const after=shots.at(-1);assert.equal(Object.keys(after.stats.resources.characters.positions).length,8);
   if(baseline){const a=shots[0].pixels,b=after.pixels;assert.equal(a.width,b.width);assert.equal(a.height,b.height);let changed=0,sum=0;for(let i=0;i<a.data.length;i+=4){let delta=0;for(let k=0;k<3;k++){const d=Math.abs(a.data[i+k]-b.data[i+k]);delta=Math.max(delta,d);sum+=d;}if(delta>24)changed++;}const fraction=changed/(a.width*a.height),mean=sum/(a.width*a.height*3);rows.push({scene,fraction,mean,before:shots[0].stats,after:after.stats});assert.ok(fraction<.01,scene+' visual mismatch '+fraction);console.log('PASS: '+scene+' unchanged resolution/eight characters, pixel difference >24: '+(fraction*100).toFixed(3)+'%');}
  }
- const c=await context(),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
+ const c=await context(),p=await c.newPage(),mailboxRequests=new Map();p.on('pageerror',e=>errors.push(e.message));p.on('request',r=>{const url=new URL(r.url());if(/^\/assets\/mailboxes\/[^/]+\/scene.glb$/.test(url.pathname))mailboxRequests.set(url.pathname,(mailboxRequests.get(url.pathname)||0)+1);});
  await p.goto(origin+'/?scene=forest&inbox=1');await ready(p,'forest');
  await p.waitForFunction(()=>window.__socialUI?.inbox);
  await p.evaluate(async()=>{await __socialStore.setDemoPaused(true);for(const id of ['tuantuan','ali','xiaomian','shanshan']){await __socialStore.addFriend(id);await __socialStore.receiveMessage(id,{text:'切换测试'});}await __socialUI.inbox.gateway.loadDemo();});
@@ -39,6 +39,7 @@ try{
   const previous=limits.get(scene);if(previous){assert.ok(r.textures<=previous.textures+2,scene+' retained textures grew');assert.ok(r.geometries<=previous.geometries+5,scene+' retained geometries grew');}else limits.set(scene,r);counts.push({cycle,scene,textures:r.textures,geometries:r.geometries});
  }
  checks.push('five full scene cycles keep one world, four friends, draft and bounded GPU allocations');
+ assert.equal(mailboxRequests.size,3);for(const count of mailboxRequests.values())assert.equal(count,1,'Each mailbox is fetched and parsed once across scene revisits');checks.push('each mailbox loads once across five complete scene cycles');
  await p.screenshot({path:path.join(out,'inbox-after-five-cycles.jpg')});await c.close();
  const failure=await context(),f=await failure.newPage();f.on('pageerror',e=>errors.push(e.message));
  await f.goto(origin+'/?scene=ideal');await ready(f,'ideal');await f.route('**/rodin/record-player/scene.glb',r=>r.abort());

@@ -10,6 +10,8 @@ if (-not (Test-Path "$env:JAVA_HOME/bin/keytool.exe")) { throw 'JDK missing. See
 if (-not (Test-Path "$env:ANDROID_HOME/platforms/android-36/android.jar")) { throw 'Android SDK 36 missing. See docs/ANDROID.md.' }
 if (-not (Test-Path $gradle)) { $gradle=Join-Path $repo 'android/gradlew.bat' }
 if (-not (Test-Path $gradle)) { throw 'Gradle wrapper missing.' }
+& node scripts/build-android-icons.mjs
+if ($LASTEXITCODE -ne 0) { throw 'Android icon build failed' }
 if (-not $SkipWebBuild) {
     & npm.cmd run build
     if ($LASTEXITCODE -ne 0) { throw 'Web build failed' }

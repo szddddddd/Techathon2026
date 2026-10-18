@@ -1,7 +1,7 @@
 import {petPayload} from './pet-state.js';
-import {isAndroidApp} from './mobile-platform.js';
+import {supportsDesktopPet} from './mobile-platform.js';
 export function createWebPet({store,ui,onOpenFriend,getSceneId=()=> 'forest',getDayNight=()=>null,bridgeOrigin='http://127.0.0.1:47831',launchProtocol=()=>{location.href='forestletters://pet';},onNotice=()=>{}}){
-  if(isAndroidApp)return{async sync(){},launch(){},connected:false,mount(container){container.textContent='桌宠仅适用于 Windows 电脑版。';},dispose(){}};
+  if(!supportsDesktopPet)return{async sync(){},launch(){},connected:false,mount(container){container.textContent='桌宠仅适用于 Windows 电脑版。';},dispose(){}};
 
   const root=document.createElement('aside');root.id='web-pet';root.setAttribute('aria-label','Windows 桌宠');
   root.innerHTML=`<button id="pet-toggle" type="button" role="switch" aria-checked="false" title="打开桌宠"><span>♧ 桌宠</span><i class="pet-switch" aria-hidden="true"></i></button><p id="pet-launch-status" role="status" hidden></p>`;

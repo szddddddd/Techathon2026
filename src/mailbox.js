@@ -1,8 +1,8 @@
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {prepareMailboxAsset} from './scene-assets.js';
 const labels={forest:'森林邮筒',fuji:'小町邮箱',ideal:'云端邮件终端'};
-export async function createMailbox({scene,terrain,camera,canvas,ui,onFocus}){
- const theme=terrain.theme,model=(await new GLTFLoader().loadAsync(`assets/mailboxes/${theme}/scene.glb`)).scene;
+export async function createMailbox({scene,terrain,camera,canvas,ui,onFocus,modelTemplate}){
+ const theme=terrain.theme,model=(modelTemplate||await prepareMailboxAsset(theme)).clone(true);
  const box=new T.Box3().setFromObject(model),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());
  const height=theme==='ideal'?2.4:1.9,scale=height/size.y;
  model.position.sub(new T.Vector3(center.x,box.min.y,center.z));
@@ -27,6 +27,7 @@ export async function createMailbox({scene,terrain,camera,canvas,ui,onFocus}){
  model.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;o.userData.generatedProp=true;}});scene.add(root);root.updateMatrixWorld(true);
  const button=document.createElement('button');button.className='scene-entry-icon';button.type='button';button.style.cssText='position:fixed;z-index:12;margin:0';button.setAttribute('aria-label','聚焦'+labels[theme]);button.innerHTML=`<span class="scene-content-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></span><span class="scene-content-copy"><strong>${labels[theme]}</strong><small>靠近看看</small></span>`;document.body.append(button);
  const target=()=>root.position.clone().add(new T.Vector3(0,height*.55,0));
+ const projected=new T.Vector3();let lastTransform='';
  let locked=true;const unsubscribe=ui.subscribe(s=>{locked=!!(s.main||s.modal);button.hidden=locked;});
  const open=()=>{if(locked||!controlsAllowed())return;onFocus?.(target());};
  function controlsAllowed(){return !document.querySelector('dialog[open]');}
@@ -34,5 +35,5 @@ export async function createMailbox({scene,terrain,camera,canvas,ui,onFocus}){
  const press=e=>{down=e.button===0?{x:e.clientX,y:e.clientY}:null;};
  const click=e=>{if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)return;down=null;if(!root.visible||locked)return;const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);const hit=ray.intersectObject(scene,true).find(h=>h.object.isMesh&&h.object.visible);if(hit){let o=hit.object;while(o&&o!==root)o=o.parent;if(o===root)open();}};
  canvas.addEventListener('pointerdown',press);canvas.addEventListener('click',click);
- return{root,target,update(){const p=target().add(new T.Vector3(0,height*.65,0)).project(camera),r=canvas.getBoundingClientRect();button.hidden=!!locked||p.z>1||p.z< -1||Math.abs(p.x)>1||Math.abs(p.y)>1;button.style.transform=`translate(${r.left+(p.x+1)*r.width/2}px,${r.top+(1-p.y)*r.height/2}px) translate(-50%,-50%)`;},setActive(active){root.visible=active;button.hidden=!active;},dispose(){unsubscribe();button.remove();canvas.removeEventListener('pointerdown',press);canvas.removeEventListener('click',click);}};
+ return{root,target,update(){if(locked||!root.visible){if(!button.hidden)button.hidden=true;return;}const p=projected.copy(root.position);p.y+=height*1.2;p.project(camera);const hidden=p.z>1||p.z< -1||Math.abs(p.x)>1||Math.abs(p.y)>1;if(button.hidden!==hidden)button.hidden=hidden;if(hidden)return;const r=canvas.getBoundingClientRect(),transform=`translate(${r.left+(p.x+1)*r.width/2}px,${r.top+(1-p.y)*r.height/2}px) translate(-50%,-50%)`;if(transform!==lastTransform){button.style.transform=transform;lastTransform=transform;}},setActive(active){root.visible=active;button.hidden=!active||locked;},dispose(){unsubscribe();button.remove();canvas.removeEventListener('pointerdown',press);canvas.removeEventListener('click',click);}};
 }

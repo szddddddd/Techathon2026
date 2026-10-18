@@ -380,8 +380,8 @@ export function createSocialUI({store,characters,controls,ui,mods,onOpenWorkshop
   });
   ui.register('picker',{el:$('chat-picker'),kind:'popover',onClosed(){picker=null;}});
   renderSummary();renderDirectory();
-  let presenceState=null,presenceContext='';
-  function prepareFrame(now){const occupant=active||closingFriend,context=occupant+'|'+chatVisible();if(presenceState!==store.state||presenceContext!==context){presenceState=store.state;presenceContext=context;presence.reconcile({state:store.state,activeFriend:occupant,chatVisible:chatVisible(),now});}const entries=presence.update(now,matchMedia('(prefers-reduced-motion: reduce)').matches);characters.setPresence(entries,store.state.friends.map(person));}
+  let presenceState=null,presenceContext='',presenceFriends=[];
+  function prepareFrame(now){const occupant=active||closingFriend,context=occupant+'|'+chatVisible();if(presenceState!==store.state)presenceFriends=store.state.friends.map(person);if(presenceState!==store.state||presenceContext!==context){presenceState=store.state;presenceContext=context;presence.reconcile({state:store.state,activeFriend:occupant,chatVisible:chatVisible(),now});}const entries=presence.update(now,matchMedia('(prefers-reduced-motion: reduce)').matches);characters.setPresence(entries,presenceFriends);}
   function update(now){
     if(statusOwner&&statusOrigin){const source=typeof statusOrigin==='function'?statusOrigin():statusOrigin;if(!source?.isConnected||source.closest('[hidden]'))closeStatus();}
     const dt=Math.min(.05,(now-lastAnchorFrame)/1000||1/60);lastAnchorFrame=now;
@@ -404,7 +404,7 @@ export function createSocialUI({store,characters,controls,ui,mods,onOpenWorkshop
       node.classList.toggle('is-hovered',!sceneTransition&&!orbiting&&controls.enabled&&hover.get(now)===a.id);
     }
     const measured=anchors.map(a=>{const node=anchorNodes.get(a.id),height=node?._anchorHeight||36;return{...a,width:node?._anchorWidth||150,height};});const positions=anchorLayout.update(measured,{now,moving,width:innerWidth,height:innerHeight,dt});
-    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;const a=anchors.find(a=>a.id===p.id);node.style.setProperty('--identity-offset',`${((a?.headY??p.y)-p.y+40).toFixed(2)}px`);node.dataset.labelOffset=p.offset.toFixed(2);node.style.transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;}
+    for(const p of positions){const node=anchorNodes.get(p.id);if(!node)continue;const a=anchors.find(a=>a.id===p.id),offset=`${((a?.headY??p.y)-p.y+40).toFixed(2)}px`,labelOffset=p.offset.toFixed(2),transform=`translate3d(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px,0) translate(-50%,-100%)`;if(node._identityOffset!==offset){node.style.setProperty('--identity-offset',offset);node._identityOffset=offset;}if(node.dataset.labelOffset!==labelOffset)node.dataset.labelOffset=labelOffset;if(node._anchorTransform!==transform){node.style.transform=transform;node._anchorTransform=transform;}}
   }
 
   refreshMods();

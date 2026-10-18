@@ -62,3 +62,39 @@ Android 15 / API 35 模拟器安装并覆盖更新到 `1.3.1-demo.2` 后，三�
 ## 设备边界
 
 原始三场景离线资产约 320 MiB，没有靠压缩贴图或删减内容减少包体。低端 GPU 仍可能受像素、阴影和原始高面数资产限制。当前已验证的浏览器/模拟器证据不能保证所有手机恒定 60 FPS；实体手机的帧率、长时间温升、系统回收和厂商 WebView 兼容性需要安装后实测。
+
+
+## 2026-10-18：重复加载与资源生命周期优化
+
+本轮以 `3ee7929` 为修改前版本，保持 v0.1 beta、原始几何、贴图、分辨率、抗锯齿、阴影及全部可视内容。没有发布或推送 Git，也没有替换 `downloads/` 中的安装包。
+
+### 本轮实现
+
+- `src/scene-assets.js` / `src/mailbox.js` / `src/scene-world.js`：邮箱模板按场景缓存正在进行及已完成的加载，失败后可重试；预加载与其他场景资源并行。每个活动邮箱独立克隆节点、共享几何与贴图，切换后保留模板，闲置 GPU 资源仍走原有释放策略。
+- `sceneResources()` 现在收集场景灯光的 Shadow 对象，退出场景时释放其 render target，覆盖富士列车头灯。共享资源不会随某一实例退出而失效。
+- `src/discovery-player.js`：普通网页改为直接媒体 URL，由媒体栈缓冲及拖动读取，省去完整文件 fetch→Blob→ObjectURL 中转。重复打开同一视频复用单个播放器与播放位置，取消的加载会正常结束等待；仍支持错误重试。APK 保留单个 Blob 的离线兼容路径，换片与退出时撤销旧 URL。
+- Web 服务器补齐 MP4 MIME。Android 模拟器 WebView 124 的离线 HTTPS URL 路径实测出现播放和拖动失败，因此没有交付该实验的原生 Range 处理器；APK 沿用兼容路径。普通手机浏览器经真实 HTTP 服务的媒体 Range 测试通过。
+- `src/day-night-environment.js` / `main.js`：固定时间且相机未动时跳过相同环境计算，自动昼夜和移动相机仍逐帧更新；相机裁剪参数未变化时不再重建阴影投影矩阵。场景切换和失败回退显式使缓存失效。
+- `main.js` / `social-ui.js` / `record-player.js` / `mailbox.js`：相同视口不重复设置画布尺寸；相同标签样式不重复写入；不可见的设施入口不做投影和 DOM 写入；好友资料映射只在社交状态变化时重建。
+- `discovery-ui.js`：视频控件沿用已有媒体事件刷新，不在场景每帧扫描控件。
+- `mobile-platform.js` / `web-pet.js` / `main.js`：Android APK、Android 浏览器和 iOS 不启动 Windows 桌宠 HTTP 轮询及 250ms 同步计时器；Windows 原生桥接及桌面浏览器行为保留。
+
+### 本轮验证与证据
+
+同一台电脑 Edge / D3D11，393×852 CSS 像素、DPR 2、实际画布 648×1405，固定随机种子、白天、八名角色，预热后采样 120 帧。修改前后分别在 `.test-results/mobile-performance/before-mobile-reuse/` 和 `after-mobile-reuse/`。这些是桌面触屏模拟，不能作为实体手机 FPS 结论。
+
+| 场景 | CPU 中位数，前→后 ms | CPU P95，前→后 ms | 帧间隔中位数，前→后 ms |
+|---|---:|---:|---:|
+| 森林 | 5.2 → 5.2 | 7.3 → 5.9 | 16.7 → 16.7 |
+| 富士 | 4.6 → 4.8 | 5.4 → 5.6 | 16.7 → 16.7 |
+| 理想城 | 2.8 → 2.8 | 3.3 → 3.5 | 16.7 → 16.7 |
+
+单轮数据没有显示稳定的整体帧耗时改善；原始 JS heap 快照也受 GC 时机影响，不据此声称总内存下降百分比。本轮可确认的收益是消除重复邮箱下载和解析、网页视频完整文件的应用层中转、重复表现更新以及场景阴影目标的遗漏释放；不宣称 APK 的视频 Blob 内存也已去除。
+
+- `test-mobile-resource-lifecycle.mjs`：并发加载合并、失败重试、实例变换隔离、共享几何保护、真实 Shadow render target 的 dispose 事件，以及固定时间缓存和相机/时间/场景失效。
+- `test-mobile-rendering.mjs`：修改前后固定视角三场景的 RGB 差异大于 24 的像素比例均为 0%，画布与三角面数量一致。五完整轮切换始终一个活动世界、四名好友，回复草稿保留；每个场景邮箱只发起一次请求。各轮纹理/几何数量一致：森林 99/223、富士 94/268、理想城 38/88。必要 GLB 失败回退和重试通过。
+- `test-mobile-media.mjs`：直接媒体请求及 Range、单视频多次打开不重载、拖动、关闭重开恢复、快速换片、加载失败重试；Android UA 页面不访问桌宠端口。证据 `.test-results/mobile-media-streaming.json` 及同名 PNG。
+- 社交存储/内容/桌宠状态、角色加载与在场策略、已有碰撞/静态实例/射线性能校验、昼夜、Android 离线触屏回归通过。离线包 291 项、327.7 MiB，模型与贴图原字节保留。
+- Web 构建和 Android release / AndroidTest 构建通过；APK 仅用于本地验证，未覆盖下载发布文件。Android 模拟器内从实际视频界面点击播放、暂停和拖动至 70% 均通过，当前单 Blob 兼容路径的证据为 `.test-results/mobile-performance/native-media-compatible.txt`；失败的直接离线 URL 试验记录另存，没有当成通过结果。
+
+复现命令：`npm run build`、`npm run android:web`、`npm run test:mobile:performance`、`npm run test:mobile:media`、`npm run test:mobile:rendering`。原生离线播放与进度拖动的复现命令：`adb shell am instrument -w -e media true app.weroam.mobile.test/app.weroam.mobile.SmokeInstrumentation`。

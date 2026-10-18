@@ -29,12 +29,18 @@ export function createEnvironmentSampler(){
  };
  sample.revision=0;return sample;
 }
-export function createDayNightEnvironment({scene,camera,renderer,hemi,sun,rim,fill,ground}){
+export function createDayNightEnvironment({scene,camera:baseCamera,getCamera=()=>baseCamera,renderer,hemi,sun,rim,fill,ground}){
  const bodies=createCelestialBodies(scene);
  const sample=createEnvironmentSampler(),pixels=new Uint8Array(128*4),sky=new T.DataTexture(pixels,1,128),color=new T.Color();
  sky.colorSpace=T.SRGBColorSpace;sky.magFilter=T.LinearFilter;sky.minFilter=T.LinearFilter;sky.name='Shared day/night sky';let lastSky='',lastSkyRevision=-1;
+ const lastPosition=new T.Vector3(),lastRotation=new T.Quaternion(),horizonColor=new T.Color(0xffa057);let lastWorld,lastSeconds,lastAspect,lastNight=0;
  return{
   apply(world,seconds){
+   const camera=getCamera();
+   // Fixed time + stationary camera is identical work. Automatic time and camera
+   // motion still update every frame, including camera-relative stars and halos.
+   if(lastWorld===world&&lastSeconds===seconds&&lastAspect===camera.aspect&&lastPosition.equals(camera.position)&&lastRotation.equals(camera.quaternion))return lastNight;
+   lastWorld=world;lastSeconds=seconds;lastAspect=camera.aspect;lastPosition.copy(camera.position);lastRotation.copy(camera.quaternion);
    const e=sample(world.id,seconds);scene.background=sky;ground.visible=false;
    if(sample.revision!==lastSkyRevision){
    lastSkyRevision=sample.revision;const key=e.top.getHex()+':'+e.background.getHex()+':'+e.bottom.getHex();
@@ -48,13 +54,13 @@ export function createDayNightEnvironment({scene,camera,renderer,hemi,sun,rim,fi
     const elevation=T.MathUtils.smoothstep(direction.y,0,.12),distance=world.id==='ideal'?110:65;
     sun.position.copy(sun.target.position).addScaledVector(direction,distance);
     sun.color.setHex(isDay?DAY_NIGHT_PROFILES[world.id].day.sun:DAY_NIGHT_PROFILES[world.id].night.sun);
-    if(isDay)sun.color.lerp(new T.Color(0xffa057),1-T.MathUtils.smoothstep(direction.y,0,.35));
+    if(isDay)sun.color.lerp(horizonColor,1-T.MathUtils.smoothstep(direction.y,0,.35));
     sun.intensity=(isDay?DAY_NIGHT_PROFILES[world.id].day.sunIntensity:.3)*elevation;
     sun.castShadow=elevation>.001;
     rim.intensity=0;fill.intensity=0;
-    Object.assign(sun.shadow.camera,{near:.1,far:distance+150});sun.shadow.camera.updateProjectionMatrix();
+    if(sun.shadow.camera.near!==.1||sun.shadow.camera.far!==distance+150){Object.assign(sun.shadow.camera,{near:.1,far:distance+150});sun.shadow.camera.updateProjectionMatrix();}
    if(scene.fog)scene.fog.color.copy(e.background);ground.material.color.copy(e.background).multiplyScalar(.65);world.setNightFactor(e.night,camera);
-   return e.night;
-  },dispose(){bodies.dispose();sky.dispose();},
+   lastNight=e.night;return lastNight;
+  },invalidate(){lastWorld=null;},dispose(){bodies.dispose();sky.dispose();},
  };
 }

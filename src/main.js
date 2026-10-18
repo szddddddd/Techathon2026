@@ -28,8 +28,9 @@ import {createSceneSwitcher,sceneIcon} from './scene-switcher.js';
 import {SCENE_REGISTRY,prepareSceneWorld} from './scene-world.js';
 import {assetCacheSnapshot,releaseInactiveAssetGPU} from './scene-assets.js';
 import {prepareSceneGPU} from './gpu-prepare.js';
-import {isAndroidApp} from './mobile-platform.js';
+import {isAndroidApp,supportsDesktopPet} from './mobile-platform.js';
 import {createTrainFollow} from './train-follow.js';
+import {createWebXR} from './webxr.js';
 
 const $=id=>document.getElementById(id);
 function curtain(title,{sceneId='forest'}={}){
@@ -47,7 +48,8 @@ async function boot(){
  const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!captureIndex});
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.42;$('viewport').append(renderer.domElement);
  // Register before any async loading so startup resizes cannot leave a stale canvas.
-  function resizeViewport(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);}
+  let viewportWidth=innerWidth,viewportHeight=innerHeight,viewportRatio=Math.min(devicePixelRatio,1.65);
+  function resizeViewport(){if(renderer.xr.isPresenting)return;const width=innerWidth,height=innerHeight,ratio=Math.min(devicePixelRatio,1.65);if(width===viewportWidth&&height===viewportHeight&&ratio===viewportRatio)return;viewportWidth=width;viewportHeight=height;camera.aspect=width/height;camera.updateProjectionMatrix();if(ratio!==viewportRatio){viewportRatio=ratio;renderer.setPixelRatio(ratio);}renderer.setSize(width,height);}
   window.addEventListener('resize',resizeViewport);
   const controls=new OrbitControls(camera,renderer.domElement);Object.assign(controls,{enableDamping:true,dampingFactor:.065,minDistance:6,maxDistance:240,maxPolarAngle:Math.PI*.485,minPolarAngle:.15,autoRotateSpeed:.35,enablePan:true});
  const hemi=new T.HemisphereLight(0xc7e3d2,0x3e5233,2.2),sun=new T.DirectionalLight(0xffe3a1,3.7),rim=new T.DirectionalLight(0x9acbc5,1.2),fill=new T.DirectionalLight(0x9bb6ad,.8);
@@ -69,7 +71,7 @@ async function boot(){
  if(mods)mods.onUnavailable=(id,options)=>openWorkshop({id,origin:options?.origin});
  window.__workshop={open:openWorkshop};
  window.addEventListener('pagehide',event=>{if(!event.persisted){void (workshop?.flush()||Promise.resolve()).catch(()=>{}).finally(()=>mods?.dispose());workshop?.dispose();}},{once:true});
- let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,switching=false,committing=false,switchCount=0,clockTime=0,sceneSwitcher,sceneControls;
+ let world=await prepareSceneWorld(readSceneTheme(),{reduced}),characters,socialUI,groupBuildings,valley,boards,trainFollow,roam,vr=null,switching=false,committing=false,switchCount=0,clockTime=0,sceneSwitcher,sceneControls;
  const groupCamera=createGroupCamera({camera,controls,reduced});window.__groupCamera=groupCamera;
  const cameraPoses=new Map();let uiState={};ui.subscribe(s=>uiState=s);
  const soundCamera=createSoundCamera({camera,controls,getRoot:()=>world.record.root,reduced});window.__sound=sound;window.__soundCamera=soundCamera;
@@ -79,14 +81,14 @@ async function boot(){
  const mountOptions={camera,controls,renderer,ui,sound,mods,onDiscovery:kind=>window.__openSceneDiscovery?.(kind),onRecord:origin=>soundSettings?.open(origin,{scene:true}),onMailbox:async()=>{if(switching||uiState.main||uiState.modal)return;if(roam?.busy)await roam.exit();if(switching)return;cancelReset();boards?.dismiss();groupCamera.close(true);trainFollow?.exit({immediate:true});soundCamera.close(true);characters.finishCamera();valley.finishCamera();mailboxInbox.open();}};
  await world.mount(mountOptions);scene.add(world.root);
  let timeStorage;try{timeStorage=localStorage;}catch{}
- const dayNight=createDayNightClock({storage:timeStorage,reduced:()=>reduced.matches,hidden:()=>document.hidden});
- const timeEnvironment=createDayNightEnvironment({scene,camera,renderer,hemi,sun,rim,fill,ground});
+ const dayNight=createDayNightClock({storage:timeStorage,reduced:()=>reduced.matches,hidden:()=>document.hidden&&!renderer.xr.isPresenting});
+ const timeEnvironment=createDayNightEnvironment({scene,camera,getCamera:()=>renderer.xr.isPresenting&&vr?vr.viewCamera:camera,renderer,hemi,sun,rim,fill,ground});
  const timeMenu=store?createDayNightMenu({clock:dayNight,ui}):null;
- function applyTime(){const state=dayNight.snapshot();timeEnvironment.apply(world,state.seconds);timeMenu?.update();document.documentElement.dataset.timePhase=state.phase;}
+ function applyTime(){const state=dayNight.snapshot();timeEnvironment.apply(world,state.seconds);timeMenu?.update();if(document.documentElement.dataset.timePhase!==state.phase)document.documentElement.dataset.timePhase=state.phase;}
  window.__dayNight={setMode(mode){const changed=dayNight.setMode(mode);applyTime();return changed;},snapshot:dayNight.snapshot,effects:()=>world.nightSnapshot(),save:dayNight.save};
  document.addEventListener('visibilitychange',()=>{if(document.hidden)dayNight.save();});
  window.addEventListener('pagehide',event=>{dayNight.save();if(!event.persisted){dayNight.dispose();timeMenu?.dispose();timeEnvironment.dispose();sceneControls?.dispose();}});
- function applyEnvironment(){const c=world.config;const city=world.id==='ideal';controls.maxDistance=city?420:240;sun.position.set(...(city?[-38,85,30]:[-18,36,18]));Object.assign(sun.shadow.camera,{left:city?-70:-42,right:city?70:42,top:city?70:42,bottom:city?-70:-42,far:city?220:110});sun.shadow.camera.updateProjectionMatrix();sun.target.position.set(0,city?15:0,0);sun.target.updateMatrixWorld();scene.background=world.background||new T.Color(c.background);renderer.toneMappingExposure=c.exposure??1.42;hemi.intensity=c.hemiIntensity??2.2;rim.color.setHex(c.rim??0x9acbc5);rim.intensity=c.rimIntensity??1.2;fill.color.setHex(c.fill??0x9bb6ad);fill.intensity=c.fillIntensity??.8;scene.fog=new T.FogExp2(c.background,innerWidth<700?(c.mobileFogDensity??c.fogDensity):c.fogDensity);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.visible=!!c.backdropGround;ground.material.color.setHex(c.backdropGround?0x263f33:c.background);document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',c.ariaLabel);applyTime();}
+ function applyEnvironment(){const c=world.config;const city=world.id==='ideal';controls.maxDistance=city?420:240;sun.position.set(...(city?[-38,85,30]:[-18,36,18]));Object.assign(sun.shadow.camera,{left:city?-70:-42,right:city?70:42,top:city?70:42,bottom:city?-70:-42,far:city?220:110});sun.shadow.camera.updateProjectionMatrix();sun.target.position.set(0,city?15:0,0);sun.target.updateMatrixWorld();scene.background=world.background||new T.Color(c.background);renderer.toneMappingExposure=c.exposure??1.42;hemi.intensity=c.hemiIntensity??2.2;rim.color.setHex(c.rim??0x9acbc5);rim.intensity=c.rimIntensity??1.2;fill.color.setHex(c.fill??0x9bb6ad);fill.intensity=c.fillIntensity??.8;scene.fog=new T.FogExp2(c.background,innerWidth<700?(c.mobileFogDensity??c.fogDensity):c.fogDensity);hemi.color.setHex(c.hemi);hemi.groundColor.setHex(c.ground);sun.color.setHex(c.sun);sun.intensity=c.sunIntensity;ground.visible=!!c.backdropGround;ground.material.color.setHex(c.backdropGround?0x263f33:c.background);timeEnvironment.invalidate();document.documentElement.dataset.scene=world.id;$('viewport').dataset.scene=world.id;$('viewport').setAttribute('aria-label',c.ariaLabel);applyTime();}
  let resetTween=null;
  const cancelReset=()=>{resetTween=null;};
  controls.addEventListener('start',cancelReset);
@@ -149,10 +151,10 @@ async function boot(){
   if(['follows','collections','history'].includes(type)){const id=mods.enabled('accounts')?'accounts':'videos';if(!mods.enabled(id))return mods.onUnavailable('accounts',options);return mods.open(id,{...options,route});}
   return mods?.open(routeMod(route),{...options,route});
  };
- function publishPetScene(){if(store){window.desktopMain?.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
+ function publishPetScene(){if(store&&supportsDesktopPet){if(window.desktopMain)window.desktopMain.publishState(petPayload(store.state,world.id,dayNight.snapshot()));void window.__webPet?.sync();}}
   if(store){window.__webPet=createWebPet({store,ui,getSceneId:()=>world.id,getDayNight:dayNight.snapshot,onOpenFriend:id=>socialUI.openFriend(id)});store.subscribe(publishPetScene);window.desktopMain?.onOpenFriend(id=>socialUI.openFriend(id));publishPetScene();}
  // Publish the authoritative clock through both native IPC and the web bridge.
- const petTimeTimer=isAndroidApp?null:setInterval(publishPetScene,250);
+ const petTimeTimer=supportsDesktopPet?setInterval(publishPetScene,250):null;
  document.addEventListener('visibilitychange',publishPetScene);
  window.addEventListener('pagehide',()=>clearInterval(petTimeTimer),{once:true});
  if(captureIndex)characters.sync(FRIENDS);if(stress)characters.sync([...FRIENDS,...FRIENDS.map(f=>({...f,id:f.id+'-stress'}))]);
@@ -160,6 +162,7 @@ async function boot(){
  roam=store?createFreeRoam({camera,controls,canvas:renderer.domElement,ui}):null;window.__freeRoam=roam;
  const snapshotPose=()=>({position:camera.position.clone(),target:controls.target.clone()});
  async function switchScene(id){
+  if(vr?.busy)throw Error('请先退出 VR，再切换场景');
   if(switching)return false;if(id===world.id)return true;if(!SCENE_REGISTRY[id])throw Error('未知场景');if(uiState.modal)throw Error('请先完成当前窗口操作。');
   cancelReset();switching=true;timeMenu?.setBusy(true);document.documentElement.dataset.sceneTransition='true';sceneSwitcher?.setBusy(true,id);const loading=curtain(SCENE_REGISTRY[id].name,{sceneId:id});let candidate=null,canvasMotion=null,old=world,rebound=false,controllersReleased=false,oldReleased=false;
   async function fadeCanvas(from,to){
@@ -197,29 +200,39 @@ async function boot(){
   }finally{publishPetScene();loading.remove();delete document.documentElement.dataset.sceneTransition;canvasMotion?.cancel();renderer.domElement.style.removeProperty('opacity');committing=false;switching=false;timeMenu?.setBusy(false);sceneSwitcher?.setCurrent(world.id);sceneSwitcher?.setBusy(false);characters.suspend(false);groupBuildings?.suspend(false);socialUI.setSceneTransition(false);controls.enabled=true;}
  }
  if(store){sceneSwitcher=createSceneSwitcher({current:world.id,onSwitch:switchScene,ui,reduced});sceneControls=createSceneControls({ui,sceneSwitcher,timeMenu});}
+ if(store&&!captureIndex){
+  vr=createWebXR({renderer,scene,camera,controls,getSceneName:()=>world.config.name,
+   beforeEnter(){if(switching||uiState.main||uiState.modal||roam?.busy||trainFollow?.busy||groupCamera.busy||characters.gathering||!controls.enabled)throw Error('请先返回场景主画面，再进入 VR');if(!characters.cancelPlacement())throw Error('请先完成人物安放');cancelReset();},
+   onError:message=>socialUI.toast(message)});window.__webXR=vr;
+  window.addEventListener('pagehide',event=>{if(!event.persisted)vr.dispose();});
+ }
  let firstFrameReady=false;
  window.__sceneTheme={get id(){return world.id;},get ready(){return firstFrameReady;},get switching(){return switching;},get audit(){return{environment:{exposure:renderer.toneMappingExposure,hemi:hemi.intensity,sun:sun.intensity,rim:rim.intensity,fill:fill.intensity},river:world.id==='forest',terrace:world.id==='forest',...world.terrain.audit,assetFailures:world.assets.failures,assetFallbacks:world.assets.fallbacks||[]};},snapshot:()=>world.terrain.snapshot?.()||{theme:'forest'},setPetalsEnabled:value=>world.terrain.petals?.setEnabled(value),switch:switchScene,resourceSnapshot:()=>({switches:switchCount,controls:{enabled:controls.enabled,enableDamping:controls.enableDamping,minDistance:controls.minDistance},...renderer.info.memory,worldRoots:scene.children.filter(o=>o.userData.sceneWorld).length,assetCache:assetCacheSnapshot(),characters:characters.getSceneState(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles})};
  try{localStorage.setItem(SCENE_STORAGE_KEY,world.id);}catch{}
  window.__renderPerformance={get frozenTransforms(){return world.frozenTransforms;},get instances(){return world.root.userData.staticInstances;},frames:0,preserveDrawingBuffer:renderer.getContext().getContextAttributes().preserveDrawingBuffer};
- let last=performance.now(),fpsFrames=0,fpsStart=last,frameId=null;
+ let last=performance.now(),fpsFrames=0,fpsStart=last;
  document.addEventListener('resume',()=>{last=performance.now();});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&frameId===null){last=performance.now();fpsStart=last;fpsFrames=0;frameId=requestAnimationFrame(frame);}});
- function frame(now){frameId=null;if(document.hidden&&!captureIndex)return;
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){last=performance.now();fpsStart=last;fpsFrames=0;}});
+ renderer.xr.addEventListener('sessionend',()=>{last=performance.now();resizeViewport();});
+ function frame(now){const inVR=renderer.xr.isPresenting;if(document.hidden&&!captureIndex&&!inVR)return;
+   // Session setup owns the reparented camera before XR starts delivering poses.
+   if(vr?.active&&!inVR){last=now;return;}
    // Fullscreen Android reading leaves the scene covered. Give scrolling and
    // input the main thread, while keeping camera transitions alive at 10 Hz.
-   if(isAndroidApp&&ui.activeMain==='discovery'&&now-last<100){frameId=requestAnimationFrame(frame);return;}
-   if(committing){last=now;frameId=requestAnimationFrame(frame);return;}const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&!document.hidden)clockTime+=dt;
-  if(!committing){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);characters.update(now,dt);valley.update(now);socialUI.update(now);groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}boards?.update(now);soundCamera.update(now);mailboxCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}
+   if(!inVR&&isAndroidApp&&ui.activeMain==='discovery'&&now-last<100)return;
+   if(committing){last=now;return;}const timeDelta=Math.max(0,(now-last)/1000),dt=Math.min(timeDelta,.05);last=now;if(!reduced.matches&&(!document.hidden||inVR))clockTime+=dt;
+  if(inVR){vr?.update();controls.enabled=false;}
+  if(!committing){if(!inVR){if(roam?.busy)roam.update(dt);else if(!trainFollow?.busy){if(resetTween)updateReset(now);else controls.update(dt);}if(!stress)socialUI.prepareFrame?.(now);}characters.update(now,dt);if(!inVR){valley.update(now);socialUI.update(now);}groupBuildings?.update(now);world.update(now,document.hidden?0:dt,clockTime);if(!inVR&&world.terrain.updateView){let target=null;const ref=socialUI.activeConversation;if(socialUI.chatVisible&&ref?.kind==='group'){const entry=groupBuildings.snapshot().entries.find(e=>e.id===ref.id);if(entry){const p=world.layout.slots[entry.slot];target=new T.Vector3(p.x,5,p.z);}}else if(socialUI.activeFriend){const p=characters.getSceneState().positions[socialUI.activeFriend];if(p)target=new T.Vector3(p.x,4,p.z);}else if(characters.gathering){const p=world.layout.gatheringCenter;target=new T.Vector3(p.x,4,p.z);}world.terrain.updateView(camera,target,now,dt);}if(!inVR){boards?.update(now);soundCamera.update(now);mailboxCamera.update(now);trainFollow?.update(now,dt);if(groupCamera.active&&['closed','closing'].includes(ui.state('meeting'))&&['closed','closing'].includes(ui.state('group-queue')))groupCamera.close();groupCamera.update(now);}}
   if(!committing){dayNight.update(timeDelta);applyTime();}
-  renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}frameId=requestAnimationFrame(frame);
+  renderer.render(scene,camera);window.__renderPerformance.frames++;fpsFrames++;if(now-fpsStart>3000){$('viewport').dataset.fps=(fpsFrames*1000/(now-fpsStart)).toFixed(1);fpsFrames=0;fpsStart=now;}
  }
  // Reconcile the initial pose after the final awaited model loads as well.
   resizeViewport();resetCamera();
   let wasMobile=innerWidth<700;
- window.addEventListener('resize',()=>{if(wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
+ window.addEventListener('resize',()=>{if(!vr?.busy&&wasMobile!==(innerWidth<700)&&!boards?.kind&&!roam?.busy&&!groupCamera.busy){wasMobile=innerWidth<700;cameraPoses.clear();resetCamera();}});
  window.addEventListener('keydown',e=>{if(e.defaultPrevented||e.target.closest('input,textarea,select,[contenteditable],dialog')||!controls.enabled)return;if(e.key==='Escape'){if(e.repeat||switching||roam?.busy||trainFollow?.busy||groupCamera.busy||uiState.main||uiState.modal)return;smoothResetCamera();e.preventDefault();return;}if(e.key==='Home'){resetCamera();e.preventDefault();}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','='].includes(e.key)&&!e.target.closest('button,input')){cancelReset();const s=new T.Spherical().setFromVector3(camera.position.clone().sub(controls.target));if(e.key==='ArrowLeft')s.theta-=.12;if(e.key==='ArrowRight')s.theta+=.12;if(e.key==='ArrowUp')s.phi-=.08;if(e.key==='ArrowDown')s.phi+=.08;if(['+','='].includes(e.key))s.radius*=.9;if(e.key==='-')s.radius*=1.1;s.phi=T.MathUtils.clamp(s.phi,.15,Math.PI*.485);s.radius=T.MathUtils.clamp(s.radius,6,controls.maxDistance);camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(s));controls.update();e.preventDefault();}});
  window.__renderPerformance.warmup=await prepareSceneGPU(renderer,scene,camera);
- $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);firstFrameReady=true;frameId=requestAnimationFrame(frame);
+ $('viewport').dataset.loaded='true';$('viewport').dataset.people='0';$('viewport').dataset.landArea=String(world.terrain.root.userData.landArea?.total||0);renderer.render(scene,camera);firstFrameReady=true;renderer.setAnimationLoop(frame);
  window.addEventListener('webglcontextlost',e=>{e.preventDefault();console.warn('WebGL context lost; reload to restore the scene.');});
  if(captureIndex){
   renderer.setPixelRatio(1);renderer.setSize(540,960,false);camera.aspect=540/960;camera.updateProjectionMatrix();controls.enabled=false;

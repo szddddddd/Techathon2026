@@ -17,9 +17,10 @@ import {isTree} from './tree-assets.js';
 import {FUJI_CARRIAGE} from './fuji-railway.js';
 import {loadIdealAssets} from './ideal-scene.js';
 
-const cache=new Map(),sceneryCache=new Map(),shared=new Set();let recordCache;
+const cache=new Map(),sceneryCache=new Map(),mailboxCache=new Map(),shared=new Set();let recordCache;
 export function sceneResources(root){const resources=new Set();root?.traverse(o=>{
  if(o.isInstancedMesh)resources.add(o);
+ if(o.isLight&&o.shadow)resources.add(o.shadow);
  if(o.geometry)resources.add(o.geometry);
  for(const m of [...(Array.isArray(o.material)?o.material:o.material?[o.material]:[]),o.customDepthMaterial,o.customDistanceMaterial].filter(Boolean)){
   resources.add(m);for(const value of Object.values(m))if(value?.isTexture)resources.add(value);
@@ -27,6 +28,12 @@ export function sceneResources(root){const resources=new Set();root?.traverse(o=
 });return resources;}
 export function disposeSceneResources(resources){for(const value of resources)if(!shared.has(value))value.dispose?.();}
 const retain=root=>{for(const resource of sceneResources(root))shared.add(resource);return root;};
+// Cache immutable templates, not live scene instances. Failed requests can retry.
+export function prepareMailboxAsset(id){
+ if(!['forest','fuji','ideal'].includes(id))return Promise.reject(Error('未知场景'));
+ if(!mailboxCache.has(id))mailboxCache.set(id,new GLTFLoader().loadAsync(`assets/mailboxes/${id}/scene.glb`).then(g=>retain(g.scene)).catch(error=>{mailboxCache.delete(id);throw error;}));
+ return mailboxCache.get(id);
+}
 const dimensions={fuji:[36,16.5,24.6],sakura_a:[3.8,4.7,3.4],sakura_b:[3.8,4.7,3.4],sakura_c:[3.8,4.7,3.4],locomotive:[3.8,2.1,1.25],carriage:[FUJI_CARRIAGE.length,FUJI_CARRIAGE.height,FUJI_CARRIAGE.width],station:[7.8,3.2,2.2],track:[3.48,.19,1.65],gate:[.65,2.5,.6]};
 export function normalizeSceneAsset(model,key,{rotation=0,sourceFolder=key}={}){
     model.rotation.y=rotation;model.updateMatrixWorld(true);
@@ -110,7 +117,7 @@ export async function prepareSceneAssets(id){
  })();cache.set(id,request);
  try{return await request;}catch(error){cache.delete(id);throw error;}
 }
-export const assetCacheSnapshot=()=>({themes:[...cache.keys()],sharedResources:shared.size});
+export const assetCacheSnapshot=()=>({themes:[...cache.keys()],mailboxes:[...mailboxCache.keys()],sharedResources:shared.size});
 
 // Keep CPU templates for fast revisits, but stop retaining the GPU allocations
 // for every previously visited world on memory-constrained phones. dispose()
