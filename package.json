@@ -1,8 +1,8 @@
 {
   "name": "weroam",
-  "version": "0.1.0-beta",
-  "displayVersion": "v0.1 beta",
-  "description": "WeRoam：三维空间社交与 Windows 桌宠",
+  "version": "0.1.0-beta.1",
+  "displayVersion": "v0.1 beta.1",
+  "description": "WeRoam锛氫笁缁寸┖闂寸ぞ浜や笌 Windows 妗屽疇",
   "main": "desktop/main.cjs",
   "scripts": {
     "pico:connect": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/connect-pico.ps1",
@@ -72,7 +72,10 @@
     "start:lan": "node scripts/serve-lan.mjs",
     "prestart:lan": "npm run build",
     "preandroid:web": "npm run build",
-    "test:structure": "node tests/test-project-structure.mjs"
+    "test:structure": "node tests/test-project-structure.mjs",
+    "desktop:build": "node scripts/build-desktop.mjs",
+    "predesktop:build": "npm run build",
+    "release:checksums": "node scripts/release-checksums.mjs"
   },
   "keywords": [
     "threejs",
@@ -94,6 +97,7 @@
   },
   "devDependencies": {
     "electron": "^36.3.2",
+    "electron-builder": "26.15.3",
     "esbuild": "^0.25.10",
     "fake-indexeddb": "^6.2.5",
     "playwright": "^1.64.1",
@@ -112,5 +116,6 @@
   "homepage": "https://github.com/szddddddd/Techathon2026#readme",
   "bugs": {
     "url": "https://github.com/szddddddd/Techathon2026/issues"
-  }
+  },
+  "productName": "WeRoam"
 }

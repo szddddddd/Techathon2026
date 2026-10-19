@@ -5,15 +5,15 @@ const MODEL = 'deepseek-pro';
 const CONFIG_FILE = path.resolve(__dirname, '../.weroam-private/agent-config.cjs');
 const failure = (code, message) => Object.assign(new Error(message), {code});
 
-function readConfig() {
+function readConfig(configFile = CONFIG_FILE) {
   try {
-    const value = require(CONFIG_FILE);
+    const value = require(configFile);
     if (typeof value.apiKey !== 'string' || !/^[A-Za-z0-9._-]{16,256}$/.test(value.apiKey)) throw new Error('invalid');
     return {apiKey:value.apiKey};
   } catch { throw failure('AGENT_CONFIG', '邮箱 Agent 尚未配置，请检查本机私有配置。'); }
 }
 
-function createAgentProvider({fetchImpl=globalThis.fetch, config=readConfig}={}) {
+function createAgentProvider({fetchImpl=globalThis.fetch, configFile=CONFIG_FILE, config=()=>readConfig(configFile)}={}) {
   function status() {
     try { config(); return {available:true,model:MODEL}; }
     catch { return {available:false,model:MODEL,message:'邮箱 Agent 尚未配置。'}; }

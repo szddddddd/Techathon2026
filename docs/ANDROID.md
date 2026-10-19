@@ -6,9 +6,11 @@
 
 ## 安装
 
-当前版本 `v0.1 beta`（versionCode `1030105`）包含手机性能优化和本地密钥配置入口。只有使用相同签名时才能覆盖安装并保留手机本地数据；缺少旧签名文件的新机器不能保证覆盖已有安装。[优化与验收说明](MOBILE-PERFORMANCE.md)。
+直接下载正式构建的签名 APK，见[安装指南](INSTALL.md)或[GitHub Release](https://github.com/szddddddd/Techathon2026/releases/tag/v0.1.0-beta.1)。
 
-执行 `npm run android:build` 后，安装包位于 `downloads/WeRoam-v0.1-beta-android.apk`，同目录提供 SHA-256 校验文件。
+当前安装包为 `0.1.0-beta.1`（versionCode `1030106`）包含手机性能优化和本地密钥配置入口。只有使用相同签名时才能覆盖安装并保留手机本地数据；缺少旧签名文件的新机器不能保证覆盖已有安装。[优化与验收说明](MOBILE-PERFORMANCE.md)。
+
+执行 `npm run android:build` 后，安装包位于 `downloads/WeRoam-0.1.0-beta.1-android.apk`，同目录提供 SHA-256 校验文件。
 
 执行 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-android-download.ps1` 自动选择当前活动网卡并在 8082 端口生成二维码；或运行 `npm run android:download` 并手动指定 `WEROAM_DOWNLOAD_URL`。用手机扫描下载页二维码或打开终端列出的局域网地址。电脑和手机需要处于可以互访的网络；校园网隔离、Windows 防火墙可能阻止访问，脚本不会改动防火墙。也可以通过 USB 将 APK 复制到手机。
 

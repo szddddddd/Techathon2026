@@ -1,0 +1,106 @@
+"""Upload checked local installers to a draft GitHub Release, then publish it.
+
+Usage: python scripts/publish-release.py [--publish]
+Uses GH_TOKEN/GITHUB_TOKEN or the Git credential helper; never prints credentials.
+"""
+import argparse
+import hashlib
+import http.client
+import json
+import os
+from pathlib import Path
+import subprocess
+import urllib.error
+import urllib.parse
+import urllib.request
+
+ROOT = Path(__file__).resolve().parents[1]
+REPO = "szddddddd/Techathon2026"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--publish", action="store_true", help="Publish after all assets upload; otherwise keep draft.")
+    args = parser.parse_args()
+    manifest = json.loads((ROOT / "output/releases/release-manifest.json").read_text(encoding="utf-8"))
+    current = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    if current != manifest["commit"] or subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
+        raise SystemExit("Release manifest must match a clean source commit.")
+    for asset in manifest["files"]:
+        file = ROOT / "output/releases" / asset["name"]
+        with file.open("rb") as stream:
+            digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        if digest != asset["sha256"] or file.stat().st_size != asset["bytes"]:
+            raise SystemExit("Artifact checksum mismatch: " + asset["name"])
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        result = subprocess.run(["git", "credential", "fill"], cwd=ROOT,
+            input="protocol=https\nhost=github.com\npath=" + REPO + ".git\n\n",
+            text=True, capture_output=True, timeout=30,
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0", "GCM_INTERACTIVE": "Never"})
+        values = dict(line.split("=", 1) for line in result.stdout.splitlines() if "=" in line)
+        token = values.get("password")
+    if not token:
+        raise SystemExit("GitHub publishing credential unavailable.")
+    headers = {"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "User-Agent": "WeRoam-release"}
+
+    def api(route, method="GET", data=None):
+        request = urllib.request.Request("https://api.github.com/repos/" + REPO + route,
+            headers={**headers, "Content-Type": "application/json"}, method=method,
+            data=None if data is None else json.dumps(data).encode())
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return json.load(response)
+
+    tag = manifest["tag"]
+    body = (ROOT / "docs/releases" / (tag + ".md")).read_text(encoding="utf-8")
+    releases = api("/releases?per_page=100")
+    release = next((r for r in releases if r["tag_name"] == tag), None)
+    if release and not release["draft"]:
+        raise SystemExit("Release is already published; existing downloads will not be replaced.")
+    if release is None:
+        release = api("/releases", "POST", {"tag_name": tag, "target_commitish": manifest["commit"],
+            "name": "WeRoam " + tag + " · Windows / Android", "body": body, "draft": True, "prerelease": "-" in tag})
+    elif release["target_commitish"] not in (manifest["commit"], "main"):
+        raise SystemExit("Existing draft targets another source commit.")
+    artifacts = [asset["name"] for asset in manifest["files"]] + ["SHA256SUMS.txt", "release-manifest.json"]
+    for name in artifacts:
+        file = ROOT / "output/releases" / name
+        existing = next((a for a in release["assets"] if a["name"] == name), None)
+        if existing:
+            with file.open("rb") as stream:
+                digest = "sha256:" + hashlib.file_digest(stream, "sha256").hexdigest()
+            if existing.get("digest") == digest:
+                print("Already uploaded:", name, flush=True)
+                continue
+            raise SystemExit("Existing draft asset differs or has no digest; inspect before replacing: " + name)
+        url = urllib.parse.urlsplit(release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name))
+        print("Uploading:", name, file.stat().st_size, "bytes", flush=True)
+        connection = http.client.HTTPSConnection(url.hostname, timeout=120)
+        try:
+            connection.putrequest("POST", url.path + "?" + url.query)
+            for key, value in {**headers, "Content-Type": "application/octet-stream", "Content-Length": str(file.stat().st_size)}.items():
+                connection.putheader(key, value)
+            connection.endheaders()
+            with file.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    connection.send(chunk)
+            response = connection.getresponse()
+            result = json.loads(response.read())
+            if response.status != 201:
+                raise SystemExit("Asset upload failed: HTTP " + str(response.status))
+            with file.open("rb") as stream:
+                digest = "sha256:" + hashlib.file_digest(stream, "sha256").hexdigest()
+            if result.get("digest") != digest or result["size"] != file.stat().st_size:
+                raise SystemExit("Uploaded asset verification failed: " + name)
+        finally:
+            connection.close()
+    release = api("/releases/" + str(release["id"]))
+    if not set(artifacts).issubset(a["name"] for a in release["assets"]):
+        raise SystemExit("Release is missing required assets.")
+    if args.publish:
+        release = api("/releases/" + str(release["id"]), "PATCH", {"draft": False, "body": body})
+    print(json.dumps({"url": release["html_url"], "draft": release["draft"], "tag": tag}, ensure_ascii=True))
+
+
+if __name__ == "__main__":
+    main()

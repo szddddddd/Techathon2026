@@ -1,0 +1,32 @@
+module.exports = {
+  appId: 'app.weroam.desktop',
+  productName: 'WeRoam',
+  directories: { output: 'output/releases' },
+  artifactName: 'WeRoam-${version}-windows-${arch}-setup.${ext}',
+  asar: true,
+  npmRebuild: false,
+  files: [
+    'package.json', 'LICENSE',
+    'desktop/**/*.{cjs,js,html,css}',
+    'server/**/*.mjs', 'scripts/glb-geometry.mjs',
+    'src/**/*.{js,css,html}', 'dist/*.js',
+    'assets/**/*.{glb,bin,json,png,jpg,jpeg,webp,svg,mp3,mp4,webm}',
+    '!.forest-avatar-data/**', '!.weroam-private/**', '!.android-signing/**',
+  ],
+  win: {
+    target: [{ target: 'nsis', arch: ['x64'] }],
+    icon: '.cache/release-icon.ico',
+    signExecutable: false,
+  },
+  nsis: {
+    oneClick: true,
+    perMachine: false,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: 'WeRoam',
+    uninstallDisplayName: 'WeRoam',
+    deleteAppDataOnUninstall: false,
+    runAfterFinish: true,
+  },
+  publish: null,
+};

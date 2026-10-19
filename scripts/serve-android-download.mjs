@@ -6,7 +6,7 @@ import {createReadStream} from 'node:fs';
 import {pipeline} from 'node:stream/promises';
 import QRCode from 'qrcode';
 const product=JSON.parse(await fs.readFile('package.json','utf8'));
-const port=Number(process.env.WEROAM_DOWNLOAD_PORT||8082),name=`WeRoam-${product.displayVersion.replace(/[^A-Za-z0-9.-]/g,'-')}-android.apk`;
+const port=Number(process.env.WEROAM_DOWNLOAD_PORT||8082),name=`WeRoam-${product.version}-android.apk`;
 const folder=path.resolve('downloads'),apk=path.join(folder,name),stat=await fs.stat(apk);
 const candidates=Object.entries(os.networkInterfaces()).flatMap(([name,list])=>list.filter(a=>a.family==='IPv4'&&!a.internal&&!a.address.startsWith('169.254.')&&!/^198\.(?:18|19)\./.test(a.address)&&!/^(?:vEthernet|WSL|VMware|VirtualBox|Docker|Loopback)/i.test(name)).map(a=>a.address));
 const urls=candidates.map(ip=>`http://${ip}:${port}/`),url=process.env.WEROAM_DOWNLOAD_URL||urls[0]||`http://localhost:${port}/`;

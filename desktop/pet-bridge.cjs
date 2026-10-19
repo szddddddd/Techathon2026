@@ -5,10 +5,10 @@ const { webPort, validState } = require('./runtime-config.cjs');
 const {pathToFileURL}=require('node:url');
 
 // Loopback only. Only this project's web origin can exchange social state.
-function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}, isVisible = () => false }) {
+function startPetBridge({ root, dataRoot = root, port = 47831, onState, onShow, onHide = () => {}, isVisible = () => false }) {
   let avatarApi;
   let avatarReady;
-  const getAvatarApi=()=>avatarReady??=import(pathToFileURL(path.join(root,'server/avatar-api.mjs')).href).then(({createAvatarApi})=>{avatarApi=createAvatarApi({root,port:server.address().port,allowFileAssets:true});return avatarApi;});
+  const getAvatarApi=()=>avatarReady??=import(pathToFileURL(path.join(root,'server/avatar-api.mjs')).href).then(({createAvatarApi})=>{avatarApi=createAvatarApi({root:dataRoot,port:server.address().port,allowFileAssets:true});return avatarApi;});
   let server, currentClient = null, pendingOpen = null, lastSeen = 0, sequence = 0;
   const configuredPort = webPort(root);
   const origins = new Set([`http://localhost:${configuredPort}`, `http://127.0.0.1:${configuredPort}`]);

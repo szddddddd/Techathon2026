@@ -185,13 +185,13 @@ function buildMenu() {
 if(singleInstance)app.whenReady().then(async () => {
   loadSettings();
   try { const data=JSON.parse(require('node:fs').readFileSync(path.join(app.getPath('userData'),'pet-social-snapshot.json'),'utf8'));if(Array.isArray(data.state?.friends)&&Array.isArray(data.state?.messages)){latestState=data.state;unreadCount=Number(data.unreadCount)||0;} } catch (_) {}
-  try { webBridge=await startPetBridge({root:ROOT,port:Number(process.env.FOREST_PET_PORT)||47831,onState:acceptWebState,onShow:showDesktopPet,onHide:()=>{petWindow?.hide();tray?.setContextMenu(buildMenu());},isVisible:()=>!!petWindow&&!petWindow.isDestroyed()&&petWindow.isVisible()}); }
+  try { webBridge=await startPetBridge({root:ROOT,dataRoot:app.isPackaged?app.getPath('userData'):ROOT,port:Number(process.env.FOREST_PET_PORT)||47831,onState:acceptWebState,onShow:showDesktopPet,onHide:()=>{petWindow?.hide();tray?.setContextMenu(buildMenu());},isVisible:()=>!!petWindow&&!petWindow.isDestroyed()&&petWindow.isVisible()}); }
   catch(error) { require('electron').dialog.showErrorBox('桌宠暂时无法启动',`本机桌宠连接未能建立：${error.message}`);app.quit();return; }
   tray = new Tray(createIcon());
   tray.setContextMenu(buildMenu());
   tray.on('click', () => focusMain());
   if(!petOnly)createMainWindow();createPetWindow();
-  mailIntegration=require('./mail-ipc.cjs').setupMailIPC({app,BrowserWindow,ipcMain,safeStorage:require('electron').safeStorage,getMainWindow:()=>mainWindow,focusMain:()=>{if(!mainWindow||mainWindow.isDestroyed())createMainWindow();if(mainWindow.isMinimized())mainWindow.restore();mainWindow.show();mainWindow.focus();}});
+  mailIntegration=require('./mail-ipc.cjs').setupMailIPC({app,configRoot:app.isPackaged?app.getPath('userData'):ROOT,BrowserWindow,ipcMain,safeStorage:require('electron').safeStorage,getMainWindow:()=>mainWindow,focusMain:()=>{if(!mainWindow||mainWindow.isDestroyed())createMainWindow();if(mainWindow.isMinimized())mainWindow.restore();mainWindow.show();mainWindow.focus();}});
   if(process.argv.includes('--mail-connect'))mailIntegration.openConnect(requestedMailProvider(process.argv));
   ipcMain.on('avatar-origin',event=>{if(event.sender===mainWindow?.webContents)event.returnValue=webBridge.origin;else event.returnValue='';});
   ipcMain.handle('avatar-request',async(event,{route,body}={})=>{

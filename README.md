@@ -4,7 +4,7 @@
 
 **让每一次聊天，都有一处风景。**
 
-基于 Three.js 的三维空间社交原型 · 浏览器 / Windows 桌宠 / Android · v0.1 beta
+基于 Three.js 的三维空间社交原型 · 浏览器 / Windows 桌宠 / Android · v0.1 beta.1
 
 [![CI](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml/badge.svg)](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-43853d)](https://nodejs.org/)
@@ -29,6 +29,18 @@ GitHub README 会过滤 iframe，请点击上方图片或链接观看；支持 i
 
 ## 快速开始
 
+### 下载安装
+
+| Windows 桌面版 | Android 手机版 |
+| :---: | :---: |
+| **[下载一键安装 EXE](https://github.com/szddddddd/Techathon2026/releases/download/v0.1.0-beta.1/WeRoam-0.1.0-beta.1-windows-x64-setup.exe)** | **[下载 APK](https://github.com/szddddddd/Techathon2026/releases/download/v0.1.0-beta.1/WeRoam-0.1.0-beta.1-android.apk)** |
+| Windows 10 / 11 · x64 | Android 8.0+ |
+
+**无需开发环境。** [版本说明](https://github.com/szddddddd/Techathon2026/releases/tag/v0.1.0-beta.1) · [安装与升级](docs/INSTALL.md) · [校验文件](https://github.com/szddddddd/Techathon2026/releases/download/v0.1.0-beta.1/SHA256SUMS.txt)
+
+<details>
+<summary>从源码启动（开发者）</summary>
+
 需要 **Node.js 22+、npm** 和支持 WebGL 2 的现代浏览器。
 
 ```sh
@@ -39,6 +51,8 @@ npm start
 ```
 
 打开 [localhost:8080](http://localhost:8080/)，实际端口以终端输出为准。基础场景与本地消息演示无需服务密钥；修改源码后重新构建并刷新。
+
+</details>
 
 <details>
 <summary>桌面端、手机与其他启动方式</summary>
