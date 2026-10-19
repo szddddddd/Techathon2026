@@ -14,18 +14,15 @@
 
 </div>
 
+## 演示视频
+
 [![WeRoam 场景预览 · 点击观看演示视频](docs/images/weroam-worlds.jpg)](https://www.bilibili.com/video/BV1yTn36fEZd/)
 
 **[▶ 在 B 站观看演示视频](https://www.bilibili.com/video/BV1yTn36fEZd/)**
 
-<details>
-<summary>内嵌播放器与播放说明</summary>
+<iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117461735180913&bvid=BV1yTn36fEZd&cid=42847109266&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
 
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=117461735180913&bvid=BV1yTn36fEZd&cid=42847109266&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
-GitHub README 会过滤 iframe，请点击上方图片或链接观看；支持 iframe 的 Markdown 阅读器可使用这里的播放器。
-
-</details>
+GitHub 不支持 iframe 播放，请点击预览图观看；支持 iframe 的阅读器可直接播放。
 
 ## 快速开始
 
