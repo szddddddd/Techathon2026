@@ -74,6 +74,9 @@ def main():
         def upload_part(name, data):
             digest = "sha256:" + hashlib.sha256(data).hexdigest()
             old = existing.get(name)
+            if old and old.get("state") == "starter" and old.get("digest") is None:
+                api("/releases/assets/" + str(old["id"]), "DELETE")
+                old = None
             if old:
                 if old.get("digest") != digest or old["size"] != len(data):
                     raise SystemExit("Staged asset differs: " + name)
@@ -93,7 +96,7 @@ def main():
                         result = saved
                         break
                     if saved:
-                        if saved.get("state") != "starter" or saved["size"] != 0:
+                        if saved.get("state") != "starter" or saved.get("digest") is not None:
                             raise SystemExit("Unconfirmed staged asset; inspect before replacing: " + name)
                         api("/releases/assets/" + str(saved["id"]), "DELETE")
                     if attempt == 3:
@@ -152,8 +155,11 @@ def main():
     release = api("/releases/" + str(release["id"]))
     if not set(artifacts).issubset(a["name"] for a in release["assets"]):
         raise SystemExit("Release is missing required assets.")
+    if any(any(a["name"].startswith(f["name"] + ".part-") for f in manifest["files"]) for a in release["assets"]):
+        raise SystemExit("Temporary parts remain; finish the assembly workflow before publishing.")
     if args.publish:
-        release = api("/releases/" + str(release["id"]), "PATCH", {"draft": False, "body": body})
+        release = api("/releases/" + str(release["id"]), "PATCH", {
+            "tag_name": tag, "target_commitish": manifest["commit"], "draft": False, "body": body})
     print(json.dumps({"url": release["html_url"], "draft": release["draft"], "tag": tag}, ensure_ascii=True))
 
 
