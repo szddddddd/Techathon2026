@@ -1,5 +1,7 @@
 # Installed dependencies and local caches
 node_modules/
+/dist/
+/weroam-slides/
 __pycache__/
 *.py[cod]
 .cache/
@@ -31,6 +33,10 @@ validation/scene-polish/*-map-*.png
 !.env.example
 *.pem
 *.key
+*.p12
+*.pfx
+*.keystore
+*.jks
 
 # OS/editor files
 Thumbs.db

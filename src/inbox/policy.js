@@ -1,4 +1,4 @@
-import {randomUUID} from '../browser-id.js';
+import {randomUUID} from '../platform/browser-id.js';
 export const fail=(code,message)=>Object.assign(new Error(message),{code});
 export function requirePermission(connection,permission,{actor='user',taskPermissions=null}={}){
   if(!['user','agent'].includes(actor))throw fail('INVALID_ACTOR','调用主体无效');

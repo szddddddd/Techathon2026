@@ -4,13 +4,17 @@
 
 ## 构建和使用
 
-构建脚本调用 `scripts/prepare-android-avatar.mjs`，使用现有 `readImageConfig` 和 `RodinRestClient.config()` 读取项目私有配置，仅将需要的字段注入被 Git 忽略的 `.cache/android-native/avatar-demo-config.json`。该文件随 APK 打包，不能通过 WebView 资源 URL 读取。演示 APK 的凭据仍可被提取，勿公开分发；凭据不写入 Git、文档或控制台。
+标准 `npm run android:build` 不注入开发者生成密钥。安装后在「我 → 设置 → 模型服务配置」填写图片服务 HTTPS Base URL、模型、尺寸及两项服务密钥；由 `AvatarSettings.java` 使用 Android Keystore 与 AES-GCM 在手机本机加密保存，不交给 WebView。保存配置不发起付费请求，也不代表凭据已验证。更换图片服务地址时须重新输入对应密钥；旧密钥留空可保留，清除配置会阻止后续生成。
+
+仓库仍保留旧 `scripts/prepare-android-avatar.mjs`，它会从项目私有配置导出含密钥的 `.cache/android-native/avatar-demo-config.json`；当前标准 APK 构建不调用该工具。不要将旧输出打包进可分发 APK，也不要把密钥写入源码、Git、文档或控制台。
 
 安装新版 APK 后，手机联网，添加联系人并上传头像即可。生成期间可继续聊天；模型下载后可离线使用。参考图和任务状态保存在应用内部目录。生成在前台轮询驱动下逐步推进；切后台或进程被关闭不保证继续执行，返回后查询已保存任务。提交结果不明确时进入 attention，不自动重新提交付费任务。当前未提供人工恢复任务编号的手机界面。
 
 ## 实现
 
-`AvatarService` 在原生工作线程执行网络调用；WebView 只接收去除 subscriptionKey 的任务数据。本地资源接口只允许任务图片和 GLB。使用固定的本地私有配置，未使用 OAuth 或其他凭据来源。生图与 Rodin 都在手机执行；电脑端原有流程不变。
+`AvatarService` 在原生工作线程执行网络调用；WebView 只接收去除 subscriptionKey 的任务数据。本地资源接口只允许任务图片和 GLB。配置来自手机本地的加密设置，生图与 Rodin 都在手机执行，电脑端流程独立。
+
+**统一接口的现有差异：** 项目 `AGENTS.md` 指定所有 Rodin 请求统一通过 `server/rodin-rest-client.mjs` 读取项目 `.forest-avatar-data/hyper3d-config.json` 的 `apiKey`。Android 既有原生演示尚未统一到该入口；保留该现状不代表已满足全平台统一约束。后续维护与新增调用须遵守项目指定入口，不改走 MCP OAuth、全局配置或其他环境密钥。所有新物体仍应先生成独立参考图，再提交 Rodin；结果不明时查询原任务。
 
 ## 手机交互
 

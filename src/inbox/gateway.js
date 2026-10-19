@@ -1,4 +1,4 @@
-import {randomUUID} from '../browser-id.js';
+import {randomUUID} from '../platform/browser-id.js';
 import {openInboxStore,clone,emptyState} from './store.js';
 import {PERMISSIONS,platformOf} from './catalog.js';
 import {makeConnection,fixtureContact} from './fixtures.js';

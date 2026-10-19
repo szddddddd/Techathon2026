@@ -26,4 +26,4 @@ The six Notes/Focus assets include a GLB, independent image-generation reference
 
 New building controls are gated off in Android; this change does not modify mobile or Android source files. Shared web bundles are rebuilt for desktop use.
 
-Verification includes desktop builds, core store/feed/discovery/pet tests, collision boundary/swept-step tests, browser placement and scene-restoration checks, and `scripts/test-board-exit.mjs`, which exercises placed board entry clicks, Escape return, camera dragging and wheel zoom.
+Verification includes desktop builds, core store/feed/discovery/pet tests, collision boundary/swept-step tests, browser placement and scene-restoration checks, and `tests/test-board-exit.mjs`, which exercises placed board entry clicks, Escape return, camera dragging and wheel zoom.

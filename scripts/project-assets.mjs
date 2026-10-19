@@ -1,12 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {PLACEMENTS} from '../src/layout.js';
-import {treeAssetPath} from '../src/tree-assets.js';
-import {GROUP_TYPES} from '../src/group-catalog.js';
-import {FUJI_VISUALS} from '../src/fuji-visuals.js';
-import {FRIENDS} from '../src/social-store.js';
-import {ACCOUNTS,ARTICLES,CREATORS,VIDEOS} from '../src/discovery-catalog.js';
-import {MUSIC_TRACKS} from '../src/sound.js';
+import {PLACEMENTS} from '../src/scenes/forest/layout.js';
+import {treeAssetPath} from '../src/scenes/forest/tree-assets.js';
+import {GROUP_TYPES} from '../src/social/group-catalog.js';
+import {FUJI_VISUALS} from '../src/scenes/fuji/fuji-visuals.js';
+import {FRIENDS} from '../src/social/social-store.js';
+import {ACCOUNTS,ARTICLES,CREATORS,VIDEOS} from '../src/discovery/discovery-catalog.js';
+import {MUSIC_TRACKS} from '../src/audio/sound.js';
 
 // Resolve dynamic model URLs as well as media links. This list covers all three
 // scenes, their explicit failure fallbacks, friend portraits and desktop pets.

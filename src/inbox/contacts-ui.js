@@ -1,5 +1,5 @@
 import {appIcon} from './icons.js';
-import {isAndroidApp} from '../mobile-platform.js';
+import {isAndroidApp} from '../platform/mobile-platform.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const platforms={qqmail:'QQ 邮箱',wechat:'微信',qq:'QQ',douyin:'抖音',xiaohongshu:'小红书'};
 export function createContactEditor({panel,chrome,open,ui,gateway,safe,openThread,onPrepareCharacter,onRemoveCharacter,onViewCharacter,getCharacter}){

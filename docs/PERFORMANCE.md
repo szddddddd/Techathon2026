@@ -8,10 +8,10 @@
 | --- | --- | --- |
 | 三个入口重复解析公共依赖 | `scripts/build.mjs` 一次构建三个独立 IIFE，仍校验源码、依赖和产物内容哈希 | 构建缓存回归；同源码下新旧构建方式三个产物逐字节一致 |
 | 大模型流式传输的文件读取回调 | `server/static-files.mjs` 使用有界 256 KiB 缓冲 | 完整文件、跨块 Range、HEAD、压缩、缓存与内容一致性测试 |
-| 唱片机阻塞其他模型请求 | `src/scene-assets.js` 并行加载场景与唱片机，富士 GLB 与清单并行请求；独立缓存场景资源供唱片机失败重试复用 | 完整模型集、共享缓存、清单失败、树木回退、双向失败和重试不增加下载/资源测试 |
+| 唱片机阻塞其他模型请求 | `src/scenes/shared/scene-assets.js` 并行加载场景与唱片机，富士 GLB 与清单并行请求；独立缓存场景资源供唱片机失败重试复用 | 完整模型集、共享缓存、清单失败、树木回退、双向失败和重试不增加下载/资源测试 |
 | 静态矩阵仍被顶层 Scene 强制刷新 | `src/main.js` 固定顶层单位变换，保留动态子节点正常更新 | 静态乘法计数为零；动态角色、晚加入对象、强制刷新和重新挂载仍正确 |
-| 恒定昼夜重复计算颜色及天空键 | `src/day-night-environment.js` 复用转换后的颜色与恒定调色板，天空按版本更新 | 昼夜边界、切换场景、原始天空像素和光照数值一致性 |
-| 星空矩阵在渲染前重复更新 | `src/day-night-effects.js` 由渲染器统一计算动态矩阵 | 星空跟随相机、改变宽高比、冻结静态场景后的更新 |
+| 恒定昼夜重复计算颜色及天空键 | `src/scenes/shared/day-night-environment.js` 复用转换后的颜色与恒定调色板，天空按版本更新 | 昼夜边界、切换场景、原始天空像素和光照数值一致性 |
+| 星空矩阵在渲染前重复更新 | `src/scenes/shared/day-night-effects.js` 由渲染器统一计算动态矩阵 | 星空跟随相机、改变宽高比、冻结静态场景后的更新 |
 
 ## 本机测量
 
@@ -45,11 +45,11 @@ npm run build
 npm test
 npm run test:performance
 npm run test:forest
-node scripts/test-day-night.mjs
-node scripts/test-project-assets.mjs
+node tests/test-day-night.mjs
+node tests/test-project-assets.mjs
 npm start
 # 在另一终端运行浏览器检查
-node scripts/test-current-scenes.mjs
+node tests/test-current-scenes.mjs
 npm run test:performance:browser
 npm run test:day-night
 npm run benchmark:scenes -- sample

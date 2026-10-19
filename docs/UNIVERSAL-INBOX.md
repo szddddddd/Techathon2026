@@ -79,7 +79,7 @@ Meta Muse 的按连接授权、读写分离、审批和撤销机制提供产品�
 - 群聊创建及资料页以图标选择所属软件，列表、聊天和场景标签携带同一标识。旧群缺省归为微信演示群，新示例群分配到不同软件；仍使用原本地群聊与场景建筑规则。
 - 图标是来源标识，人物头像或群头像是消息主体。消息与通讯录统一使用“头像 → 昵称＋软件图标 → 摘要／账号”的排列，不再在头像角上叠放软件标识。演示消息头像使用已有本地角色肖像；用户提供的头像优先。无可用头像的手动消息使用姓名占位。
 
-新增验收：`node scripts/test-platform-contacts.mjs` 检查跨软件隔离、头像校验、任务身份、持久化、删除、权限及群来源。`node scripts/test-platform-contacts-browser.mjs` 检查人物消息、通讯录筛选、上下拉伸、头像任务去重及恢复、场景角色、群来源和移动端。头像提供方以已有袋鼠模型模拟，未新增真实付费生成；该结果验证接线和交互，不能作为新头像模型质量验收。
+新增验收：`node tests/test-platform-contacts.mjs` 检查跨软件隔离、头像校验、任务身份、持久化、删除、权限及群来源。`node tests/test-platform-contacts-browser.mjs` 检查人物消息、通讯录筛选、上下拉伸、头像任务去重及恢复、场景角色、群来源和移动端。头像提供方以已有袋鼠模型模拟，未新增真实付费生成；该结果验证接线和交互，不能作为新头像模型质量验收。
 
 ## 平台证据与接入路线
 
@@ -126,7 +126,7 @@ Meta Muse 的按连接授权、读写分离、审批和撤销机制提供产品�
 - `npm run build`：通过。收件箱独立 ESM 包约 67 KB；打开消息页后才请求，未进入初始场景包。未据此推导端到端帧率提升。
 - `npm run test:inbox`：18 组通过，零网络调用；包含同库并发写入冲突、已提交撤销对其他窗口的即时遮蔽及排队执行撤销。
 - `npm run test:inbox:browser`：13 组通过。覆盖三场景共享同一实例、来源与账号筛选、外部草稿、原好友及群聊的独立草稿和附件、只读拒绝发送、拒绝确认、实际确认、引用草稿、撤销清理、桌面与移动端／短视口、44px 主按钮、Escape、重置、持久化入口与失败重试；未观察到外部 HTTP/WebSocket 请求或页面脚本错误。
-- `npm test`、`npm run test:performance`、`npm run test:scenes`、`node scripts/test-group-chat.mjs`、`node scripts/test-group-scene.mjs`：通过。群聊旧测试使用的已移除 `cyber` 场景已改为当前理想城。
+- `npm test`、`npm run test:performance`、`npm run test:scenes`、`node tests/test-group-chat.mjs`、`node tests/test-group-scene.mjs`：通过。群聊旧测试使用的已移除 `cyber` 场景已改为当前理想城。
 - 未完成真实平台账号、Electron 真实凭据隔离、系统通知、真实模型或真实 SMTP 验收；这些仍属于阶段 B–D。键盘与触控采用浏览器自动化检查，未进行屏幕阅读器或真实手机硬件验收。
 
 浏览器结果写入 `.test-results/inbox/results.json`（本机生成，不提交）；演示可通过界面重置后重复运行。已保存主流程及通讯录截图：

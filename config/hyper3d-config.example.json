@@ -1,0 +1,4 @@
+{
+  "baseURL": "https://api.hyper3d.com/api/v2",
+  "apiKey": "REPLACE_WITH_YOUR_LOCAL_KEY"
+}

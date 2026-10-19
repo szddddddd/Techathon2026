@@ -1,0 +1,98 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {chromium,baseURL} from './test-runtime.mjs';
+const out='.test-results/platform-contacts';await fs.mkdir(out,{recursive:true});
+const publishScreenshots=process.argv.includes('--screenshots');
+if(publishScreenshots)await fs.mkdir('docs/images',{recursive:true});
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']});
+const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+const page=await context.newPage(),errors=[],jobs=new Map();let submits=0,ready=false;
+page.on('pageerror',e=>errors.push(e.message));
+const portrait=await fs.readFile('assets/rodin-friends/kangaroo/portrait.webp'),glb=await fs.readFile('assets/rodin-friends/kangaroo/scene.glb');
+await context.route('**/api/avatar/**',async route=>{
+  const req=route.request(),path=new URL(req.url()).pathname.replace('/api/avatar/','');
+  if(path.startsWith('assets/'))return route.fulfill({contentType:path.endsWith('.glb')?'model/gltf-binary':'image/webp',body:path.endsWith('.glb')?glb:portrait});
+  if(path==='jobs'&&req.method()==='POST'){
+    const data=req.postDataJSON();submits++;assert.ok(data.avatarBase64);assert.equal(data.autoContinue,true);
+    jobs.set(data.requestId,{id:data.requestId,phase:'model_processing'});return route.fulfill({json:jobs.get(data.requestId)});
+  }
+  const id=path.split('/')[1],job=jobs.get(id);
+  if(!job)return route.fulfill({status:404,json:{error:'not found'}});
+  if(ready)Object.assign(job,{phase:'ready',modelUrl:`/api/avatar/assets/${id}/scene.glb`,referenceUrl:`/api/avatar/assets/${id}/reference.img`});
+  return route.fulfill({json:job});
+});
+const settled=(id,state='open')=>page.waitForFunction(({id,state})=>__uiInteractions.state(id)===state,{id,state});
+const shot=async name=>{await page.screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:87,style:'.inbox-toast{visibility:hidden!important}'});if(publishScreenshots)await fs.copyFile(`${out}/${name}.jpg`,`docs/images/inbox-${name}.jpg`);};
+try{
+  await page.goto(`${baseURL}/?scene=forest&inbox=1`);await page.waitForFunction(()=>window.__socialUI?.inbox&&window.__sceneTheme?.ready,null,{timeout:180000});
+  await page.evaluate(async()=>{await __socialStore.setDemoPaused(true);await __socialStore.addFriend('tuantuan');await __socialStore.addFriend('ali');await __socialUI.inbox.gateway.loadDemo();await __socialStore.seedGroupDemo();});
+  const mailRow=page.locator('[data-inbox-thread="external:demo:qqmail:thread-1"]');
+  assert.equal(await mailRow.locator('.conversation-top strong').textContent(),'林晓');assert.equal(await mailRow.locator('.inbox-app-badge').count(),0);
+  assert.ok((await mailRow.locator('.conversation-avatar>img').getAttribute('src')).includes('portrait.webp'));
+  assert.equal(await mailRow.locator('.conversation-top strong img').getAttribute('alt'),'QQ 邮箱');
+  await page.locator('[data-inbox-platform=qqmail]').click();await shot('people-messages-desktop');await page.locator('[data-inbox-platform=all]').click();
+  await page.locator('[data-conversation-tab=contacts]').click();assert.equal(await page.locator('[data-inbox-contact]').count(),5);
+  const before=await page.locator('#directory').boundingBox();
+  const bottomGrip=page.locator('[data-resize-edge=bottom]');let r=await bottomGrip.boundingBox();
+  await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await page.mouse.move(r.x+r.width/2,r.y+r.height/2+80,{steps:8});await page.mouse.up();
+  const bottomResized=await page.locator('#directory').boundingBox();assert.ok(bottomResized.height>before.height+50);assert.ok(Math.abs(bottomResized.y-before.y)<2);
+  const topGrip=page.locator('[data-resize-edge=top]');r=await topGrip.boundingBox();
+  await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await page.mouse.move(r.x+r.width/2,r.y+r.height/2-80,{steps:8});await page.mouse.up();
+  const topResized=await page.locator('#directory').boundingBox();assert.ok(topResized.height>bottomResized.height+50);assert.ok(topResized.y<before.y-50);
+  await bottomGrip.focus();await page.keyboard.press('End');const largest=await page.locator('#directory').boundingBox();assert.ok(largest.y>=12&&largest.y+largest.height<=1000-11);
+  await page.setViewportSize({width:1440,height:650});const smaller=await page.locator('#directory').boundingBox();assert.ok(smaller.y>=11&&smaller.y+smaller.height<=650-11);
+  await page.setViewportSize({width:1440,height:1000});
+
+  await shot('contacts-desktop');
+  await page.locator('[data-inbox-platform=wechat]').click();assert.equal(await page.locator('[data-inbox-contact]').count(),1);
+  await page.locator('#directory .contacts-add').click();await settled('inbox-contact');
+  assert.equal(await page.locator('#inbox-contact [name=platform]:checked').inputValue(),'wechat');
+  await page.locator('#inbox-contact [name=name]').fill('跨平台小雨');await page.locator('#inbox-contact [name=account]').fill('xiaoyu-demo');
+  await page.locator('#inbox-contact [name=note]').fill('周末徒步认识的朋友');
+  await page.locator('#inbox-contact [name=avatar]').setInputFiles('assets/rodin-friends/kangaroo/portrait.webp');await page.locator('.inbox-contact-photo img').waitFor();
+  await shot('contact-editor-desktop');
+  await page.evaluate(()=>{const f=document.querySelector('.inbox-contact-form');f.requestSubmit();f.requestSubmit();});await settled('inbox-contact','closed');
+  await page.waitForFunction(()=>Object.values(__socialStore.state.customFriends||{}).some(f=>f.sourcePlatform==='wechat'&&f.modelPhase==='model_processing'));
+  assert.equal(submits,1);assert.equal(await page.locator('[data-inbox-contact]').count(),2);
+  const first=await page.evaluate(()=>__socialUI.inbox.gateway.snapshot.contacts.find(c=>c.account==='xiaoyu-demo'));
+  await page.locator(`[data-inbox-contact="${first.id}"]`).click();await settled('inbox-contact');
+  await page.locator('#inbox-contact [name=note]').fill('更新后的好友备注');await page.locator('#inbox-contact [type=submit]').click();await settled('inbox-contact','closed');assert.equal(submits,1);
+  await page.locator('[data-inbox-platform=qq]').click();await page.locator('#directory .contacts-add').click();await settled('inbox-contact');
+  await page.locator('#inbox-contact [name=name]').fill('跨平台小雨');await page.locator('#inbox-contact [name=account]').fill('xiaoyu-demo');
+  await page.locator('#inbox-contact [name=avatar]').setInputFiles('assets/rodin-friends/kangaroo/portrait.webp');await page.locator('.inbox-contact-photo img').waitFor();
+  await page.locator('#inbox-contact [type=submit]').click();await settled('inbox-contact','closed');await page.waitForFunction(()=>Object.values(__socialStore.state.customFriends||{}).filter(f=>f.externalContactId).length===2);
+  await page.waitForFunction(()=>Object.values(__socialStore.state.customFriends||{}).filter(f=>f.externalContactId&&f.modelPhase==='model_processing').length===2);assert.equal(submits,2);
+  await page.reload();await page.waitForFunction(()=>window.__socialUI?.inbox&&window.__sceneTheme?.ready,null,{timeout:180000});
+  await page.locator('[data-conversation-tab=contacts]').click();assert.equal(await page.locator('[data-inbox-contact]').count(),7);assert.equal(await page.locator('[data-inbox-platform=native]').isVisible(),false);assert.equal(submits,2);
+  ready=true;await page.waitForFunction(()=>Object.values(__socialStore.state.customFriends||{}).filter(f=>f.externalContactId&&f.modelPhase==='ready').length===2,null,{timeout:20000});
+  const friendId=await page.evaluate(()=>Object.values(__socialStore.state.customFriends).find(f=>f.externalContactId&&f.sourcePlatform==='wechat').id);
+  // A completed avatar enters the scene without manufacturing an incoming message.
+await page.waitForFunction(id=>__characterPlacement.snapshot().characters.some(c=>c.id===id),friendId,{timeout:30000});
+  // An avatar attached to an existing sender opens that sender's original thread.
+  await page.locator('[data-inbox-contact="contact:demo:qqmail"]').click();await settled('inbox-contact');
+  await page.locator('#inbox-contact [name=avatar]').setInputFiles('assets/rodin-friends/kangaroo/portrait.webp');await page.locator('.inbox-contact-photo img').waitFor();
+  await page.locator('#inbox-contact [type=submit]').click();await settled('inbox-contact','closed');
+  const mailFriend=await page.evaluate(()=>Object.values(__socialStore.state.customFriends).find(f=>f.externalContactId==='contact:demo:qqmail').id);
+  await page.evaluate(id=>__socialUI.openFriend(id),mailFriend);await settled('inbox-thread');
+  assert.equal(await page.locator('#inbox-thread h2').textContent(),'林晓');
+  await page.locator('#inbox-thread .inbox-close').click();await settled('inbox-thread','closed');
+  await page.evaluate(()=>__uiInteractions.open('directory'));await settled('directory');
+  await page.waitForFunction(()=>Object.values(__socialStore.state.customFriends).filter(f=>f.externalContactId&&f.modelPhase==='ready').length===3,null,{timeout:20000});assert.equal(submits,3);
+  await page.locator('[data-contact-kind=groups]').click();await page.locator('[data-inbox-platform=qq]').click();
+  assert.equal(await page.locator('[data-contact-group]').count(),3);await shot('groups-desktop');
+  await page.locator('#directory .contacts-add').click();await settled('group-create');
+  await page.locator('#group-create-form [name=sourcePlatform][value=qq]').check();await page.locator('#group-create-form [name=name]').fill('QQ 设计讨论');
+  await page.locator('#group-create-form [name=member][value=tuantuan]').check();await page.locator('#group-create-form [name=member][value=ali]').check();await page.locator('#group-create-form [type=submit]').click();await settled('meeting');
+  assert.equal(await page.locator('#meeting-name img').getAttribute('alt'),'QQ');
+  const group=await page.evaluate(()=>__socialStore.state.groups.find(g=>g.name==='QQ 设计讨论'));assert.equal(group.sourcePlatform,'qq');
+  await page.locator('#moments-toggle').click();await settled('group-info');assert.equal(await page.locator('#group-info [name=sourcePlatform]:checked').inputValue(),'qq');await shot('group-platform-desktop');
+  await page.keyboard.press('Escape');await settled('group-info','closed');await page.keyboard.press('Escape');await settled('meeting','closed');
+  await page.evaluate(()=>__uiInteractions.open('directory'));await settled('directory');await page.locator('[data-conversation-tab=contacts]').click();await page.locator('[data-contact-kind=friends]').click();await page.locator('[data-inbox-platform=wechat]').click();
+  await page.setViewportSize({width:391,height:844});await shot('contacts-mobile');
+  await page.locator(`[data-inbox-contact="${first.id}"]`).click();await settled('inbox-contact');await shot('contact-editor-mobile');
+  assert.ok(await page.locator('#inbox-contact [type=submit]').evaluate(el=>el.getBoundingClientRect().height>=44));
+  await page.locator('[data-contact-remove]').click();await page.locator('[data-contact-confirm]').click();await settled('inbox-contact','closed');
+  assert.ok(!await page.evaluate(id=>__socialStore.state.friends.includes(id),friendId));assert.equal(submits,3);assert.deepEqual(errors,[]);
+  await fs.writeFile(`${out}/results.json`,JSON.stringify({ok:true,submits,errors,fixture:'Avatar provider mocked with existing kangaroo assets; verifies integration, not newly generated model quality.'},null,2));
+  console.log('PASS: people-first messages, app contacts, both resize grips and viewport clamp, initial sources, avatar jobs once, refresh/resume, automatic scene actor, software groups, mobile and remove');
+}catch(e){await page.screenshot({path:`${out}/failure.jpg`});throw e;}finally{await context.close();await browser.close();}

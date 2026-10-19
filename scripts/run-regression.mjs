@@ -4,7 +4,7 @@ const names = suites.length ? suites : ['social-store','social-feed','discovery-
 for (const name of names) {
   if (!/^[a-z-]+$/.test(name)) throw new Error('Invalid suite name');
   const code = await new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [`scripts/test-${name}.mjs`], { stdio: 'inherit', env: process.env });
+    const child = spawn(process.execPath, [`tests/test-${name}.mjs`], { stdio: 'inherit', env: process.env });
     child.once('error', reject); child.once('exit', code => resolve(code ?? 1));
   });
   if (code) { process.exitCode = code; break; }

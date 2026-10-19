@@ -6,16 +6,16 @@
 
 | 方案条目 | 实现 |
 | --- | --- |
-| 四种原始模型的关节、活动范围 | `src/character-rig-profile.js`，按身高归一化，+Z 为正面；当前绑定版本 3 |
-| 可重复生成的四权重蒙皮 | `src/character-rig-weights.js`、`scripts/generate-character-rigs.mjs`、`assets/character-rigs/*/rig.json` 与 `weights.bin` |
-| SkinnedMesh 与独立骨骼实例 | `src/character-rig.js`，使用 SkeletonUtils.clone；共享几何/纹理，骨骼和道具独立 |
+| 四种原始模型的关节、活动范围 | `src/characters/character-rig-profile.js`，按身高归一化，+Z 为正面；当前绑定版本 3 |
+| 可重复生成的四权重蒙皮 | `src/characters/character-rig-weights.js`、`scripts/generate-character-rigs.mjs`、`assets/character-rigs/*/rig.json` 与 `weights.bin` |
+| SkinnedMesh 与独立骨骼实例 | `src/characters/character-rig.js`，使用 SkeletonUtils.clone；共享几何/纹理，骨骼和道具独立 |
 | 自定义模型 | Worker 中双足检查、局部轮廓定位和权重计算；适配可识别的已有骨骼/权重；不通过检查则静态显示 |
-| 八状态、待机与步态 | `src/character-actions.js`，骨骼四元数混合、腿部双关节 IK、按实际距离推进步态、骨盆调节与支撑边界 |
+| 八状态、待机与步态 | `src/characters/character-actions.js`，骨骼四元数混合、腿部双关节 IK、按实际距离推进步态、骨盆调节与支撑边界 |
 | 道具 | 绑定手骨的原生几何记事本、翻页及杯子；行走时收起 |
-| 场景/标签/拾取 | `src/social-characters.js`，先更新姿态再投影；姿态见证顶点用于日常边界，完整蒙皮采样用于检查 |
-| 绑定诊断 | `src/avatar-friend-ui.js`；失败形象显示“骨骼待校正”，不阻断聊天与拖放 |
-| 校正工具 | `rig-review.html`、`src/rig-review.js`；关节坐标、逐顶点权重覆盖、导入导出、缓存保存、跨页原位刷新 |
-| 验证 | `scripts/test-*-rig*.mjs`、`scripts/test-skeletal-cycles.mjs`、动作/拖放/场景已有回归 |
+| 场景/标签/拾取 | `src/characters/social-characters.js`，先更新姿态再投影；姿态见证顶点用于日常边界，完整蒙皮采样用于检查 |
+| 绑定诊断 | `src/ui/avatar-friend-ui.js`；失败形象显示“骨骼待校正”，不阻断聊天与拖放 |
+| 校正工具 | `rig-review.html`、`src/review/rig-review.js`；关节坐标、逐顶点权重覆盖、导入导出、缓存保存、跨页原位刷新 |
+| 验证 | `tests/test-*-rig*.mjs`、`tests/test-skeletal-cycles.mjs`、动作/拖放/场景已有回归 |
 
 原 GLB、顶点数量、UV、材质贴图均保留。运行时仅增加 skinIndex/skinWeight 与骨骼；没有调用生成服务。内置角色分别使用 27、27、26、26 个关节。原场景饱和度、梯田改动与理想城无会客厅行为保留；两种桌宠均不使用该控制器。
 
@@ -41,7 +41,7 @@ npm run test:actions
 npm run test:drag
 npm run test:scenes
 npm run test:performance
-node scripts/test-ideal-layout.mjs
+node tests/test-ideal-layout.mjs
 ```
 
 `npm run record:rigs` 录制实时完整动作，`node scripts/export-rig-clips.mjs` 按 24fps 固定步长导出每个角色/状态 12 秒短视频（前 8 秒正面、后 4 秒侧面）。后者使用 Playwright 安装目录中的 FFmpeg，或显式设置 `FFMPEG_PATH`。不依赖网络模型或服务。

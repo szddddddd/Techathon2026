@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {createRecordMotion} from '../src/audio/record-motion.js';
+const m=createRecordMotion();m.step(1/60,true);assert(m.snapshot().speed>0&&m.snapshot().speed<.1);
+for(let i=0;i<180;i++)m.step(1/60,true);assert(Math.abs(m.snapshot().speed-2*Math.PI*33.333/60)<.001);
+const before=m.snapshot();m.step(1/60,false);assert(m.snapshot().speed>before.speed*.95);
+for(let i=0;i<240;i++)m.step(1/60,false);assert.equal(m.snapshot().speed,0);
+const stopped=m.snapshot().angle;m.step(.05,false);assert.equal(m.snapshot().angle,stopped);
+m.step(.05,true);assert(m.snapshot().speed>0);m.step(.05,true,true);assert.equal(m.snapshot().speed,0);
+const a=createRecordMotion(),b=createRecordMotion();for(let i=0;i<60;i++)a.step(1/60,true);for(let i=0;i<30;i++)b.step(1/30,true);assert(Math.abs(a.snapshot().angle-b.snapshot().angle)<1e-10);
+console.log('PASS: smooth start/stop, exact rest, restart, reduced motion and frame-rate independence');

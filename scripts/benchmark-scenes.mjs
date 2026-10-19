@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {performance} from 'node:perf_hooks';
-import {chromium,baseURL} from './test-runtime.mjs';
+import {chromium,baseURL} from '../tests/test-runtime.mjs';
 
 // Run against a local server. A saved bundle allows comparison with the same
 // assets, browser, server and machine, without checking out or changing sources.

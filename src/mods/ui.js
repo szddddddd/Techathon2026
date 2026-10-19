@@ -1,4 +1,4 @@
-import {randomUUID} from '../browser-id.js';
+import {randomUUID} from '../platform/browser-id.js';
 import {MODS,modById,modIcon} from './catalog.js';
 import {timerRemaining} from './manager.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

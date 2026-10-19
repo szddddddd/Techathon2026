@@ -1,4 +1,4 @@
-import {spawn} from 'node:child_process';import {once} from 'node:events';import fs from 'node:fs/promises';import path from 'node:path';import {chromium,baseURL} from './test-runtime.mjs';
+import {spawn} from 'node:child_process';import {once} from 'node:events';import fs from 'node:fs/promises';import path from 'node:path';import {chromium,baseURL} from '../tests/test-runtime.mjs';
 const out='.test-results/skeletal-actions/clips';await fs.mkdir(out,{recursive:true});
 const runtime=path.join(process.env.LOCALAPPDATA,'ms-playwright'),versions=(await fs.readdir(runtime)).filter(n=>n.startsWith('ffmpeg-')).sort().reverse(),ffmpeg=process.env.FFMPEG_PATH||path.join(runtime,versions[0],'ffmpeg-win64.exe');
 const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:1000,height:800}});

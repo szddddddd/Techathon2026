@@ -8,14 +8,14 @@
 
 | 检查 | 命令 | 结果与证据边界 |
 |---|---|---|
-| Agent 执行与输出 | `node scripts/test-mail-agent.mjs` | 通过；双授权与逐次确认、10 封／40,000 字符限制、问题限长、任务白名单、精确引用、可信收件人、非法输出、重复与并发、取消／迟到响应、权限及正文变化、会话清除、超时 |
-| 数据与权限持久化 | `node scripts/test-mail-agent-storage.mjs` | 通过；旧缓存默认拒绝、最小上下文不含凭据附件、权限与草稿加密重载、撤销版本变化、审计不含内容、断开删除、保存失败回滚 |
-| 模型边界与桌面 IPC | `node scripts/test-mail-agent-ipc.mjs` | 通过；固定 HTTPS 请求与 Bearer／非流式参数、认证／限流／网络／输出错误脱敏、非可信窗口拒绝、前端注入正文无效、未授权无模型调用、导航／窗口销毁取消 |
-| Provider 与凭据边界 | `node scripts/test-mail-agent-provider.mjs` | 通过；模拟网络错误、重定向拒绝、取消、输出体积限制；649 个文本及构建产物检查无密钥，私有目录被 Git 忽略，直接及编码穿越 HTTP 请求均返回 404，Android 离线清单不包含桌面或私有文件 |
+| Agent 执行与输出 | `node tests/test-mail-agent.mjs` | 通过；双授权与逐次确认、10 封／40,000 字符限制、问题限长、任务白名单、精确引用、可信收件人、非法输出、重复与并发、取消／迟到响应、权限及正文变化、会话清除、超时 |
+| 数据与权限持久化 | `node tests/test-mail-agent-storage.mjs` | 通过；旧缓存默认拒绝、最小上下文不含凭据附件、权限与草稿加密重载、撤销版本变化、审计不含内容、断开删除、保存失败回滚 |
+| 模型边界与桌面 IPC | `node tests/test-mail-agent-ipc.mjs` | 通过；固定 HTTPS 请求与 Bearer／非流式参数、认证／限流／网络／输出错误脱敏、非可信窗口拒绝、前端注入正文无效、未授权无模型调用、导航／窗口销毁取消 |
+| Provider 与凭据边界 | `node tests/test-mail-agent-provider.mjs` | 通过；模拟网络错误、重定向拒绝、取消、输出体积限制；649 个文本及构建产物检查无密钥，私有目录被 Git 忽略，直接及编码穿越 HTTP 请求均返回 404，Android 离线清单不包含桌面或私有文件 |
 | 真实 Electron 持久化与窗口 | `npm run test:mail:agent:desktop` | 通过；临时用户目录中使用真实 Electron safeStorage，草稿与权限跨进程重启恢复，其他窗口请求被拒绝，断开删除；邮件和模型响应为合成数据 |
 | Agent 桌面与手机布局 | `npm run test:mail:agent:browser` | 通过；模拟桌面桥接，双授权、逐次确认、摘要与回复、来源、采用、复制、跳转、取消与撤销竞态、纯文本输出；验证 390px 布局，无真实邮箱或模型请求 |
 | 既有功能回归 | `npm test`、`npm run test:inbox`、`npm run test:mail`、邮箱浏览器与桌面测试 | 通过；社交存储、Inbox、邮箱协议和连接窗口回归。三场景邮箱社交／退出流程分别覆盖桌面与移动布局 |
-| 构建与静态服务 | `npm run build`、`node scripts/test-static-files.mjs` | 通过；最终构建缓存复用；本地预览根路径 200，私有配置直接及编码穿越路径 404 |
+| 构建与静态服务 | `npm run build`、`node tests/test-static-files.mjs` | 通过；最终构建缓存复用；本地预览根路径 200，私有配置直接及编码穿越路径 404 |
 
 存储单元测试使用模拟 `safeStorage` 验证 AES-GCM 存储流程；另有真实 Electron 测试验证本机 safeStorage 与跨进程恢复，不代表实测每台系统的 DPAPI 或系统密钥链。测试使用临时目录，结束后清理。超时测试缩短为 15ms 验证控制流，正式配置为 60 秒。
 

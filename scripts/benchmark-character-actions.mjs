@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import {chromium,baseURL} from './test-runtime.mjs';
+import {chromium,baseURL} from '../tests/test-runtime.mjs';
 const label=process.argv[2]||'after',out='.test-results/skeletal-actions';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-angle=d3d11']}),trials=[];
 try{for(let trial=0;trial<3;trial++){

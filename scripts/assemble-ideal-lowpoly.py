@@ -138,7 +138,7 @@ for o in matching('Rock blade'):bpy.data.objects.remove(o,do_unlink=True)
 replace('Engine','island-engines',[-20,-14.2,3],[21,-.3,15.5])
 
 # The shared round-island layout expands depth without stretching houses or craft.
-proportions=json.loads((ROOT/'src/ideal-proportions.json').read_text(encoding='utf8'))
+proportions=json.loads((ROOT/'src/scenes/ideal/ideal-proportions.json').read_text(encoding='utf8'))
 depth_scale=proportions['depthScale']
 for obj in list(bpy.context.scene.objects):
     if obj.parent:continue

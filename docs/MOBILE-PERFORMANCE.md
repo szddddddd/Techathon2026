@@ -6,14 +6,14 @@
 
 | 改动 | 实现 | 保持的行为 |
 | --- | --- | --- |
-| 精确碰撞数据压紧并建立空间索引 | `src/placement-triangles.js`、`src/social-characters.js` | Float64 世界三角面、人体高度裁剪、脚下支撑与建筑内部检查 |
-| 静态模型射线加速 | `src/static-raycast.js`、`src/ideal-scene.js`、`src/group-scene.js` | 只对静态普通网格启用间接 BVH；保持原三角索引，骨骼模型使用原路径 |
-| 重复物件合并为 GPU 实例 | `src/static-instances.js`、`src/scene-world.js` | 原几何、材质、矩阵和阴影；保留原对象进行拾取；动态与透明物件排除 |
-| 合并时保留索引缓冲 | `src/indexed-geometry.js`、三个场景构建器 | 不再把已有索引网格展开为每面重复顶点 |
-| 首帧准备与纹理上传分段 | `src/gpu-prepare.js`、`src/main.js` | 并行着色器编译、原纹理上传，在准备期间让出界面线程 |
-| 切换后释放非当前场景 GPU 资源 | `src/scene-assets.js`、`src/main.js` | CPU 模板可复用；再次进入时重新上传；成功切换后才释放 |
-| 减少动作和标签重复工作 | `src/character-actions.js`、`src/social-ui.js`、`src/group-scene.js` | 复用关节目标和蒙皮采样；只写变化的标签属性；静态遮挡结果复用 |
-| 手机停止桌宠空轮询 | `src/main.js`、`src/web-pet.js` | Android 不启动 Windows 桌宠发布/轮询，桌面行为保留 |
+| 精确碰撞数据压紧并建立空间索引 | `src/rendering/placement-triangles.js`、`src/characters/social-characters.js` | Float64 世界三角面、人体高度裁剪、脚下支撑与建筑内部检查 |
+| 静态模型射线加速 | `src/rendering/static-raycast.js`、`src/scenes/ideal/ideal-scene.js`、`src/social/group-scene.js` | 只对静态普通网格启用间接 BVH；保持原三角索引，骨骼模型使用原路径 |
+| 重复物件合并为 GPU 实例 | `src/rendering/static-instances.js`、`src/scenes/shared/scene-world.js` | 原几何、材质、矩阵和阴影；保留原对象进行拾取；动态与透明物件排除 |
+| 合并时保留索引缓冲 | `src/rendering/indexed-geometry.js`、三个场景构建器 | 不再把已有索引网格展开为每面重复顶点 |
+| 首帧准备与纹理上传分段 | `src/rendering/gpu-prepare.js`、`src/main.js` | 并行着色器编译、原纹理上传，在准备期间让出界面线程 |
+| 切换后释放非当前场景 GPU 资源 | `src/scenes/shared/scene-assets.js`、`src/main.js` | CPU 模板可复用；再次进入时重新上传；成功切换后才释放 |
+| 减少动作和标签重复工作 | `src/characters/character-actions.js`、`src/social/social-ui.js`、`src/social/group-scene.js` | 复用关节目标和蒙皮采样；只写变化的标签属性；静态遮挡结果复用 |
+| 手机停止桌宠空轮询 | `src/main.js`、`src/characters/web-pet.js` | Android 不启动 Windows 桌宠发布/轮询，桌面行为保留 |
 
 射线实现使用 [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh)，锁定在项目依赖中；不修改全局 `Mesh.prototype`。
 
@@ -27,7 +27,7 @@ npm run test:mobile:rendering
 npm run benchmark:mobile -- after
 # 同一测试脚本可选用保存的旧 bundle
 node scripts/benchmark-mobile.mjs before .test-results/mobile-performance/baseline-world.js
-node scripts/test-mobile-rendering.mjs .test-results/mobile-performance/baseline-world.js
+node tests/test-mobile-rendering.mjs .test-results/mobile-performance/baseline-world.js
 ```
 
 结果在 `.test-results/mobile-performance/`，包含 JSON、CPU profile 和截图。基线 bundle/APK 是本机保存的优化前产物，不进入 Git。重现历史对照需保留这些基线。
@@ -70,11 +70,11 @@ Android 15 / API 35 模拟器安装并覆盖更新到 `1.3.1-demo.2` 后，三�
 
 ### 本轮实现
 
-- `src/scene-assets.js` / `src/mailbox.js` / `src/scene-world.js`：邮箱模板按场景缓存正在进行及已完成的加载，失败后可重试；预加载与其他场景资源并行。每个活动邮箱独立克隆节点、共享几何与贴图，切换后保留模板，闲置 GPU 资源仍走原有释放策略。
+- `src/scenes/shared/scene-assets.js` / `src/ui/mailbox.js` / `src/scenes/shared/scene-world.js`：邮箱模板按场景缓存正在进行及已完成的加载，失败后可重试；预加载与其他场景资源并行。每个活动邮箱独立克隆节点、共享几何与贴图，切换后保留模板，闲置 GPU 资源仍走原有释放策略。
 - `sceneResources()` 现在收集场景灯光的 Shadow 对象，退出场景时释放其 render target，覆盖富士列车头灯。共享资源不会随某一实例退出而失效。
-- `src/discovery-player.js`：普通网页改为直接媒体 URL，由媒体栈缓冲及拖动读取，省去完整文件 fetch→Blob→ObjectURL 中转。重复打开同一视频复用单个播放器与播放位置，取消的加载会正常结束等待；仍支持错误重试。APK 保留单个 Blob 的离线兼容路径，换片与退出时撤销旧 URL。
+- `src/discovery/discovery-player.js`：普通网页改为直接媒体 URL，由媒体栈缓冲及拖动读取，省去完整文件 fetch→Blob→ObjectURL 中转。重复打开同一视频复用单个播放器与播放位置，取消的加载会正常结束等待；仍支持错误重试。APK 保留单个 Blob 的离线兼容路径，换片与退出时撤销旧 URL。
 - Web 服务器补齐 MP4 MIME。Android 模拟器 WebView 124 的离线 HTTPS URL 路径实测出现播放和拖动失败，因此没有交付该实验的原生 Range 处理器；APK 沿用兼容路径。普通手机浏览器经真实 HTTP 服务的媒体 Range 测试通过。
-- `src/day-night-environment.js` / `main.js`：固定时间且相机未动时跳过相同环境计算，自动昼夜和移动相机仍逐帧更新；相机裁剪参数未变化时不再重建阴影投影矩阵。场景切换和失败回退显式使缓存失效。
+- `src/scenes/shared/day-night-environment.js` / `main.js`：固定时间且相机未动时跳过相同环境计算，自动昼夜和移动相机仍逐帧更新；相机裁剪参数未变化时不再重建阴影投影矩阵。场景切换和失败回退显式使缓存失效。
 - `main.js` / `social-ui.js` / `record-player.js` / `mailbox.js`：相同视口不重复设置画布尺寸；相同标签样式不重复写入；不可见的设施入口不做投影和 DOM 写入；好友资料映射只在社交状态变化时重建。
 - `discovery-ui.js`：视频控件沿用已有媒体事件刷新，不在场景每帧扫描控件。
 - `mobile-platform.js` / `web-pet.js` / `main.js`：Android APK、Android 浏览器和 iOS 不启动 Windows 桌宠 HTTP 轮询及 250ms 同步计时器；Windows 原生桥接及桌面浏览器行为保留。

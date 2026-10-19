@@ -1,0 +1,33 @@
+name: 功能建议
+description: 描述使用场景、期望行为与验收方式。
+title: '[Feature] '
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 使用场景与问题
+      description: 谁会遇到什么问题？如已有相关行为，请提供复现步骤或命令。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望行为
+      description: 描述建议的功能、影响的平台与可接受的替代方案。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收方式
+      description: 列出可观察的完成条件，以及适用的验证步骤或命令。
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 提交前检查
+      options:
+        - label: 我已删除 API 密钥、账号凭据、真实邮件和个人数据。
+          required: true

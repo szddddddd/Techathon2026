@@ -1,7 +1,8 @@
 # WeRoam 技术实现说明
 
 **项目版本：** v0.1 beta<br>
-**代码核对日期：** 2026-10-18
+**代码核对日期：** 2026-10-18<br>
+**工程结构与配置说明更新：** 2026-10-19
 
 本文按当前仓库实现编写。演示稿中的愿景、方案图和平台接入设想不自动代表代码已实现；功能边界以代码和项目记录为准。
 
@@ -74,14 +75,16 @@ flowchart TB
 
 主要代码入口：
 
-- 三维主应用与渲染循环：`src/main.js`、`src/scene-world.js`、`src/scene-assets.js`
-- 三场景与布局：`src/valley-*`、`src/fuji-*`、`src/cyber-*`、`src/ideal-scene.js`
-- 角色、骨骼与状态动作：`src/social-characters.js`、`src/character-rig.js`、`src/character-actions.js`、`src/character-rig-worker.js`
-- 社交数据及界面：`src/social-store.js`、`src/social-conversations.js`、`src/social-ui.js`
+- 三维主应用与渲染循环：`src/main.js`、`src/scenes/shared/scene-world.js`、`src/scenes/shared/scene-assets.js`
+- 三场景与布局：`src/scenes/forest/`、`src/scenes/fuji/`、`src/scenes/cyber/`、`src/scenes/ideal/`；共享组件在 `src/scenes/shared/`
+- 角色、骨骼与状态动作：`src/characters/social-characters.js`、`src/characters/character-rig.js`、`src/characters/character-actions.js`、`src/characters/character-rig-worker.js`
+- 社交数据及界面：`src/social/social-store.js`、`src/social/social-conversations.js`、`src/social/social-ui.js`
 - Inbox：`src/inbox/`，与主场景和演示库通过适配层连接；桌面邮箱另位于 `desktop/mail-*.cjs` 与 `src/inbox/desktop-mail.js`
 - Mods：`src/mods/`，由 `src/main.js` 的模块管理器加载
 - 头像生成：`server/image-config.mjs`、`server/rodin-rest-client.mjs`、`server/avatar-pipeline.mjs`
 - Android 原生容器：`android/app/src/main/`
+- 前端样式：`src/styles/`；前端领域目录见[项目结构](PROJECT-STRUCTURE.md)
+- 本地配置模板：`config/`，仅有占位值，运行时使用私有目录内的实际配置
 
 ## 3. 运行与数据流
 
@@ -103,7 +106,9 @@ Electron 邮箱服务只连接固定的 QQ／163 IMAP 主机，使用只读 EXAM
 
 用户主动添加好友并上传有权使用的头像后，服务端先调用图像编辑服务生成单独参考图，再通过 `server/rodin-rest-client.mjs` 提交 Hyper3D Rodin，查询原任务并下载 GLB。任务记录用于避免网络结果不明时重复提交。Rodin API 凭据从项目私有配置读取，不能写进源码、普通日志或文档。
 
-Android 源码包含独立头像生成演示实现；其构建流程会把服务配置放入 APK 私有资源，但该凭据仍可被 APK 提取。因此这一路径只适用于受控演示包，不应把含有效生成密钥的 APK 当作可公开分发产品。
+Android 源码包含独立头像生成演示实现：用户在手机「我 → 设置 → 模型服务配置」输入自己的服务配置，`AvatarSettings` 使用 Android Keystore 与 AES-GCM 加密保存，`AvatarService` 在原生线程执行图像与 Rodin 请求。当前标准构建不注入开发者密钥。仓库仍保留旧 `scripts/prepare-android-avatar.mjs` 工具，但标准 APK 构建不调用它，也不应将其私有输出用于公开分发。
+
+该 Android 实现尚未统一到项目指定的 `server/rodin-rest-client.mjs` 与 `.forest-avatar-data/hyper3d-config.json` 入口，属于既有边界，不能宣称全平台已统一。后续维护与新增 Rodin 请求须遵循 `AGENTS.md` 的统一配置约束。详见 [Android 头像说明](ANDROID-AVATAR-DEMO.md)。
 
 ## 4. 信任与数据边界
 
@@ -116,7 +121,7 @@ Android 源码包含独立头像生成演示实现；其构建流程会把服务
 
 ## 5. 代码内可复核的验证入口
 
-测试脚本按功能分布在 `scripts/`。常用命令包括：
+测试脚本按功能位于 `tests/`，构建与诊断工具位于 `scripts/`。常用命令包括：
 
 ```powershell
 npm run build

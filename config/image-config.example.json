@@ -1,0 +1,6 @@
+{
+  "baseURL": "https://your-image-service.example/v1",
+  "apiKey": "REPLACE_WITH_YOUR_LOCAL_KEY",
+  "model": "gpt-image-2",
+  "size": "1024x1536"
+}

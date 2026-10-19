@@ -9,7 +9,7 @@ const runtime=/\.(?:glb|bin|json|png|jpe?g|webp|svg|mp3|mp4|webm)$/i;
 const files=[];
 async function collect(dir){for(const entry of await fs.readdir(path.join(root,dir),{withFileTypes:true})){const rel=path.posix.join(dir,entry.name);if(entry.isDirectory())await collect(rel);else if(runtime.test(rel))files.push(rel);}}
 await collect('assets');
-files.push(...(await fs.readdir(root)).filter(name=>name.endsWith('.css')),'startup.js','mobile/android-runtime.js','mobile/android.css');
+files.push(...(await fs.readdir(path.join(root,'src/styles'))).filter(name=>name.endsWith('.css')).map(name=>`src/styles/${name}`),'src/startup.js','mobile/android-runtime.js','mobile/android.css');
 files.push('dist/world.js','dist/inbox.js','dist/workshop.js','dist/rig-worker.js','asset-review.html','dist/review.js');
 await fs.mkdir(webDir,{recursive:true});
 const inventory=[];let textureBefore=0,textureAfter=0;

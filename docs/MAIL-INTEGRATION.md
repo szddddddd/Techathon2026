@@ -26,8 +26,8 @@
 ## 验证边界
 
 - `npm run test:mail`：模拟 IMAP 客户端验证范围、只读、正文/附件选择、复用与去重、游标失效、失败原子性、撤销竞态、密文校验和演示/Agent 隔离。
-- `node scripts/test-mail-browser.mjs`：使用合成邮箱投影验证阅读、收取、清除、来源标记、移动端指引；截图在 `.test-results/mail-*.png`。
-- `node scripts/test-mail-desktop.mjs`：在独立 Electron 配置中检查真实 safeStorage、独立凭据页面、CSP 与 IPC 拒绝路径。
+- `node tests/test-mail-browser.mjs`：使用合成邮箱投影验证阅读、收取、清除、来源标记、移动端指引；截图在 `.test-results/mail-*.png`。
+- `node tests/test-mail-desktop.mjs`：在独立 Electron 配置中检查真实 safeStorage、独立凭据页面、CSP 与 IPC 拒绝路径。
 - 上述自动测试不代表已登录用户邮箱。只有本地连接窗口返回成功，才表示该账号的 IMAP 认证、INBOX 读取和本机保存已实测。SMTP、OAuth、其他邮箱、移动端真实接入均未验证/未启用。
 - 本次另验证了 QQ IMAP 的真实 TLS 连接及服务器证书，未发送账号凭据。构建、Inbox 单元/浏览器回归及社交存储测试通过。额外的旧桌宠桥接脚本在初始可见性断言处超时：其模拟初始值为隐藏，却等待打开；本次未修改该脚本或桌宠行为，不将该项计为通过。
 

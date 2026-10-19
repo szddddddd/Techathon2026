@@ -65,7 +65,7 @@ function startPetBridge({ root, port = 47831, onState, onShow, onHide = () => {}
       let requested;
       try { requested=decodeURIComponent(url.pathname); } catch { res.writeHead(400);res.end();return; }
       if(requested==='/')requested='/index.html';
-      if(!/^\/(assets\/|dist\/|(?:index|pet|asset-review)\.html$|startup\.js$|[a-z0-9-]+\.css$)/i.test(requested)||requested.includes('..')||requested.includes('\\')){res.writeHead(404);res.end();return;}
+      if(!/^\/(assets\/|dist\/|(?:index|pet|asset-review)\.html$|src\/startup\.js$|src\/styles\/[a-z0-9-]+\.css$)/i.test(requested)||requested.includes('..')||requested.includes('\\')){res.writeHead(404);res.end();return;}
       const file=path.resolve(root,'.'+requested);
       if(!file.startsWith(path.resolve(root)+path.sep)){res.writeHead(404);res.end();return;}
       try { const stat=await fs.promises.stat(file);if(!stat.isFile())throw new Error();res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Content-Length':stat.size});fs.createReadStream(file).pipe(res); }

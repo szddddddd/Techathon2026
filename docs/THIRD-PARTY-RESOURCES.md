@@ -2,6 +2,7 @@
 
 **项目版本：** v0.1 beta<br>
 **清点日期：** 2026-10-18<br>
+**源码许可与工程结构记录更新：** 2026-10-19<br>
 **适用范围：** 当前仓库代码、运行资产以及 `weroam-slides/output/WeRoam-v27.pptx` 演示稿
 
 本文记录仓库中可以核实的依赖、服务和素材来源，并标出需要另行取得凭证的部分。它不是律师出具的法律意见，也不构成对未核实资源的许可保证。第三方服务条款会更新；正式发布时应重新核验并保存适用于实际账号和使用计划的条款、发票或授权证明。
@@ -25,7 +26,7 @@
 | AndroidX WebKit 1.14.0 | Android 本地 WebView 资源映射 | Apache-2.0 | `android/app/build.gradle`；[AndroidX WebKit](https://developer.android.com/jetpack/androidx/releases/webkit) |
 | Android Gradle Plugin 8.13.2、Gradle 8.13 | Android 构建工具 | Apache-2.0 | `android/build.gradle`、Gradle Wrapper；工具链许可证与应用素材许可证分开 |
 
-根目录 `package.json` 的 `license` 字段声明为 `ISC`，但本次清点没有找到仓库根级 `LICENSE` 或 `NOTICE` 文件。该元数据不足以替代正式发布时的许可文本与第三方 notices；项目代码对外采用的许可证仍需由权利人确认并补齐。
+根目录 [`LICENSE`](../LICENSE) 已提供与 `package.json` 匹配的 ISC 文本，适用于项目原创代码。第三方依赖与模型、图片、音视频、文章、品牌标识仍保留各自权利；根许可证不自动授予未取得的素材权利。随包第三方 notices 仍需按实际分发内容收集。
 
 ## 2. 生成服务与外部平台
 
@@ -46,7 +47,7 @@ Hyper3D 官方资料说明，Rodin API 输入与输出在其活动系统保留�
 | 森林、富士及环境 3D 模型 | `assets/rodin*`；部分模型有 `manifest.json` 记录 Hyper3D Rodin 任务、提示词及输出哈希 | 生成来源可追溯程度不一；模型生成不等同于已确认商业许可。按单项 manifest 对照 Rodin 账户、计划及输入参考图授权留档。无 manifest 的旧模型补齐来源 |
 | 理想城场景 | `assets/ideal-city/source.blend` 与 `scene.glb`；项目记录称源文件由用户提供，场景为 Blender 原生几何且无外部贴图依赖 | 源文件提供者身份、可对外展示／分发范围的书面许可未随仓库保存。公开演示、转授权或商用前取得确认 |
 | 四个初始好友模型与肖像 | `assets/rodin-friends/`；模型来自 Rodin，肖像用于本地示例 | 资产记录说明示例不是实际好友照片；具体原始头像由谁提供、输入是否含真实人物以及对应肖像授权没有完整入库。含可识别真人时，应取得适用的肖像和输入使用同意 |
-| StartHub 联育文章及封面图 | `src/starthub-content.js`、`assets/discovery/starthub-yc-2026.png`；代码注释记录文字为用户提供，封面图由用户提供 | 未记录原始文章链接、作者、发布日期或转载授权；文章提及 YC 不代表 YC 官方发布或背书。对外传播前补充原文出处、作者署名及转载／改编许可 |
+| StartHub 联育文章及封面图 | `src/discovery/starthub-content.js`、`assets/discovery/starthub-yc-2026.png`；代码注释记录文字为用户提供，封面图由用户提供 | 未记录原始文章链接、作者、发布日期或转载授权；文章提及 YC 不代表 YC 官方发布或背书。对外传播前补充原文出处、作者署名及转载／改编许可 |
 | 示例视频与缩略图 | `assets/discovery/video-1` 至 `video-6` 的 `.webm`／`.jpg` | 当前源码和资产说明没有找到逐文件作者、原始 URL 或许可证明。公开分发前应追溯来源并取得许可；无法确认时替换为自制或明确授权素材 |
 | 场景音乐 | `assets/audio/forest-mixtape.mp3`、`spring-strings.mp3` | 当前源码未记录作曲者、来源、采样或音乐许可。需补齐作品和录音两个层面的权利凭证；不能仅因文件在仓库中就视为可公开分发 |
 | Hyper3D 宣传视频／封面 | `assets/discovery/hyper3d-agent-ready.mp4`、同名 `.jpg`，内容与 Hyper3D 品牌有关 | 仓库内未找到随资产保存的许可或媒体包授权。若用于发布版，按 Hyper3D 品牌／媒体使用规范核实并保留来源 |
@@ -59,7 +60,7 @@ Iconify 是图标检索／分发框架，不统一拥有图标集授权。其官
 
 ## 4. 仓库记录情况
 
-- 根目录没有发现 `LICENSE`、`NOTICE` 或 `COPYING` 文件；`package.json` 仅包含 `ISC` 元数据字段。
+- 根目录已补齐匹配 `package.json` 的 ISC `LICENSE`，并明确第三方软件和素材不自动纳入该授权；逐项素材凭证和分发 notices 仍需补齐。
 - `assets/README.md` 说明了主要场景资产类别、Rodin 来源和示例媒体的性质；理想城与理想城低模目录另有来源说明。
 - 截至清点日，`assets/` 下有 78 个 manifest 文件，其中 58 个 manifest 明确写有 Rodin provider。manifest 并不覆盖每个媒体文件、每张参考图或每个生成结果的完整权利凭证。
 - `weroam-slides/assets/app-icons/README.md` 列出演示稿中使用的平台图标；slides 生成脚本还保存部分 Iconify collection/name 和下载 URL。品牌图标使用权仍需按商标规范检查。
@@ -68,7 +69,7 @@ Iconify 是图标检索／分发框架，不统一拥有图标集授权。其官
 
 ## 5. 发布前建议
 
-1. 明确项目源代码希望采用的许可证，并在仓库根目录添加匹配的 `LICENSE`；为 Electron、npm、AndroidX 和其他随包依赖生成并附带 notices。
+1. 保留根 ISC `LICENSE` 与第三方权利边界；为 Electron、npm、AndroidX 和其他实际随包依赖生成并附带 notices。
 2. 建立逐文件资源清单，至少包含文件路径、作者／提供者、原始 URL、获取日期、许可证、允许用途、署名要求和许可凭证存放位置；对生成资产再记录参考图来源、服务计划、任务 ID 和输出哈希。
 3. 补齐理想城 Blender 源文件、StartHub 文章及封面、Hyper3D 宣传视频、所有背景音乐和演示视频的权利证明；不能确认的文件先从公开发布包移除或替换。
 4. 在归档时保存 OpenAI 与 Hyper3D 的账户计划、适用条款版本和付款／授权凭证；不要把 API 密钥写入清单、截图或版本库。

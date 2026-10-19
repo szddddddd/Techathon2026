@@ -1,0 +1,39 @@
+name: 错误报告
+description: 提交可复现的问题；请删除密钥、真实邮件及个人数据。
+title: '[Bug] '
+labels: [bug]
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: 运行环境
+      description: 填写操作系统、Node.js 版本、浏览器或 Electron 版本，以及 Git 提交号。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤与命令
+      description: 从安装、构建或启动命令开始，列出最少复现步骤。
+      placeholder: |
+        npm ci
+        npm run build
+        npm start
+        1. 打开……
+        2. 点击……
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 预期行为与实际结果
+      description: 附上已脱敏的错误信息或截图；请勿上传私有配置、真实邮件或个人数据。
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 提交前检查
+      options:
+        - label: 我已删除 API 密钥、账号凭据、真实邮件和个人数据。
+          required: true

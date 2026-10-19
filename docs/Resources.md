@@ -162,10 +162,10 @@ flowchart TB
 
 主要代码入口：
 
-- 三维主应用与渲染循环：`src/main.js`、`src/scene-world.js`、`src/scene-assets.js`
-- 三场景与布局：`src/valley-*`、`src/fuji-*`、`src/cyber-*`、`src/ideal-scene.js`
-- 角色、骨骼与状态动作：`src/social-characters.js`、`src/character-rig.js`、`src/character-actions.js`、`src/character-rig-worker.js`
-- 社交数据及界面：`src/social-store.js`、`src/social-conversations.js`、`src/social-ui.js`
+- 三维主应用与渲染循环：`src/main.js`、`src/scenes/shared/scene-world.js`、`src/scenes/shared/scene-assets.js`
+- 三场景与布局：`src/scenes/forest/`、`src/scenes/fuji/`、`src/scenes/cyber/`、`src/scenes/ideal/`；共享组件在 `src/scenes/shared/`
+- 角色、骨骼与状态动作：`src/characters/social-characters.js`、`src/characters/character-rig.js`、`src/characters/character-actions.js`、`src/characters/character-rig-worker.js`
+- 社交数据及界面：`src/social/social-store.js`、`src/social/social-conversations.js`、`src/social/social-ui.js`
 - Inbox：`src/inbox/`，与主场景和演示库通过适配层连接；桌面邮箱另位于 `desktop/mail-*.cjs` 与 `src/inbox/desktop-mail.js`
 - Mods：`src/mods/`，由 `src/main.js` 的模块管理器加载
 - 头像生成：`server/image-config.mjs`、`server/rodin-rest-client.mjs`、`server/avatar-pipeline.mjs`
@@ -191,7 +191,7 @@ Electron 邮箱服务只连接固定的 QQ／163 IMAP 主机，使用只读 EXAM
 
 用户主动添加好友并上传有权使用的头像后，服务端先调用图像编辑服务生成单独参考图，再通过 `server/rodin-rest-client.mjs` 提交 Hyper3D Rodin，查询原任务并下载 GLB。任务记录用于避免网络结果不明时重复提交。Rodin API 凭据从项目私有配置读取，不能写进源码、普通日志或文档。
 
-Android 源码包含独立头像生成演示实现；其构建流程会把服务配置放入 APK 私有资源，但该凭据仍可被 APK 提取。因此这一路径只适用于受控演示包，不应把含有效生成密钥的 APK 当作可公开分发产品。
+Android 源码包含独立头像生成演示实现。当前标准构建不注入开发者密钥，用户在手机模型服务设置中配置自己的密钥，由 Android Keystore 与 AES-GCM 加密保存。原生演示尚未统一到项目指定的 Node REST 客户端与项目私有配置入口；详见 [Android 头像说明](ANDROID-AVATAR-DEMO.md)。后续维护与新增 Rodin 请求须遵守 `AGENTS.md` 的统一入口约束。
 
 ## 4. 信任与数据边界
 
@@ -204,7 +204,7 @@ Android 源码包含独立头像生成演示实现；其构建流程会把服务
 
 ## 5. 代码内可复核的验证入口
 
-测试脚本按功能分布在 `scripts/`。常用命令包括：
+测试脚本按功能位于 `tests/`，构建与诊断工具位于 `scripts/`。常用命令包括：
 
 ```powershell
 npm run build
