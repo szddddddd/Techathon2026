@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -43,7 +44,7 @@ def main():
         token = values.get("password")
     if not token:
         raise SystemExit("GitHub publishing credential unavailable.")
-    headers = {"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "User-Agent": "WeRoam-release"}
+    headers = {"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "User-Agent": "WeRoam-release", "Cache-Control": "no-cache"}
 
     def api(route, method="GET", data=None):
         request = urllib.request.Request("https://api.github.com/repos/" + REPO + route,
@@ -65,7 +66,7 @@ def main():
     elif release["target_commitish"] != manifest["commit"]:
         if release["assets"]:
             raise SystemExit("Existing draft with assets targets another source commit.")
-        release = api("/releases/" + str(release["id"]), "PATCH", {"target_commitish": manifest["commit"]})
+        release = api("/releases/" + str(release["id"]), "PATCH", {"tag_name": tag, "target_commitish": manifest["commit"]})
     artifacts = [asset["name"] for asset in manifest["files"]] + ["SHA256SUMS.txt", "release-manifest.json"]
     if args.stage_parts:
         existing = {asset["name"]: asset for asset in release["assets"]}
@@ -78,10 +79,27 @@ def main():
                     raise SystemExit("Staged asset differs: " + name)
                 print("Already staged:", name, flush=True)
                 return
-            request = urllib.request.Request(release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name),
-                headers={**headers, "Content-Type": "application/octet-stream"}, data=data)
-            with urllib.request.urlopen(request, timeout=120) as response:
-                result = json.load(response)
+            for attempt in range(4):
+                request = urllib.request.Request(release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name),
+                    headers={**headers, "Content-Type": "application/octet-stream"}, data=data)
+                try:
+                    with urllib.request.urlopen(request, timeout=90) as response:
+                        result = json.load(response)
+                    break
+                except (urllib.error.URLError, ConnectionError, TimeoutError):
+                    current_assets = api("/releases/" + str(release["id"]) + "/assets?per_page=100&refresh=" + str(time.time_ns()))
+                    saved = next((a for a in current_assets if a["name"] == name), None)
+                    if saved and saved.get("digest") == digest and saved["size"] == len(data):
+                        result = saved
+                        break
+                    if saved:
+                        if saved.get("state") != "starter" or saved["size"] != 0:
+                            raise SystemExit("Unconfirmed staged asset; inspect before replacing: " + name)
+                        api("/releases/assets/" + str(saved["id"]), "DELETE")
+                    if attempt == 3:
+                        raise SystemExit("Upload interrupted; rerun to resume verified parts: " + name)
+                    print("Retrying interrupted part:", name, flush=True)
+                    time.sleep(2)
             if result.get("digest") != digest or result["size"] != len(data):
                 raise SystemExit("Staged asset verification failed: " + name)
             print("Staged:", name, len(data), "bytes", flush=True)
@@ -101,7 +119,7 @@ def main():
                 data = stream.read(part_bytes)
             upload_part(f"{name}.part-{index:03d}", data)
 
-        with ThreadPoolExecutor(max_workers=3) as pool:
+        with ThreadPoolExecutor(max_workers=2) as pool:
             list(pool.map(stage, jobs))
         print("All parts verified. Dispatch assemble-release.yml on this source commit, then use --publish.")
         return
