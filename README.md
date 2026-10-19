@@ -14,6 +14,8 @@
 
 [文档](docs/README.md) · [开发指南](docs/DEVELOPMENT.md) · [参与贡献](.github/CONTRIBUTING.md)
 
+设计指导：[@cios413](https://github.com/cios413)
+
 </div>
 
 ## 演示视频
