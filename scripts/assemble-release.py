@@ -30,7 +30,7 @@ def main():
     release = next(r for r in api("/releases?per_page=100") if r["tag_name"] == tag)
     if not release["draft"]:
         raise SystemExit("Only draft releases may be assembled.")
-    assets = {a["name"]: a for a in release["assets"]}
+    assets = {a["name"]: a for a in api("/releases/" + str(release["id"]) + "/assets?per_page=100")}
     with tempfile.TemporaryDirectory(prefix="weroam-release-") as folder:
         folder = Path(folder)
 
@@ -81,6 +81,7 @@ def main():
         fresh = api("/releases/" + str(release["id"]))
         if not fresh["draft"]:
             raise SystemExit("Release was published during assembly; no draft assets will be removed.")
+        fresh["assets"] = api("/releases/" + str(release["id"]) + "/assets?per_page=100")
         complete = {a["name"]: a for a in fresh["assets"]}
         for file in manifest["files"]:
             asset = complete[file["name"]]

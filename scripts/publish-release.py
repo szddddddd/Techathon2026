@@ -68,6 +68,7 @@ def main():
             raise SystemExit("Existing draft with assets targets another source commit.")
         release = api("/releases/" + str(release["id"]), "PATCH", {"tag_name": tag, "target_commitish": manifest["commit"]})
     artifacts = [asset["name"] for asset in manifest["files"]] + ["SHA256SUMS.txt", "release-manifest.json"]
+    release["assets"] = api("/releases/" + str(release["id"]) + "/assets?per_page=100")
     if args.stage_parts:
         existing = {asset["name"]: asset for asset in release["assets"]}
 
@@ -153,6 +154,7 @@ def main():
         if result.get("digest") != digest or result["size"] != file.stat().st_size:
             raise SystemExit("Uploaded asset verification failed: " + name)
     release = api("/releases/" + str(release["id"]))
+    release["assets"] = api("/releases/" + str(release["id"]) + "/assets?per_page=100")
     if not set(artifacts).issubset(a["name"] for a in release["assets"]):
         raise SystemExit("Release is missing required assets.")
     if any(any(a["name"].startswith(f["name"] + ".part-") for f in manifest["files"]) for a in release["assets"]):
