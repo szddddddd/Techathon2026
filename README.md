@@ -2,9 +2,11 @@
 
 <h1><img src="assets/branding/weroam-icon-rounded.png" alt="" width="48" height="48" align="absmiddle"> WeRoam</h1>
 
-**让每一次聊天，都有一处风景。**
+**We meet We live**
 
-基于 Three.js 的三维空间社交原型 · 浏览器 / Windows 桌宠 / Android · v0.1 beta.1
+这是一个模块化空间社交原型。核心设计是把每项功能都可视化为实体，放入场景之中。
+
+基于 Three.js · 浏览器 / Windows 桌宠 / Android · v0.1 beta.1
 
 [![CI](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml/badge.svg)](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-43853d)](https://nodejs.org/)
