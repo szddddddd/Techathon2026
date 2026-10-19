@@ -26,3 +26,11 @@
 | 上一轮远程 CI | 提交 `f9b751e` 的 [GitHub Actions](https://github.com/szddddddd/Techathon2026/actions/runs/39223122344) 已通过 |
 
 本轮未在本机重新运行自动化测试、构建 APK 或验收实体设备。新提交的远程检查结果以 [CI 页面](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml) 为准。没有连接真实邮箱或发起付费生成请求。
+
+## 后续：根目录与首页
+
+根目录受 Git 管理的文件从 18 个减至 9 个：五个 HTML 源文件移到 `src/pages/`，两个 Windows 启动器移到 `scripts/windows/`，贡献与安全说明移到 `.github/`。现有页面 URL 通过静态服务映射到新位置；Electron 的文件入口及邮箱可信页面路径同步迁移，Android 构建使用包内相对基址。
+
+README 保留演示视频、快速开始和文档入口，其余内容折叠展示；保存用户提供的 B 站 iframe，同时提供可点击预览图和直接观看链接。GitHub Markdown API 的实际渲染保留五个 `details` 与视频链接，过滤 iframe。
+
+网页构建和 Android Web 资源构建成功，171 处文档相对链接均能定位到文件。此轮未在本机运行自动化测试或验收实体设备。

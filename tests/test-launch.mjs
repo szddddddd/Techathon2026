@@ -6,10 +6,10 @@ import {baseURL,outputPath} from './test-runtime.mjs';
 const pkg=JSON.parse(await fs.readFile('package.json','utf8')),lock=JSON.parse(await fs.readFile('package-lock.json','utf8'));
 assert.equal(pkg.version,lock.version);assert.equal(pkg.version,lock.packages[''].version);
 for(const name of ['index.html','pet.html']){
- const html=await fs.readFile(name,'utf8');assert.ok(html.includes(`name="forest-version" content="${pkg.version}"`));
+ const html=await fs.readFile('src/pages/'+name,'utf8');assert.ok(html.includes(`name="forest-version" content="${pkg.version}"`));
  for(const match of html.matchAll(/(?:src|href)="([^"?]+\.(?:js|css))\?v=([^"]+)"/g)){assert.equal(match[2],pkg.version);await fs.access(match[1]);}
 }
-const launcher=await fs.readFile('启动 WeRoam.cmd','utf8');assert.ok(launcher.includes('scripts\\launch.ps1'));
+const launcher=await fs.readFile('scripts/windows/启动 WeRoam.cmd','utf8');assert.ok(launcher.includes('..\\launch.ps1'));
 // Reuse the explicitly supplied test server; never register OS protocols in tests.
 const output=await new Promise((resolve,reject)=>{
  const child=spawn('powershell.exe',['-NoProfile','-File',path.resolve('scripts/launch.ps1'),'-NoBrowser','-SkipProtocolInstall'],{env:{...process.env,FOREST_WEB_PORT:new URL(baseURL).port,PATH:path.dirname(process.execPath)+path.delimiter+process.env.PATH},windowsHide:true});

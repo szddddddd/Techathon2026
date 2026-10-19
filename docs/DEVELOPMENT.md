@@ -2,7 +2,7 @@
 
 [项目首页](../README.md) / [文档索引](README.md)
 
-所有命令从仓库根目录执行，除非明确另有说明。主仓库为 [szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)，贡献约定见 [CONTRIBUTING](../CONTRIBUTING.md)。
+所有命令从仓库根目录执行，除非明确另有说明。主仓库为 [szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)，贡献约定见 [CONTRIBUTING](../.github/CONTRIBUTING.md)。
 
 ## 环境与首次启动
 
@@ -20,7 +20,7 @@ npm start
 
 当前没有自动监听构建。修改 JavaScript 后重新运行 `npm run build`，再刷新；修改 HTML/CSS 后刷新，修改 Electron 主进程或 preload 后重启桌面端。构建基于输入与输出指纹复用缓存，需要强制重建时运行 `npm run build -- --force`。
 
-Windows 双击 `启动 WeRoam.cmd` 或运行 `npm run launch` 会准备依赖、构建并启动网页。脚本可能写入本机 `.forest-runtime.json` 并准备桌宠协议；该状态不应提交。
+Windows 双击 `scripts/windows/启动 WeRoam.cmd` 或运行 `npm run launch` 会准备依赖、构建并启动网页。脚本可能写入本机 `.forest-runtime.json` 并准备桌宠协议；该状态不应提交。
 
 ## 运行入口
 
@@ -37,7 +37,7 @@ Windows 双击 `启动 WeRoam.cmd` 或运行 `npm run launch` 会准备依赖、
 | `npm run android:download` | 局域网 APK 下载页 |
 | `npm run pico:connect` | 已授权头显的 ADB reverse 与 WebXR 入口 |
 
-根目录 `index.html` 是主世界，`pet.html` 是桌宠，`asset-review.html` / `rig-review.html` 是资产与骨骼查看页，`data-transfer.html` 是数据传递页面。保持这些 URL 稳定；源码与样式位置见[项目结构](PROJECT-STRUCTURE.md)。
+HTML 源文件集中在 `src/pages/`：`index.html` 是主世界，`pet.html` 是桌宠，`asset-review.html` / `rig-review.html` 是资产与骨骼查看页，`data-transfer.html` 是数据传递页面。本地服务仍以 `/`、`/pet.html` 等原有 URL 提供页面；源码与样式位置见[项目结构](PROJECT-STRUCTURE.md)。
 
 ## 测试与基准
 
@@ -98,4 +98,4 @@ Android 现有头像演示有独立原生实现和手机配置，尚未统一走
 - **生成服务缺配置：** 基础浏览不受影响；由本机使用者在对应私有文件中配置，不通过修改源码或使用其他账户密钥绕过。
 - **手机/头显与浏览器表现不同：** 记录设备、系统、WebView/浏览器版本及具体场景；模拟测试不能证明实机性能。
 
-涉及真实消息或凭据的错误，先脱敏再报告；泄露处理与私密报告渠道见 [SECURITY](../SECURITY.md)。
+涉及真实消息或凭据的错误，先脱敏再报告；泄露处理与私密报告渠道见 [SECURITY](../.github/SECURITY.md)。

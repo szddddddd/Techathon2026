@@ -7,7 +7,7 @@ import {serveStatic} from '../server/static-files.mjs';
 
 await fs.mkdir('.test-results',{recursive:true});const root=await fs.mkdtemp(path.resolve('.test-results/http-cache-'));await fs.mkdir(path.join(root,'dist'));await fs.mkdir(path.join(root,'assets'));
 const text='const fixture="'+('forest '.repeat(2000))+'";';
-await fs.writeFile(path.join(root,'dist/world.js'),text);await fs.writeFile(path.join(root,'index.html'),'<title>Forest</title>');
+await fs.writeFile(path.join(root,'dist/world.js'),text);await fs.mkdir(path.join(root,'src/pages'),{recursive:true});await fs.writeFile(path.join(root,'src/pages/index.html'),'<title>Forest</title>');
 await fs.writeFile(path.join(root,'assets/video.webm'),Buffer.from(Array.from({length:200},(_,i)=>i)));
 const model=Buffer.alloc(2*1024*1024+37);for(let i=0;i<model.length;i++)model[i]=(i*31+Math.floor(i/65536))%256;
 await fs.writeFile(path.join(root,'assets/model.glb'),model);

@@ -16,7 +16,7 @@ app.whenReady().then(()=>{
   global.mailTestRequire=require;
   ipcMain.on('avatar-origin',event=>event.returnValue='');
   global.mailTest=require(path.join(${JSON.stringify(root)},'desktop/mail-ipc.cjs')).setupMailIPC({app,BrowserWindow:HiddenWindow,ipcMain,safeStorage,getMainWindow:()=>main,focusMain(){}});
-  main.loadFile(path.join(${JSON.stringify(root)},'index.html'));
+  main.loadFile(path.join(${JSON.stringify(root)},'src/pages/index.html'));
 });
 app.on('window-all-closed',()=>{});
 `);

@@ -13,7 +13,7 @@
 | [技术架构](TECHNICAL-ARCHITECTURE.md) | 浏览器、Electron、Android 与外部服务的数据流 |
 | [项目概览](PROJECT-OVERVIEW.md) | 产品定位、已实现能力与交付边界 |
 | [性能说明](PERFORMANCE.md) / [移动端性能](MOBILE-PERFORMANCE.md) | 缓存、资源生命周期与测量方法 |
-| [贡献指南](../CONTRIBUTING.md) / [安全报告](../SECURITY.md) | 贡献流程与私密问题处理 |
+| [贡献指南](../.github/CONTRIBUTING.md) / [安全报告](../.github/SECURITY.md) | 贡献流程与私密问题处理 |
 
 ## 功能与平台
 

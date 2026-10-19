@@ -13,7 +13,7 @@ function trustedFrame(event, window, file) {
 function setupMailIPC({app, BrowserWindow, ipcMain, safeStorage, getMainWindow, focusMain, agentComplete}) {
   let authWindow = null, pendingOpen = false, agent = null;
   const services=new Map();
-  const mainFile = path.resolve(__dirname,'../index.html'), authFile = path.join(__dirname,'mail-connect.html');
+  const mainFile = path.resolve(__dirname,'../src/pages/index.html'), authFile = path.join(__dirname,'mail-connect.html');
   function getService(provider='qqmail') {
     providerOf(provider);
     if(!services.has(provider))services.set(provider,createMailService({provider,store:new EncryptedMailStore(app.getPath('userData'),safeStorage,provider),onChange(){agent?.invalidate();const main=getMainWindow();if(main&&!main.isDestroyed())main.webContents.send('mail-changed');}}));

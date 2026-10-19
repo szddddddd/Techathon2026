@@ -8,7 +8,7 @@ WeRoam 使用原生 JavaScript ES Modules 构建共享三维前端。Node 本地
 
 | 路径 | 职责 | 维护边界 |
 | --- | --- | --- |
-| 根目录 HTML | 主世界、桌宠、模型/骨骼查看和数据传递页面 | 稳定路由入口；不承载共享业务实现 |
+| `src/pages/` | 主世界、桌宠、模型/骨骼查看和数据传递页面 | 稳定路由入口；不承载共享业务实现 |
 | `src/` | Three.js 场景、角色、前端状态和 UI | 浏览器共享代码；通过适配器使用平台能力 |
 | `server/` | 本地头像 API、生成任务、REST 客户端与静态文件服务 | 不将私有配置返回浏览器 |
 | `desktop/` | Electron 主进程、preload、桌宠、邮箱与 Agent | 凭据在可信执行端；窄 IPC |
@@ -27,6 +27,7 @@ WeRoam 使用原生 JavaScript ES Modules 构建共享三维前端。Node 本地
 ```text
 src/
 ├── main.js / startup.js # 主应用与启动界面
+├── pages/               # HTML 页面源文件；服务映射到原有 URL
 ├── scenes/
 │   ├── forest/          # 森林、山谷、溪流与地形
 │   ├── fuji/            # 富士、樱花街区与列车
@@ -51,16 +52,16 @@ src/
 
 | 页面 / 执行入口 | 实现位置 |
 | --- | --- |
-| `index.html` | `src/startup.js` 启动页与 `src/main.js` 三维主应用，主 bundle 为 `dist/world.js` |
-| `pet.html` | `src/characters/pet.js` 与 `dist/pet.js` |
-| `asset-review.html` | `src/review/asset-review.js` 与 `dist/review.js` |
-| `rig-review.html` | `src/review/rig-review.js` 与 `dist/rig-review.js` |
+| `/` → `src/pages/index.html` | `src/startup.js` 启动页与 `src/main.js` 三维主应用，主 bundle 为 `dist/world.js` |
+| `/pet.html` → `src/pages/pet.html` | `src/characters/pet.js` 与 `dist/pet.js` |
+| `/asset-review.html` → `src/pages/asset-review.html` | `src/review/asset-review.js` 与 `dist/review.js` |
+| `/rig-review.html` → `src/pages/rig-review.html` | `src/review/rig-review.js` 与 `dist/rig-review.js` |
 | 骨骼 Worker | `src/characters/character-rig-worker.js` 与 `dist/rig-worker.js` |
 | 本地 HTTP | `scripts/serve.mjs`，调用 `server/static-files.mjs` 和 `server/avatar-api.mjs` |
 | Electron | `desktop/main.cjs`，经 `desktop/preload.cjs` 暴露受限能力 |
 | Android | `android/app/src/main/`，加载打包的本地网页资源 |
 
-`scripts/build.mjs` 使用 esbuild 输出主世界、桌宠、查看器和骨骼 Worker，并单独生成 Inbox / Workshop ESM bundle。构建脚本更新页面版本参数，主页面不通过框架路由替代根 HTML。
+`scripts/build.mjs` 使用 esbuild 输出主世界、桌宠、查看器和骨骼 Worker，并单独生成 Inbox / Workshop ESM bundle。构建脚本更新页面版本参数，主页面HTML 通过本地静态服务映射到原有页面 URL。
 
 ## 可信端与数据流
 
@@ -100,3 +101,7 @@ flowchart LR
 | 浏览器 / Android IndexedDB | 各自设备和来源下的会话、草稿与模块状态 |
 
 浏览器、Electron 与手机数据没有自动云同步。备份或重置前应明确所在运行端；删除构建缓存不等于删除消息，卸载应用或清除站点数据则可能删除本机内容。
+
+## 根目录约定
+
+根目录仅保留 README、LICENSE、AGENTS、npm 清单与必要的 Git / 编辑器 / Node 配置。HTML 位于 `src/pages/`，Windows 双击入口位于 `scripts/windows/`，贡献和安全说明位于 `.github/`。页面的 `<base>` 保证浏览器旧路由与 Electron 本地文件继续使用项目根资源；Android 打包时将其改为包内相对基址。

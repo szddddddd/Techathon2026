@@ -13,8 +13,9 @@ files.push(...(await fs.readdir(path.join(root,'src/styles'))).filter(name=>name
 files.push('dist/world.js','dist/inbox.js','dist/workshop.js','dist/rig-worker.js','asset-review.html','dist/review.js');
 await fs.mkdir(webDir,{recursive:true});
 const inventory=[];let textureBefore=0,textureAfter=0;
-for(const rel of files){const dest=path.join(webDir,rel);let data=await fs.readFile(path.join(root,rel));if(rel.endsWith('.glb')){const result=await mobileGLB(data);data=result.data;textureBefore+=result.before;textureAfter+=result.after;}await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,data);inventory.push({path:rel,bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')});}
-let html=await fs.readFile(path.join(root,'index.html'),'utf8');
+for(const rel of files){const dest=path.join(webDir,rel);let data=await fs.readFile(path.join(root,rel==='asset-review.html'?'src/pages/'+rel:rel));if(rel.endsWith('.html'))data=Buffer.from(data.toString('utf8').replace('<base href="../../">','<base href="./">'));if(rel.endsWith('.glb')){const result=await mobileGLB(data);data=result.data;textureBefore+=result.before;textureAfter+=result.after;}await fs.mkdir(path.dirname(dest),{recursive:true});await fs.writeFile(dest,data);inventory.push({path:rel,bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')});}
+let html=await fs.readFile(path.join(root,'src/pages/index.html'),'utf8');
+html=html.replace('<base href="../../">','<base href="./">');
 html=html.replace('width=device-width,initial-scale=1','width=device-width,initial-scale=1,viewport-fit=cover');
 html=html.replace('</head>','<link rel="stylesheet" href="mobile/android.css"><script src="mobile/android-runtime.js"></script></head>');
 await fs.writeFile(path.join(webDir,'index.html'),html);

@@ -20,7 +20,7 @@ app.whenReady().then(()=>{
   ipcMain.on('avatar-origin',event=>event.returnValue='');
   global.agentTest.main=main;global.agentTest.store=store;
   global.agentTest.integration=require(path.join(root,'desktop/mail-ipc.cjs')).setupMailIPC({app,BrowserWindow,ipcMain,safeStorage,getMainWindow:()=>main,focusMain(){},agentComplete:async messages=>{global.agentTest.calls++;const data=JSON.parse(messages.at(-1).content);if(data.emails.length!==1||data.emails[0].id!==id||JSON.stringify(data).includes('synthetic-local-only'))throw new Error('scope');return JSON.stringify({answer:'周五有讨论。',citations:[{messageId:id,text:'周五下午三点讨论。'}],drafts:[{threadId:id,text:'收到，准时参加。'}]});}});
-  main.loadFile(path.join(root,'index.html'));
+  main.loadFile(path.join(root,'src/pages/index.html'));
 });
 app.on('window-all-closed',()=>{});
 `);

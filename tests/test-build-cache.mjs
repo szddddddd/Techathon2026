@@ -8,7 +8,8 @@ await fs.mkdir(path.join(root,'scripts'));await fs.mkdir(path.join(root,'src'));
 await fs.copyFile('scripts/build.mjs',path.join(root,'scripts/build.mjs'));
 await fs.writeFile(path.join(root,'package.json'),JSON.stringify({version:'1.0.0'}));
 await fs.writeFile(path.join(root,'package-lock.json'),'{}');
-for(const name of ['index','pet'])await fs.writeFile(path.join(root,name+'.html'),'<head><title>Fixture</title></head>');
+await fs.mkdir(path.join(root,'src/pages'));
+for(const name of ['index','pet'])await fs.writeFile(path.join(root,'src/pages',name+'.html'),'<head><title>Fixture</title></head>');
 await fs.writeFile(path.join(root,'src/value.js'),'export const value=1;');
 for(const name of ['main','review/asset-review','characters/pet','review/rig-review','characters/character-rig-worker']){
  const file=path.join(root,'src',name+'.js');await fs.mkdir(path.dirname(file),{recursive:true});
@@ -35,5 +36,5 @@ await fs.writeFile(path.join(root,'.cache/build-state.json'),'broken');assert.ma
 const state=JSON.parse(await fs.readFile(path.join(root,'.cache/build-state.json'),'utf8'));state.files={};await fs.writeFile(path.join(root,'.cache/build-state.json'),JSON.stringify(state));assert.match(await build(),/Built WeRoam/);
 assert.match(await build('--force'),/Built WeRoam/);assert.match(await build(),/Reused unchanged/);
 await fs.writeFile(path.join(root,'package.json'),JSON.stringify({version:'1.0.1'}));assert.match(await build(),/Built WeRoam/);
-assert.match(await fs.readFile(path.join(root,'index.html'),'utf8'),/content="1.0.1"/);
+assert.match(await fs.readFile(path.join(root,'src/pages/index.html'),'utf8'),/content="1.0.1"/);
 console.log('PASS: cache hits; source content, new imports, dependencies, outputs, corrupt state, forced builds and HTML versions invalidate correctly.');

@@ -47,10 +47,10 @@ try {
   const blocked=new EncryptedMailStore(directory,{isEncryptionAvailable:()=>false});assert.throws(()=>blocked.save({}),e=>e.code==='VAULT_UNAVAILABLE');
   await service.connect({account,code:secret});const damaged=JSON.parse(fs.readFileSync(store.file,'utf8'));damaged.tag=Buffer.alloc(16).toString('base64');fs.writeFileSync(store.file,JSON.stringify(damaged));assert.throws(()=>store.load(),e=>e.code==='VAULT_FAILED');service.disconnect();
 
-  const sender={},frame={url:new URL('../index.html',import.meta.url).href},window={isDestroyed:()=>false,webContents:sender};sender.mainFrame=frame;
-  assert.equal(trustedFrame({sender,senderFrame:frame},window,path.resolve('index.html')),true);
-  assert.equal(trustedFrame({sender,senderFrame:{url:frame.url}},window,path.resolve('index.html')),false,'child frame cannot impersonate main');
-  assert.equal(trustedFrame({sender:{},senderFrame:frame},window,path.resolve('index.html')),false);
+  const sender={},frame={url:new URL('../src/pages/index.html',import.meta.url).href},window={isDestroyed:()=>false,webContents:sender};sender.mainFrame=frame;
+  assert.equal(trustedFrame({sender,senderFrame:frame},window,path.resolve('src/pages/index.html')),true);
+  assert.equal(trustedFrame({sender,senderFrame:{url:frame.url}},window,path.resolve('src/pages/index.html')),false,'child frame cannot impersonate main');
+  assert.equal(trustedFrame({sender:{},senderFrame:frame},window,path.resolve('src/pages/index.html')),false);
 
   await service.connect({account,code:secret});
   let listener,closed=false,wasRealStored=false;

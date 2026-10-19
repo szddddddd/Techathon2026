@@ -34,7 +34,7 @@ const safeStorage={isEncryptionAvailable:()=>true,encryptString:s=>Buffer.from(s
 const id='mail-qq-real:1:1', text='仅分析这一封邮件。';
 new EncryptedMailStore(directory,safeStorage).save({version:1,account:'123456789@qq.com',credential,messages:[{id,threadId:id,subject:'测试',sender:{name:'同事',address:'friend@example.invalid'},createdAt:Date.now(),text}],local:{},audit:[],cursor:null});
 const handlers=new Map(),ipcMain=new EventEmitter();ipcMain.handle=(name,fn)=>handlers.set(name,fn);ipcMain.removeHandler=name=>handlers.delete(name);
-const sender=new EventEmitter();sender.send=()=>{};sender.mainFrame={url:pathToFileURL(path.resolve('index.html')).href};
+const sender=new EventEmitter();sender.send=()=>{};sender.mainFrame={url:pathToFileURL(path.resolve('src/pages/index.html')).href};
 const main={isDestroyed:()=>false,webContents:sender};const trusted={sender,senderFrame:sender.mainFrame};
 let calls=0,hold=false,release;
 const complete=async(messages)=>{calls++;assert.ok(messages.at(-1).content.includes(text));assert.ok(!messages.at(-1).content.includes('RENDERER-INJECTED-BODY'));if(hold)await new Promise(r=>release=r);return JSON.stringify({answer:'已整理。',citations:[{messageId:id,text}],drafts:[]});};

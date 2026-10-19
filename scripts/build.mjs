@@ -43,7 +43,7 @@ if(!unchanged){
  await fs.writeFile(cacheFile,JSON.stringify({esbuild:esbuildVersion,node:process.versions.node,files}));
 }
 for(const filename of ['index.html','pet.html']){
- const full=path.join(root,filename),original=await fs.readFile(full,'utf8');let source=original;
+ const full=path.join(root,'src/pages',filename),original=await fs.readFile(full,'utf8');let source=original;
  source=source.replace(/((?:src|href)="[^"?]+\.(?:js|css))(?:\?[^" ]*)?"/g,`$1?v=${version}"`);
  source=source.replace(/<meta name="forest-version" content="[^"]*">/,'');
  source=source.replace(/<title>[^<]*<\/title>/,`<title>WeRoam ${displayVersion}${filename==='pet.html'?' · 桌宠':' · 朋友住在风景里'}</title>`);

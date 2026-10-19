@@ -12,7 +12,7 @@ const resources = new Set();
 const desktopPages = ['index.html', 'pet.html', 'asset-review.html'];
 const desktopResources = new Set();
 for (const page of pages) {
-  const html = await fs.readFile(path.join(root, page), 'utf8');
+  const html = await fs.readFile(path.join(root, 'src/pages', page), 'utf8');
   for (const [, resource] of html.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)) {
     const url = new URL(resource, 'http://localhost/').pathname;
     resources.add(url);

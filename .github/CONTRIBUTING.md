@@ -1,6 +1,6 @@
 # 参与 WeRoam 开发
 
-主仓库为 [szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)。先阅读 [README](README.md)、[开发指南](docs/DEVELOPMENT.md)、[项目结构](docs/PROJECT-STRUCTURE.md) 和仓库 `AGENTS.md`。本项目处于 beta 阶段，功能边界与验证限制应随代码一起更新。
+主仓库为 [szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)。先阅读 [README](../README.md)、[开发指南](../docs/DEVELOPMENT.md)、[项目结构](../docs/PROJECT-STRUCTURE.md) 和仓库 `AGENTS.md`。本项目处于 beta 阶段，功能边界与验证限制应随代码一起更新。
 
 ## 准备与分支
 
@@ -17,7 +17,7 @@ npm test
 ## 修改约定
 
 - 保持原生 ES Modules 与现有模块边界；Electron 主进程沿用 `.cjs`，Node 工具使用 `.mjs`。
-- 页面入口留在根目录，前端逻辑放入 `src/` 相应功能目录，CSS 放入 `src/styles/`，测试放入 `tests/`，工程工具放入 `scripts/`。
+- 页面入口放入 `src/pages/`，前端逻辑放入 `src/` 相应功能目录，CSS 放入 `src/styles/`，测试放入 `tests/`，工程工具放入 `scripts/`。
 - 将纯状态与计算逻辑和 DOM、场景、网络副作用分开。新增角色、场景或 UI 监听时，同时处理卸载、场景切换和后台恢复。
 - 通过现有适配层访问邮箱、IPC、生成服务和存储；不要让前端直接获得桌面凭据或提供任意网络/代码执行接口。
 - 保留 URL、消息数据、草稿与用户配置的兼容性。确需迁移时，说明触发条件和恢复办法。
@@ -31,7 +31,7 @@ npm test
 
 ## 验证与 Pull Request
 
-按改动运行相关逻辑测试，涉及页面、布局、交互或生命周期时再运行对应浏览器检查；命令索引见[开发指南](docs/DEVELOPMENT.md)。为修复的问题保留有意义的回归验证，避免把实现逐行复写成测试。
+按改动运行相关逻辑测试，涉及页面、布局、交互或生命周期时再运行对应浏览器检查；命令索引见[开发指南](../docs/DEVELOPMENT.md)。为修复的问题保留有意义的回归验证，避免把实现逐行复写成测试。
 
 PR 描述应包括：
 

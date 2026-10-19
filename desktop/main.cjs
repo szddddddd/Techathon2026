@@ -96,7 +96,7 @@ function createMainWindow() {
   secureWindow(mainWindow);
   // Scene switches update history in place; only a new document invalidates IPC readiness.
   mainWindow.webContents.on('did-start-navigation', (_event, _url, isInPlace, isMainFrame) => { if(isMainFrame&&!isInPlace)mainReady = false; });
-  mainWindow.loadFile(path.join(ROOT, 'index.html'));
+  mainWindow.loadFile(path.join(ROOT, 'src/pages/index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
   mainWindow.on('close', event => { if (!app.isQuitting) { event.preventDefault(); mainWindow.hide(); } });
 }
