@@ -5,7 +5,6 @@ Uses GH_TOKEN/GITHUB_TOKEN or the Git credential helper; never prints credential
 """
 import argparse
 import hashlib
-import http.client
 import json
 import os
 from pathlib import Path
@@ -49,7 +48,8 @@ def main():
             headers={**headers, "Content-Type": "application/json"}, method=method,
             data=None if data is None else json.dumps(data).encode())
         with urllib.request.urlopen(request, timeout=60) as response:
-            return json.load(response)
+            body = response.read()
+            return json.loads(body) if body else None
 
     tag = manifest["tag"]
     body = (ROOT / "docs/releases" / (tag + ".md")).read_text(encoding="utf-8")
@@ -60,8 +60,10 @@ def main():
     if release is None:
         release = api("/releases", "POST", {"tag_name": tag, "target_commitish": manifest["commit"],
             "name": "WeRoam " + tag + " · Windows / Android", "body": body, "draft": True, "prerelease": "-" in tag})
-    elif release["target_commitish"] not in (manifest["commit"], "main"):
-        raise SystemExit("Existing draft targets another source commit.")
+    elif release["target_commitish"] != manifest["commit"]:
+        if release["assets"]:
+            raise SystemExit("Existing draft with assets targets another source commit.")
+        release = api("/releases/" + str(release["id"]), "PATCH", {"target_commitish": manifest["commit"]})
     artifacts = [asset["name"] for asset in manifest["files"]] + ["SHA256SUMS.txt", "release-manifest.json"]
     for name in artifacts:
         file = ROOT / "output/releases" / name
@@ -73,27 +75,22 @@ def main():
                 print("Already uploaded:", name, flush=True)
                 continue
             raise SystemExit("Existing draft asset differs or has no digest; inspect before replacing: " + name)
-        url = urllib.parse.urlsplit(release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name))
+        url = release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name)
         print("Uploading:", name, file.stat().st_size, "bytes", flush=True)
-        connection = http.client.HTTPSConnection(url.hostname, timeout=120)
-        try:
-            connection.putrequest("POST", url.path + "?" + url.query)
-            for key, value in {**headers, "Content-Type": "application/octet-stream", "Content-Length": str(file.stat().st_size)}.items():
-                connection.putheader(key, value)
-            connection.endheaders()
-            with file.open("rb") as stream:
-                while chunk := stream.read(1024 * 1024):
-                    connection.send(chunk)
-            response = connection.getresponse()
-            result = json.loads(response.read())
-            if response.status != 201:
-                raise SystemExit("Asset upload failed: HTTP " + str(response.status))
-            with file.open("rb") as stream:
-                digest = "sha256:" + hashlib.file_digest(stream, "sha256").hexdigest()
-            if result.get("digest") != digest or result["size"] != file.stat().st_size:
-                raise SystemExit("Uploaded asset verification failed: " + name)
-        finally:
-            connection.close()
+        # curl streams large files without a Python SSL send loop. Authentication
+        # goes through stdin, never the process arguments, disk, or command log.
+        config = "\n".join('header = "' + key + ": " + value + '"' for key, value in headers.items()) + "\n"
+        upload = subprocess.run(["curl.exe" if os.name == "nt" else "curl", "--config", "-",
+            "--silent", "--show-error", "--fail-with-body", "--connect-timeout", "30", "--max-time", "600",
+            "--request", "POST", "--header", "Content-Type: application/octet-stream", "--data-binary", "@" + str(file), url],
+            input=config, text=True, capture_output=True, timeout=620)
+        if upload.returncode:
+            raise SystemExit("Asset upload failed; draft preserved. curl exit " + str(upload.returncode))
+        result = json.loads(upload.stdout)
+        with file.open("rb") as stream:
+            digest = "sha256:" + hashlib.file_digest(stream, "sha256").hexdigest()
+        if result.get("digest") != digest or result["size"] != file.stat().st_size:
+            raise SystemExit("Uploaded asset verification failed: " + name)
     release = api("/releases/" + str(release["id"]))
     if not set(artifacts).issubset(a["name"] for a in release["assets"]):
         raise SystemExit("Release is missing required assets.")
