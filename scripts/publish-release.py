@@ -4,6 +4,7 @@ Usage: python scripts/publish-release.py [--publish]
 Uses GH_TOKEN/GITHUB_TOKEN or the Git credential helper; never prints credentials.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -20,6 +21,7 @@ REPO = "szddddddd/Techathon2026"
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--publish", action="store_true", help="Publish after all assets upload; otherwise keep draft.")
+    parser.add_argument("--stage-parts", action="store_true", help="Stage 16 MiB parts for the assemble-release workflow; never publishes.")
     args = parser.parse_args()
     manifest = json.loads((ROOT / "output/releases/release-manifest.json").read_text(encoding="utf-8"))
     current = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -65,6 +67,44 @@ def main():
             raise SystemExit("Existing draft with assets targets another source commit.")
         release = api("/releases/" + str(release["id"]), "PATCH", {"target_commitish": manifest["commit"]})
     artifacts = [asset["name"] for asset in manifest["files"]] + ["SHA256SUMS.txt", "release-manifest.json"]
+    if args.stage_parts:
+        existing = {asset["name"]: asset for asset in release["assets"]}
+
+        def upload_part(name, data):
+            digest = "sha256:" + hashlib.sha256(data).hexdigest()
+            old = existing.get(name)
+            if old:
+                if old.get("digest") != digest or old["size"] != len(data):
+                    raise SystemExit("Staged asset differs: " + name)
+                print("Already staged:", name, flush=True)
+                return
+            request = urllib.request.Request(release["upload_url"].split("{")[0] + "?name=" + urllib.parse.quote(name),
+                headers={**headers, "Content-Type": "application/octet-stream"}, data=data)
+            with urllib.request.urlopen(request, timeout=120) as response:
+                result = json.load(response)
+            if result.get("digest") != digest or result["size"] != len(data):
+                raise SystemExit("Staged asset verification failed: " + name)
+            print("Staged:", name, len(data), "bytes", flush=True)
+
+        for name in artifacts[-2:]:
+            upload_part(name, (ROOT / "output/releases" / name).read_bytes())
+        jobs = []
+        part_bytes = 16 * 1024 * 1024
+        for asset in manifest["files"]:
+            for index, offset in enumerate(range(0, asset["bytes"], part_bytes)):
+                jobs.append((asset["name"], index, offset))
+
+        def stage(job):
+            name, index, offset = job
+            with (ROOT / "output/releases" / name).open("rb") as stream:
+                stream.seek(offset)
+                data = stream.read(part_bytes)
+            upload_part(f"{name}.part-{index:03d}", data)
+
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            list(pool.map(stage, jobs))
+        print("All parts verified. Dispatch assemble-release.yml on this source commit, then use --publish.")
+        return
     for name in artifacts:
         file = ROOT / "output/releases" / name
         existing = next((a for a in release["assets"] if a["name"] == name), None)

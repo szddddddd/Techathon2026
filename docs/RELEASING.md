@@ -39,4 +39,6 @@ python scripts/publish-release.py --publish
 
 脚本使用当前 GitHub 的 `GH_TOKEN` / `GITHUB_TOKEN` 或 Git 凭据助手；凭据只在内存中使用，不打印或写入文件。已有公开版本不会被覆盖；草稿只复用哈希一致的已上传文件。全部必需文件上传完成后才公开 Release。带连字符的版本号发布为预发布，因此下载入口使用明确版本链接，不依赖 `/releases/latest`。
 
+若网络无法上传单个大文件，可运行 `python scripts/publish-release.py --stage-parts`。脚本把每个包以 16 MiB 分段上传到草稿，再手动触发 `assemble-release.yml`（输入相同版本标签、从 `main` 运行）。Actions 校验源码提交、分段与整包哈希，在 GitHub 中上传完整安装包，确认两个包无误后删除临时分段；最后再运行 `--publish`。该流程仅使用仓库的临时 GitHub Token，不需要上传 Android 签名密钥。
+
 本机脚本生成的草稿与本次用户明确要求发布的版本，可按已授权范围公开。后续发布仍须遵循当次用户指令。
