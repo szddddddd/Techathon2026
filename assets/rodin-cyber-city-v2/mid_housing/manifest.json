@@ -1,8 +1,0 @@
-{
-  "id": "mid_housing",
-  "name": "堆叠住宅楼",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 0,
-  "sha256": "c67026a13794517b09cdf5e70441f40c319909dd3df333f301d88bbf8af6da73"
-}

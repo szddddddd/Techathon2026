@@ -1,5 +1,7 @@
 # Desktop module buildings
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 The Creative Workshop provides manual placement for Notes, Focus, Accounts and Videos. Notes and Focus each have three preset Rodin models for Forest, Fuji Sakura Town and Ideal City. Accounts and Videos reuse their existing themed discovery boards, preview surfaces and content transitions.
 
 ## Placement and relocation

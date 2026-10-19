@@ -1,5 +1,7 @@
 # 项目结构与职责
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 WeRoam 使用原生 JavaScript ES Modules 构建共享三维前端。Node 本地服务、Electron 桌面能力及 Android 容器提供各平台特有功能；三者不共享所有权限或用户数据。
 
 ## 顶层目录
@@ -29,7 +31,6 @@ src/
 │   ├── forest/          # 森林、山谷、溪流与地形
 │   ├── fuji/            # 富士、樱花街区与列车
 │   ├── ideal/           # 理想城布局与场景
-│   ├── cyber/           # 城市几何、交通与视觉组件
 │   └── shared/          # 场景共享布局、自然及建筑组件
 ├── characters/          # 模型、骨骼、动作、拖动、桌宠与 Worker
 ├── social/              # 好友、消息、动态、状态与群聊

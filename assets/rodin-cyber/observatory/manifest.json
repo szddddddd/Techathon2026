@@ -1,8 +1,0 @@
-{
-  "id": "observatory",
-  "name": "星图观测站",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 0,
-  "sha256": "41c1d4740eac05d95a56e8f7b7c3818e08f0ac78ceb1cc0e60569377fb5759a9"
-}

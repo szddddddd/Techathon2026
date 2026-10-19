@@ -1,5 +1,7 @@
 # 开发指南
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 所有命令从仓库根目录执行，除非明确另有说明。主仓库为 [szddddddd/Techathon2026](https://github.com/szddddddd/Techathon2026)，贡献约定见 [CONTRIBUTING](../CONTRIBUTING.md)。
 
 ## 环境与首次启动

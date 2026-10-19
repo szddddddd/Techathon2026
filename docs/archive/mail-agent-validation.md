@@ -43,7 +43,7 @@
 
 以下均使用合成邮件与模拟桌面桥接；手机截图只验证响应式布局，不代表 Android 已启用真实 Agent。
 
-- [桌面截图](images/mail-agent-desktop.png)
-- [390px 手机布局截图](images/mail-agent-mobile.png)
+- [桌面截图](../images/mail-agent-desktop.png)
+- [390px 手机布局截图](../images/mail-agent-mobile.png)
 
 本文件不包含凭据、请求正文、真实邮件或模型完整响应。不因自动化通过而宣称真实账号或端到端使用已验收。

@@ -1,5 +1,7 @@
 # WeRoam 技术实现说明
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 **项目版本：** v0.1 beta<br>
 **代码核对日期：** 2026-10-18<br>
 **工程结构与配置说明更新：** 2026-10-19
@@ -76,7 +78,7 @@ flowchart TB
 主要代码入口：
 
 - 三维主应用与渲染循环：`src/main.js`、`src/scenes/shared/scene-world.js`、`src/scenes/shared/scene-assets.js`
-- 三场景与布局：`src/scenes/forest/`、`src/scenes/fuji/`、`src/scenes/cyber/`、`src/scenes/ideal/`；共享组件在 `src/scenes/shared/`
+- 三场景与布局：`src/scenes/forest/`、`src/scenes/fuji/`、`src/scenes/ideal/`；共享组件在 `src/scenes/shared/`
 - 角色、骨骼与状态动作：`src/characters/social-characters.js`、`src/characters/character-rig.js`、`src/characters/character-actions.js`、`src/characters/character-rig-worker.js`
 - 社交数据及界面：`src/social/social-store.js`、`src/social/social-conversations.js`、`src/social/social-ui.js`
 - Inbox：`src/inbox/`，与主场景和演示库通过适配层连接；桌面邮箱另位于 `desktop/mail-*.cjs` 与 `src/inbox/desktop-mail.js`
@@ -106,7 +108,7 @@ Electron 邮箱服务只连接固定的 QQ／163 IMAP 主机，使用只读 EXAM
 
 用户主动添加好友并上传有权使用的头像后，服务端先调用图像编辑服务生成单独参考图，再通过 `server/rodin-rest-client.mjs` 提交 Hyper3D Rodin，查询原任务并下载 GLB。任务记录用于避免网络结果不明时重复提交。Rodin API 凭据从项目私有配置读取，不能写进源码、普通日志或文档。
 
-Android 源码包含独立头像生成演示实现：用户在手机「我 → 设置 → 模型服务配置」输入自己的服务配置，`AvatarSettings` 使用 Android Keystore 与 AES-GCM 加密保存，`AvatarService` 在原生线程执行图像与 Rodin 请求。当前标准构建不注入开发者密钥。仓库仍保留旧 `scripts/prepare-android-avatar.mjs` 工具，但标准 APK 构建不调用它，也不应将其私有输出用于公开分发。
+Android 源码包含独立头像生成演示实现：用户在手机「我 → 设置 → 模型服务配置」输入自己的服务配置，`AvatarSettings` 使用 Android Keystore 与 AES-GCM 加密保存，`AvatarService` 在原生线程执行图像与 Rodin 请求。当前标准构建不注入开发者密钥。旧的开发者密钥导出工具已移除；公开 APK 不应携带私有配置。
 
 该 Android 实现尚未统一到项目指定的 `server/rodin-rest-client.mjs` 与 `.forest-avatar-data/hyper3d-config.json` 入口，属于既有边界，不能宣称全平台已统一。后续维护与新增 Rodin 请求须遵循 `AGENTS.md` 的统一配置约束。详见 [Android 头像说明](ANDROID-AVATAR-DEMO.md)。
 

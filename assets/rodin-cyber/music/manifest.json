@@ -1,8 +1,0 @@
-{
-  "id": "music",
-  "name": "合成器录音室",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 0,
-  "sha256": "ce252a3258376a649b3daea5b2964f086faaf4204d1ba5da3c3daf29c5c183fe"
-}

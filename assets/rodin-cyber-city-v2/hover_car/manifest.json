@@ -1,8 +1,0 @@
-{
-  "id": "hover_car",
-  "name": "悬浮通勤车",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 1.5707963267948966,
-  "sha256": "4cfbb98770bd0576a311a54e3fea4b01bac6e61995e5ad911f0520b0b83bc860"
-}

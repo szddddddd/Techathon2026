@@ -11,4 +11,3 @@
 /* Shared with scene travel: match the island backdrop, including its 60% stop. */
 #startup-loading,.scene-travel[data-destination=forest]{background:linear-gradient(180deg,#203a32 0%,#203a32 60%,#263f33 100%);color:#f1f4e7}
 #startup-loading[data-theme=fuji],.scene-travel[data-destination=fuji]{background:linear-gradient(180deg,#9c89aa 0%,#b797ac 60%,#c5a2b2 100%);color:#fff9f7}
-#startup-loading[data-theme=cyber],.scene-travel[data-destination=cyber]{background:linear-gradient(180deg,#1c2439 0%,#343650 60%,#71627e 100%);color:#edf3ff}

@@ -1,12 +1,14 @@
 # Android 独立形象演示
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 手机直接通过 HTTPS 调用生图和 Rodin 服务，不需要电脑服务、USB 转发或局域网。流程为：上传头像 → 生成独立参考图 → 提交 Rodin → 查询原任务 → 下载 GLB 到手机内部存储。
 
 ## 构建和使用
 
 标准 `npm run android:build` 不注入开发者生成密钥。安装后在「我 → 设置 → 模型服务配置」填写图片服务 HTTPS Base URL、模型、尺寸及两项服务密钥；由 `AvatarSettings.java` 使用 Android Keystore 与 AES-GCM 在手机本机加密保存，不交给 WebView。保存配置不发起付费请求，也不代表凭据已验证。更换图片服务地址时须重新输入对应密钥；旧密钥留空可保留，清除配置会阻止后续生成。
 
-仓库仍保留旧 `scripts/prepare-android-avatar.mjs`，它会从项目私有配置导出含密钥的 `.cache/android-native/avatar-demo-config.json`；当前标准 APK 构建不调用该工具。不要将旧输出打包进可分发 APK，也不要把密钥写入源码、Git、文档或控制台。
+旧的开发者密钥导出工具已移除。不要将历史 `.cache/android-native/avatar-demo-config.json` 输出打包进可分发 APK，也不要把密钥写入源码、Git、文档或控制台。
 
 安装新版 APK 后，手机联网，添加联系人并上传头像即可。生成期间可继续聊天；模型下载后可离线使用。参考图和任务状态保存在应用内部目录。生成在前台轮询驱动下逐步推进；切后台或进程被关闭不保证继续执行，返回后查询已保存任务。提交结果不明确时进入 attention，不自动重新提交付费任务。当前未提供人工恢复任务编号的手机界面。
 

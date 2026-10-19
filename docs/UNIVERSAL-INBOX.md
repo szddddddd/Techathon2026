@@ -1,5 +1,7 @@
 # WeRoam Universal Inbox
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 本文保留阶段 A 的本地产品 Demo 设计及当时验证记录，描述浏览器中的合成消息、手动收录与确定性脚本助手。“模拟发送”只写入本地演示库。
 
 2026-10-18 桌面能力更新：QQ／163 只读邮箱连接见 [MAIL-INTEGRATION.md](MAIL-INTEGRATION.md)；需单独授权的校内模型对话、分析和本地草稿见 [MAIL-AGENT.md](MAIL-AGENT.md)。下文阶段 A 的“未接入真实邮箱／模型”不适用于新增桌面路径；真实账号验收范围见对应验证记录。

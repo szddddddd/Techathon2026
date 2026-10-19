@@ -134,7 +134,6 @@ def main():
                     story[i:i+2] = [KeepTogether(story[i:i+2])]
                     break
         doc.build(story,canvasmaker=NumberedCanvas)
-        (ROOT/'docs'/path.name).write_bytes(path.read_bytes())
         print(path.relative_to(ROOT))
 
 if __name__=='__main__':main()

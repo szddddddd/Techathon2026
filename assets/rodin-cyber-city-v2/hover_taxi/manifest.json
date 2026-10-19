@@ -1,8 +1,0 @@
-{
-  "id": "hover_taxi",
-  "name": "悬浮出租车",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 1.5707963267948966,
-  "sha256": "58d89b54258ee4da79abbefb67e2b77305212075e10acbaa3a64bc4bd26fde58"
-}

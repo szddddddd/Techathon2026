@@ -1,5 +1,7 @@
 # PICO / Meta Quest 浏览器 VR
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 当前接入采用 WebXR，不需要安装手机 APK，也不需要串流软件。可在 PICO 浏览器或 Meta Quest Browser 中选择森林、富士樱町或理想城，再点击「进入 VR」，允许浏览器使用 VR。
 
 ## USB 连接（本地开发）

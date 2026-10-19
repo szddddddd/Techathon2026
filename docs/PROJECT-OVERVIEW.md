@@ -1,5 +1,7 @@
 # WeRoam 项目说明
 
+[项目首页](../README.md) / [文档索引](README.md)
+
 **项目名称：** WeRoam<br>
 **版本：** v0.1 beta<br>
 **项目口号：** 让每一次聊天，都有一处风景。<br>
@@ -78,7 +80,7 @@ WeRoam 是一款以三维空间为社交界面的互动原型。项目希望把�
 - 技术实现：[TECHNICAL-ARCHITECTURE.md](TECHNICAL-ARCHITECTURE.md)
 - 第三方资源与授权状态：[THIRD-PARTY-RESOURCES.md](THIRD-PARTY-RESOURCES.md)
 - Universal Inbox 能力与边界：[UNIVERSAL-INBOX.md](UNIVERSAL-INBOX.md)、[MAIL-INTEGRATION.md](MAIL-INTEGRATION.md)
-- 邮箱 Agent 使用与验证：[MAIL-AGENT.md](MAIL-AGENT.md)、[MAIL-AGENT-VALIDATION.md](MAIL-AGENT-VALIDATION.md)
+- 邮箱 Agent 使用与验证：[MAIL-AGENT.md](MAIL-AGENT.md)、[MAIL-AGENT-VALIDATION.md](archive/mail-agent-validation.md)
 - 创意工坊与 Mod：[WORKSHOP.md](WORKSHOP.md)
 - Android 演示版：[ANDROID.md](ANDROID.md)
 - WebXR 范围：[PICO-VR.md](PICO-VR.md)

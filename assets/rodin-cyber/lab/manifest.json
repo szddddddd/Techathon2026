@@ -1,8 +1,0 @@
-{
-  "id": "lab",
-  "name": "生物科技实验室",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 0,
-  "sha256": "b32bf07044aaffa1e67537a7fe934f79a4ad80c1e5cec8566f36e8492fc2e121"
-}

@@ -1,8 +1,0 @@
-{
-  "id": "cargo_ship",
-  "name": "小型货运飞船",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 1.5707963267948966,
-  "sha256": "49294def26c41d8b0d2615d6865727271dd165e2caaac5296869b0a8a6825814"
-}

@@ -1,8 +1,0 @@
-{
-  "id": "dock",
-  "name": "空港停泊塔",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 0,
-  "sha256": "37c1b4ce6c284a3a1fe44f989cf03c39ca258389f1f43f863c623ff0c7dde898"
-}

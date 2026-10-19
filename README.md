@@ -6,6 +6,12 @@
 
 基于 Three.js 的三维空间社交原型，提供浏览器体验、Windows 桌面端与 Android 容器。
 
+[![CI](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml/badge.svg)](https://github.com/szddddddd/Techathon2026/actions/workflows/ci.yml)
+[![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-43853d)](https://nodejs.org/)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
+
+A Three.js spatial social prototype for the browser, Windows desktop and Android.
+
 </div>
 
 ![WeRoam 三个场景的实际运行画面](docs/images/weroam-worlds.jpg)
@@ -20,7 +26,6 @@
 git clone https://github.com/szddddddd/Techathon2026.git
 cd Techathon2026
 npm ci
-npm run build
 npm start
 ```
 
@@ -69,7 +74,7 @@ APK 输出到 `downloads/`，下载页供可互访局域网中的手机使用。
 
 - [Universal Inbox 演示](http://localhost:8080/?scene=forest&inbox=1)：主动点击“体验示例”载入合成消息；[功能说明](docs/UNIVERSAL-INBOX.md)。
 - [创意工坊](http://localhost:8080/?scene=fuji&workshop=1)：管理便签、专注计时和内容模块；[功能说明](docs/WORKSHOP.md)。
-- [邮箱 Agent](docs/MAIL-AGENT.md)：真实邮件权限、配置、数据流与[验证记录](docs/MAIL-AGENT-VALIDATION.md)。
+- [邮箱 Agent](docs/MAIL-AGENT.md)：真实邮件权限、配置、数据流与[验证记录](docs/archive/mail-agent-validation.md)。
 
 ## 工程结构
 
@@ -77,7 +82,7 @@ APK 输出到 `downloads/`，下载页供可互访局域网中的手机使用。
 Techathon2026/
 ├── index.html / pet.html / *-review.html / data-transfer.html
 ├── src/                 # 共享前端入口
-│   ├── scenes/          # forest / fuji / ideal / cyber / shared
+│   ├── scenes/          # forest / fuji / ideal / shared
 │   ├── characters/      # 角色、骨骼、动作与桌宠
 │   ├── social/          # 好友、群聊与消息
 │   ├── discovery/       # 内容设施与媒体预览
@@ -102,6 +107,18 @@ Techathon2026/
 ```
 
 根目录 HTML 保留为稳定页面入口；业务实现位于 `src/`。各层职责、入口与数据目录见[项目结构](docs/PROJECT-STRUCTURE.md)。
+
+### 文档导航
+
+| 我想…… | 从这里开始 |
+| --- | --- |
+| 运行项目、配置开发环境 | [开发指南](docs/DEVELOPMENT.md) |
+| 理解代码与数据流 | [目录职责](docs/PROJECT-STRUCTURE.md) · [技术架构](docs/TECHNICAL-ARCHITECTURE.md) |
+| 使用收件箱、工坊、头像或移动端 | [功能与平台指南](docs/README.md#功能与平台) |
+| 查素材来源和使用许可 | [资产目录](assets/README.md) · [第三方资源](docs/THIRD-PARTY-RESOURCES.md) |
+| 查看阶段计划与旧验收数据 | [历史档案](docs/archive/README.md) |
+
+当前指南以 Markdown 为维护源；PDF 使用 `python scripts/export-project-docs.py` 按需导出到被忽略的 `output/pdf/`，依赖与字体要求见脚本说明。
 
 ## 开发与验证
 

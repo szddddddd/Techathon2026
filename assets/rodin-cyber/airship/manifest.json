@@ -1,8 +1,0 @@
-{
-  "id": "airship",
-  "name": "巡航飞艇",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 1.5707963267948966,
-  "sha256": "fd4211922667bf729aae5ee21d8d3fd3a8b93fcb1128cfa3050ae65d39c6508f"
-}

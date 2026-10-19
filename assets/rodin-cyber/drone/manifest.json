@@ -1,8 +1,0 @@
-{
-  "id": "drone",
-  "name": "快递无人机",
-  "provider": "Hyper3D Rodin",
-  "file": "scene.glb",
-  "rotationY": 1.5707963267948966,
-  "sha256": "fa08c14db7b2f25481aa23f0944d33fa70a9ce7ff5b4bc141907195f26cb1ec1"
-}
