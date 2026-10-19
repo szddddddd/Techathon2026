@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/branding/weroam-icon.png" alt="WeRoam 产品图标" width="128" height="128">
+
 # WeRoam
 
 **让每一次聊天，都有一处风景。**
