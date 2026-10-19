@@ -16,13 +16,9 @@
 
 ## 演示视频
 
-[![WeRoam 场景预览 · 点击观看演示视频](docs/images/weroam-worlds.jpg)](https://www.bilibili.com/video/BV1yTn36fEZd/)
+https://github.com/user-attachments/assets/c315ede8-90ab-4a5a-bee8-0b316da6d35d
 
 **[▶ 在 B 站观看演示视频](https://www.bilibili.com/video/BV1yTn36fEZd/)**
-
-<iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117461735180913&bvid=BV1yTn36fEZd&cid=42847109266&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
-GitHub 不支持 iframe 播放，请点击预览图观看；支持 iframe 的阅读器可直接播放。
 
 ## 快速开始
 
